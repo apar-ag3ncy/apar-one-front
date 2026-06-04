@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:cursor": "node e2e/cursor-check.mjs"
+    "test:cursor": "node e2e/cursor-check.mjs",
+    "test:mobile": "node e2e/mobile-menu-check.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
