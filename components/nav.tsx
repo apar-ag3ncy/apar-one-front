@@ -35,6 +35,20 @@ export function Nav() {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
+  // Close the menu on route change and on Escape.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <>
       <header className={cn("nav", onDark && "on-dark", scrolled && "scrolled", open && "menu-open")}>
@@ -60,7 +74,9 @@ export function Nav() {
           </Link>
           <button
             className="nav-burger"
-            aria-label="Menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            type="button"
             onClick={() => setOpen((v) => !v)}
           >
             <span />
@@ -70,8 +86,11 @@ export function Nav() {
         </div>
       </header>
 
-      <div className={cn("mobile-menu", open && "open")}>
-        <div className="mm-links" onClick={() => setOpen(false)}>
+      <div
+        className={cn("mobile-menu", open && "open")}
+        onClick={() => setOpen(false)}
+      >
+        <div className="mm-links">
           <Link href="/">Home</Link>
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href}>
