@@ -251,7 +251,11 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 @media (prefers-reduced-motion: no-preference){
   body{ animation: pageReveal .55s var(--ease) both; }
 }
-@keyframes pageReveal{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+/* opacity-only: animating `transform` on <body> turns it into a containing
+   block for position:fixed descendants, which detaches the custom cursor /
+   nav / scroll-progress from the viewport (they scroll away after the first
+   section). Never animate transform/filter/perspective on <body>. */
+@keyframes pageReveal{ from{ opacity:0; } to{ opacity:1; } }
 
 /* ---------- custom cursor (brand-red ring + trailing dot) ---------- */
 .has-cursor, .has-cursor *{ cursor:none !important; }
