@@ -15,7 +15,7 @@ const LINKS = [
   { href: "/clients", label: "Clients" },
   { href: "/#manifesto", label: "Manifesto" },
   { href: "/#studio", label: "Studio" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/start", label: "Contact" },
 ];
 
 export function Nav() {
@@ -69,7 +69,7 @@ export function Nav() {
               </Link>
             ))}
           </nav>
-          <Link className="nav-cta" href="/#contact" data-magnetic>
+          <Link className="nav-cta" href="/start" data-magnetic>
             Start a project
           </Link>
           <button
