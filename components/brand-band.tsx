@@ -54,7 +54,7 @@ export function BrandBand() {
       <div className="wrap brand-band-in">
         <span className="bb-kick">This is</span>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="bb-logo" src="/assets/apar-logo-red.png" alt="APAR" />
+        <img className="bb-logo" src="/assets/apar-logo-red.svg" alt="APAR" />
         <div className="bb-line">
           <span>Digital Marketing</span>
           <i />
