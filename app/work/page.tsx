@@ -112,7 +112,7 @@ export default function WorkPage() {
               Your brand could be <em>next.</em>
             </Reveal>
             <Reveal i={1}>
-              <Link className="btn" href="/#contact">
+              <Link className="btn" href="/start">
                 <span>Start a project</span>
                 <span className="arr">↗</span>
               </Link>

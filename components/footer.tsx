@@ -6,7 +6,7 @@ const LINKS = [
   { href: "/clients", label: "Clients" },
   { href: "/#manifesto", label: "Manifesto" },
   { href: "/#studio", label: "Studio" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/start", label: "Contact" },
 ];
 
 export function Footer() {
@@ -18,7 +18,7 @@ export function Footer() {
         <h2 className="footer-cta">
           Let&apos;s make something <em>worth remembering.</em>
         </h2>
-        <Link className="footer-arrowlink" href="/#contact" data-magnetic>
+        <Link className="footer-arrowlink" href="/start" data-magnetic>
           <span className="circ">→</span> Start a project with APAR
         </Link>
         <div className="footer-grid">

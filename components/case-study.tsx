@@ -182,7 +182,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
             <div className="nx-l">{data.next.kicker}</div>
             <div className="nx-name">{data.next.name} ↗</div>
           </a>
-          <Link className="case-btn" href="/#contact">
+          <Link className="case-btn" href="/start">
             Start your project ↗
           </Link>
         </div>
