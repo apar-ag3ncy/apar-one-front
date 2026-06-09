@@ -310,6 +310,7 @@ export const CASES: Record<string, CaseData> = {
       cat: "Real Estate",
       blurb: "Where address becomes aspiration — branding, content and campaigns for premium real estate.",
     },
+    logoTint: "#C9A062",
     fonts: FONTS_ACHAL,
     sub: "Premium real estate, positioned with confidence — a navy world that makes an address feel like a landmark.",
     theme: {
