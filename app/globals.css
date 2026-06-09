@@ -484,6 +484,13 @@ body.intro-lock{overflow:hidden;}
 .fc-logo-img[data-loaded="true"]{opacity:1;transform:scale(1);}
 /* brand-coloured logos that match their card → render as a white silhouette */
 .fc-logo-img--invert{filter:brightness(0) invert(1);}
+/* solid-colour (e.g. gold) silhouette via image mask */
+.fc-logo-mask{
+  position:absolute;inset:23% 10%;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:contain;mask-size:contain;
+}
 
 /* glassy shine streak that sweeps across the card on entrance */
 .fc-shine{

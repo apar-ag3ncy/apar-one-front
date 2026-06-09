@@ -35,6 +35,9 @@ export interface CaseData {
   /** Force the logo to render as a white silhouette (for brand-coloured logos
    *  whose colour matches their card background). */
   logoInvert?: boolean;
+  /** Render the logo as a solid silhouette of this exact colour (e.g. gold),
+   *  via an image mask. Takes precedence over logoInvert. */
+  logoTint?: string;
   /** Per-company typography — drives both the case page and its featured card. */
   fonts: CaseFonts;
   eyebrow: string;

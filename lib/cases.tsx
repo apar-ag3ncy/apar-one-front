@@ -43,8 +43,8 @@ export const CASES: Record<string, CaseData> = {
     theme: {
       bg: "#0a2a20",
       bg2: "#0f3d2e",
-      ink: "#F4E9C8",
-      soft: "rgba(244,233,200,.70)",
+      ink: "#E9CE82",
+      soft: "rgba(233,206,130,.72)",
       accent: "#D8B65B",
       accentSoft: "rgba(216,182,91,.18)",
       line: "rgba(244,233,200,.18)",
@@ -365,7 +365,7 @@ export const CASES: Record<string, CaseData> = {
       ),
       by: "Director — Achal",
     },
-    next: { kicker: "Next case", name: "High on Smiles", href: "/work/high-on-smiles", color: "#0A8FCC", ink: "#FFFFFF" },
+    next: { kicker: "Next case", name: "High on Smiles", href: "/work/high-on-smiles", color: "#4A80C6", ink: "#FFFFFF" },
   },
 
   "high-on-smiles": {
@@ -381,10 +381,10 @@ export const CASES: Record<string, CaseData> = {
     fonts: FONTS_DEFAULT,
     sub: "A modern dental clinic, made approachable — a bright, clean world that turns nervous first-timers into loyal, smiling regulars.",
     theme: {
-      bg: "#0A8FCC",
-      bg2: "#2AA6DD",
+      bg: "#4A80C6",
+      bg2: "#5E91D2",
       ink: "#FFFFFF",
-      soft: "rgba(255,255,255,.85)",
+      soft: "rgba(255,255,255,.86)",
       accent: "#FFFFFF",
       accentSoft: "rgba(255,255,255,.18)",
       line: "rgba(255,255,255,.26)",
@@ -861,6 +861,7 @@ export const FEATURED_CLIENTS = CASE_SLUGS.map((slug, idx) => {
     // a case can override via its own `logo` field. Missing files fall back to the name.
     logo: c.logo ?? `/logos/${slug}.png`,
     logoInvert: c.logoInvert ?? false,
+    logoTint: c.logoTint,
     year: c.meta.find((m) => m.label === "Year")?.value ?? "",
     theme: c.theme,
     fonts: c.fonts,

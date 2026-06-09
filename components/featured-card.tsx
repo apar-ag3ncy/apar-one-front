@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Reveal } from "./reveal";
@@ -14,7 +14,16 @@ import { featuredCardVars, type FeaturedClient } from "@/lib/cases";
  * Shared by the home and clients pages so the markup lives in one place.
  */
 export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number }) {
+  const imgRef = useRef<HTMLImageElement>(null);
   const [logoLoaded, setLogoLoaded] = useState(false);
+
+  // Cached images can finish loading before React attaches onLoad, so check
+  // the image's completed state on mount as well — otherwise the logo would
+  // silently never appear and the card would look empty.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) setLogoLoaded(true);
+  }, []);
 
   return (
     <Reveal
@@ -26,17 +35,29 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
     >
       {/* Rest face: the logo if it loads, otherwise the name (no broken image). */}
       <span className="fc-logo" aria-hidden="true">
-        {client.logo ? (
+        {client.logo && client.logoTint ? (
+          // Solid-colour silhouette (e.g. gold) via image mask.
+          <span
+            className="fc-logo-mask"
+            style={{
+              WebkitMaskImage: `url("${client.logo}")`,
+              maskImage: `url("${client.logo}")`,
+              backgroundColor: client.logoTint,
+            }}
+          />
+        ) : client.logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            ref={imgRef}
             className={`fc-logo-img${client.logoInvert ? " fc-logo-img--invert" : ""}`}
             src={client.logo}
             alt=""
             data-loaded={logoLoaded ? "true" : "false"}
             onLoad={() => setLogoLoaded(true)}
+            onError={() => setLogoLoaded(false)}
           />
         ) : null}
-        {!logoLoaded && <span className="fc-logo-name">{client.name}</span>}
+        {!client.logoTint && !logoLoaded && <span className="fc-logo-name">{client.name}</span>}
       </span>
 
       {/* Glassy shine that sweeps across once as the card scrolls into view. */}
