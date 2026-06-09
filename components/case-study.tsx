@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { Reveal } from "./reveal";
 import { CountUp } from "./count-up";
-import { ImageSlot } from "./image-slot";
+import { PhotoSlot } from "./photo-slot";
 import { NextCaseScroll } from "./next-case-scroll";
 import { useCaseTransition } from "./transition-provider";
 
@@ -82,8 +82,14 @@ export function CaseStudy({ data }: { data: CaseData }) {
     "--sans": data.fonts.sans,
   } as React.CSSProperties;
 
+  // Give each case page a different gallery rhythm / spacing / alignment so the
+  // case studies don't all look like the same template. Deterministic per slug.
+  const variant = ["a", "b", "c"][
+    [...data.slug].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 3
+  ];
+
   return (
-    <div className="case-page" data-case={data.slug} style={themeVars}>
+    <div className="case-page" data-case={data.slug} data-variant={variant} style={themeVars}>
       {/* HERO */}
       <header className="case-hero" data-screen-label={`${data.slug} — Hero`}>
         <div className="case-wrap case-hero-in">
@@ -105,7 +111,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
             ))}
           </Reveal>
           <Reveal className="case-hero-fig">
-            <ImageSlot shape="rounded" radius={7} placeholder={data.heroPlaceholder} />
+            <PhotoSlot src={`/work/${data.slug}/hero.jpg`} radius={7} placeholder={data.heroPlaceholder} />
           </Reveal>
         </div>
       </header>
@@ -150,7 +156,11 @@ export function CaseStudy({ data }: { data: CaseData }) {
           <div className="case-gallery">
             {data.approach.gallery.map((g, i) => (
               <Reveal key={i} className={`g ${g.cls}`}>
-                <ImageSlot placeholder={g.placeholder} style={{ aspectRatio: g.ratio }} />
+                <PhotoSlot
+                  src={`/work/${data.slug}/${i + 1}.jpg`}
+                  placeholder={g.placeholder}
+                  radius={6}
+                />
               </Reveal>
             ))}
           </div>

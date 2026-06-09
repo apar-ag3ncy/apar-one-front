@@ -3,11 +3,12 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ImageSlot } from "./image-slot";
+import { VideoSlot } from "./video-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 
 // Derived from the single source of truth (lib/cases.tsx) — every case auto-appears
 // in the horizontal scroll, in order, with no manual sync as cases are added.
+// Each frame plays /videos/<slug>.mp4 (drop the file in and it appears).
 const CARDS = FEATURED_CLIENTS.map((c) => ({
   href: c.href,
   num: c.i,
@@ -15,7 +16,8 @@ const CARDS = FEATURED_CLIENTS.map((c) => ({
   title: c.name,
   desc: c.blurb,
   year: c.year ? `'${c.year.slice(-2)}` : "",
-  slot: `Drop ${c.name} image`,
+  video: `/videos/${c.slug}.mp4`,
+  slot: `Drop ${c.name} video`,
 }));
 
 // Scroll length scales with card count (+2 fixed panels: intro & CTA) so the pin
@@ -92,7 +94,7 @@ export function PinnedGallery() {
               <div className="frame">
                 <span className="num">{c.num}</span>
                 <span className="tagpill">{c.tag}</span>
-                <ImageSlot shape="rounded" radius={5} placeholder={c.slot} style={{ width: "100%" }} />
+                <VideoSlot src={c.video} radius={5} placeholder={c.slot} style={{ width: "100%" }} />
               </div>
               <div className="cap">
                 <div>
