@@ -30,6 +30,11 @@ export interface CaseData {
   title: React.ReactNode;
   /** Plain-text fields used by the featured-client cards (home + clients pages). */
   card: { name: string; cat: string; blurb: string };
+  /** Optional brand logo shown on the featured card at rest (path under /public). */
+  logo?: string;
+  /** Force the logo to render as a white silhouette (for brand-coloured logos
+   *  whose colour matches their card background). */
+  logoInvert?: boolean;
   /** Per-company typography — drives both the case page and its featured card. */
   fonts: CaseFonts;
   eyebrow: string;

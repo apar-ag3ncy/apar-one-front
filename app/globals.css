@@ -468,6 +468,44 @@ body.intro-lock{overflow:hidden;}
   .fc-card:hover,.fc-card:focus-visible,.fc-card:active{transform:none;}
 }
 
+/* ── Card face: brand logo at rest, info revealed on hover/press ─────────── */
+.fc-card .fc-logo{
+  position:absolute;inset:0;z-index:3;opacity:1;pointer-events:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease);
+}
+/* logo image is invisible until it actually loads — a missing file shows nothing.
+   Scales + fades in for a sleek entrance. */
+.fc-logo-img{
+  position:absolute;inset:0;margin:auto;width:auto;height:auto;
+  max-width:80%;max-height:54%;object-fit:contain;
+  opacity:0;transform:scale(.9);
+  transition:opacity .55s var(--ease),transform .7s var(--ease);
+}
+.fc-logo-img[data-loaded="true"]{opacity:1;transform:scale(1);}
+/* brand-coloured logos that match their card → render as a white silhouette */
+.fc-logo-img--invert{filter:brightness(0) invert(1);}
+
+/* glassy shine streak that sweeps across the card on entrance */
+.fc-shine{
+  position:absolute;top:-20%;height:140%;left:0;width:45%;z-index:5;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.10) 42%,rgba(255,255,255,.32) 50%,rgba(255,255,255,.10) 58%,transparent);
+}
+@media (prefers-reduced-motion:reduce){ .fc-shine{display:none;} }
+.fc-logo-name{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;font-family:var(--serif);font-size:clamp(22px,2.5vw,34px);
+  line-height:1.05;letter-spacing:-.01em;color:var(--fc-accent,var(--ink));padding:0 26px;
+}
+.fc-body{
+  display:flex;flex-direction:column;flex:1 1 auto;width:100%;
+  opacity:0;transition:opacity .45s var(--ease);
+}
+.fc-card:hover .fc-logo,.fc-card:focus-visible .fc-logo,.fc-card:active .fc-logo{opacity:0;transform:scale(.96);}
+.fc-card:hover .fc-body,.fc-card:focus-visible .fc-body,.fc-card:active .fc-body{opacity:1;}
+@media (prefers-reduced-motion:reduce){
+  .fc-card .fc-logo,.fc-card .fc-body{transition:opacity .2s linear;}
+}
+
 .client-wall{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:48px;}
 .cw-item{font-family:var(--serif);font-size:clamp(18px,2vw,26px);color:var(--ink-soft);padding:10px 20px;
   border:1px solid var(--line);border-radius:100px;transition:.35s var(--ease);cursor:default;}

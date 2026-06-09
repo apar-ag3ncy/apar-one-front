@@ -106,6 +106,7 @@ export const CASES: Record<string, CaseData> = {
       cat: "Jewellery",
       blurb: "A modern jewellery label — brand identity, content engine and performance ads.",
     },
+    logoInvert: true,
     fonts: FONTS_GIRVAAN,
     sub: "A modern jewellery label for a softer, contemporary buyer — built from a blush-and-white world that feels effortlessly elegant.",
     theme: {
@@ -376,6 +377,7 @@ export const CASES: Record<string, CaseData> = {
       cat: "Dental",
       blurb: "Smiles worth showing off — brand, content and campaigns for a modern dental clinic.",
     },
+    logoInvert: true,
     fonts: FONTS_DEFAULT,
     sub: "A modern dental clinic, made approachable — a bright, clean world that turns nervous first-timers into loyal, smiling regulars.",
     theme: {
@@ -443,6 +445,7 @@ export const CASES: Record<string, CaseData> = {
       cat: "Silver",
       blurb: "Silver worth passing down — branding, content and campaigns for a heritage silver house.",
     },
+    logoInvert: true,
     fonts: FONTS_DEFAULT,
     sub: "A house of fine silver articles, made to be lived with — a cool, polished world that turns everyday silver into heirlooms.",
     theme: {
@@ -565,7 +568,7 @@ export const CASES: Record<string, CaseData> = {
       ),
       by: "Director — A Paramount",
     },
-    next: { kicker: "Next case", name: "Kundan Jewellers", href: "/work/kundan-jewellers", color: "#C29A6A", ink: "#44331F" },
+    next: { kicker: "Next case", name: "Kundan Jewellers", href: "/work/kundan-jewellers", color: "#34251A", ink: "#EBDFCD" },
   },
 
   "kundan-jewellers": {
@@ -580,15 +583,15 @@ export const CASES: Record<string, CaseData> = {
     fonts: FONTS_DEFAULT,
     sub: "A jewellery house of warm gold and kundan craft — given a soft, modern brand world as refined as its pieces.",
     theme: {
-      bg: "#C29A6A",
-      bg2: "#D0AC82",
-      ink: "#44331F",
-      soft: "rgba(68,51,31,.72)",
-      accent: "#2E2011",
-      accentSoft: "rgba(46,32,17,.16)",
-      line: "rgba(68,51,31,.22)",
+      bg: "#34251A",
+      bg2: "#473322",
+      ink: "#EBDFCD",
+      soft: "rgba(235,223,205,.70)",
+      accent: "#C9A062",
+      accentSoft: "rgba(201,160,98,.18)",
+      line: "rgba(235,223,205,.18)",
     },
-    heroPlaceholder: "Drop Kundan Jewellers hero image (warm tan / gold)",
+    heroPlaceholder: "Drop Kundan Jewellers hero image (warm brown / gold)",
     meta: [
       { label: "Services", value: "Branding · Social · Campaigns" },
       { label: "Sector", value: "Jewellery" },
@@ -644,6 +647,7 @@ export const CASES: Record<string, CaseData> = {
       cat: "Jewellery",
       blurb: "Heritage jewellery with a warm, earthy soul — identity, content and campaigns that honour the legacy.",
     },
+    logoInvert: true,
     fonts: FONTS_DEFAULT,
     sub: "A trusted jewellery name with deep roots — given a warm, terracotta-and-cream brand world that carries its heritage into a new generation.",
     theme: {
@@ -853,11 +857,17 @@ export const FEATURED_CLIENTS = CASE_SLUGS.map((slug, idx) => {
     cat: c.card.cat,
     name: c.card.name,
     blurb: c.card.blurb,
+    // Auto-derived: drop /public/logos/<slug>.png and it appears on the card;
+    // a case can override via its own `logo` field. Missing files fall back to the name.
+    logo: c.logo ?? `/logos/${slug}.png`,
+    logoInvert: c.logoInvert ?? false,
     year: c.meta.find((m) => m.label === "Year")?.value ?? "",
     theme: c.theme,
     fonts: c.fonts,
   };
 });
+
+export type FeaturedClient = (typeof FEATURED_CLIENTS)[number];
 
 /** CSS custom properties that theme a `.fc-card` — colours + fonts from a case. */
 export function featuredCardVars(c: {

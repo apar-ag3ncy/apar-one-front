@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import { FEATURED_CLIENTS, featuredCardVars } from "@/lib/cases";
+import { FEATURED_CLIENTS } from "@/lib/cases";
+import { FeaturedCard } from "@/components/featured-card";
 
 export const metadata: Metadata = {
   title: "Clients — APAR Digital Marketing Agency",
@@ -50,24 +51,7 @@ export default function ClientsPage() {
           </Reveal>
           <div className="featured-clients" style={{ marginTop: 40 }}>
             {FEATURED_CLIENTS.map((c, i) => (
-              <Reveal
-                key={c.slug}
-                i={i}
-                as={Link}
-                href={c.href}
-                className="fc-card"
-                style={featuredCardVars(c)}
-              >
-                <div className="fc-top">
-                  <span className="fc-i">{c.i}</span>
-                  <span className="fc-cat">{c.cat}</span>
-                </div>
-                <h3>{c.name}</h3>
-                <p>{c.blurb}</p>
-                <span className="fc-go">
-                  View case <i>↗</i>
-                </span>
-              </Reveal>
+              <FeaturedCard key={c.slug} client={c} i={i} />
             ))}
           </div>
         </div>
