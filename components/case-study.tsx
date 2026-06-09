@@ -18,9 +18,20 @@ export interface CaseTheme {
   line: string;
 }
 
+export interface CaseFonts {
+  /** CSS font-family stack for display/serif type (titles, leads, quotes). */
+  serif: string;
+  /** CSS font-family stack for body/sans type (eyebrow, labels, copy). */
+  sans: string;
+}
+
 export interface CaseData {
   slug: string;
   title: React.ReactNode;
+  /** Plain-text fields used by the featured-client cards (home + clients pages). */
+  card: { name: string; cat: string; blurb: string };
+  /** Per-company typography — drives both the case page and its featured card. */
+  fonts: CaseFonts;
   eyebrow: string;
   sub: string;
   theme: CaseTheme;
@@ -58,10 +69,13 @@ export function CaseStudy({ data }: { data: CaseData }) {
     "--c-accent": t.accent,
     "--c-accent-soft": t.accentSoft,
     "--c-line": t.line,
+    // Per-company typography — overrides the site default --serif/--sans for this page only.
+    "--serif": data.fonts.serif,
+    "--sans": data.fonts.sans,
   } as React.CSSProperties;
 
   return (
-    <div className="case-page" style={themeVars}>
+    <div className="case-page" data-case={data.slug} style={themeVars}>
       {/* HERO */}
       <header className="case-hero" data-screen-label={`${data.slug} — Hero`}>
         <div className="case-wrap case-hero-in">

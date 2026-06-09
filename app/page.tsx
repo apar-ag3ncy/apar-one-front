@@ -12,6 +12,7 @@ import { Faq } from "@/components/faq";
 import { Reveal } from "@/components/reveal";
 import { CountUp } from "@/components/count-up";
 import { ImageSlot } from "@/components/image-slot";
+import { FEATURED_CLIENTS, featuredCardVars } from "@/lib/cases";
 
 const SERVICES = [
   { num: "01", name: "Branding", desc: "Identity, positioning & brand systems that hold up everywhere." },
@@ -27,15 +28,8 @@ const PROCESS = [
   { n: "04", h: "Launch & grow", p: "We ship, measure and optimise — turning attention into repeatable results." },
 ];
 
-const FEATURED = [
-  { cls: "chheda", href: "/work/chheda", i: "01", cat: "Jewellery", h: "Chheda Jewellers", p: "Heritage gold & diamond house — identity, festive campaigns and social growth." },
-  { cls: "girvaan", href: "/work/girvaan", i: "02", cat: "Jewellery", h: "Girvaan", p: "A modern jewellery label — brand identity, content engine and performance ads." },
-  { cls: "diarah", href: "/work/diarah", i: "03", cat: "Jewellery", h: "Diarah", p: "Luxury fine jewellery — refined rebrand and full-funnel digital campaigns." },
-];
-
 const WALL = [
-  "Silver Emporium", "Achal", "Maison Mireyaa", "Kundan Jewellers", "Harshit Gold",
-  "Jatubhai Veljibhai Jewellers", "Tarava", "High on Smiles", "Signi World",
+  "Harshit Gold",
 ];
 
 export default function Home() {
@@ -236,18 +230,25 @@ export default function Home() {
             Brands that <em>trust us.</em>
           </Reveal>
           <Reveal as="p" className="lead" style={{ marginBottom: 48 }}>
-            A growing roster of jewellery houses and lifestyle brands. Three featured stories below.
+            A growing roster of jewellery houses and lifestyle brands. Twelve featured stories below.
           </Reveal>
 
           <div className="featured-clients">
-            {FEATURED.map((c, i) => (
-              <Reveal key={c.i} i={i} as="a" className={`fc-card ${c.cls}`} href={c.href}>
+            {FEATURED_CLIENTS.map((c, i) => (
+              <Reveal
+                key={c.slug}
+                i={i}
+                as="a"
+                className="fc-card"
+                href={c.href}
+                style={featuredCardVars(c)}
+              >
                 <div className="fc-top">
                   <span className="fc-i">{c.i}</span>
                   <span className="fc-cat">{c.cat}</span>
                 </div>
-                <h3>{c.h}</h3>
-                <p>{c.p}</p>
+                <h3>{c.name}</h3>
+                <p>{c.blurb}</p>
                 <span className="fc-go">
                   View case <i>↗</i>
                 </span>

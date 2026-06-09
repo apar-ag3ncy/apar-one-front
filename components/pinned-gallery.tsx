@@ -4,13 +4,23 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ImageSlot } from "./image-slot";
+import { FEATURED_CLIENTS } from "@/lib/cases";
 
-const CARDS = [
-  { href: "/work/chheda", num: "01", tag: "Jewellery", title: "Chheda Jewellers", desc: "Brand identity, festive campaigns & social growth", year: "'26", slot: "Drop Chheda image" },
-  { href: "/work/girvaan", num: "02", tag: "Jewellery", title: "Girvaan", desc: "Identity & content for a modern jewellery label", year: "'25", slot: "Drop Girvaan image" },
-  { href: "/work/diarah", num: "03", tag: "Jewellery", title: "Diarah", desc: "Luxury rebrand & performance campaigns", year: "'25", slot: "Drop Diarah image" },
-  { href: "/clients", num: "04", tag: "Lifestyle", title: "High on Smiles", desc: "Brand world & always-on social", year: "'24", slot: "Drop High on Smiles image" },
-];
+// Derived from the single source of truth (lib/cases.tsx) — every case auto-appears
+// in the horizontal scroll, in order, with no manual sync as cases are added.
+const CARDS = FEATURED_CLIENTS.map((c) => ({
+  href: c.href,
+  num: c.i,
+  tag: c.cat,
+  title: c.name,
+  desc: c.blurb,
+  year: c.year ? `'${c.year.slice(-2)}` : "",
+  slot: `Drop ${c.name} image`,
+}));
+
+// Scroll length scales with card count (+2 fixed panels: intro & CTA) so the pin
+// pacing stays consistent as cases are added. 4 cards ≈ 440vh baseline.
+const PIN_HEIGHT = `${Math.round((CARDS.length + 2) * 74)}vh`;
 
 /**
  * Pinned horizontal-scroll work gallery — projects slide sideways through a
@@ -60,7 +70,7 @@ export function PinnedGallery() {
       ref={sectionRef}
       className="pin"
       data-screen-label="Home — Work Gallery"
-      style={{ height: "440vh" }}
+      style={{ height: PIN_HEIGHT }}
     >
       <div className="pin-sticky">
         <div ref={trackRef} className="pin-track">

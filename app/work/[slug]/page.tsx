@@ -15,9 +15,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const data = CASES[slug];
   if (!data) return {};
-  const name = slug.charAt(0).toUpperCase() + slug.slice(1);
   return {
-    title: `${name} — APAR Case Study`,
+    title: `${data.card.name} — APAR Case Study`,
     description: data.sub,
   };
 }

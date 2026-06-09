@@ -428,10 +428,11 @@ body.intro-lock{overflow:hidden;}
 .testi-grid .by2{margin-top:18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mid);}
 
 /* ---- clients ---- */
-.featured-clients{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.featured-clients{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px;}
 .fc-card{position:relative;display:flex;flex-direction:column;min-height:300px;padding:30px;border-radius:6px;
-  overflow:hidden;color:var(--ink);transition:transform .5s var(--spring),box-shadow .5s var(--ease);transform-style:preserve-3d;}
-.fc-card:hover{box-shadow:0 26px 60px rgba(26,23,20,.18);}
+  overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));
+  transition:transform .5s var(--spring),box-shadow .5s var(--ease);transform-style:preserve-3d;}
+.fc-card:hover,.fc-card:focus-visible,.fc-card:active{transform:translateY(-6px);box-shadow:0 30px 70px -20px rgba(26,23,20,.45);}
 .fc-card .fc-top{display:flex;align-items:center;justify-content:space-between;}
 .fc-card .fc-i{font-family:var(--serif);font-style:italic;font-size:22px;}
 .fc-card .fc-cat{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
@@ -440,15 +441,32 @@ body.intro-lock{overflow:hidden;}
 .fc-card .fc-go{font-size:13px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
 .fc-card .fc-go i{font-style:normal;transition:transform .4s var(--ease);}
 .fc-card:hover .fc-go i{transform:translate(4px,-4px);}
-.fc-card.chheda{background:linear-gradient(160deg,#0f3d2e,#0a2a20);color:#F4E9C8;}
-.fc-card.chheda .fc-cat,.fc-card.chheda .fc-i{color:#D8B65B;}
-.fc-card.chheda h3{color:#E8D38A;}
-.fc-card.girvaan{background:linear-gradient(160deg,#fbe9ee,#f6dbe4);color:#5a2238;}
-.fc-card.girvaan .fc-cat,.fc-card.girvaan .fc-i{color:#c66a8a;}
-.fc-card.girvaan h3{color:#8d2f54;}
-.fc-card.diarah{background:linear-gradient(160deg,#3a121f,#2a0c16);color:#F3E4D6;}
-.fc-card.diarah .fc-cat,.fc-card.diarah .fc-i{color:#D9A679;}
-.fc-card.diarah h3{color:#EBC79E;}
+/* Per-client colours come from --fc-* vars set inline from each case theme
+   (see FEATURED_CLIENTS / featuredCardVars in lib/cases.tsx). */
+.fc-card .fc-cat,.fc-card .fc-i{color:var(--fc-accent,var(--red));}
+.fc-card h3{color:var(--fc-accent,var(--ink));}
+
+/* ── Glassy sheen on hover / press — all cards ──────────────────────────── */
+.fc-card{will-change:transform;}
+.fc-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;
+  opacity:0;transition:opacity .45s var(--ease);
+  background:linear-gradient(125deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,.08) 26%,rgba(255,255,255,0) 52%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -60px 80px -50px rgba(255,255,255,.10);
+}
+.pin-card .frame::before,
+.work-card .frame::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  opacity:0;transition:opacity .45s var(--ease);
+  background:linear-gradient(125deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 24%,rgba(255,255,255,0) 50%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(255,255,255,.16);
+}
+.fc-card:hover::after,.fc-card:focus-visible::after,.fc-card:active::after,
+.pin-card:hover .frame::before,.pin-card:focus-visible .frame::before,.pin-card:active .frame::before,
+.work-card:hover .frame::before,.work-card:focus-visible .frame::before,.work-card:active .frame::before{opacity:1;}
+@media (prefers-reduced-motion:reduce){
+  .fc-card:hover,.fc-card:focus-visible,.fc-card:active{transform:none;}
+}
 
 .client-wall{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:48px;}
 .cw-item{font-family:var(--serif);font-size:clamp(18px,2vw,26px);color:var(--ink-soft);padding:10px 20px;
@@ -531,6 +549,8 @@ body.intro-lock{overflow:hidden;}
 /* ============================================================
    CASE STUDY (themeable via .case-page wrapper --c-* vars)
    ============================================================ */
+/* Per-company colours (--c-*) and fonts (--serif/--sans) are set inline on
+   .case-page from each case theme/fonts — see CaseStudy / lib/cases.tsx. */
 .case-page{background:var(--c-bg);color:var(--c-ink);min-height:100vh;}
 .case-page ::selection{background:var(--c-accent);color:var(--c-bg);}
 .case-wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}

@@ -22,10 +22,15 @@ const CARDS: {
   { href: "/work/chheda", cat: "jewellery", span: 7, ratio: "16/11", tag: "Jewellery", title: "Chheda Jewellers", year: "2026", desc: "Brand identity · Festive campaigns · Social growth", slot: "Drop Chheda image" },
   { href: "/work/girvaan", cat: "jewellery", span: 5, ratio: "4/5", tag: "Jewellery", title: "Girvaan", year: "2025", desc: "Identity, content engine & performance ads", slot: "Drop Girvaan image" },
   { href: "/work/diarah", cat: "jewellery", span: 5, ratio: "4/5", tag: "Jewellery", title: "Diarah", year: "2025", desc: "Luxury rebrand & full-funnel campaigns", slot: "Drop Diarah image" },
-  { href: "/clients", cat: "lifestyle", span: 7, ratio: "16/11", tag: "Lifestyle", title: "High on Smiles", year: "2024", desc: "Brand world & always-on social", slot: "Drop High on Smiles image" },
-  { href: "/clients", cat: "jewellery", span: 4, ratio: "1/1", tag: "Jewellery", title: "Silver Emporium", year: "2025", desc: "Social content & campaigns", slot: "Drop Silver Emporium image" },
-  { href: "/clients", cat: "jewellery", span: 4, ratio: "1/1", tag: "Jewellery", title: "Kundan Jewellers", year: "2025", desc: "Identity & digital marketing", slot: "Drop Kundan image" },
-  { href: "/clients", cat: "lifestyle", span: 4, ratio: "1/1", tag: "Lifestyle", title: "Maison Mireyaa", year: "2026", desc: "Brand & campaign creation", slot: "Drop Maison Mireyaa image" },
+  { href: "/work/high-on-smiles", cat: "lifestyle", span: 7, ratio: "16/11", tag: "Dental", title: "High on Smiles", year: "2024", desc: "Modern dental clinic — brand, content & campaigns", slot: "Drop High on Smiles image" },
+  { href: "/work/silver-emporium", cat: "jewellery", span: 4, ratio: "1/1", tag: "Silver", title: "Silver Emporium", year: "2025", desc: "Heritage silver — branding, content & campaigns", slot: "Drop Silver Emporium image" },
+  { href: "/work/kundan-jewellers", cat: "jewellery", span: 4, ratio: "1/1", tag: "Jewellery", title: "Kundan Jewellers", year: "2025", desc: "Identity, content & festive campaigns", slot: "Drop Kundan image" },
+  { href: "/work/maison-mireyaa", cat: "lifestyle", span: 4, ratio: "1/1", tag: "Florist", title: "Maison Mireyaa", year: "2025", desc: "Branding, seasonal content & campaigns", slot: "Drop Maison Mireyaa image" },
+  { href: "/work/achal", cat: "lifestyle", span: 4, ratio: "1/1", tag: "Real Estate", title: "Achal", year: "2025", desc: "Premium real estate — branding & campaigns", slot: "Drop Achal image" },
+  { href: "/work/a-paramount", cat: "lifestyle", span: 4, ratio: "1/1", tag: "Engineering", title: "A Paramount", year: "2025", desc: "Engineering works — brand, web & lead gen", slot: "Drop A Paramount image" },
+  { href: "/work/jatubhai-velji", cat: "jewellery", span: 4, ratio: "1/1", tag: "Jewellery", title: "Jatubhai Velji", year: "2025", desc: "Heritage jewellery — identity, content & campaigns", slot: "Drop Jatubhai Velji image" },
+  { href: "/work/signi", cat: "jewellery", span: 4, ratio: "1/1", tag: "Lab-Grown Gems", title: "Signi", year: "2025", desc: "Lab-grown gems — brand, content & campaigns", slot: "Drop Signi image" },
+  { href: "/work/tarava", cat: "jewellery", span: 4, ratio: "1/1", tag: "Fine Silver", title: "Tarava", year: "2025", desc: "Fine silver jewellery — brand, content & campaigns", slot: "Drop Tarava image" },
 ];
 
 const FILTERS: { key: Cat; label: string }[] = [

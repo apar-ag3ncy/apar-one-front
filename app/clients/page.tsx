@@ -1,31 +1,27 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { FEATURED_CLIENTS, featuredCardVars } from "@/lib/cases";
 
 export const metadata: Metadata = {
   title: "Clients — APAR Digital Marketing Agency",
   description: "The brands APAR works with — jewellery houses and lifestyle brands across India.",
 };
 
-const FEATURED = [
-  { cls: "chheda", href: "/work/chheda", i: "01", cat: "Jewellery", h: "Chheda Jewellers", p: "Heritage gold & diamond house — identity, festive campaigns and social growth." },
-  { cls: "girvaan", href: "/work/girvaan", i: "02", cat: "Jewellery", h: "Girvaan", p: "A modern jewellery label — brand identity, content engine and performance ads." },
-  { cls: "diarah", href: "/work/diarah", i: "03", cat: "Jewellery", h: "Diarah", p: "Luxury fine jewellery — refined rebrand and full-funnel digital campaigns." },
-];
-
 const ROSTER = [
   { n: "01", name: "Chheda Jewellers", cat: "Jewellery", href: "/work/chheda" },
   { n: "02", name: "Girvaan", cat: "Jewellery", href: "/work/girvaan" },
   { n: "03", name: "Diarah", cat: "Jewellery", href: "/work/diarah" },
-  { n: "04", name: "Silver Emporium", cat: "Jewellery" },
-  { n: "05", name: "Achal", cat: "Jewellery" },
-  { n: "06", name: "Maison Mireyaa", cat: "Lifestyle" },
-  { n: "07", name: "Kundan Jewellers", cat: "Jewellery" },
+  { n: "04", name: "Silver Emporium", cat: "Silver", href: "/work/silver-emporium" },
+  { n: "05", name: "Achal", cat: "Real Estate", href: "/work/achal" },
+  { n: "06", name: "Maison Mireyaa", cat: "Florist", href: "/work/maison-mireyaa" },
+  { n: "07", name: "Kundan Jewellers", cat: "Jewellery", href: "/work/kundan-jewellers" },
   { n: "08", name: "Harshit Gold", cat: "Jewellery" },
-  { n: "09", name: "Jatubhai Veljibhai Jewellers", cat: "Jewellery" },
-  { n: "10", name: "Tarava", cat: "Lifestyle" },
-  { n: "11", name: "High on Smiles", cat: "Lifestyle" },
-  { n: "12", name: "Signi World", cat: "Lifestyle" },
+  { n: "09", name: "Jatubhai Velji Jewellers", cat: "Jewellery", href: "/work/jatubhai-velji" },
+  { n: "10", name: "Tarava", cat: "Fine Silver", href: "/work/tarava" },
+  { n: "11", name: "High on Smiles", cat: "Dental", href: "/work/high-on-smiles" },
+  { n: "12", name: "Signi", cat: "Lab-Grown Gems", href: "/work/signi" },
+  { n: "13", name: "A Paramount", cat: "Engineering", href: "/work/a-paramount" },
 ];
 
 export default function ClientsPage() {
@@ -41,7 +37,7 @@ export default function ClientsPage() {
           </Reveal>
           <Reveal as="p" className="lead" i={1}>
             From heritage jewellery houses to fast-moving lifestyle brands — a focused roster we
-            partner with closely. Our three featured stories lead the way.
+            partner with closely. Our twelve featured stories lead the way.
           </Reveal>
         </div>
       </section>
@@ -53,14 +49,21 @@ export default function ClientsPage() {
             <i className="ln" />
           </Reveal>
           <div className="featured-clients" style={{ marginTop: 40 }}>
-            {FEATURED.map((c, i) => (
-              <Reveal key={c.i} i={i} as={Link} href={c.href} className={`fc-card ${c.cls}`}>
+            {FEATURED_CLIENTS.map((c, i) => (
+              <Reveal
+                key={c.slug}
+                i={i}
+                as={Link}
+                href={c.href}
+                className="fc-card"
+                style={featuredCardVars(c)}
+              >
                 <div className="fc-top">
                   <span className="fc-i">{c.i}</span>
                   <span className="fc-cat">{c.cat}</span>
                 </div>
-                <h3>{c.h}</h3>
-                <p>{c.p}</p>
+                <h3>{c.name}</h3>
+                <p>{c.blurb}</p>
                 <span className="fc-go">
                   View case <i>↗</i>
                 </span>
