@@ -419,25 +419,21 @@ body.intro-lock{overflow:hidden;}
 .stats-band .stat .l{color:var(--ink-mid);}
 .stats-inner{align-items:start;}
 
-/* ---- ripple canvas (Lusion-style scroll ripple, APAR palette) ---- */
-.ripple-canvas{
-  position:absolute;inset:0;width:100%;height:100%;
-  z-index:0;display:block;pointer-events:none;
-  /* fade in so the band never flashes a blank canvas before the first frame */
-  opacity:0;animation:ripple-in .9s var(--ease) .05s forwards;
-}
-@keyframes ripple-in{to{opacity:1;}}
-@media (prefers-reduced-motion: reduce){
-  .ripple-canvas{animation:none;opacity:1;}
-}
+/* ---- band backdrop: orange pixel-grid glowing dome (Algolia-style) ---- */
+.band-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#070707;}
+.pixel-dome{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;}
 
 /* ---- logo / brand band ---- */
 .brand-band{position:relative;background:var(--ink);color:var(--cream);padding:120px 0;overflow:hidden;text-align:center;}
-.brand-band-glow{position:absolute;left:50%;top:46%;width:80vw;max-width:1100px;height:420px;transform:translate(-50%,-50%);z-index:1;mix-blend-mode:screen;
-  background:radial-gradient(closest-side,rgba(235,59,37,.32),transparent 72%);filter:blur(8px);pointer-events:none;}
 .brand-band-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
 .bb-kick{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:rgba(244,237,226,.55);margin-bottom:26px;}
-.bb-logo{width:min(72vw,620px);filter:drop-shadow(0 14px 60px rgba(235,59,37,.45));}
+.bb-logo{width:100%;}
+
+/* ---- APAR wordmark (real logo image, focus-in reveal) ---- */
+.bb-wordmark{display:flex;justify-content:center;pointer-events:none;will-change:transform,filter,opacity;}
+.bb-wordmark .apar-logo{font-size:clamp(64px,12.5vw,190px);line-height:.9;}
+/* keep the warm red glow the type wordmark had */
+.bb-wordmark .apar-logo{filter:drop-shadow(0 12px 54px rgba(235,59,37,.26));}
 .bb-line{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:34px;}
 .bb-line span{font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--cream);}
 .bb-line i{width:6px;height:6px;border-radius:50%;background:var(--red);}

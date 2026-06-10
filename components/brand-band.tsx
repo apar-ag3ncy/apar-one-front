@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { RippleCanvas } from "./ripple-canvas";
+import { BandBackdrop } from "./band-backdrop";
+import { BrandMark } from "./brand-mark";
 
 /**
  * Brand band — the big red APAR mark scales up with a glowing reveal,
@@ -19,30 +20,15 @@ export function BrandBand() {
 
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      const logo = band.querySelector(".bb-logo");
-      const glow = band.querySelector(".brand-band-glow");
+      // the logo runs its own Apple-style focus-in reveal (framer-motion);
+      // GSAP just staggers the supporting lines in.
       const bits = band.querySelectorAll(".bb-kick,.bb-line,.bb-sub");
-
-      gsap.set(logo, { scale: 0.8, opacity: 0, y: 50 });
       gsap.set(bits, { y: 28, opacity: 0 });
 
       gsap
         .timeline({ scrollTrigger: { trigger: band, start: "top 72%" }, defaults: { ease: "power3.out" } })
-        .to(logo, { scale: 1, opacity: 1, y: 0, duration: 1.15, ease: "power4.out" })
-        .to(bits, { y: 0, opacity: 1, duration: 0.7, stagger: 0.12 }, "-=0.6");
+        .to(bits, { y: 0, opacity: 1, duration: 0.7, stagger: 0.12, delay: 0.35 });
 
-      if (glow) {
-        gsap.fromTo(
-          glow,
-          { scale: 0.6, opacity: 0.4 },
-          {
-            scale: 1.18,
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: { trigger: band, start: "top bottom", end: "bottom top", scrub: true },
-          },
-        );
-      }
       requestAnimationFrame(() => ScrollTrigger.refresh());
     }, band);
 
@@ -51,12 +37,10 @@ export function BrandBand() {
 
   return (
     <section ref={ref} className="brand-band" data-screen-label="Home — Brand">
-      <RippleCanvas intensity={1.1} />
-      <div className="brand-band-glow" aria-hidden />
+      <BandBackdrop domeY={-0.15} intensity={1.15} />
       <div className="wrap brand-band-in">
         <span className="bb-kick">This is</span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="bb-logo" src="/assets/apar-logo-red.png" alt="APAR" />
+        <BrandMark className="bb-logo" />
         <div className="bb-line">
           <span>Digital Marketing</span>
           <i />
