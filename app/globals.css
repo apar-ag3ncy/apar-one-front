@@ -136,8 +136,17 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
 .nav.scrolled{background:rgba(244,237,226,.82);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line);height:70px;}
 .nav .brand{display:flex;align-items:center;gap:13px;}
-.nav .brand img{height:30px;transition:height .4s var(--ease);}
-.nav.scrolled .brand img{height:25px;}
+/* Animated APAR wordmark — leading "A" morphs across scripts */
+.apar-logo{display:inline-flex;align-items:center;font-family:var(--sans);font-weight:800;
+  font-size:40px;line-height:1;letter-spacing:-.015em;text-transform:uppercase;color:var(--red);
+  transition:font-size .4s var(--ease),color .35s var(--ease);user-select:none;}
+.apar-logo.on-dark{color:var(--cream);}
+.nav.scrolled .apar-logo{font-size:34px;}
+.apar-logo .apar-a{display:inline-flex;align-items:center;justify-content:center;
+  width:.72em;animation:aparAswap .3s var(--ease);}
+.apar-logo .apar-rest{display:inline-block;}
+@keyframes aparAswap{0%{opacity:0;transform:translateY(-.12em) scale(.82);}100%{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){.apar-logo .apar-a{animation:none;}}
 .nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
@@ -348,7 +357,8 @@ body.intro-lock{overflow:hidden;}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:transform 1s var(--spring);}
 #intro.done{transform:translateY(-101%);}
-#intro .intro-logo{height:54px;}
+#intro .intro-logo{display:flex;align-items:center;justify-content:center;}
+#intro .intro-logo .apar-logo{font-size:clamp(54px,6.5vw,86px);}
 #intro .intro-count{position:absolute;bottom:48px;right:var(--gut);font-family:var(--serif);font-style:italic;font-size:clamp(40px,7vw,90px);}
 #intro .intro-tag{position:absolute;bottom:60px;left:var(--gut);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-mid);}
 @media (prefers-reduced-motion:reduce){ #intro{display:none;} }
@@ -404,15 +414,28 @@ body.intro-lock{overflow:hidden;}
 .scroll-hint i{width:46px;height:1px;background:var(--ink-soft);position:relative;overflow:hidden;}
 .scroll-hint i::after{content:"";position:absolute;inset:0;background:var(--red);animation:scrollln 2.2s var(--ease) infinite;}
 @keyframes scrollln{0%{transform:translateX(-100%);}60%,100%{transform:translateX(100%);}}
-.stats-band{background:var(--ink);color:var(--cream);padding:96px 0;}
+.stats-band{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);padding:96px 0;}
+.stats-band .wrap{position:relative;z-index:2;}
 .stats-band .stat .l{color:var(--ink-mid);}
 .stats-inner{align-items:start;}
 
+/* ---- ripple canvas (Lusion-style scroll ripple, APAR palette) ---- */
+.ripple-canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  z-index:0;display:block;pointer-events:none;
+  /* fade in so the band never flashes a blank canvas before the first frame */
+  opacity:0;animation:ripple-in .9s var(--ease) .05s forwards;
+}
+@keyframes ripple-in{to{opacity:1;}}
+@media (prefers-reduced-motion: reduce){
+  .ripple-canvas{animation:none;opacity:1;}
+}
+
 /* ---- logo / brand band ---- */
 .brand-band{position:relative;background:var(--ink);color:var(--cream);padding:120px 0;overflow:hidden;text-align:center;}
-.brand-band-glow{position:absolute;left:50%;top:46%;width:80vw;max-width:1100px;height:420px;transform:translate(-50%,-50%);
+.brand-band-glow{position:absolute;left:50%;top:46%;width:80vw;max-width:1100px;height:420px;transform:translate(-50%,-50%);z-index:1;mix-blend-mode:screen;
   background:radial-gradient(closest-side,rgba(235,59,37,.32),transparent 72%);filter:blur(8px);pointer-events:none;}
-.brand-band-in{position:relative;display:flex;flex-direction:column;align-items:center;}
+.brand-band-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
 .bb-kick{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:rgba(244,237,226,.55);margin-bottom:26px;}
 .bb-logo{width:min(72vw,620px);filter:drop-shadow(0 14px 60px rgba(235,59,37,.45));}
 .bb-line{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:34px;}

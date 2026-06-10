@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { AparLogo } from "./apar-logo";
 
 // Routes with a dark hero — the nav flips to cream (matches the design's
 // data-nav="dark"). Girvaan's hero is light, so it keeps the default.
@@ -54,8 +55,7 @@ export function Nav() {
       <header className={cn("nav", onDark && "on-dark", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
           <Link className="brand" href="/" aria-label="APAR — Digital Marketing Agency">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={onDark ? "/assets/apar-logo-cream.png" : "/assets/apar-logo-red.png"} alt="APAR" />
+            <AparLogo onDark={onDark} />
             <span className="brand-tag">
               Digital Marketing
               <br />

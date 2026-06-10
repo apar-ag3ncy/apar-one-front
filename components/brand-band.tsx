@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { RippleCanvas } from "./ripple-canvas";
 
 /**
  * Brand band — the big red APAR mark scales up with a glowing reveal,
@@ -50,6 +51,7 @@ export function BrandBand() {
 
   return (
     <section ref={ref} className="brand-band" data-screen-label="Home — Brand">
+      <RippleCanvas intensity={1.1} />
       <div className="brand-band-glow" aria-hidden />
       <div className="wrap brand-band-in">
         <span className="bb-kick">This is</span>

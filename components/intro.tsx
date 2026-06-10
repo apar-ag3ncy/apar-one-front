@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { AparLogo } from "./apar-logo";
 
 /**
  * Intro reveal overlay — APAR logo + count-up wipes away on first visit
@@ -51,14 +52,14 @@ export function Intro({ onDone }: { onDone?: () => void }) {
           exit={{ y: "-101%" }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         >
-          <motion.img
+          <motion.div
             className="intro-logo"
-            src="/assets/apar-logo-cream.png"
-            alt="APAR"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          />
+          >
+            <AparLogo onDark />
+          </motion.div>
           <span className="intro-tag">Digital Marketing Agency · Mumbai</span>
           <span className="intro-count">{count}</span>
         </motion.div>
