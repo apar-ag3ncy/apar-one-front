@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Reveal } from "./reveal";
 import { CountUp } from "./count-up";
 import { PhotoSlot } from "./photo-slot";
+import { VideoSlot } from "./video-slot";
 import { NextCaseScroll } from "./next-case-scroll";
 import { useCaseTransition } from "./transition-provider";
 
@@ -46,7 +47,12 @@ export interface CaseData {
   heroPlaceholder: string;
   meta: { label: string; value: string }[];
   brief: { lead: React.ReactNode; challenge: string; did: string[] };
-  approach: { lead: React.ReactNode; gallery: { cls: string; placeholder: string; ratio: string }[] };
+  approach: {
+    lead: React.ReactNode;
+    /** Grid items render as photos (/work/<slug>/<i>.jpg) by default; set
+     *  `video` to a /videos/... path to play a looping film in that frame. */
+    gallery: { cls: string; placeholder: string; ratio: string; video?: string }[];
+  };
   stats: { n: number; suffix?: string; label: string }[];
   quote: { text: React.ReactNode; by: string };
   next: { kicker: string; name: string; href: string; color: string; ink: string };
@@ -156,11 +162,15 @@ export function CaseStudy({ data }: { data: CaseData }) {
           <div className="case-gallery">
             {data.approach.gallery.map((g, i) => (
               <Reveal key={i} className={`g ${g.cls}`}>
-                <PhotoSlot
-                  src={`/work/${data.slug}/${i + 1}.jpg`}
-                  placeholder={g.placeholder}
-                  radius={6}
-                />
+                {g.video ? (
+                  <VideoSlot src={g.video} placeholder={g.placeholder} radius={6} style={{ aspectRatio: g.ratio }} />
+                ) : (
+                  <PhotoSlot
+                    src={`/work/${data.slug}/${i + 1}.jpg`}
+                    placeholder={g.placeholder}
+                    radius={6}
+                  />
+                )}
               </Reveal>
             ))}
           </div>

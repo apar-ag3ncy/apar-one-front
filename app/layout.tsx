@@ -5,6 +5,7 @@ import { ConditionalFooter } from "@/components/conditional-footer";
 import { CustomCursor } from "@/components/custom-cursor";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 import { TransitionProvider } from "@/components/transition-provider";
+import { SmoothScroll } from "@/components/smooth-scroll";
 
 export const metadata: Metadata = {
   title: "APAR — Digital Marketing & Branding Agency, Mumbai",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body data-page="index">
+        <SmoothScroll />
         <ScrollProgressBar />
         <CustomCursor />
         <Nav />

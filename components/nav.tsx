@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { AparLogo } from "./apar-logo";
+import { Magnetic } from "./magnetic";
 
 // Routes with a dark hero — the nav flips to cream (matches the design's
 // data-nav="dark"). Girvaan's hero is light, so it keeps the default.
@@ -69,9 +70,11 @@ export function Nav() {
               </Link>
             ))}
           </nav>
-          <Link className="nav-cta" href="/#contact" data-magnetic>
-            Start a project
-          </Link>
+          <Magnetic strength={0.25}>
+            <Link className="nav-cta" href="/#contact" data-magnetic>
+              Start a project
+            </Link>
+          </Magnetic>
           <button
             className="nav-burger"
             aria-label={open ? "Close menu" : "Open menu"}

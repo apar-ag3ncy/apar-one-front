@@ -61,6 +61,10 @@
 }
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
+/* Lenis inertial scroll (Lusion feel) — native smooth-behavior must yield to it */
+html.lenis,html.lenis body{height:auto;}
+.lenis.lenis-smooth{scroll-behavior:auto!important;}
+.lenis.lenis-stopped{overflow:hidden;}
 body{
   margin:0;background:var(--cream);color:var(--ink);
   font-family:var(--sans);font-size:17px;line-height:1.6;
@@ -306,7 +310,9 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .pin-intro h2{font-family:var(--serif);font-size:clamp(40px,4.4vw,72px);line-height:1;letter-spacing:-.02em;margin:24px 0 22px;}
 .pin-intro h2 em{font-style:italic;color:var(--red);}
 .pin-intro p{color:rgba(244,237,226,.72);max-width:36ch;font-size:16px;}
-.pin-card{flex:none;width:clamp(220px,40vh,400px);align-self:center;}
+.pin-card{flex:none;width:clamp(220px,40vh,400px);align-self:center;
+  /* Lusion-style motion-skew: leans with scroll velocity (set by SmoothScroll) */
+  transform:skewX(calc(var(--scroll-skew,0)*-3deg));will-change:transform;}
 .pin-card .frame{position:relative;overflow:hidden;border-radius:5px;background:#241f1b;}
 /* 9:16 portrait video frame */
 .pin-card .img-slot,.pin-card .ph-img{width:100%;aspect-ratio:9/16;height:auto;display:block;transition:transform 1.1s var(--ease);}
@@ -410,17 +416,32 @@ body.intro-lock{overflow:hidden;}
 .hero-feature .frame{position:relative;border-radius:4px;overflow:hidden;}
 .hero-feature-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-style:italic;color:var(--cream);font-size:24px;z-index:2;mix-blend-mode:difference;}
 .hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:12px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.45);backdrop-filter:blur(6px);padding:6px 12px;border-radius:100px;}
-.scroll-hint{display:flex;align-items:center;gap:12px;margin-top:54px;color:var(--ink-soft);font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
-.scroll-hint i{width:46px;height:1px;background:var(--ink-soft);position:relative;overflow:hidden;}
-.scroll-hint i::after{content:"";position:absolute;inset:0;background:var(--red);animation:scrollln 2.2s var(--ease) infinite;}
-@keyframes scrollln{0%{transform:translateX(-100%);}60%,100%{transform:translateX(100%);}}
+/* Lusion-style scroll cue — a mouse outline whose wheel-dot drops on a loop,
+   beside quiet microcopy. The whole cue dissolves as scrolling starts (wired
+   to scroll progress in hero.tsx). */
+.scroll-hint{margin-top:54px;transition:opacity .5s var(--ease);}
+.scroll-hint.gone{opacity:0;pointer-events:none;}
+.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
+.cue-mouse{width:22px;height:34px;flex:none;border:1.5px solid var(--ink-mid);border-radius:12px;position:relative;}
+.cue-mouse::after{
+  content:"";position:absolute;left:50%;top:6px;width:4px;height:4px;margin-left:-2px;
+  border-radius:50%;background:var(--red);
+  animation:cueDrop 1.9s cubic-bezier(.45,0,.25,1) infinite;
+}
+@keyframes cueDrop{
+  0%{transform:translateY(0);opacity:0;}
+  18%{opacity:1;}
+  64%{transform:translateY(14px);opacity:1;}
+  85%,100%{transform:translateY(18px);opacity:0;}
+}
+@media (prefers-reduced-motion:reduce){.cue-mouse::after{animation:none;opacity:1;}}
 .stats-band{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);padding:96px 0;}
 .stats-band .wrap{position:relative;z-index:2;}
 .stats-band .stat .l{color:var(--ink-mid);}
 .stats-inner{align-items:start;}
 
 /* ---- band backdrop: orange pixel-grid glowing dome (Algolia-style) ---- */
-.band-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#070707;}
+.band-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#120701;}
 .pixel-dome{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;}
 
 /* ---- logo / brand band ---- */

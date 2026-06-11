@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ImageSlot } from "./image-slot";
+import { Magnetic } from "./magnetic";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -23,6 +24,17 @@ export function Hero({ start }: { start: boolean }) {
   const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
   const copyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const featY = useTransform(scrollYProgress, [0, 1], ["0%", "-26%"]);
+
+  // Lusion-style: the scroll cue dissolves as soon as the user starts scrolling
+  // (plain scroll listener + CSS transition — kept out of framer's opacity
+  // arbitration, which suppresses derived MotionValues here).
+  const [cueGone, setCueGone] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setCueGone(window.scrollY > 60);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const animate = reduce ? "show" : start ? "show" : "hidden";
   const base = 0.25;
@@ -94,10 +106,12 @@ export function Hero({ start }: { start: boolean }) {
             variants={{ hidden: { y: 22, opacity: 0 }, show: { y: 0, opacity: 1 } }}
             transition={{ duration: 0.7, ease: EASE, delay: base + 1.15 }}
           >
-            <a className="btn" href="/work">
-              <span>See the work</span>
-              <span className="arr">↗</span>
-            </a>
+            <Magnetic strength={0.3}>
+              <a className="btn" href="/work">
+                <span>See the work</span>
+                <span className="arr">↗</span>
+              </a>
+            </Magnetic>
             <a className="btn-ghost" href="/#services">
               What we do
             </a>
@@ -159,16 +173,18 @@ export function Hero({ start }: { start: boolean }) {
         </motion.div>
       </div>
 
-      <motion.div
-        className="scroll-hint"
-        initial={{ opacity: 0, y: 10 }}
-        animate={animate}
-        variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-        transition={{ duration: 0.6, ease: EASE, delay: base + 1.5 }}
-      >
-        <span>Scroll</span>
-        <i />
-      </motion.div>
+      <div className={`scroll-hint${cueGone ? " gone" : ""}`}>
+        <motion.div
+          className="scroll-cue"
+          initial={{ opacity: 0, y: 10 }}
+          animate={animate}
+          variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+          transition={{ duration: 0.6, ease: EASE, delay: base + 1.5 }}
+        >
+          <span className="cue-mouse" aria-hidden />
+          <span>Scroll to explore</span>
+        </motion.div>
+      </div>
     </section>
   );
 }

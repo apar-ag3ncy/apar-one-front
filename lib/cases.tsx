@@ -147,6 +147,7 @@ export const CASES: Record<string, CaseData> = {
         { cls: "wide", placeholder: "Social grid / key visual", ratio: "16/11" },
         { cls: "half", placeholder: "Product detail", ratio: "5/4" },
         { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "tall", placeholder: "Hanuman Jayanti film", ratio: "4/5", video: "/videos/girvaan-hanuman-jayanti.mp4" },
       ],
     },
     stats: [

@@ -7,18 +7,21 @@ import { useEffect, useRef } from "react";
  * rendered as thousands of tiny rounded-rectangle tiles on a strict, perfectly
  * aligned grid (tiles almost touching, subtle corner radius). The beam is
  * brightest at the top-centre crown, dimmer toward the sides, and dissolves into
- * black above and below via opacity (tiles never resize). Premium orange shades
- * (deep burnt -> amber -> golden -> soft cream crown) over a near-black base.
+ * black above and below via opacity (tiles never resize). The reference image's
+ * shades hue-rotated to orange: pale peach crown, vivid orange band, warm dark
+ * fades, over a near-black base.
  *
  * Hovering lifts a soft, premium shimmer around the cursor. Click-through;
  * pointer is read from `window` (bounds-checked) so hover works over the
  * overlaid content. Parks the loop when idle/offscreen.
  */
 type PixelDomeProps = {
-  /** CSS px size of each pixel cell (tiny: ~4-8px). Default 6. */
+  /** CSS px size of each pixel cell. ~20px matches the Algolia reference pitch
+   *  (~74 columns across a 1440px band -> thousands of tiles that read as one
+   *  smooth gradient from a distance). Default 20. */
   cell?: number;
-  /** vertical centre of the ring system, bottom-up. Small/negative (below the
-   *  frame) so the dome sweeps the whole viewport. Default -0.05. */
+  /** ellipse centre of the arc, bottom-up; small/negative (below the frame) so
+   *  the beam sweeps the full width with its crown near the top. Default -0.15. */
   domeY?: number;
   /** overall glow strength. Default 1. */
   intensity?: number;
@@ -40,11 +43,14 @@ uniform vec2  uMouse;      // 0..1, bottom-up
 uniform float uMouseOn;    // 0..1
 uniform float uTime;       // seconds, for flicker
 
-// APAR orange: deep burnt -> rich amber -> warm golden -> soft cream (crown only)
-const vec3 C_DARK  = vec3(0.090, 0.035, 0.015);
-const vec3 C_MID   = vec3(0.520, 0.230, 0.070);
-const vec3 C_HOT   = vec3(0.900, 0.540, 0.220);
-const vec3 C_LIGHT = vec3(0.980, 0.910, 0.800);
+// the BLUE reference's shade relationships, hue-rotated to orange: its pale
+// band is near-white (lavender (192,190,236), ~78% luma) against a deep,
+// intensely saturated vivid band (blue (58,55,235)) — a dramatic two-shade
+// contrast — and the fades are the vivid hue scaled toward black.
+const vec3 C_LIGHT = vec3(0.930, 0.824, 0.753);      // pale peach (237,210,192) — the near-white band
+const vec3 C_HOT   = vec3(0.922, 0.510, 0.216);      // vivid orange (235,130,55) — deep saturated band
+const vec3 C_MID   = vec3(0.507, 0.281, 0.119);      // C_HOT * 0.55 — fade, same hue
+const vec3 C_DARK  = vec3(0.083, 0.046, 0.019);      // C_HOT * 0.09 — fade end, same hue
 
 // cheap per-cell hash -> 0..1
 float hash21(vec2 p){
@@ -53,62 +59,92 @@ float hash21(vec2 p){
   return fract(p.x * p.y);
 }
 
+// ---- ONE single curved beam (the Algolia arc): an ellipse whose centre sits
+//      below the frame, so the bright strip sweeps the full width — apex at the
+//      top-centre crown, sides running off the edges. Crisp-ish dissolve above
+//      the strip, long dissolve below it; a falloff ALONG the arc keeps it
+//      brightest at the crown and dimmer toward the sides.
+//      uDomeY = ellipse centre (bottom-up; negative = below the frame). ----
+// returns vec2(glow, t): t is the signed distance across the strip
+// (positive = outer/top side, negative = inner/below side)
+vec2 beamAt(vec2 uv, float aspect){
+  // flatten the arc on narrow/tall bands (mobile) so it still reads as a wide
+  // sweep instead of bunching into a steep dome; desktop (aspect >= ~1.55)
+  // keeps the reference curvature.
+  float rx = 0.62 * max(1.0, 1.55 / aspect);
+  float ry = 0.98;                       // vertical radius (uv)
+  vec2 d = vec2((uv.x - 0.5) / rx, (uv.y - uDomeY) / ry);
+  float dist = length(d);
+  float t = dist - 0.92;                                 // signed distance across the strip
+  float w = (t > 0.0) ? 0.13 : 0.30;                     // crisp top edge; long inner dissolve
+  float glow = exp(-(t * t) / (w * w)) * uIntensity;
+  float crown = clamp(d.y / max(dist, 0.001), 0.0, 1.0); // 1 at the crown -> 0 at the sides
+  return vec2(glow * mix(0.55, 1.0, crown), t);
+}
+
 void main(){
   float aspect = uRes.x / uRes.y;
 
   // ---- grid cell this fragment belongs to ----
   vec2 cellId = floor(gl_FragCoord.xy / uCell);
   vec2 cellCenter = (cellId + 0.5) * uCell;
-  vec2 uv = cellCenter / uRes;              // sample point (0..1, bottom-up)
-
-  // ---- ONE single curved beam of light, following an ellipse arc whose centre
-  //      sits below the frame (so the strip spans the full width). Brightness is
-  //      a Gaussian ACROSS the strip — a sharper top edge and a softer inner
-  //      edge — so the beam dissolves into black above and below. A second
-  //      falloff ALONG the arc keeps it brightest at the top-centre crown and
-  //      dimmer toward the sides (exactly like the reference). No rings, no halo.
-  //      uDomeY = ellipse centre (bottom-up; negative = below the frame). ----
-  float rx = 0.62;                       // horizontal radius (uv) -> past the edges
-  float ry = 0.98;                       // vertical radius (uv)
-  vec2 d = vec2((uv.x - 0.5) / rx, (uv.y - uDomeY) / ry);
-  float dist = length(d);
-  float t = dist - 0.92;                                 // signed distance across the strip
-  float w = (t > 0.0) ? 0.13 : 0.18;                     // sharp top edge, soft inner edge
-  float glow = exp(-(t * t) / (w * w)) * uIntensity;
-  float crown = clamp(d.y / max(dist, 0.001), 0.0, 1.0); // 1 at the crown -> 0 at the sides
-  glow *= mix(0.55, 1.0, crown);
+  vec2 uvC = cellCenter / uRes;             // per-cell sample (tile colour stepping)
+  vec2 uvF = gl_FragCoord.xy / uRes;        // per-fragment sample (soft in-tile shading)
 
   // ---- hover: a soft, premium glow lift that follows the cursor (gentle
   //      shimmer, not an arcade flicker) ----
-  float md = length((uv - uMouse) * vec2(aspect, 1.0));
+  float md = length((uvC - uMouse) * vec2(aspect, 1.0));
   float near = exp(-(md * md) / (2.0 * 0.16 * 0.16)) * uMouseOn;
   float rnd = hash21(cellId + 0.5);
   float tw  = sin(uTime * (4.0 + rnd * 6.0) + rnd * 38.0) * 0.5 + 0.5;
-  glow += near * (0.35 + 0.25 * tw);
+  float hov = near * (0.35 + 0.25 * tw);
 
-  float g = clamp(glow, 0.0, 1.3);
+  // per-tile glow drives opacity (stable across each tile); the colour blends in
+  // a little of the per-fragment glow so each tile carries the reference's faint
+  // internal gradient instead of being a flat chip.
+  vec2 bC = beamAt(uvC, aspect);
+  vec2 bF = beamAt(uvF, aspect);
+  float gA   = clamp(bC.x + hov, 0.0, 1.3);
+  float gCol = clamp(mix(bC.x, bF.x, 0.30) + hov, 0.0, 1.3);
 
-  // ---- tiny rounded-rectangle tile, almost touching its neighbours (very small
-  //      gap, ~2-3px corner radius). No dot, no outline, identical size everywhere. ----
+  // ---- tile texture, matched to the reference zooms: tiles almost touch; the
+  //      seams are slightly DARKER GROOVES in the same colour (never holes), and
+  //      where four rounded corners meet the groove deepens into the small dark
+  //      4-pointed star. ----
   vec2 local = fract(gl_FragCoord.xy / uCell) - 0.5;
-  float aa = 1.0 / uCell;
-  float hs = 0.46;                                      // tiles almost touch (tiny gap)
-  float cr = 0.13;                                      // subtle corner radius
+  float hs = 0.47;                                      // tile half-size (thin seam)
+  float cr = 0.17;                                      // soft squircle corners
   vec2 qd = abs(local) - vec2(hs - cr);
   float box = length(max(qd, 0.0)) + min(max(qd.x, qd.y), 0.0) - cr; // rounded-box SDF
-  float pix = 1.0 - smoothstep(-aa, aa, box);
+  float seam = smoothstep(0.0, 0.105, box);             // 0 in tile -> 1 deep in the junction star
 
-  // ---- colour ramp: deep burnt -> amber -> golden -> soft cream (crown only) ----
-  vec3 col = mix(C_DARK, C_MID, smoothstep(0.05, 0.34, g));
-  col = mix(col, C_HOT, smoothstep(0.34, 0.72, g));
-  col = mix(col, C_LIGHT, smoothstep(0.82, 1.12, g));
+  // ---- band mapping measured from the reference image: both sides stay
+  //      saturated (no grey rows). Above the bright zone: warm dark ->
+  //      orange-brown -> soft rise into the pale orange. Below it: the more
+  //      VIVID stripe first, then the long saturated fall to near-black. ----
+  vec3 above = mix(C_DARK, C_MID, smoothstep(0.05, 0.35, gCol));
+  above = mix(above, mix(C_HOT, C_LIGHT, 0.5), smoothstep(0.35, 0.70, gCol));
+  above = mix(above, C_LIGHT, smoothstep(0.72, 0.90, gCol));     // -> broad pale-orange zone
 
-  // ---- clean emergence from darkness. Keep the approved beam opacity curve for
-  //      lit tiles, then multiply by a low-glow GATE that only kills the faint
-  //      tail: the gate is 1 for beam tiles (g >= 0.24, unchanged) and 0 for the
-  //      faint periphery (g < 0.12), so everything outside the main beam reads as
-  //      clean dark — no dirty textures, glow trails or ghost arcs. ----
-  float a = pix * smoothstep(0.05, 0.45, g) * smoothstep(0.12, 0.24, g);
+  vec3 below = mix(C_DARK, C_MID, smoothstep(0.04, 0.30, gCol));
+  below = mix(below, C_HOT, smoothstep(0.30, 0.62, gCol));       // vivid stripe under the bright zone
+  below = mix(below, C_LIGHT, smoothstep(0.80, 0.94, gCol));     // joins the bright zone
+
+  float belowSel = clamp(-bC.y * 30.0, 0.0, 1.0);                // 1 below the centreline
+  vec3 col = mix(above, below, belowSel);
+
+  // the reference's dark background is not flat black: the tile grid stays
+  // faintly visible everywhere. Blend the dark tiles up to a dim warm base so
+  // the texture (and its junction stars) barely shows in the dark.
+  col = mix(vec3(0.180, 0.083, 0.031), col, smoothstep(0.03, 0.18, gCol));
+
+  col *= 1.0 - 0.45 * seam;                             // moderate grooves like the reference — dividers scale with tile brightness
+
+  // ---- emergence from darkness: the beam opacity curve plus a gentle low-glow
+  //      gate, over a faint alpha floor that keeps the grid texture barely
+  //      visible across the dark (like the reference), never fully black. ----
+  float aBeam = smoothstep(0.05, 0.42, gA) * smoothstep(0.06, 0.18, gA);
+  float a = max(aBeam, 0.085);
   gl_FragColor = vec4(col, a);
 }
 `;
@@ -125,7 +161,7 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return s;
 }
 
-export function PixelDome({ cell = 7, domeY = -0.15, intensity = 1, className }: PixelDomeProps) {
+export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }: PixelDomeProps) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -167,6 +203,7 @@ export function PixelDome({ cell = 7, domeY = -0.15, intensity = 1, className }:
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0, 0, 0, 0); // transparent — every frame starts clean
 
     const u = (n: string) => gl.getUniformLocation(prog, n);
     const uRes = u("uRes");
@@ -207,6 +244,7 @@ export function PixelDome({ cell = 7, domeY = -0.15, intensity = 1, className }:
     let t = 0; // elapsed seconds, drives the hover flicker
 
     const draw = () => {
+      gl.clear(gl.COLOR_BUFFER_BIT); // reset to transparent so frames never accumulate (no ghost trails)
       gl.uniform2f(uRes, w, h);
       gl.uniform1f(uCell, Math.max(4, cell * dpr));
       gl.uniform2f(uMouse, sx, sy);

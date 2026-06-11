@@ -9,6 +9,24 @@ import { FEATURED_CLIENTS } from "@/lib/cases";
 // Derived from the single source of truth (lib/cases.tsx) — every case auto-appears
 // in the horizontal scroll, in order, with no manual sync as cases are added.
 // Each frame plays /videos/<slug>.mp4 (drop the file in and it appears).
+
+// Temporary fills so no frame sits empty while per-client films are produced:
+// clients without their own /videos/<slug>.mp4 cycle through the available
+// brand films (no two adjacent frames repeat). To replace one, drop a real
+// <slug>.mp4 into /public/videos and delete the slug from this map.
+const VIDEO_FILL: Record<string, string> = {
+  diarah: "/videos/girvaan-hanuman-jayanti.mp4",
+  "maison-mireyaa": "/videos/girvaan-fathers-day.mp4",
+  achal: "/videos/girvaan-mahavir.mp4",
+  "high-on-smiles": "/videos/girvaan.mp4",
+  "silver-emporium": "/videos/chheda.mp4",
+  "a-paramount": "/videos/girvaan-hanuman-jayanti.mp4",
+  "kundan-jewellers": "/videos/girvaan-fathers-day.mp4",
+  "jatubhai-velji": "/videos/girvaan-mahavir.mp4",
+  signi: "/videos/girvaan.mp4",
+  tarava: "/videos/chheda.mp4",
+};
+
 const CARDS = FEATURED_CLIENTS.map((c) => ({
   href: c.href,
   num: c.i,
@@ -16,7 +34,7 @@ const CARDS = FEATURED_CLIENTS.map((c) => ({
   title: c.name,
   desc: c.blurb,
   year: c.year ? `'${c.year.slice(-2)}` : "",
-  video: `/videos/${c.slug}.mp4`,
+  video: VIDEO_FILL[c.slug] ?? `/videos/${c.slug}.mp4`,
   slot: `Drop ${c.name} video`,
 }));
 
