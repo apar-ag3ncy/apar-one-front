@@ -38,6 +38,8 @@ export function CustomCursor() {
     let scale = 1;
     let scaleT = 1;
     let raf = 0;
+    let running = false;
+    let curTarget: Element | null = null;
 
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
@@ -47,12 +49,48 @@ export function CustomCursor() {
     ring.classList.add("ready");
     dot.classList.add("ready");
 
+    const frame = () => {
+      if (
+        Math.abs(r.x - cur.x) < 0.1 &&
+        Math.abs(r.y - cur.y) < 0.1 &&
+        Math.abs(d.x - cur.x) < 0.1 &&
+        Math.abs(d.y - cur.y) < 0.1 &&
+        Math.abs(scale - scaleT) < 0.001
+      ) {
+        r.x = cur.x;
+        r.y = cur.y;
+        d.x = cur.x;
+        d.y = cur.y;
+        scale = scaleT;
+        ring.style.transform = `translate(${r.x}px,${r.y}px) translate(-50%,-50%) scale(${scale})`;
+        dot.style.transform = `translate(${d.x}px,${d.y}px) translate(-50%,-50%)`;
+        running = false;
+        return;
+      }
+      r.x = lerp(r.x, cur.x, 0.16);
+      r.y = lerp(r.y, cur.y, 0.16);
+      d.x = lerp(d.x, cur.x, 0.42);
+      d.y = lerp(d.y, cur.y, 0.42);
+      scale = lerp(scale, scaleT, 0.15);
+      ring.style.transform = `translate(${r.x}px,${r.y}px) translate(-50%,-50%) scale(${scale})`;
+      dot.style.transform = `translate(${d.x}px,${d.y}px) translate(-50%,-50%)`;
+      raf = requestAnimationFrame(frame);
+    };
+    const wake = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(frame);
+    };
+
     const onMove = (e: MouseEvent) => {
       cur.x = e.clientX;
       cur.y = e.clientY;
+      wake();
     };
     const onOver = (e: MouseEvent) => {
-      const t = (e.target as Element)?.closest?.(HOVER_SEL);
+      const t = (e.target as Element)?.closest?.(HOVER_SEL) ?? null;
+      if (t === curTarget) return;
+      curTarget = t;
       if (!t) return;
       const el = t as HTMLElement;
       scaleT = el.dataset.cursor
@@ -64,13 +102,19 @@ export function CustomCursor() {
       ring.classList.toggle("labelled", !!labelText);
       if (labelText) label.textContent = labelText;
       ring.classList.add("active");
+      wake();
     };
     const onOut = (e: MouseEvent) => {
-      if (!(e.target as Element)?.closest?.(HOVER_SEL)) return;
+      if (((e.relatedTarget as Element)?.closest?.(HOVER_SEL) ?? null) === curTarget) return;
+      curTarget = null;
       scaleT = 1;
       ring.classList.remove("active", "labelled");
+      wake();
     };
-    const onDown = () => ring.classList.add("down");
+    const onDown = () => {
+      ring.classList.add("down");
+      wake();
+    };
     const onUp = () => ring.classList.remove("down");
 
     addEventListener("mousemove", onMove, { passive: true });
@@ -79,17 +123,7 @@ export function CustomCursor() {
     addEventListener("mousedown", onDown);
     addEventListener("mouseup", onUp);
 
-    const frame = () => {
-      r.x = lerp(r.x, cur.x, 0.16);
-      r.y = lerp(r.y, cur.y, 0.16);
-      d.x = lerp(d.x, cur.x, 0.42);
-      d.y = lerp(d.y, cur.y, 0.42);
-      scale = lerp(scale, scaleT, 0.15);
-      ring.style.transform = `translate(${r.x}px,${r.y}px) translate(-50%,-50%) scale(${scale})`;
-      dot.style.transform = `translate(${d.x}px,${d.y}px) translate(-50%,-50%)`;
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
+    wake();
 
     return () => {
       cancelAnimationFrame(raf);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -8,8 +8,9 @@ import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
 
 // Routes with a dark hero — the nav flips to cream (matches the design's
-// data-nav="dark"). Girvaan's hero is light, so it keeps the default.
-const DARK_ROUTES = new Set(["/work/chheda", "/work/diarah"]);
+// data-nav="dark"). Home's beam landing is dark; Girvaan's hero is light, so
+// it keeps the default.
+const DARK_ROUTES = new Set(["/", "/work/chheda", "/work/diarah"]);
 
 const LINKS = [
   { href: "/work", label: "Work" },
@@ -22,12 +23,19 @@ const LINKS = [
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const onDark = DARK_ROUTES.has(pathname);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      const v = window.scrollY > 24;
+      if (v !== scrolledRef.current) {
+        scrolledRef.current = v;
+        setScrolled(v);
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

@@ -17,7 +17,11 @@ export function BrandMark({ className }: { className?: string }) {
     <motion.div
       className={className ? `bb-wordmark ${className}` : "bb-wordmark"}
       initial={reduce ? { opacity: 1 } : { opacity: 0, scale: 1.06, filter: "blur(14px)" }}
-      whileInView={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
+      whileInView={
+        reduce
+          ? { opacity: 1 }
+          : { opacity: 1, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } }
+      }
       viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 1.3, ease: EASE }}
     >

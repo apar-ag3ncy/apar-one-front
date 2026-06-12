@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /**
@@ -21,13 +21,40 @@ export function Magnetic({
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.4 });
   const sy = useSpring(y, { stiffness: 200, damping: 18, mass: 0.4 });
+  const centerRef = useRef<{ x: number; y: number } | null>(null);
+  const dirtyRef = useRef(true);
 
-  const onMove = (e: React.MouseEvent) => {
+  useEffect(() => {
+    const markDirty = () => {
+      dirtyRef.current = true;
+    };
+    window.addEventListener("scroll", markDirty, { passive: true });
+    window.addEventListener("resize", markDirty, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", markDirty);
+      window.removeEventListener("resize", markDirty);
+    };
+  }, []);
+
+  const measure = () => {
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width / 2)) * strength);
-    y.set((e.clientY - (r.top + r.height / 2)) * strength);
+    // subtract current spring offset to get the true resting center
+    centerRef.current = {
+      x: r.left + r.width / 2 - sx.get(),
+      y: r.top + r.height / 2 - sy.get(),
+    };
+    dirtyRef.current = false;
+  };
+
+  const onMove = (e: React.MouseEvent) => {
+    if (dirtyRef.current || !centerRef.current) measure();
+    const c = centerRef.current;
+    if (!c) return;
+    const pull = strength / (1 + strength);
+    x.set((e.clientX - c.x) * pull);
+    y.set((e.clientY - c.y) * pull);
   };
   const reset = () => {
     x.set(0);
@@ -39,6 +66,7 @@ export function Magnetic({
       ref={ref}
       className={className}
       style={{ x: sx, y: sy, display: "inline-flex" }}
+      onMouseEnter={measure}
       onMouseMove={onMove}
       onMouseLeave={reset}
     >

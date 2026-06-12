@@ -4,6 +4,17 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// One refresh per frame no matter how many instances mount together.
+let refreshScheduled = false;
+function scheduleRefresh() {
+  if (refreshScheduled) return;
+  refreshScheduled = true;
+  requestAnimationFrame(() => {
+    refreshScheduled = false;
+    ScrollTrigger.refresh();
+  });
+}
+
 /**
  * Scroll-fill text — each word inks in from grey to ink (red for accent words
  * wrapped in *asterisks*) as the statement scrolls through the viewport.
@@ -27,6 +38,7 @@ export function ScrollFill({ text, className }: { text: string; className?: stri
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
+    let prevLit = 0;
     const st = ScrollTrigger.create({
       trigger: el,
       start: "top 80%",
@@ -34,10 +46,13 @@ export function ScrollFill({ text, className }: { text: string; className?: stri
       scrub: true,
       onUpdate: (self) => {
         const lit = Math.round(self.progress * spans.length);
-        spans.forEach((s, i) => s.classList.toggle("lit", i < lit));
+        if (lit === prevLit) return;
+        const [a, b] = lit > prevLit ? [prevLit, lit] : [lit, prevLit];
+        for (let i = a; i < b; i++) spans[i].classList.toggle("lit", i < lit);
+        prevLit = lit;
       },
     });
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+    scheduleRefresh();
     return () => st.kill();
   }, []);
 

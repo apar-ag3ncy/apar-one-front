@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Intro } from "@/components/intro";
 import { Hero } from "@/components/hero";
-import { BrandBand } from "@/components/brand-band";
 import { VelocityMarquee } from "@/components/velocity-marquee";
 import { SplitWords } from "@/components/split-words";
 import { ScrollFill } from "@/components/scroll-fill";
@@ -14,7 +13,7 @@ import { CountUp } from "@/components/count-up";
 import { ImageSlot } from "@/components/image-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
-import { BandBackdrop } from "@/components/band-backdrop";
+import { StrandsBackdrop } from "@/components/strands-backdrop";
 
 const SERVICES = [
   { num: "01", name: "Branding", desc: "Identity, positioning & brand systems that hold up everywhere." },
@@ -42,8 +41,6 @@ export default function Home() {
       <Intro onDone={() => setIntroDone(true)} />
 
       <Hero start={introDone} />
-
-      <BrandBand />
 
       <VelocityMarquee />
 
@@ -150,7 +147,7 @@ export default function Home() {
 
       {/* ===== STATS ===== */}
       <section className="stats-band" data-screen-label="Home — Stats">
-        <BandBackdrop domeY={-0.12} intensity={1.05} />
+        <StrandsBackdrop />
         <div className="wrap">
           <div className="cols cols-3 stats-inner">
             <Reveal className="stat" i={0}>

@@ -1,5 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, useEffect, useRef } from "react";
 
 interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
   className?: string;
@@ -23,8 +25,28 @@ export function Marquee({
   repeat = 4,
   ...props
 }: MarqueeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Pause the infinite animation while the marquee is offscreen.
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const state = entry.isIntersecting ? "" : "paused";
+        for (const track of Array.from(root.children)) {
+          (track as HTMLElement).style.animationPlayState = state;
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div
+      ref={ref}
       {...props}
       className={cn(
         "group flex overflow-hidden p-2 [--duration:40s] [--gap:1rem] [gap:var(--gap)]",

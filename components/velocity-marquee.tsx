@@ -1,11 +1,13 @@
 "use client";
 
+import { useRef } from "react";
 import {
   motion,
   useScroll,
   useVelocity,
   useSpring,
   useTransform,
+  useInView,
 } from "framer-motion";
 import { Marquee } from "./magicui/marquee";
 
@@ -22,13 +24,15 @@ const WORDS = [
  * Framer Motion scroll-velocity mapped to a live skewY (the "velocity skew").
  */
 export function VelocityMarquee() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: "20% 0px" });
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
-  const smooth = useSpring(scrollVelocity, { stiffness: 200, damping: 50 });
+  const smooth = useSpring(scrollVelocity, { stiffness: 200, damping: 50, restDelta: 0.01 });
   const skew = useTransform(smooth, [-2000, 0, 2000], [-4, 0, 4], { clamp: true });
 
   return (
-    <motion.div className="vmarquee" style={{ skewY: skew }} aria-hidden>
+    <motion.div ref={ref} className="vmarquee" style={inView ? { skewY: skew } : undefined} aria-hidden>
       <Marquee className="vtrack" pauseOnHover repeat={4}>
         {WORDS.map((w, i) => (
           <span key={i} className={w.out ? "out" : undefined}>

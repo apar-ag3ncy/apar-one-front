@@ -29,41 +29,87 @@ export function VideoSlot({
   className,
   style,
 }: VideoSlotProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
+  const [near, setNear] = useState(false);
+
+  // The <video> only mounts once the frame first comes near the viewport
+  // (and then stays mounted, so it's never refetched when scrolled away).
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([en]) => {
+        if (en?.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "25%" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // React doesn't reliably set the `muted` DOM property from the attribute,
-  // which blocks autoplay — force it muted and kick off playback on mount.
+  // which blocks autoplay — force it muted. Playback (and so video decoding)
+  // runs only while the frame is near the viewport: with many videos on a
+  // page, decoding them all at once tanks scrolling performance.
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
     v.muted = true;
-    v.play().catch(() => {
-      /* autoplay can still be blocked; the loaded frame stays visible */
-    });
-  }, [src]);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const io = new IntersectionObserver(
+      ([en]) => {
+        if (en?.isIntersecting) {
+          if (!v.paused) return;
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            if (v.paused) {
+              v.play().catch(() => {
+                /* autoplay can still be blocked; the loaded frame stays visible */
+              });
+            }
+          }, 150);
+        } else {
+          clearTimeout(timer);
+          if (!v.paused) v.pause();
+        }
+      },
+      { rootMargin: "25%" }
+    );
+    io.observe(v);
+    return () => {
+      clearTimeout(timer);
+      io.disconnect();
+    };
+  }, [near, src]);
 
   return (
     <div
+      ref={wrapRef}
       className={cn("img-slot", !ready && "ph-img", className)}
       style={{ borderRadius: `${radius}px`, ...style }}
       aria-label={placeholder}
     >
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video
-        ref={ref}
-        className="video-slot-el"
-        src={src}
-        poster={poster}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        data-ready={ready ? "true" : "false"}
-        onLoadedData={() => setReady(true)}
-        onCanPlay={() => setReady(true)}
-      />
+      {near && (
+        // eslint-disable-next-line jsx-a11y/media-has-caption
+        <video
+          ref={ref}
+          className="video-slot-el"
+          src={src}
+          poster={poster}
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          data-ready={ready ? "true" : "false"}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+        />
+      )}
       {!ready && <span className="img-slot-cap">{placeholder}</span>}
     </div>
   );

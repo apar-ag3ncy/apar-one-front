@@ -43,14 +43,15 @@ uniform vec2  uMouse;      // 0..1, bottom-up
 uniform float uMouseOn;    // 0..1
 uniform float uTime;       // seconds, for flicker
 
-// the BLUE reference's shade relationships, hue-rotated to orange: its pale
-// band is near-white (lavender (192,190,236), ~78% luma) against a deep,
-// intensely saturated vivid band (blue (58,55,235)) — a dramatic two-shade
-// contrast — and the fades are the vivid hue scaled toward black.
-const vec3 C_LIGHT = vec3(0.930, 0.824, 0.753);      // pale peach (237,210,192) — the near-white band
-const vec3 C_HOT   = vec3(0.922, 0.510, 0.216);      // vivid orange (235,130,55) — deep saturated band
-const vec3 C_MID   = vec3(0.507, 0.281, 0.119);      // C_HOT * 0.55 — fade, same hue
-const vec3 C_DARK  = vec3(0.083, 0.046, 0.019);      // C_HOT * 0.09 — fade end, same hue
+// the reference image's measured shades hue-rotated to the BRAND RED #EE3A24
+// (S/L preserved, exactly like the Algolia original's tint/shade ladder):
+//   pale lavender (192,190,236) -> pale rose (236,196,190) crest,
+//   electric blue (58,55,235)  -> brand red (238,58,36) glow,
+//   fades = the vivid hue scaled toward the warm near-black base.
+const vec3 C_LIGHT = vec3(0.925, 0.770, 0.745);      // pale rose — thin bright crest
+const vec3 C_HOT   = vec3(0.933, 0.227, 0.141);      // brand red #EE3A24 — broad glow
+const vec3 C_MID   = vec3(0.513, 0.125, 0.078);      // C_HOT * 0.55 — fade, same hue
+const vec3 C_DARK  = vec3(0.084, 0.020, 0.013);      // C_HOT * 0.09 — fade end, same hue
 
 // cheap per-cell hash -> 0..1
 float hash21(vec2 p){
@@ -76,7 +77,7 @@ vec2 beamAt(vec2 uv, float aspect){
   vec2 d = vec2((uv.x - 0.5) / rx, (uv.y - uDomeY) / ry);
   float dist = length(d);
   float t = dist - 0.92;                                 // signed distance across the strip
-  float w = (t > 0.0) ? 0.13 : 0.30;                     // crisp top edge; long inner dissolve
+  float w = (t > 0.0) ? 0.16 : 0.42;                     // soft (but tight) halo above; long mist-like dissolve below
   float glow = exp(-(t * t) / (w * w)) * uIntensity;
   float crown = clamp(d.y / max(dist, 0.001), 0.0, 1.0); // 1 at the crown -> 0 at the sides
   return vec2(glow * mix(0.55, 1.0, crown), t);
@@ -112,7 +113,7 @@ void main(){
   //      where four rounded corners meet the groove deepens into the small dark
   //      4-pointed star. ----
   vec2 local = fract(gl_FragCoord.xy / uCell) - 0.5;
-  float hs = 0.47;                                      // tile half-size (thin seam)
+  float hs = 0.485;                                     // tiles all but touch — hairline seam
   float cr = 0.17;                                      // soft squircle corners
   vec2 qd = abs(local) - vec2(hs - cr);
   float box = length(max(qd, 0.0)) + min(max(qd.x, qd.y), 0.0) - cr; // rounded-box SDF
@@ -124,11 +125,11 @@ void main(){
   //      VIVID stripe first, then the long saturated fall to near-black. ----
   vec3 above = mix(C_DARK, C_MID, smoothstep(0.05, 0.35, gCol));
   above = mix(above, mix(C_HOT, C_LIGHT, 0.5), smoothstep(0.35, 0.70, gCol));
-  above = mix(above, C_LIGHT, smoothstep(0.72, 0.90, gCol));     // -> broad pale-orange zone
+  above = mix(above, C_LIGHT, smoothstep(0.85, 1.05, gCol));     // pale only at the very crest -> THIN bright arc
 
   vec3 below = mix(C_DARK, C_MID, smoothstep(0.04, 0.30, gCol));
-  below = mix(below, C_HOT, smoothstep(0.30, 0.62, gCol));       // vivid stripe under the bright zone
-  below = mix(below, C_LIGHT, smoothstep(0.80, 0.94, gCol));     // joins the bright zone
+  below = mix(below, C_HOT, smoothstep(0.30, 0.62, gCol));       // broad vivid glow under the thin arc
+  below = mix(below, C_LIGHT, smoothstep(0.88, 1.06, gCol));     // joins the crest
 
   float belowSel = clamp(-bC.y * 30.0, 0.0, 1.0);                // 1 below the centreline
   vec3 col = mix(above, below, belowSel);
@@ -136,14 +137,14 @@ void main(){
   // the reference's dark background is not flat black: the tile grid stays
   // faintly visible everywhere. Blend the dark tiles up to a dim warm base so
   // the texture (and its junction stars) barely shows in the dark.
-  col = mix(vec3(0.180, 0.083, 0.031), col, smoothstep(0.03, 0.18, gCol));
+  col = mix(vec3(0.180, 0.040, 0.026), col, smoothstep(0.03, 0.18, gCol));
 
-  col *= 1.0 - 0.45 * seam;                             // moderate grooves like the reference — dividers scale with tile brightness
+  col *= 1.0 - 0.22 * seam;                             // hairline grooves + soft junction dots — gaps barely read, like the reference
 
   // ---- emergence from darkness: the beam opacity curve plus a gentle low-glow
   //      gate, over a faint alpha floor that keeps the grid texture barely
   //      visible across the dark (like the reference), never fully black. ----
-  float aBeam = smoothstep(0.05, 0.42, gA) * smoothstep(0.06, 0.18, gA);
+  float aBeam = smoothstep(0.05, 0.42, gA) * smoothstep(0.035, 0.13, gA);
   float a = max(aBeam, 0.085);
   gl_FragColor = vec4(col, a);
 }
@@ -173,10 +174,6 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
         alpha: true,
         premultipliedAlpha: false,
         antialias: false,
-        // keep the last frame on screen when the rAF parks (the dome is mostly
-        // static); without this the buffer is cleared after compositing and the
-        // idle dome disappears between frames.
-        preserveDrawingBuffer: true,
       }) as
         | WebGLRenderingContext
         | null) ?? null;
@@ -219,9 +216,22 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
     let w = 0;
     let h = 0;
     let dpr = 1;
+    // canvas rect cached at resize time (the canvas fills its inset:0 host, so
+    // it only moves via scroll — onMove offsets by the scroll delta instead of
+    // re-measuring per pointer event)
+    let rl = 0;
+    let rt = 0;
+    let rw = 0;
+    let rh = 0;
+    let rsy = 0;
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
       const rect = canvas.getBoundingClientRect();
+      rl = rect.left;
+      rt = rect.top;
+      rw = rect.width;
+      rh = rect.height;
+      rsy = window.scrollY;
       w = Math.max(1, Math.round(rect.width * dpr));
       h = Math.max(1, Math.round(rect.height * dpr));
       if (canvas.width !== w || canvas.height !== h) {
@@ -262,11 +272,12 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
       sy += (my - sy) * k;
       onSmooth += (onTarget - onSmooth) * k;
       draw();
-      // Keep redrawing while the band is on-screen, so the dome is always a
-      // fresh, correct frame instead of relying on a parked/stale buffer (which
-      // WebGL may clear after compositing, and which dev Strict-Mode remounts
-      // can leave wrong). The IntersectionObserver stops the loop off-screen.
-      if (!onScreen) {
+      // Park the loop when settled (no hover, smoothing converged) — the dome is
+      // static at rest and the compositor keeps the last frame on screen, so
+      // an idle band costs nothing. Pointer movement wakes it back up.
+      const settled =
+        onTarget === 0 && onSmooth < 0.004 && Math.abs(mx - sx) < 0.002 && Math.abs(my - sy) < 0.002;
+      if (!onScreen || settled) {
         raf = 0;
         return;
       }
@@ -279,15 +290,18 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
     };
 
     const onMove = (e: PointerEvent) => {
-      const r = canvas.getBoundingClientRect();
-      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      const top = rt - (window.scrollY - rsy);
+      const inside =
+        rw > 0 && rh > 0 && e.clientX >= rl && e.clientX <= rl + rw && e.clientY >= top && e.clientY <= top + rh;
       if (!inside) {
-        onTarget = 0;
-        wake();
+        if (onTarget !== 0 || onSmooth > 0.004) {
+          onTarget = 0;
+          wake();
+        }
         return;
       }
-      mx = (e.clientX - r.left) / r.width;
-      my = 1 - (e.clientY - r.top) / r.height;
+      mx = (e.clientX - rl) / rw;
+      my = 1 - (e.clientY - top) / rh;
       onTarget = 1;
       wake();
     };

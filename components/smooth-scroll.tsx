@@ -7,10 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
  * Lusion-style inertial scrolling (Lenis), driven from GSAP's ticker so
- * ScrollTrigger pins/scrubs stay perfectly in sync. Also:
- *  - feeds scroll velocity into the global `--scroll-skew` CSS var (used for
- *    the subtle motion-skew on the work cards),
- *  - routes same-page anchor links through Lenis for a smooth glide.
+ * ScrollTrigger pins/scrubs stay perfectly in sync. Also routes same-page
+ * anchor links through Lenis for a smooth glide.
  * No-ops entirely under prefers-reduced-motion.
  */
 export function SmoothScroll() {
@@ -19,13 +17,8 @@ export function SmoothScroll() {
 
     gsap.registerPlugin(ScrollTrigger);
     const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
-    const root = document.documentElement;
 
-    lenis.on("scroll", (e: { velocity: number }) => {
-      ScrollTrigger.update();
-      const skew = Math.max(-1, Math.min(1, e.velocity * 0.02));
-      root.style.setProperty("--scroll-skew", skew.toFixed(3));
-    });
+    lenis.on("scroll", () => ScrollTrigger.update());
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
@@ -48,7 +41,6 @@ export function SmoothScroll() {
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(raf);
       lenis.destroy();
-      root.style.removeProperty("--scroll-skew");
     };
   }, []);
 

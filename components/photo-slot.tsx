@@ -52,6 +52,7 @@ export function PhotoSlot({
           src={src}
           alt={placeholder}
           loading="lazy"
+          decoding="async"
           data-loaded={loaded ? "true" : "false"}
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}

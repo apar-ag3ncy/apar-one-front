@@ -28,10 +28,13 @@ const A_GLYPHS = [
  */
 export function AparLogo({ onDark = false }: { onDark?: boolean }) {
   const [i, setI] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const el = ref.current;
+    if (!el) return;
 
     const start = Date.now();
     let idx = 0;
@@ -43,14 +46,30 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
       const delay = elapsed < 1800 ? 80 : 1300;
       timer.current = setTimeout(tick, delay);
     };
-    timer.current = setTimeout(tick, 80);
+    // Only cycle while the wordmark is actually on screen.
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!timer.current) timer.current = setTimeout(tick, 80);
+      } else if (timer.current) {
+        clearTimeout(timer.current);
+        timer.current = null;
+      }
+    });
+    io.observe(el);
     return () => {
+      io.disconnect();
       if (timer.current) clearTimeout(timer.current);
+      timer.current = null;
     };
   }, []);
 
   return (
-    <span className={`apar-logo${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">
+    <span
+      ref={ref}
+      className={`apar-logo${onDark ? " on-dark" : ""}`}
+      aria-label="APAR"
+      role="img"
+    >
       <span className="apar-a" key={i} aria-hidden="true">
         {A_GLYPHS[i]}
       </span>
