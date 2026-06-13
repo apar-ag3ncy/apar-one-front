@@ -4,17 +4,19 @@ import Link from "next/link";
 import Strands from "@/components/react-bits/Strands";
 
 /**
- * Floating "Talk to us" action button — a refractive glass-orb (react-bits
- * Strands) docked bottom-right on every page, linking to the home contact
- * section. The orb is a tiny capped-DPR canvas that parks when the tab is
- * hidden and respects prefers-reduced-motion, so it stays off the scroll budget.
+ * Floating contact orb — a refractive glass "siri" (react-bits Strands) docked
+ * bottom-right on every page, linking to the home contact section. Lit with the
+ * brand's exact strand palette (red → orange → gold), matching the stats band.
+ * The label no longer sits beside it: a soft, small "Talk to us" message fades
+ * in only on hover/focus. The orb is a tiny capped-DPR canvas that parks when
+ * the tab is hidden and respects prefers-reduced-motion, off the scroll budget.
  */
 export function TalkToUs() {
   return (
     <Link href="/#contact" className="ttu" aria-label="Talk to us">
       <span className="ttu-orb" aria-hidden="true">
         <Strands
-          colors={["#F97316", "#7C3AED", "#06B6D4"]}
+          colors={["#EB3B25", "#F0883B", "#F6C57A"]}
           count={6}
           speed={0.9}
           amplitude={2.4}
@@ -24,7 +26,7 @@ export function TalkToUs() {
           taper={2.2}
           spread={1.5}
           intensity={0.7}
-          saturation={1.7}
+          saturation={1.5}
           opacity={1}
           scale={1.1}
           glass
@@ -33,7 +35,7 @@ export function TalkToUs() {
           glassSize={1.02}
         />
       </span>
-      <span className="ttu-label">Talk to us</span>
+      <span className="ttu-tip" aria-hidden="true">Talk to us</span>
     </Link>
   );
 }

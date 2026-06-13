@@ -92,24 +92,29 @@ void main(){
   vec2 uvC = cellCenter / uRes;             // per-cell sample (tile colour stepping)
   vec2 uvF = gl_FragCoord.xy / uRes;        // per-fragment sample (soft in-tile shading)
 
-  // ---- hover: a soft, premium glow lift that follows the cursor (gentle
-  //      shimmer, not an arcade flicker). The radius is kept TIGHT (sigma 0.07)
-  //      so the lit pixels read as a small halo around the ~40px cursor ring
-  //      instead of a big bloom that swallows a third of the screen and looks
-  //      blocky/ugly. ----
+  // ---- hover: a small, in-hue "pop" that follows the cursor. The lit tiles get
+  //      a touch brighter and warmer — they must NOT trend to the pale/white
+  //      crest colour (that read as ugly blown-out white blocks). So the hover
+  //      lifts only the tile ALPHA here, and a warm RED pop is added to the
+  //      final colour below; it never feeds the colour ramp's white crest.
+  //      Radius kept tight (sigma 0.06) so the cursor's reach is felt but
+  //      contained — present, not a bloom. ----
   float md = length((uvC - uMouse) * vec2(aspect, 1.0));
-  float near = exp(-(md * md) / (2.0 * 0.07 * 0.07)) * uMouseOn;
+  float near = exp(-(md * md) / (2.0 * 0.06 * 0.06)) * uMouseOn;
   float rnd = hash21(cellId + 0.5);
   float tw  = sin(uTime * (4.0 + rnd * 6.0) + rnd * 38.0) * 0.5 + 0.5;
-  float hov = near * (0.30 + 0.20 * tw);
+  float hov = near * (0.20 + 0.12 * tw);
 
   // per-tile glow drives opacity (stable across each tile); the colour blends in
   // a little of the per-fragment glow so each tile carries the reference's faint
   // internal gradient instead of being a flat chip.
   vec2 bC = beamAt(uvC, aspect);
   vec2 bF = beamAt(uvF, aspect);
+  // hover lifts the tile ALPHA (so the popped patch emerges) but NOT the colour
+  // ramp — the warm pop is added straight to the final colour below, keeping it
+  // in-hue (no white crest).
   float gA   = clamp(bC.x + hov, 0.0, 1.3);
-  float gCol = clamp(mix(bC.x, bF.x, 0.30) + hov, 0.0, 1.3);
+  float gCol = clamp(mix(bC.x, bF.x, 0.30), 0.0, 1.3);
 
   // ---- tile texture, matched to the reference zooms: tiles almost touch; the
   //      seams are slightly DARKER GROOVES in the same colour (never holes), and
@@ -141,6 +146,10 @@ void main(){
   // faintly visible everywhere. Blend the dark tiles up to a dim warm base so
   // the texture (and its junction stars) barely shows in the dark.
   col = mix(vec3(0.180, 0.040, 0.026), col, smoothstep(0.03, 0.18, gCol));
+
+  // ---- hover pop: add a warm RED lift (red-weighted so it brightens in-hue and
+  //      never trends to white). A "lil pop" on the tiles under the cursor. ----
+  col += hov * vec3(0.42, 0.10, 0.06);
 
   col *= 1.0 - 0.22 * seam;                             // hairline grooves + soft junction dots — gaps barely read, like the reference
 

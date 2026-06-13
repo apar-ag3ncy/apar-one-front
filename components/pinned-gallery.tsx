@@ -69,7 +69,9 @@ export function PinnedGallery() {
           trigger: section,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.5,
+          // Lenis already smooths the scroll; a smaller scrub keeps the track
+          // tight to it (less double-lag "trailing" through the pinned section).
+          scrub: 0.3,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             // Only the lightweight progress bar updates here. (The old

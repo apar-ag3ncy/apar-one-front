@@ -812,32 +812,48 @@ body.intro-lock{overflow:hidden;}
   .meta-row{gap:18px;}
 }
 
-/* floating "Talk to us" button — react-bits Strands glass orb */
+/* floating contact "siri" — bare react-bits Strands glass orb (no pill, no
+   persistent label). A soft, small "Talk to us" message fades in only on hover. */
 .ttu{
   position:fixed;right:24px;bottom:24px;z-index:100;
-  display:flex;align-items:center;gap:13px;
-  height:72px;padding:6px 24px 6px 6px;
-  border-radius:100px;
-  background:rgba(26,23,20,.97);
-  border:1px solid rgba(244,237,226,.16);
-  box-shadow:0 14px 34px -12px rgba(0,0,0,.55);
-  color:var(--cream);
-  transition:transform .35s var(--ease),background .35s var(--ease),box-shadow .35s var(--ease);
+  width:60px;height:60px;border-radius:50%;
+  display:block;color:var(--cream);
+  /* warm halo so the dark orb reads as a live, tappable object */
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.5),0 0 0 1px rgba(244,237,226,.10),0 0 26px -6px rgba(240,136,59,.42);
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease);
 }
-.ttu:hover{transform:translateY(-2px);background:var(--ink);box-shadow:0 18px 42px -12px rgba(0,0,0,.62);}
-.ttu:focus-visible{outline:2px solid var(--red);outline-offset:3px;}
+.ttu:hover{transform:translateY(-2px) scale(1.05);
+  box-shadow:0 16px 40px -10px rgba(0,0,0,.55),0 0 0 1px rgba(246,197,122,.22),0 0 42px -4px rgba(235,59,37,.6);}
+.ttu:focus-visible{outline:2px solid var(--red);outline-offset:4px;}
 .ttu-orb{
-  width:60px;height:60px;flex:0 0 60px;
+  width:100%;height:100%;
   border-radius:50%;overflow:hidden;
   background:#0c0a08;
   transform:translateZ(0);
 }
-.ttu-label{
-  font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
-  white-space:nowrap;
+/* hover-only message: small, soft, warm — sits to the LEFT so it never clips
+   the right edge; tinted with the orb's gold strand shade. */
+.ttu-tip{
+  position:absolute;right:calc(100% + 14px);top:50%;
+  transform:translateY(-50%) translateX(8px);
+  white-space:nowrap;pointer-events:none;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  color:rgba(246,210,184,.92);
+  background:rgba(18,3,2,.55);
+  border:1px solid rgba(246,197,122,.22);
+  padding:7px 14px;border-radius:100px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 22px -10px rgba(0,0,0,.5);
+  opacity:0;transition:opacity .4s var(--ease),transform .45s var(--ease);
+}
+.ttu:hover .ttu-tip,.ttu:focus-visible .ttu-tip{
+  opacity:1;transform:translateY(-50%) translateX(0);
+}
+@media (prefers-reduced-motion:reduce){
+  .ttu,.ttu-tip{transition:opacity .2s linear;}
+  .ttu:hover{transform:none;}
 }
 @media (max-width:760px){
-  .ttu{right:16px;bottom:16px;height:64px;padding:5px 20px 5px 5px;gap:11px;}
-  .ttu-orb{width:54px;height:54px;flex-basis:54px;}
-  .ttu-label{font-size:12px;}
+  .ttu{right:16px;bottom:16px;width:54px;height:54px;}
+  .ttu-tip{font-size:10px;}
 }

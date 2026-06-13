@@ -2,6 +2,7 @@
 
 import { Renderer, Program, Mesh, Color, Triangle, RenderTarget } from "ogl";
 import { useEffect, useRef, type CSSProperties } from "react";
+import { isScrolling } from "@/lib/scroll-state";
 
 /**
  * Strands — woven ribbons of light, ported from React Bits (ogl/WebGL).
@@ -358,8 +359,12 @@ export default function Strands({
         return;
       }
       animateId = requestAnimationFrame(update);
-      const current = propsRef.current;
       program.uniforms.uTime.value = t * 0.001;
+      // Skip the GPU-heavy render while the page is actively scrolling so this
+      // full-section backdrop never competes with scroll compositing. uTime keeps
+      // advancing, so it resumes seamlessly the instant scrolling settles.
+      if (isScrolling()) return;
+      const current = propsRef.current;
       if (current !== lastProps) {
         lastProps = current;
         const key = current.colors.join();

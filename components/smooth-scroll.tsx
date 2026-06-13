@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { markScrolling } from "@/lib/scroll-state";
 
 /**
  * Lusion-style inertial scrolling (Lenis), driven from GSAP's ticker so
@@ -16,9 +17,22 @@ export function SmoothScroll() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    // Duration/easing (time-based) instead of lerp (frame-based): on a busy
+    // machine that drops frames, a fixed lerp steps unevenly and reads as a
+    // stuttery "catching-up" scroll. Time-based easing stays a consistent glide
+    // regardless of frame rate.
+    const lenis = new Lenis({
+      duration: 1.05,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.6,
+    });
 
-    lenis.on("scroll", () => ScrollTrigger.update());
+    lenis.on("scroll", () => {
+      ScrollTrigger.update();
+      markScrolling();
+    });
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);

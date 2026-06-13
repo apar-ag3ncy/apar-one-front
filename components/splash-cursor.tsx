@@ -928,6 +928,11 @@ export function SplashCursor({
         // render one last clean frame and stop the loop.
         parked = true;
         rafRef.current = null;
+        // The parked canvas is fully transparent (dye dissipated), but a
+        // full-viewport WebGL layer still costs the compositor to blend on every
+        // scrolled frame. Hiding it removes that layer until the next pointer
+        // interaction — a real win on integrated GPUs during scroll.
+        canvas!.style.visibility = "hidden";
         return;
       }
       rafRef.current = requestAnimationFrame(updateFrame);
@@ -937,6 +942,7 @@ export function SplashCursor({
       lastActivity = Date.now();
       if (parked && isActive) {
         parked = false;
+        canvas!.style.visibility = "visible";
         lastUpdateTime = Date.now();
         rafRef.current = requestAnimationFrame(updateFrame);
       }
