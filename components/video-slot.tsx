@@ -15,11 +15,76 @@ interface VideoSlotProps {
   style?: CSSProperties;
 }
 
+/* ----------------------------------------------------------------------------
+ * Shared playback coordinator — caps how many videos decode at once.
+ *
+ * The work gallery alone holds a dozen <video>s. On weaker GPUs (Intel), letting
+ * every video that drifts near the viewport call play() at once means several
+ * H.264 streams decode + composite simultaneously, which stalls the main thread
+ * for hundreds of ms during scroll (the "laggy scroll"). This module-level
+ * coordinator keeps at most MAX_CONCURRENT playing — the ones closest to the
+ * viewport centre — and pauses the rest. Reconciliation is rAF-batched so a
+ * burst of IntersectionObserver callbacks during a fast scroll collapses into a
+ * single pass.
+ * ------------------------------------------------------------------------- */
+const MAX_CONCURRENT = 2;
+const wanting = new Set<HTMLVideoElement>(); // near viewport, would like to play
+const playing = new Set<HTMLVideoElement>(); // currently allowed to play
+let scheduled = false;
+
+function centreDistance(v: HTMLVideoElement) {
+  const r = v.getBoundingClientRect();
+  const dy = r.top + r.height / 2 - window.innerHeight / 2;
+  const dx = r.left + r.width / 2 - window.innerWidth / 2;
+  return Math.abs(dy) + Math.abs(dx) * 0.5; // prefer vertical centring, weight horizontal less
+}
+
+function reconcile() {
+  scheduled = false;
+  const ranked = [...wanting].sort((a, b) => centreDistance(a) - centreDistance(b));
+  const allow = new Set(ranked.slice(0, MAX_CONCURRENT));
+  for (const v of playing) {
+    if (!allow.has(v)) {
+      v.pause();
+      playing.delete(v);
+    }
+  }
+  for (const v of allow) {
+    if (!playing.has(v)) {
+      v.play().catch(() => {
+        /* autoplay can still be blocked; the loaded frame stays visible */
+      });
+      playing.add(v);
+    }
+  }
+}
+
+function schedulePlayback() {
+  if (scheduled) return;
+  scheduled = true;
+  requestAnimationFrame(reconcile);
+}
+
+function requestPlay(v: HTMLVideoElement) {
+  wanting.add(v);
+  schedulePlayback();
+}
+
+function releasePlay(v: HTMLVideoElement) {
+  wanting.delete(v);
+  if (playing.has(v)) {
+    v.pause();
+    playing.delete(v);
+  }
+  schedulePlayback();
+}
+
 /**
  * Project video frame. Autoplays a muted, looping video from `src`. Until a
  * video file actually exists there, it shows the editorial drop-zone
  * placeholder — so dropping /public/videos/<slug>.mp4 is all that's needed,
- * no code change (mirrors how the logos work).
+ * no code change (mirrors how the logos work). Playback is governed by the
+ * shared coordinator above so only a couple of clips ever decode at once.
  */
 export function VideoSlot({
   src,
@@ -53,37 +118,25 @@ export function VideoSlot({
   }, []);
 
   // React doesn't reliably set the `muted` DOM property from the attribute,
-  // which blocks autoplay — force it muted. Playback (and so video decoding)
-  // runs only while the frame is near the viewport: with many videos on a
-  // page, decoding them all at once tanks scrolling performance.
+  // which blocks autoplay — force it muted. Actual playback is routed through
+  // the shared coordinator (requestPlay/releasePlay): the frame registers
+  // intent when it's near the viewport, and the coordinator decides whether it
+  // gets to decode, capping concurrent playback to keep scrolling smooth.
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
     v.muted = true;
-    let timer: ReturnType<typeof setTimeout> | undefined;
     const io = new IntersectionObserver(
       ([en]) => {
-        if (en?.isIntersecting) {
-          if (!v.paused) return;
-          clearTimeout(timer);
-          timer = setTimeout(() => {
-            if (v.paused) {
-              v.play().catch(() => {
-                /* autoplay can still be blocked; the loaded frame stays visible */
-              });
-            }
-          }, 150);
-        } else {
-          clearTimeout(timer);
-          if (!v.paused) v.pause();
-        }
+        if (en?.isIntersecting) requestPlay(v);
+        else releasePlay(v);
       },
-      { rootMargin: "25%" }
+      { rootMargin: "0px" }
     );
     io.observe(v);
     return () => {
-      clearTimeout(timer);
       io.disconnect();
+      releasePlay(v);
     };
   }, [near, src]);
 

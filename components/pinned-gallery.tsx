@@ -72,23 +72,20 @@ export function PinnedGallery() {
           scrub: 0.5,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
+            // Only the lightweight progress bar updates here. (The old
+            // velocity-skew write per frame triggered a full-document style
+            // recalc — see .pin-card in globals.css — and has been removed.)
             if (progressRef.current) {
               progressRef.current.style.setProperty(
                 "--pp-scale",
                 String(0.08 + self.progress * 0.92)
               );
             }
-            const skew = Math.max(-1, Math.min(1, self.getVelocity() * 0.00003));
-            section.style.setProperty("--scroll-skew", skew.toFixed(3));
           },
-          onScrubComplete: () => section.style.setProperty("--scroll-skew", "0"),
-          onLeave: () => section.style.setProperty("--scroll-skew", "0"),
-          onLeaveBack: () => section.style.setProperty("--scroll-skew", "0"),
         },
       });
       return () => {
         tween.scrollTrigger?.kill();
-        section.style.removeProperty("--scroll-skew");
       };
     });
 

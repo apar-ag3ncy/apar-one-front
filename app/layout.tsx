@@ -7,6 +7,7 @@ import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 import { TransitionProvider } from "@/components/transition-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { SplashCursor } from "@/components/splash-cursor";
+import { TalkToUs } from "@/components/talk-to-us";
 
 export const metadata: Metadata = {
   title: "APAR — Digital Marketing & Branding Agency, Mumbai",
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ScrollProgressBar />
         <CustomCursor />
         <Nav />
+        <TalkToUs />
         <TransitionProvider>
           {children}
           <ConditionalFooter />

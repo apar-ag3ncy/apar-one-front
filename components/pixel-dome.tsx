@@ -93,12 +93,15 @@ void main(){
   vec2 uvF = gl_FragCoord.xy / uRes;        // per-fragment sample (soft in-tile shading)
 
   // ---- hover: a soft, premium glow lift that follows the cursor (gentle
-  //      shimmer, not an arcade flicker) ----
+  //      shimmer, not an arcade flicker). The radius is kept TIGHT (sigma 0.07)
+  //      so the lit pixels read as a small halo around the ~40px cursor ring
+  //      instead of a big bloom that swallows a third of the screen and looks
+  //      blocky/ugly. ----
   float md = length((uvC - uMouse) * vec2(aspect, 1.0));
-  float near = exp(-(md * md) / (2.0 * 0.16 * 0.16)) * uMouseOn;
+  float near = exp(-(md * md) / (2.0 * 0.07 * 0.07)) * uMouseOn;
   float rnd = hash21(cellId + 0.5);
   float tw  = sin(uTime * (4.0 + rnd * 6.0) + rnd * 38.0) * 0.5 + 0.5;
-  float hov = near * (0.35 + 0.25 * tw);
+  float hov = near * (0.30 + 0.20 * tw);
 
   // per-tile glow drives opacity (stable across each tile); the colour blends in
   // a little of the per-fragment glow so each tile carries the reference's faint
