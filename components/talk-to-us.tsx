@@ -17,22 +17,22 @@ export function TalkToUs() {
       <span className="ttu-orb" aria-hidden="true">
         <Strands
           colors={["#EB3B25", "#F0883B", "#F6C57A"]}
-          count={6}
-          speed={0.9}
-          amplitude={2.4}
-          waviness={1.3}
-          thickness={0.55}
-          glow={2.2}
-          taper={2.2}
-          spread={1.5}
-          intensity={0.7}
+          count={5}
+          speed={0.85}
+          amplitude={1.3}
+          waviness={1.1}
+          thickness={0.85}
+          glow={2.8}
+          taper={1.8}
+          spread={1}
+          intensity={0.85}
           saturation={1.5}
           opacity={1}
-          scale={1.1}
+          scale={1.4}
           glass
           refraction={1.1}
           dispersion={1}
-          glassSize={1.02}
+          glassSize={1.05}
         />
       </span>
       <span className="ttu-tip" aria-hidden="true">Talk to us</span>

@@ -56,6 +56,11 @@
   --maxw:1320px;
   --serif:'Newsreader',Georgia,serif;
   --sans:'Archivo',system-ui,sans-serif;
+  /* APAR wordmark = Fit (DJR), variable-width, across the 3 scripts it ships in.
+     Real Fit (Adobe Fonts kit) wins; width-variable stand-ins are the fallback. */
+  --fit:'fit-variable','Roboto Flex',var(--sans);
+  --fit-deva:'fit-devanagari-variable','Noto Sans Devanagari',var(--sans);
+  --fit-kannada:'fit-kannada-variable','Noto Sans Kannada',var(--sans);
   --ease:cubic-bezier(.2,.7,.25,1);
   --spring:cubic-bezier(.22,1,.36,1);
 }
@@ -145,17 +150,23 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
 .nav.scrolled{background:rgba(244,237,226,.88);backdrop-filter:blur(9px);box-shadow:0 1px 0 var(--line);height:70px;}
 .nav .brand{display:flex;align-items:center;gap:13px;}
-/* Animated APAR wordmark — leading "A" morphs across scripts */
-.apar-logo{display:inline-flex;align-items:center;font-family:var(--sans);font-weight:800;
-  font-size:40px;line-height:1;letter-spacing:-.015em;text-transform:uppercase;color:var(--red);
+/* APAR wordmark — the heavy, blocky Fit (DJR) of the OG company logo. The leading
+   "A" swaps between the three scripts Fit ships in (Latin / Devanagari / Kannada).
+   It is STILL: the glyph just changes in place — no pop-in, no scale, no width
+   breathing — matching the static original. */
+.apar-logo{display:inline-flex;align-items:baseline;font-family:var(--fit);font-weight:900;
+  font-size:40px;line-height:1;letter-spacing:-.03em;font-stretch:100%;text-transform:uppercase;color:var(--red);
   transition:font-size .4s var(--ease),color .35s var(--ease);user-select:none;}
 .apar-logo.on-dark{color:var(--cream);}
 .nav.scrolled .apar-logo{font-size:34px;}
-.apar-logo .apar-a{display:inline-flex;align-items:center;justify-content:center;
-  width:.72em;animation:aparAswap .3s var(--ease);}
-.apar-logo .apar-rest{display:inline-block;}
-@keyframes aparAswap{0%{opacity:0;transform:translateY(-.12em) scale(.82);}100%{opacity:1;transform:none;}}
-@media (prefers-reduced-motion:reduce){.apar-logo .apar-a{animation:none;}}
+/* The swapping "A" sits in a fixed, centred slot (width measured by the component
+   to fit the widest script) so "PAR" never shifts. The inner glyph is uniformly
+   scaled to PAR's cap height — so every script reads at the SAME size — while
+   keeping its own proportions, baseline-aligned with PAR. */
+.apar-logo .apar-a{display:inline-block;text-align:right;min-width:0;
+  width:calc(1em * var(--apar-a-slot, .9));}
+.apar-logo .apar-a-glyph{display:inline-block;line-height:1;}
+.apar-logo .apar-rest{display:inline-block;font-family:var(--fit);}
 .nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
@@ -815,15 +826,33 @@ body.intro-lock{overflow:hidden;}
 /* floating contact "siri" — bare react-bits Strands glass orb (no pill, no
    persistent label). A soft, small "Talk to us" message fades in only on hover. */
 .ttu{
-  position:fixed;right:24px;bottom:24px;z-index:100;
-  width:60px;height:60px;border-radius:50%;
+  position:fixed;right:28px;bottom:28px;z-index:100;
+  /* Siri-style glass ball: compact, and fluidly responsive — scales with the
+     viewport between a 44px touch-target floor and a 58px cap (was a fixed,
+     oversized 100px). The Strands canvas fills 100% of this and re-renders on
+     resize, so the orb stays crisp at every size. */
+  width:clamp(44px, 4.2vw, 58px);height:clamp(44px, 4.2vw, 58px);border-radius:50%;
   display:block;color:var(--cream);
-  /* warm halo so the dark orb reads as a live, tappable object */
-  box-shadow:0 12px 30px -10px rgba(0,0,0,.5),0 0 0 1px rgba(244,237,226,.10),0 0 26px -6px rgba(240,136,59,.42);
-  transition:transform .4s var(--ease),box-shadow .4s var(--ease);
+  /* layered premium depth: deep soft drop + crisp glass rim + warm ambient halo */
+  box-shadow:
+    0 18px 44px -12px rgba(0,0,0,.55),
+    0 0 0 1px rgba(244,237,226,.12),
+    0 0 0 6px rgba(244,237,226,.04),
+    0 0 34px -6px rgba(240,136,59,.40);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease);
 }
-.ttu:hover{transform:translateY(-2px) scale(1.05);
-  box-shadow:0 16px 40px -10px rgba(0,0,0,.55),0 0 0 1px rgba(246,197,122,.22),0 0 42px -4px rgba(235,59,37,.6);}
+/* faint specular crescent on the rim — the glass catch-light that sells "premium" */
+.ttu::after{
+  content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(120% 90% at 32% 22%,rgba(255,255,255,.16),rgba(255,255,255,0) 42%);
+  mix-blend-mode:screen;
+}
+.ttu:hover{transform:translateY(-3px) scale(1.06);
+  box-shadow:
+    0 24px 52px -12px rgba(0,0,0,.6),
+    0 0 0 1px rgba(246,197,122,.26),
+    0 0 0 7px rgba(246,197,122,.06),
+    0 0 52px -4px rgba(235,59,37,.58);}
 .ttu:focus-visible{outline:2px solid var(--red);outline-offset:4px;}
 .ttu-orb{
   width:100%;height:100%;
@@ -854,6 +883,8 @@ body.intro-lock{overflow:hidden;}
   .ttu:hover{transform:none;}
 }
 @media (max-width:760px){
-  .ttu{right:16px;bottom:16px;width:54px;height:54px;}
+  /* size comes from the clamp() above (settles to the 44px floor here); only the
+     edge insets tighten on small screens. */
+  .ttu{right:18px;bottom:18px;}
   .ttu-tip{font-size:10px;}
 }

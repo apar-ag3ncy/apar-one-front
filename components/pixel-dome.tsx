@@ -147,9 +147,12 @@ void main(){
   // the texture (and its junction stars) barely shows in the dark.
   col = mix(vec3(0.180, 0.040, 0.026), col, smoothstep(0.03, 0.18, gCol));
 
-  // ---- hover pop: add a warm RED lift (red-weighted so it brightens in-hue and
-  //      never trends to white). A "lil pop" on the tiles under the cursor. ----
-  col += hov * vec3(0.42, 0.10, 0.06);
+  // ---- hover pop: blend the tiles under the cursor toward a bright brand-red
+  //      (green/blue kept low so it can NEVER trend to the pale/white crest that
+  //      read as ugly blown-out blocks). The tiles just "pop" a little warmer and
+  //      brighter — in-hue, contained, enough to feel the cursor, not a bloom. ----
+  vec3 POP = vec3(1.0, 0.32, 0.18);                     // bright brand-red — low G/B = stays red, never white
+  col = mix(col, POP, clamp(hov * 2.2, 0.0, 0.8));
 
   col *= 1.0 - 0.22 * seam;                             // hairline grooves + soft junction dots — gaps barely read, like the reference
 

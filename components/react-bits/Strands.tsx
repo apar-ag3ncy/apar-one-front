@@ -355,9 +355,15 @@ export default function Strands({
       lastW = width;
       lastH = height;
       renderer.setSize(width, height);
-      program.uniforms.uResolution.value = [width, height];
-      renderTarget.setSize(width, height);
-      glassProgram.uniforms.uResolution.value = [width, height];
+      // uResolution and the render target MUST match the canvas's device-pixel
+      // draw buffer, not its CSS size. The renderer uses a capped dpr (up to 2),
+      // so gl_FragCoord spans width*dpr; passing CSS px here would center the
+      // glass sphere at a quarter point (lower-left) and render it half-size.
+      const bw = gl.drawingBufferWidth;
+      const bh = gl.drawingBufferHeight;
+      program.uniforms.uResolution.value = [bw, bh];
+      renderTarget.setSize(bw, bh);
+      glassProgram.uniforms.uResolution.value = [bw, bh];
     }
     window.addEventListener("resize", resize);
     resize();
