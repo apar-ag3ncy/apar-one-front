@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer className="footer">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="footer-mark" src="/assets/apar-logo-cream.png" alt="" />
+      <img className="footer-mark" src="/assets/apar-logo-cream.svg" alt="" />
       <div className="wrap">
         <h2 className="footer-cta">
           Let&apos;s make something <em>worth remembering.</em>
@@ -24,7 +24,7 @@ export function Footer() {
         <div className="footer-grid">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="footer-logo" src="/assets/apar-logo-cream.png" alt="APAR" />
+            <img className="footer-logo" src="/assets/apar-logo-cream.svg" alt="APAR" />
             <p className="big">
               A digital marketing &amp; branding agency for brands that refuse to blend in.
             </p>
@@ -63,7 +63,7 @@ export function Footer() {
         </div>
         <div className="footer-base">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/apar-logo-cream.png" alt="APAR" />
+          <img src="/assets/apar-logo-cream.svg" alt="APAR" />
           <span>© 2026 APAR Agency — All rights reserved.</span>
           <span>Digital Marketing · Branding · Strategy · AI Content</span>
         </div>

@@ -59,9 +59,10 @@ export function PinnedGallery() {
     gsap.registerPlugin(ScrollTrigger);
 
     const mm = gsap.matchMedia();
-    // Only drive the horizontal scrub above the mobile breakpoint; below it the
-    // CSS collapses the pin into a normal vertical stack.
-    mm.add("(min-width: 761px)", () => {
+    // Only drive the horizontal scrub on wider/landscape screens; at ≤900px the
+    // CSS collapses the pin into a vertical stack (scroll-jacking feels bad on
+    // portrait / touch tablets). Kept in sync with the @media(max-width:900px).
+    mm.add("(min-width: 901px)", () => {
       const tween = gsap.to(track, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",

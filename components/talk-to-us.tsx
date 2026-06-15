@@ -1,17 +1,35 @@
 "use client";
 
 import Link from "next/link";
+import { ConversationProvider } from "@elevenlabs/react";
 import Strands from "@/components/react-bits/Strands";
+import { VoiceConcierge } from "@/components/voice-concierge";
+import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
 
 /**
  * Floating contact orb — a refractive glass "siri" (react-bits Strands) docked
- * bottom-right on every page, linking to the home contact section. Lit with the
- * brand's exact strand palette (red → orange → gold), matching the stats band.
- * The label no longer sits beside it: a soft, small "Talk to us" message fades
- * in only on hover/focus. The orb is a tiny capped-DPR canvas that parks when
- * the tab is hidden and respects prefers-reduced-motion, off the scroll budget.
+ * bottom-right on every page. Lit with the brand's exact strand palette
+ * (red → orange → gold), matching the stats band.
+ *
+ * When an ElevenLabs Agent is configured (NEXT_PUBLIC_ELEVENLABS_AGENT_ID), the
+ * orb becomes a real, Siri-like voice call with APAR's concierge — tap to talk,
+ * audio-reactive waveform, live captions. See lib/elevenlabs.ts + VOICE-CONCIERGE.md.
+ *
+ * Until then it gracefully falls back to its original behaviour: a link to the
+ * on-page contact section. Nothing breaks before the agent is connected.
  */
 export function TalkToUs() {
+  if (VOICE_CONCIERGE_ENABLED) {
+    return (
+      <ConversationProvider>
+        <VoiceConcierge />
+      </ConversationProvider>
+    );
+  }
+  return <TalkToUsFallback />;
+}
+
+function TalkToUsFallback() {
   return (
     <Link href="/#contact" className="ttu" aria-label="Talk to us">
       <span className="ttu-orb" aria-hidden="true">
@@ -35,7 +53,9 @@ export function TalkToUs() {
           glassSize={1.05}
         />
       </span>
-      <span className="ttu-tip" aria-hidden="true">Talk to us</span>
+      <span className="ttu-tip" aria-hidden="true">
+        Talk to us
+      </span>
     </Link>
   );
 }

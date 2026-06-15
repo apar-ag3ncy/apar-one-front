@@ -56,11 +56,20 @@
   --maxw:1320px;
   --serif:'Newsreader',Georgia,serif;
   --sans:'Archivo',system-ui,sans-serif;
-  /* APAR wordmark = Fit (DJR), variable-width, across the 3 scripts it ships in.
-     Real Fit (Adobe Fonts kit) wins; width-variable stand-ins are the fallback. */
-  --fit:'fit-variable','Roboto Flex',var(--sans);
-  --fit-deva:'fit-devanagari-variable','Noto Sans Devanagari',var(--sans);
-  --fit-kannada:'fit-kannada-variable','Noto Sans Kannada',var(--sans);
+  /* APAR wordmark = Fit (DJR), variable-width, across the 9 scripts it ships in.
+     Real Fit (Adobe Fonts kit) wins; the logo's leading-"A" transition only
+     renders a script live once its real Fit family is confirmed loaded — see
+     components/apar-logo.tsx. Stand-ins below are only for non-logo Fit usage. */
+  /* Real Adobe Fonts family names for Fit are the `-vf` variants (from the Fit
+     web-project source). Arabic/Armenian/Kannada confirmed; the rest follow the
+     same `-vf` pattern. Noto stand-ins remain until the Adobe kit is connected. */
+  --fit:'fit-vf','Roboto Flex',var(--sans);                    /* Latin · Cyrillic · Greek */
+  --fit-deva:'fit-devanagari-vf','Noto Sans Devanagari',var(--sans);
+  --fit-kannada:'fit-kannada-vf','Noto Sans Kannada',var(--sans);
+  --fit-hebrew:'fit-hebrew-vf','Noto Sans Hebrew',var(--sans);
+  --fit-armenian:'fit-armenian-vf','Noto Sans Armenian',var(--sans);
+  --fit-tamil:'fit-tamil-vf','Noto Sans Tamil',var(--sans);
+  --fit-arabic:'fit-arabic-vf','Noto Sans Arabic',var(--sans);
   --ease:cubic-bezier(.2,.7,.25,1);
   --spring:cubic-bezier(.22,1,.36,1);
 }
@@ -148,25 +157,27 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 }
 .nav-in{display:flex;align-items:center;justify-content:space-between;width:100%;
   max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
-.nav.scrolled{background:rgba(244,237,226,.88);backdrop-filter:blur(9px);box-shadow:0 1px 0 var(--line);height:70px;}
+/* Near-opaque solid (no backdrop blur): a frosted sticky bar re-blurs the
+   backdrop every scrolled frame it overlaps moving content — a real scroll cost
+   on tablet/desktop. The solid reads the same and composites for free. */
+.nav.scrolled{background:rgba(244,237,226,.96);box-shadow:0 1px 0 var(--line);height:70px;}
 .nav .brand{display:flex;align-items:center;gap:13px;}
 /* APAR wordmark — the heavy, blocky Fit (DJR) of the OG company logo. The leading
    "A" swaps between the three scripts Fit ships in (Latin / Devanagari / Kannada).
    It is STILL: the glyph just changes in place — no pop-in, no scale, no width
    breathing — matching the static original. */
-.apar-logo{display:inline-flex;align-items:baseline;font-family:var(--fit);font-weight:900;
-  font-size:40px;line-height:1;letter-spacing:-.03em;font-stretch:100%;text-transform:uppercase;color:var(--red);
+.apar-logo{display:inline-flex;align-items:center;
+  font-size:40px;line-height:1;color:var(--red);
   transition:font-size .4s var(--ease),color .35s var(--ease);user-select:none;}
 .apar-logo.on-dark{color:var(--cream);}
 .nav.scrolled .apar-logo{font-size:34px;}
-/* The swapping "A" sits in a fixed, centred slot (width measured by the component
-   to fit the widest script) so "PAR" never shifts. The inner glyph is uniformly
-   scaled to PAR's cap height — so every script reads at the SAME size — while
-   keeping its own proportions, baseline-aligned with PAR. */
-.apar-logo .apar-a{display:inline-block;text-align:right;min-width:0;
-  width:calc(1em * var(--apar-a-slot, .9));}
-.apar-logo .apar-a-glyph{display:inline-block;line-height:1;}
-.apar-logo .apar-rest{display:inline-block;font-family:var(--fit);}
+/* The wordmark is an exact vector trace of the Fit "अPĀR" lockup, sized off
+   font-size (cap-height ≈ 1em) and colored via currentColor so the same mark
+   works in red / cream / ink / white wherever .apar-logo's color is set. */
+.apar-logo .apar-logo-svg{height:1em;width:auto;display:block;overflow:visible;}
+/* Leading-"A" script transition: each Fit glyph cross-fades in the same slot. */
+.apar-logo .apar-lead{transition:opacity .5s var(--ease);}
+@media (prefers-reduced-motion: reduce){.apar-logo .apar-lead{transition:none;}}
 .nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
@@ -347,7 +358,10 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .pin-progress{position:absolute;left:var(--gut);right:var(--gut);bottom:46px;height:2px;background:rgba(244,237,226,.18);z-index:3;}
 .pin-progress i{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(var(--pp-scale,.08));transform-origin:left;background:var(--red);transition:transform .15s linear;}
 .pin-hint{position:absolute;right:var(--gut);bottom:60px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,237,226,.6);z-index:3;}
-@media (max-width:760px){
+@media (max-width:900px){
+  /* Collapse the horizontal scrub to a vertical stack at ≤900px (kept in sync
+     with the GSAP matchMedia in pinned-gallery.tsx) — scroll-jacking feels bad
+     on portrait / touch tablets. */
   .pin{height:auto !important;}
   .pin-sticky{position:static;height:auto;display:block;padding:80px 0;}
   .pin-track{flex-direction:column;transform:none !important;gap:48px;align-items:center;}
@@ -544,10 +558,8 @@ body.intro-lock{overflow:hidden;}
 
 /* ---- clients ---- */
 .featured-clients{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px;}
-.fc-card{position:relative;display:flex;flex-direction:column;min-height:300px;padding:30px;border-radius:6px;
-  overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));
-  transition:transform .5s var(--spring),box-shadow .5s var(--ease);}
-.fc-card:hover,.fc-card:focus-visible,.fc-card:active{transform:translateY(-6px);box-shadow:0 30px 70px -20px rgba(26,23,20,.45);}
+.fc-card{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:300px;padding:30px;border-radius:14px;
+  overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));}
 .fc-card .fc-top{display:flex;align-items:center;justify-content:space-between;}
 .fc-card .fc-i{font-family:var(--serif);font-style:italic;font-size:22px;}
 .fc-card .fc-cat{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
@@ -579,7 +591,7 @@ body.intro-lock{overflow:hidden;}
 .pin-card:hover .frame::before,.pin-card:focus-visible .frame::before,.pin-card:active .frame::before,
 .work-card:hover .frame::before,.work-card:focus-visible .frame::before,.work-card:active .frame::before{opacity:1;}
 @media (prefers-reduced-motion:reduce){
-  .fc-card:hover,.fc-card:focus-visible,.fc-card:active{transform:none;}
+  .fc-glow:hover,.fc-glow:focus-within{transform:none;}
 }
 
 /* ── Card face: brand logo at rest, info revealed on hover/press ─────────── */
@@ -626,6 +638,137 @@ body.intro-lock{overflow:hidden;}
 @media (prefers-reduced-motion:reduce){
   .fc-card .fc-logo,.fc-card .fc-body{transition:opacity .2s linear;}
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   BorderGlow (React Bits) — cursor-following edge glow + mesh-gradient border.
+   Component: components/react-bits/BorderGlow.tsx. Used to give each featured
+   card a premium halo tinted to its own brand colour (.fc-glow override below).
+   ════════════════════════════════════════════════════════════════════════ */
+.border-glow-card{
+  --edge-proximity:0;
+  --cursor-angle:45deg;
+  --edge-sensitivity:30;
+  --color-sensitivity:calc(var(--edge-sensitivity) + 20);
+  --border-radius:28px;
+  --glow-padding:40px;
+  --cone-spread:25;
+
+  position:relative;
+  border-radius:var(--border-radius);
+  isolation:isolate;
+  transform:translate3d(0,0,0.01px);
+  display:grid;
+  border:1px solid rgb(255 255 255 / 15%);
+  background:var(--card-bg,#120F17);
+  overflow:visible;
+  box-shadow:
+    rgba(0,0,0,.1) 0px 1px 2px,
+    rgba(0,0,0,.1) 0px 2px 4px,
+    rgba(0,0,0,.1) 0px 4px 8px,
+    rgba(0,0,0,.1) 0px 8px 16px,
+    rgba(0,0,0,.1) 0px 16px 32px,
+    rgba(0,0,0,.1) 0px 32px 64px;
+}
+.border-glow-card::before,
+.border-glow-card::after,
+.border-glow-card > .edge-light{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  transition:opacity .25s ease-out;z-index:-1;
+}
+.border-glow-card:not(:hover):not(.sweep-active)::before,
+.border-glow-card:not(:hover):not(.sweep-active)::after,
+.border-glow-card:not(:hover):not(.sweep-active) > .edge-light{
+  opacity:0;transition:opacity .75s ease-in-out;
+}
+/* colored mesh-gradient border */
+.border-glow-card::before{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg,#120F17) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+    var(--gradient-one,radial-gradient(at 80% 55%,hsla(268,100%,76%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-two,radial-gradient(at 69% 34%,hsla(349,100%,74%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-three,radial-gradient(at 8% 6%,hsla(136,100%,78%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-four,radial-gradient(at 41% 38%,hsla(192,100%,64%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-five,radial-gradient(at 86% 85%,hsla(186,100%,74%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-six,radial-gradient(at 82% 18%,hsla(52,100%,65%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-seven,radial-gradient(at 51% 4%,hsla(12,100%,72%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-base,linear-gradient(#c299ff 0 100%)) border-box;
+  opacity:calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 15) * 1%),
+      transparent calc((100 - var(--cone-spread) - 15) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
+    );
+}
+/* colored mesh-gradient background fill near edges */
+.border-glow-card::after{
+  border:1px solid transparent;
+  background:
+    var(--gradient-one,radial-gradient(at 80% 55%,hsla(268,100%,76%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-two,radial-gradient(at 69% 34%,hsla(349,100%,74%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-three,radial-gradient(at 8% 6%,hsla(136,100%,78%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-four,radial-gradient(at 41% 38%,hsla(192,100%,64%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-five,radial-gradient(at 86% 85%,hsla(186,100%,74%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-six,radial-gradient(at 82% 18%,hsla(52,100%,65%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-seven,radial-gradient(at 51% 4%,hsla(12,100%,72%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-base,linear-gradient(#c299ff 0 100%)) padding-box;
+  mask-image:
+    linear-gradient(to bottom,black,black),
+    radial-gradient(ellipse at 50% 50%,black 40%,transparent 65%),
+    radial-gradient(ellipse at 66% 66%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 33% 33%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 66% 33%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 33% 66%,black 5%,transparent 40%),
+    conic-gradient(from var(--cursor-angle) at center,transparent 5%,black 15%,black 85%,transparent 95%);
+  mask-composite:subtract,add,add,add,add,add;
+  opacity:calc(var(--fill-opacity,0.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode:soft-light;
+}
+/* outer glow layer */
+.border-glow-card > .edge-light{
+  inset:calc(var(--glow-padding) * -1);
+  pointer-events:none;z-index:1;
+  mask-image:
+    conic-gradient(from var(--cursor-angle) at center,black 2.5%,transparent 10%,transparent 90%,black 97.5%);
+  opacity:calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode:plus-lighter;
+}
+.border-glow-card > .edge-light::before{
+  content:"";position:absolute;inset:var(--glow-padding);border-radius:inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color,hsl(40deg 80% 80% / 100%)),
+    inset 0 0 1px 0 var(--glow-color-60,hsl(40deg 80% 80% / 60%)),
+    inset 0 0 3px 0 var(--glow-color-50,hsl(40deg 80% 80% / 50%)),
+    inset 0 0 6px 0 var(--glow-color-40,hsl(40deg 80% 80% / 40%)),
+    inset 0 0 15px 0 var(--glow-color-30,hsl(40deg 80% 80% / 30%)),
+    inset 0 0 25px 2px var(--glow-color-20,hsl(40deg 80% 80% / 20%)),
+    inset 0 0 50px 2px var(--glow-color-10,hsl(40deg 80% 80% / 10%)),
+    0 0 1px 0 var(--glow-color-60,hsl(40deg 80% 80% / 60%)),
+    0 0 3px 0 var(--glow-color-50,hsl(40deg 80% 80% / 50%)),
+    0 0 6px 0 var(--glow-color-40,hsl(40deg 80% 80% / 40%)),
+    0 0 15px 0 var(--glow-color-30,hsl(40deg 80% 80% / 30%)),
+    0 0 25px 2px var(--glow-color-20,hsl(40deg 80% 80% / 20%)),
+    0 0 50px 2px var(--glow-color-10,hsl(40deg 80% 80% / 10%));
+}
+.border-glow-inner{
+  display:flex;flex-direction:column;position:relative;z-index:1;
+}
+
+/* ── APAR featured-card integration ─────────────────────────────────────── */
+.fc-glow{
+  transition:transform .5s var(--spring),box-shadow .5s var(--ease);
+}
+.fc-glow:hover,.fc-glow:focus-within{
+  transform:translate3d(0,-6px,0.01px);
+  box-shadow:0 36px 84px -22px rgba(26,23,20,.5);
+}
+/* the inner brand card fills the glow shell; its own overflow clips logo/shine */
+.fc-glow > .border-glow-inner{overflow:visible;}
+.fc-glow .fc-card{width:100%;height:100%;}
 
 .client-wall{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:48px;}
 .cw-item{font-family:var(--serif);font-size:clamp(18px,2vw,26px);color:var(--ink-soft);padding:10px 20px;
@@ -887,4 +1030,216 @@ body.intro-lock{overflow:hidden;}
      edge insets tighten on small screens. */
   .ttu{right:18px;bottom:18px;}
   .ttu-tip{font-size:10px;}
+}
+/* the launcher is now a <button> when the voice concierge is live — strip the
+   native button chrome so it stays a bare glass orb identical to the link form. */
+.ttu-button{
+  appearance:none;-webkit-appearance:none;
+  border:0;padding:0;margin:0;background:transparent;cursor:pointer;
+  font:inherit;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Voice concierge — the Siri-like call panel the orb expands into.
+   Dark gallery glass, brand-lit; audio-reactive waveform + orb halo.
+   ───────────────────────────────────────────────────────────────────────── */
+.vc-panel{
+  position:fixed;right:28px;bottom:28px;z-index:101;
+  width:min(360px, calc(100vw - 36px));
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding:20px 20px 18px;
+  border-radius:24px;color:var(--cream);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(240,136,59,.10), rgba(240,136,59,0) 60%),
+    linear-gradient(180deg, rgba(28,8,6,.92), rgba(14,4,3,.94));
+  border:1px solid rgba(246,197,122,.20);
+  backdrop-filter:blur(20px) saturate(1.2);
+  -webkit-backdrop-filter:blur(20px) saturate(1.2);
+  box-shadow:
+    0 30px 70px -20px rgba(0,0,0,.7),
+    0 0 0 1px rgba(244,237,226,.06),
+    0 0 60px -18px rgba(235,59,37,.4);
+  animation:vc-rise .5s var(--spring) both;
+}
+@keyframes vc-rise{
+  from{opacity:0;transform:translateY(18px) scale(.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.vc-head{
+  width:100%;display:flex;align-items:flex-start;justify-content:space-between;
+}
+.vc-id{display:flex;flex-direction:column;gap:2px;}
+.vc-name{
+  font-family:var(--fit);font-weight:700;font-size:21px;line-height:1;
+  letter-spacing:.01em;color:var(--cream);
+}
+.vc-role{
+  font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:600;
+  color:rgba(246,197,122,.78);
+}
+.vc-x{
+  appearance:none;border:0;cursor:pointer;
+  width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  color:rgba(244,237,226,.6);
+  background:rgba(244,237,226,.05);
+  border:1px solid rgba(244,237,226,.10);
+  transition:color .25s var(--ease),background .25s var(--ease);
+}
+.vc-x:hover{color:var(--cream);background:rgba(244,237,226,.12);}
+
+.vc-orb{
+  --vc-level:0;
+  position:relative;
+  width:clamp(112px,30vw,138px);height:clamp(112px,30vw,138px);
+  border-radius:50%;overflow:hidden;background:#0c0a08;
+  transform:scale(calc(1 + var(--vc-level) * .05));
+  box-shadow:
+    0 0 0 1px rgba(244,237,226,.08),
+    0 0 calc(26px + var(--vc-level) * 64px) calc(var(--vc-level) * 7px)
+      rgba(240,136,59, calc(.22 + var(--vc-level) * .5));
+  transition:transform .12s linear, box-shadow .12s linear;
+}
+.vc-orb::after{
+  content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(120% 90% at 32% 22%,rgba(255,255,255,.18),rgba(255,255,255,0) 44%);
+  mix-blend-mode:screen;
+}
+.vc-orb.is-busy{animation:vc-breathe 1.8s var(--ease) infinite;}
+@keyframes vc-breathe{
+  0%,100%{box-shadow:0 0 0 1px rgba(244,237,226,.08),0 0 24px 0 rgba(240,136,59,.28);}
+  50%{box-shadow:0 0 0 1px rgba(244,237,226,.08),0 0 46px 4px rgba(235,59,37,.5);}
+}
+
+.vc-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  color:rgba(246,210,184,.82);text-align:center;min-height:14px;
+}
+.vc-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--ink-mid);flex:none;
+}
+.vc-dot.is-live{background:var(--red);animation:vc-pulse 1.6s ease-in-out infinite;}
+@keyframes vc-pulse{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(235,59,37,.5);}
+  50%{opacity:.55;box-shadow:0 0 0 5px rgba(235,59,37,0);}
+}
+
+.vc-wave{
+  width:100%;height:38px;display:block;
+  opacity:0;transition:opacity .4s var(--ease);
+}
+.vc-wave.is-live{opacity:1;}
+
+.vc-caption{
+  margin:0;font-family:var(--serif);font-size:15px;line-height:1.5;
+  text-align:center;color:var(--cream);
+  max-height:6.6em;overflow:hidden;
+  animation:vc-fade .5s var(--ease) both;
+}
+.vc-caption-muted{color:var(--ink-mid);font-size:13.5px;}
+@keyframes vc-fade{from{opacity:0;}to{opacity:1;}}
+
+.vc-controls{display:flex;align-items:center;gap:12px;margin-top:2px;}
+.vc-mute{
+  appearance:none;cursor:pointer;
+  width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;color:var(--cream);
+  background:rgba(244,237,226,.05);
+  border:1px solid rgba(244,237,226,.16);
+  transition:background .25s var(--ease),border-color .25s var(--ease),opacity .25s var(--ease);
+}
+.vc-mute:hover{background:rgba(244,237,226,.12);}
+.vc-mute.is-muted{
+  color:#ffd9cf;background:rgba(235,59,37,.18);border-color:rgba(235,59,37,.5);
+}
+.vc-mute:disabled{opacity:.4;cursor:default;}
+.vc-end{
+  appearance:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  height:46px;padding:0 20px;border-radius:100px;border:0;
+  color:var(--cream);background:var(--red);
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 10px 26px -10px rgba(235,59,37,.7);
+  transition:background .25s var(--ease),transform .25s var(--ease);
+}
+.vc-end:hover{background:var(--red-deep);transform:translateY(-1px);}
+.vc-retry{
+  appearance:none;cursor:pointer;
+  height:46px;padding:0 22px;border-radius:100px;
+  color:var(--cream);background:rgba(244,237,226,.06);
+  border:1px solid rgba(246,197,122,.3);
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  transition:background .25s var(--ease);
+}
+.vc-retry:hover{background:rgba(244,237,226,.14);}
+
+@media (max-width:760px){
+  .vc-panel{right:12px;left:12px;bottom:14px;width:auto;}
+}
+@media (prefers-reduced-motion:reduce){
+  .vc-panel{animation:none;}
+  .vc-orb,.vc-orb.is-busy{transition:none;animation:none;transform:none;}
+  .vc-dot.is-live{animation:none;}
+  .vc-caption{animation:none;}
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   CROSS-DEVICE RESPONSIVENESS PASS
+   Appended last so these win by source order. Fills the gaps the audit found:
+   a real tablet tier, a sub-480 phone tier, 44px touch targets, dynamic-
+   viewport-safe full-height elements, and edge-overflow guards.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Full-height elements: use small-viewport-height so mobile browser chrome can't
+   cause 100vh overflow or a jump when the URL bar shows/hides. */
+.pin-sticky{height:100svh;}
+.case-page{min-height:100svh;}
+.case-hero{min-height:min(94svh,760px);}
+.splash-cursor canvas{width:100%;height:100svh;}
+
+/* Tablet (~768px): collapse the grids that were still 2-up / cramped between the
+   existing 760 and 1024 breakpoints. */
+@media (max-width:900px){
+  .cols-2{grid-template-columns:1fr;}
+  .testi-grid{grid-template-columns:1fr;gap:36px;}
+}
+
+/* Touch devices: comfortable ≥44px tap targets everywhere. */
+@media (pointer:coarse){
+  .nav-links a{padding:12px 0;}
+  .chip{padding:12px 18px;}
+  .roster-row{padding:22px 6px;}
+  .btn,.btn-ghost,.nav-cta,.fc-go,.rr-go{min-height:44px;display:inline-flex;align-items:center;}
+  /* The BorderGlow halo is a hover effect — useless on touch, and its bloom
+     extends past the viewport edge. Drop the layer entirely on touch (no
+     overflow, fewer compositor layers). */
+  .border-glow-card > .edge-light{display:none;}
+}
+
+/* Mobile menu: scroll on short / landscape phones instead of overlapping the
+   absolutely-pinned footer. */
+.mobile-menu{overflow-y:auto;}
+@media (max-height:640px){
+  .mobile-menu{justify-content:flex-start;padding-top:88px;}
+  .mobile-menu a{font-size:clamp(26px,7.5vw,40px);}
+  .mobile-menu .mm-foot{position:static;margin-top:28px;left:auto;right:auto;}
+}
+
+/* Small phones (≤480): the existing tiers stop scaling above this. */
+@media (max-width:480px){
+  :root{--gut:18px;}
+  .section{padding-top:56px;padding-bottom:56px;}
+  .footer{padding:64px 0 32px;}
+  .hb-wordmark .apar-logo{font-size:clamp(52px,16vw,72px);}
+  .bb-wordmark .apar-logo{font-size:clamp(48px,15vw,72px);filter:drop-shadow(0 8px 28px rgba(235,59,37,.22));}
+  .sector{min-height:340px;padding:26px;}
+  .hero-actions{flex-wrap:wrap;gap:14px;}
+  .page-wipe-label{font-size:clamp(34px,11vw,64px);white-space:normal;text-align:center;}
+}
+
+/* Edge-overflow guards on phones: keep decorative full-bleed elements from
+   poking past the single-column layout / viewport edge. */
+@media (max-width:560px){
+  .footer-mark{width:58%;bottom:-10%;opacity:.04;}
 }

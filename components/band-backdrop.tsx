@@ -7,6 +7,10 @@ import { PixelDome } from "./pixel-dome";
  * from thousands of tiny tiles (one curved beam, pale peach crown + vivid
  * orange band). Sits behind the band content (z-index 0) on a near-black base,
  * click-through; a soft shimmer follows the pointer.
+ *
+ * The pixel dome always renders (it's a signature brand element); its own
+ * IntersectionObserver parks the loop off-screen and it skips render while
+ * scrolling, so it stays light without being gated off any device.
  */
 export function BandBackdrop({ domeY = -0.15, intensity = 1 }: { domeY?: number; intensity?: number }) {
   return (

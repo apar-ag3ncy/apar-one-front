@@ -719,9 +719,11 @@ export const CASES: Record<string, CaseData> = {
     },
     fonts: FONTS_DEFAULT,
     sub: "Lab-grown diamonds and gems with a conscience — given a deep-indigo brand world that makes sustainable sparkle feel anything but a compromise.",
+    // Signi mark (white, transparent) auto-loads from public/logos/signi.png —
+    // white-on-indigo, no tint/invert needed.
     theme: {
-      bg: "#3A2F7A",
-      bg2: "#4A3D95",
+      bg: "#3c3073",
+      bg2: "#4D4090",
       ink: "#EFEDFB",
       soft: "rgba(239,237,251,.72)",
       accent: "#FFFFFF",
@@ -786,9 +788,11 @@ export const CASES: Record<string, CaseData> = {
     },
     fonts: FONTS_DEFAULT,
     sub: "A house of fine silver jewellery, rooted in heritage — given a deep, earthy brand world where every piece feels considered, sacred and quietly luxurious.",
+    // Real Tarava mark (reclining bull + "TARAVA — Moments in Silver"), auto-loaded
+    // from public/logos/tarava.png. Silver-on-maroon — no tint/invert needed.
     theme: {
-      bg: "#2A0E1E",
-      bg2: "#3A1628",
+      bg: "#520825",
+      bg2: "#6E0B33",
       ink: "#CAC1B6",
       soft: "rgba(202,193,182,.72)",
       accent: "#CAC1B6",

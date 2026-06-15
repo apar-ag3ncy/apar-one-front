@@ -26,7 +26,10 @@ export function SmoothScroll() {
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 1.6,
+      // touch is left NATIVE (syncTouch defaults false); keep the multiplier at
+      // 1 so finger-drag stays 1:1 — 1.6 made phone scroll feel fast/floaty.
+      touchMultiplier: 1,
+      gestureOrientation: "vertical",
     });
 
     lenis.on("scroll", () => {
@@ -37,6 +40,16 @@ export function SmoothScroll() {
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
+
+    // Keep Lenis's cached scroll limits in lockstep with the real document height.
+    // Videos, web fonts and images all change layout after first paint; without
+    // this, Lenis's limits drift and scroll feels like it "stops short" / rubber-
+    // bands near the bottom. Every ScrollTrigger.refresh now re-measures Lenis.
+    const onRefresh = () => lenis.resize();
+    ScrollTrigger.addEventListener("refresh", onRefresh);
+    const onLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", onLoad);
+    document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
 
     // same-page hash links glide via Lenis instead of jumping
     const onClick = (ev: MouseEvent) => {
@@ -53,6 +66,8 @@ export function SmoothScroll() {
 
     return () => {
       document.removeEventListener("click", onClick);
+      ScrollTrigger.removeEventListener("refresh", onRefresh);
+      window.removeEventListener("load", onLoad);
       gsap.ticker.remove(raf);
       lenis.destroy();
     };

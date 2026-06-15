@@ -11,6 +11,7 @@
     "test:mobile": "node e2e/mobile-menu-check.mjs"
   },
   "dependencies": {
+    "@elevenlabs/react": "^1.6.7",
     "@radix-ui/react-accordion": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -30,6 +31,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "playwright": "^1.60.0",
+    "potrace": "^2.1.8",
     "tailwindcss": "^4.0.6",
     "tw-animate-css": "^1.2.4",
     "typescript": "^5.7.3"

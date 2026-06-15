@@ -1,133 +1,249 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-// The leading "A" cycles through the SAME letter as Fit draws it — strictly the
-// three scripts Fit ships in (Latin, Devanagari, Kannada), each in its matching
-// Fit family.
-const SCRIPTS = [
-  { char: "A", cssVar: "--fit" }, // Latin — Fit (David Jonathan Ross)
-  { char: "अ", cssVar: "--fit-deva" }, // Devanagari — Fit Devanagari (Kimya Gandhi)
-  { char: "ಅ", cssVar: "--fit-kannada" }, // Kannada — Fit Kannada (Taresh Vohra)
-];
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
- * Animated APAR wordmark, set in **Fit** (DJR). The leading "A" swaps between
- * Fit's three scripts (Latin → Devanagari → Kannada) in place — no entrance
- * motion, the original logo's still feel.
+ * APAR wordmark — strictly **Fit** (David Jonathan Ross). The leading "A"
+ * transitions across the languages Fit ships in, every form rendered in REAL Fit:
  *
- * Each script's glyph has a different intrinsic height/width at a given
- * font-size, so the wordmark would visibly change size as it cycles. We fix that
- * by measuring the actual rendered ink height of each glyph and uniformly scaling
- * it to match "PAR"'s cap height, plus a shared slot width so "PAR" never shifts.
- * The measurement reads whatever font truly renders — the stand-ins today, real
- * Fit once the Adobe kit is connected — so it stays correct either way.
+ *  • Latin A and Devanagari अ are exact vector outlines traced from the master
+ *    artwork — always available, always genuine Fit, no font kit needed.
+ *  • The other Fit scripts (Cyrillic А, Greek Α, Hebrew א, Armenian Ա, Tamil அ,
+ *    Kannada ಅ, Arabic ا) render as live Fit text from their matching Fit family —
+ *    but ONLY join the cycle once document.fonts confirms that real Fit family is
+ *    loaded (via the agency's Adobe Fonts kit). They are NEVER shown in a fallback
+ *    font, so the mark is strictly Fit at all times.
  *
- * Respects prefers-reduced-motion (stays on Latin "A").
+ * Every leading glyph is normalized into one fixed slot — matched to the master
+ * cap-height, width-contained, baseline-aligned, and RIGHT-aligned to "PĀR" — so
+ * every script keeps the same gap to the word ("sticks" to it) and the transition
+ * never shifts "PĀR" or changes the wordmark's size/spacing.
+ * Resting/default + reduced-motion = अ (the master). fill:currentColor lets the
+ * one mark render white / cream / red / ink via CSS color.
  */
+const VIEWBOX = "28 21 519 288";
+const PAR_PATH = "M206.19 301.75L205.00 300.51L205.00 164.98L205.00 29.46L205.73 28.73L206.46 28.00L256.60 28.00C306.48 28.00 306.73 28.00 307.00 27.50C307.39 26.78 309.61 26.78 310.00 27.50C310.16 27.80 310.52 28.00 310.90 28.00C311.32 28.00 311.93 28.41 312.76 29.24L314.00 30.48L314.00 39.58L314.00 48.69L314.56 49.09L315.12 49.50L314.56 49.91C314.07 50.26 314.00 50.54 314.00 52.00C314.00 53.46 314.07 53.74 314.56 54.09L315.12 54.50L314.56 54.91L314.00 55.31L314.00 147.52C314.00 239.48 314.00 239.73 313.50 240.00C313.07 240.23 313.00 240.52 313.00 242.00C313.00 243.48 312.93 243.77 312.50 244.00C312.06 244.24 312.00 244.52 312.00 246.50C312.00 248.48 311.94 248.76 311.50 249.00C311.17 249.17 311.00 249.52 311.00 250.00C311.00 250.48 310.83 250.83 310.50 251.00C310.08 251.23 310.00 251.52 310.00 252.95C310.00 254.59 309.97 254.64 309.00 255.50C308.31 256.11 308.00 256.58 308.00 257.05C308.00 257.50 307.84 257.77 307.50 257.88C307.23 257.96 307.00 258.19 307.00 258.38C307.00 258.58 307.23 258.85 307.50 259.00C308.32 259.44 308.11 259.96 307.06 260.05C306.20 260.12 306.11 260.20 306.00 261.00C305.89 261.78 305.78 261.89 305.00 262.00C304.23 262.11 304.12 262.22 304.05 262.94C304.00 263.43 303.78 263.85 303.48 264.01C303.19 264.17 303.00 264.53 303.00 264.95C303.00 265.42 302.70 265.89 302.00 266.50C301.23 267.18 301.00 267.56 301.00 268.19C301.00 269.12 300.43 269.30 300.00 268.50C299.73 267.99 299.00 267.80 299.00 268.24C299.00 268.38 297.88 269.61 296.50 270.99C294.92 272.57 294.00 273.68 294.00 274.01C294.00 274.30 293.67 274.87 293.27 275.27C292.68 275.86 292.32 276.00 291.40 276.00C290.52 276.00 290.21 276.11 290.00 276.50C289.83 276.83 289.48 277.00 289.00 277.00C288.52 277.00 288.17 277.17 288.00 277.50C287.79 277.90 287.48 278.00 286.50 278.00C285.52 278.00 285.21 278.10 285.00 278.50C284.83 278.83 284.48 279.00 284.00 279.00C283.52 279.00 283.17 279.17 283.00 279.50C282.83 279.83 282.48 280.00 282.00 280.00C281.52 280.00 281.17 280.17 281.00 280.50C280.83 280.83 280.48 281.00 280.00 281.00C279.52 281.00 279.17 281.17 279.00 281.50C278.77 281.93 278.48 282.00 277.00 282.00C275.52 282.00 275.23 282.07 275.00 282.50C274.79 282.90 274.48 283.00 273.50 283.00C272.52 283.00 272.21 283.10 272.00 283.50C271.75 283.97 271.48 284.00 268.00 284.00C264.52 284.00 264.25 284.03 264.00 284.50C263.77 284.92 263.48 285.00 262.09 285.00C260.70 285.00 260.38 285.09 259.97 285.56L259.49 286.12L259.09 285.56C258.60 284.87 258.09 284.84 257.88 285.48C257.80 285.74 257.57 286.02 257.37 286.09C257.11 286.19 257.00 286.62 257.00 287.48C257.00 288.48 257.10 288.79 257.50 289.00C257.90 289.21 258.00 289.52 258.00 290.50C258.00 291.48 257.90 291.79 257.50 292.00C257.03 292.25 257.00 292.52 257.00 296.40L257.00 300.54L256.27 301.27C255.58 301.96 255.42 302.00 253.50 302.00C251.69 302.00 251.40 302.06 250.98 302.56L250.50 303.12L250.02 302.56L249.54 302.00L228.96 302.00C208.64 302.00 208.37 302.01 208.06 302.50C207.89 302.77 207.66 303.00 207.56 303.00C207.46 302.99 206.84 302.43 206.19 301.75ZM261.00 233.13C261.00 232.52 261.15 232.19 261.50 232.00C261.97 231.75 262.00 231.48 262.00 227.50C262.00 223.52 261.97 223.25 261.50 223.00C261.00 222.73 261.00 222.48 261.00 152.00L261.00 81.27L261.51 80.99C261.95 80.76 262.01 80.52 261.95 79.42C261.88 78.20 261.83 78.12 261.15 78.04C260.75 78.00 260.21 77.72 259.96 77.42L259.50 76.88L259.04 77.42C258.79 77.72 258.25 78.00 257.85 78.04L257.12 78.12L257.06 154.83L257.00 231.54L257.73 232.27C258.13 232.67 258.72 233.00 259.05 233.00C259.37 233.00 259.77 233.22 259.94 233.50C260.45 234.32 261.00 234.13 261.00 233.13ZM318.69 301.25C318.15 300.69 318.00 300.29 318.00 299.42C318.00 298.56 317.88 298.22 317.44 297.91L316.88 297.50L317.44 297.09L318.00 296.69L318.00 276.98C318.00 257.52 317.99 257.26 317.50 257.00C317.06 256.76 317.00 256.48 317.00 254.50C317.00 252.52 317.06 252.24 317.50 252.00C317.96 251.75 318.00 251.48 318.00 248.50C318.00 245.52 317.96 245.25 317.50 245.00C317.06 244.76 317.00 244.48 317.00 242.50C317.00 240.52 317.06 240.24 317.50 240.00C318.00 239.73 318.00 239.48 318.00 151.52L318.00 63.31L317.44 62.91L316.88 62.50L317.44 62.09C317.96 61.72 318.00 61.50 318.00 59.08C318.00 56.52 318.02 56.45 318.73 55.73L319.46 55.00L367.10 55.00C414.48 55.00 414.73 55.00 415.00 54.50C415.23 54.07 415.52 54.00 417.00 54.00C418.48 54.00 418.77 54.07 419.00 54.50C419.37 55.18 420.64 55.18 421.00 54.49C421.25 54.03 421.48 53.99 423.58 54.05L425.88 54.12L425.95 54.94C426.00 55.43 426.22 55.85 426.52 56.01C426.99 56.26 427.00 57.84 427.00 176.98L427.00 297.69L427.56 298.07L428.12 298.45L427.08 299.41C426.41 300.05 426.02 300.64 425.96 301.13L425.88 301.88L401.18 301.94L376.48 302.00L375.24 300.76C374.01 299.53 374.00 299.51 374.00 297.90C374.00 296.52 374.08 296.23 374.50 296.00C374.99 295.74 375.00 295.48 375.00 276.00C375.00 256.62 374.99 256.26 374.51 256.00C374.06 255.76 374.01 255.43 373.94 252.43L373.88 249.12L372.68 249.05C371.64 248.98 371.40 249.07 370.74 249.72L370.00 250.46L370.00 268.60C370.00 286.48 370.01 286.74 370.50 287.00C370.94 287.24 371.00 287.52 371.00 289.50C371.00 291.48 370.94 291.76 370.50 292.00C370.05 292.24 370.00 292.52 370.00 294.98C370.00 297.50 370.04 297.72 370.56 298.09L371.12 298.50L370.56 298.91C370.24 299.14 370.00 299.58 370.00 299.92C370.00 300.27 369.68 300.86 369.27 301.27L368.54 302.00L343.96 301.99L319.38 301.98L318.69 301.25ZM373.95 195.07C374.01 192.57 374.07 192.23 374.51 192.00C374.99 191.74 375.00 191.24 375.00 149.00C375.00 106.99 374.99 106.26 374.52 106.01C374.22 105.85 374.00 105.43 373.95 104.94C373.88 104.16 373.83 104.12 372.68 104.05C371.64 103.98 371.40 104.07 370.74 104.72L370.00 105.46L370.00 151.00L370.00 196.53L370.69 197.26C371.29 197.90 371.53 197.98 372.62 197.93L373.88 197.88L373.95 195.07ZM319.19 48.75L318.00 47.52L318.00 38.89C318.00 30.62 318.02 30.26 318.48 30.01C318.78 29.85 319.00 29.43 319.05 28.94L319.12 28.12L372.33 28.06L425.54 28.00L426.27 28.73L427.00 29.46L427.00 38.60C427.00 47.38 426.98 47.74 426.52 47.99C426.22 48.15 426.00 48.57 425.95 49.06L425.88 49.88L373.12 49.92L320.38 49.97L319.19 48.75ZM537.94 302.50C537.63 302.01 537.36 302.00 514.05 302.00L490.46 302.00L489.73 301.27C489.14 300.68 489.00 300.32 489.00 299.40C489.00 298.52 488.89 298.21 488.50 298.00C488.17 297.83 488.00 297.48 488.00 297.00C488.00 296.52 488.17 296.17 488.50 296.00C488.93 295.77 489.00 295.48 489.00 294.00C489.00 292.52 488.93 292.23 488.50 292.00C488.01 291.74 488.00 291.48 488.00 271.97C488.00 252.41 488.01 252.20 488.50 252.07C489.00 251.94 489.22 251.00 488.76 251.00C488.63 251.00 488.07 250.55 487.53 250.00C486.35 248.81 485.71 248.75 484.73 249.73L484.00 250.46L484.00 269.10C484.00 287.48 483.99 287.74 483.50 288.00C483.06 288.24 483.00 288.52 483.00 290.50C483.00 292.48 483.06 292.76 483.50 293.00C483.96 293.25 484.00 293.52 484.00 296.50C484.00 299.44 483.96 299.76 483.52 299.99C483.22 300.15 483.00 300.57 482.95 301.06L482.88 301.88L457.50 301.88L432.12 301.88L432.06 178.07C432.00 54.58 432.00 54.27 431.50 54.00C431.07 53.77 431.00 53.48 431.00 52.01C431.00 50.50 431.06 50.26 431.50 50.12C432.14 49.92 432.14 49.34 431.50 49.00C430.86 48.66 430.86 48.08 431.50 47.88C431.98 47.72 432.00 47.45 432.06 37.92L432.12 28.12L483.84 28.06L535.55 28.00L536.02 27.44L536.50 26.88L536.98 27.44C537.24 27.75 537.70 28.00 538.00 28.00C538.29 28.00 538.87 28.33 539.27 28.73L540.00 29.46L540.00 110.60C540.00 191.48 540.00 191.73 539.50 192.00C539.17 192.17 539.00 192.52 539.00 193.00C539.00 193.48 538.83 193.83 538.50 194.00C538.06 194.24 538.00 194.52 538.00 196.50C538.00 198.48 537.94 198.76 537.50 199.00C537.19 199.17 537.00 199.53 537.00 199.95C537.00 200.42 536.70 200.89 536.00 201.50C535.11 202.28 535.00 202.50 535.00 203.55C535.00 204.50 534.91 204.75 534.50 204.88C534.23 204.96 534.00 205.19 534.00 205.38C534.00 205.58 534.23 205.85 534.50 206.00C534.99 206.26 535.21 207.00 534.80 207.00C534.27 207.00 533.00 208.46 533.00 209.08C533.00 209.47 532.81 209.84 532.52 209.99C532.22 210.15 532.00 210.57 531.95 211.06C531.88 211.85 531.84 211.88 530.50 212.00C529.16 212.12 529.12 212.15 529.05 212.94C529.00 213.43 528.78 213.85 528.48 214.01C527.77 214.39 527.88 215.42 528.73 216.27L529.46 217.00L533.99 217.00L538.52 217.00L540.31 218.79C542.08 220.56 542.09 220.59 541.55 220.95C541.11 221.24 541.00 221.55 541.00 222.52C541.00 223.48 540.89 223.79 540.50 224.00C540.00 224.27 540.00 224.52 540.00 259.98L540.00 295.69L540.56 296.09L541.12 296.50L540.56 296.91C540.06 297.27 540.00 297.52 540.00 299.43C540.00 301.39 539.95 301.60 539.31 302.27C538.50 303.13 538.35 303.16 537.94 302.50ZM486.93 197.50C487.00 197.22 487.27 197.00 487.53 197.00C487.99 197.00 488.00 195.61 488.00 137.73L488.00 78.46L487.27 77.73C486.34 76.81 485.66 76.81 484.73 77.73L484.00 78.46L484.00 137.50L484.00 196.53L484.69 197.25C485.53 198.13 486.73 198.27 486.93 197.50Z";
+
+// Leading slot, taken from the master अ outline (right edge 201, baseline 303,
+// cap-height 276). Every leading glyph is RIGHT-aligned to this edge, so it sits
+// the same small gap from "PĀR" — it "sticks" to the word at a constant cap-height.
+// No glyph floats off or resizes the wordmark as the script cycles.
+const SLOT = { right: 201, baseline: 303, capH: 276, maxW: 176 };
+
+// Normalize any leading glyph into the slot: match cap-height (capped so a wide
+// glyph can't overlap PĀR) and right-align to the slot edge + baseline.
+function fitTransform(bb: { x: number; y: number; width: number; height: number }): string | null {
+  if (!bb.width || !bb.height) return null;
+  const scale = Math.min(SLOT.capH / bb.height, SLOT.maxW / bb.width);
+  const tx = SLOT.right - (bb.x + bb.width) * scale;
+  const ty = SLOT.baseline - (bb.y + bb.height) * scale;
+  return `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${scale.toFixed(4)})`;
+}
+
+// Intrinsic bboxes of the two baked Fit outlines — used to right-align them on the
+// first paint (no flash) before the live measure pass refines every glyph.
+const VECTOR_BOX: Record<string, { x: number; y: number; width: number; height: number }> = {
+  deva: { x: 33.89, y: 27, width: 167.11, height: 276 },
+  latin: { x: 55.63, y: 27, width: 123.86, height: 276.12 },
+  armenian: { x: 6, y: 6, width: 70, height: 170 },
+  cjk: { x: 5, y: 5, width: 109, height: 151 },
+  tamil: { x: 10, y: 10, width: 135, height: 151 },
+};
+
+type Script = {
+  key: string; lang: string; label: string;
+  vector?: string; // baked Fit outline (always available)
+  char?: string; // live glyph (needs real Fit loaded)
+  cssVar?: string; // CSS var carrying the Fit family for rendering
+  fitName?: string; // exact Fit family name used to confirm real Fit is loaded
+  style?: CSSProperties; // per-script tuning (e.g. weight/width to match Fit)
+};
+
+// Order = cycle order. Index 0 (Devanagari अ) is the resting/default state (the master).
+const SCRIPTS: Script[] = [
+  { key: "deva", lang: "Devanagari", label: "अ", vector: "M197.94 302.50C197.63 302.01 197.36 302.00 174.05 302.00L150.46 302.00L149.73 301.27L149.00 300.54L149.00 238.40C149.00 176.52 149.00 176.27 148.50 176.00C148.20 175.84 148.00 175.48 148.00 175.10C148.00 174.32 146.75 173.00 146.00 173.00C145.70 173.00 145.13 173.33 144.73 173.73L144.00 174.46L144.00 237.50L144.00 300.54L143.27 301.27L142.54 302.00L110.40 302.00C78.52 302.00 78.27 302.00 78.00 301.50C77.83 301.17 77.48 301.00 77.00 301.00C76.52 301.00 76.17 301.17 76.00 301.50C75.83 301.83 75.48 302.00 75.00 302.00C74.52 302.00 74.17 301.83 74.00 301.50C73.77 301.07 73.48 301.00 72.00 301.00C70.52 301.00 70.23 300.93 70.00 300.50C69.77 300.07 69.48 300.00 68.00 300.00C66.52 300.00 66.23 299.93 66.00 299.50C65.83 299.17 65.48 299.00 65.00 299.00C64.52 299.00 64.17 298.83 64.00 298.50C63.83 298.17 63.48 298.00 63.00 298.00C62.52 298.00 62.17 297.83 62.00 297.50C61.79 297.11 61.48 297.00 60.55 297.00C59.49 297.00 59.29 296.89 58.50 296.00C57.89 295.30 57.42 295.00 56.95 295.00C56.53 295.00 56.17 294.81 56.00 294.50C55.84 294.20 55.48 294.00 55.10 294.00C54.63 294.00 53.83 293.36 52.00 291.50C50.40 289.88 49.35 289.00 49.00 289.00C48.26 289.00 47.06 287.74 46.96 286.85C46.89 286.23 46.74 286.11 46.00 286.00C45.23 285.89 45.12 285.78 45.05 285.06C45.00 284.58 44.78 284.15 44.50 284.00C44.22 283.85 44.00 283.42 43.95 282.94C43.88 282.22 43.77 282.11 43.00 282.00C42.14 281.88 42.12 281.85 42.00 280.50C41.88 279.15 41.86 279.12 41.00 279.00L40.12 278.88L40.05 277.07C39.99 275.57 39.89 275.21 39.49 274.99C39.17 274.83 39.00 274.47 39.00 274.00C39.00 273.52 38.83 273.17 38.50 273.00C38.07 272.77 38.00 272.48 38.00 271.00C38.00 269.52 37.93 269.23 37.50 269.00C37.07 268.77 37.00 268.48 37.00 267.00C37.00 265.52 36.93 265.23 36.50 265.00C36.10 264.79 36.00 264.48 36.00 263.50C36.00 262.52 35.90 262.21 35.50 262.00C35.05 261.76 35.00 261.48 35.00 259.00C35.00 256.52 35.05 256.24 35.50 256.00C36.00 255.73 36.00 255.48 36.00 215.60L36.00 175.46L36.73 174.73L37.46 174.00L61.49 174.00L85.52 174.00L86.76 175.24L88.00 176.47L88.06 214.17L88.12 251.88L89.50 251.88C90.87 251.88 90.88 251.87 90.95 251.06C91.00 250.57 91.22 250.15 91.52 249.99C91.99 249.74 92.00 249.05 92.00 210.60L92.00 171.46L91.27 170.73L90.54 170.00L63.90 170.00C37.81 170.00 37.26 169.99 37.01 169.52C36.85 169.22 36.43 169.00 35.94 168.95L35.12 168.88L35.05 167.04C34.98 165.37 35.02 165.20 35.49 165.08C36.15 164.90 36.15 164.10 35.50 163.93C35.06 163.81 35.00 163.59 35.00 162.03C35.00 160.52 35.07 160.23 35.50 160.00C35.99 159.74 36.00 159.48 36.00 143.50C36.00 127.52 35.99 127.26 35.50 127.00C35.11 126.79 35.00 126.48 35.00 125.52C35.00 124.55 34.89 124.24 34.44 123.94L33.89 123.57L34.68 122.79C35.14 122.32 35.72 122.00 36.10 122.00C36.48 122.00 36.84 121.80 37.00 121.50C37.26 121.01 37.52 121.00 62.41 121.00L87.54 121.00L88.02 120.44L88.50 119.88L88.99 120.45C89.33 120.86 89.69 121.01 90.18 120.95C90.76 120.89 90.89 120.74 90.95 120.06C91.00 119.57 91.22 119.15 91.52 118.99C91.99 118.74 92.00 118.31 91.94 98.93L91.88 79.12L90.64 79.05C89.76 78.99 89.30 78.83 89.06 78.48C88.87 78.22 88.56 78.00 88.36 78.00C88.05 78.00 88.00 80.51 88.00 96.26L88.00 114.52L86.76 115.76L85.52 117.00L61.40 117.00C37.79 117.00 37.26 116.99 37.01 116.52C36.85 116.22 36.43 116.00 35.94 115.95C35.23 115.88 35.12 115.77 35.05 115.08C34.99 114.48 35.10 114.21 35.49 114.01L36.00 113.73L36.00 71.60L36.00 29.46L36.73 28.73L37.46 28.00L90.00 28.00L142.54 28.00L143.27 28.73L144.00 29.46L144.00 65.60C144.00 101.48 144.00 101.73 143.50 102.00C143.10 102.21 143.00 102.52 143.00 103.50C143.00 104.48 142.90 104.79 142.50 105.00C142.17 105.17 142.00 105.52 142.00 106.00C142.00 106.48 141.83 106.83 141.50 107.00C141.06 107.24 141.00 107.52 141.00 109.41L141.00 111.55L139.50 113.00C138.50 113.96 138.00 114.64 138.00 115.04C138.00 115.41 137.63 115.95 137.00 116.50C135.87 117.49 135.66 118.55 136.48 118.99C136.78 119.15 137.00 119.57 137.05 120.06L137.12 120.88L140.93 120.94C144.52 121.01 144.74 120.99 145.00 120.51C145.16 120.20 145.52 120.00 145.90 120.00C146.27 120.00 146.84 119.69 147.27 119.27C148.00 118.54 148.00 118.54 148.00 115.40C148.00 112.52 148.04 112.25 148.50 112.00C149.00 111.73 149.00 111.48 149.00 71.52L149.00 31.31L148.45 30.94C147.90 30.58 147.90 30.57 149.19 29.29L150.48 28.00L172.10 28.00C193.48 28.00 193.74 27.99 194.00 27.50C194.23 27.08 194.52 27.00 195.89 27.00L197.52 27.00L199.26 28.74L201.00 30.48L201.00 165.11C201.00 299.48 201.00 299.73 200.50 300.00C200.20 300.16 200.00 300.52 200.00 300.91C200.00 301.49 198.88 303.00 198.44 303.00C198.34 303.00 198.11 302.77 197.94 302.50Z" },
+  { key: "latin", lang: "Latin", label: "A", vector: "M57.64 302.28C57.04 301.65 56.88 301.21 56.88 300.24C56.88 299.28 56.74 298.91 56.25 298.55L55.63 298.10L56.25 297.65L56.88 297.20L56.88 275.26C56.88 253.59 56.87 253.31 56.32 253.01C55.83 252.75 55.77 252.43 55.77 250.23C55.77 248.03 55.83 247.71 56.32 247.45C56.83 247.17 56.88 246.86 56.88 243.55C56.88 240.23 56.83 239.93 56.32 239.65C55.83 239.39 55.77 239.07 55.77 236.87C55.77 234.67 55.83 234.35 56.32 234.09C56.88 233.79 56.88 233.50 56.88 135.58L56.88 37.37L56.25 36.92L55.63 36.46L56.25 36.01C56.83 35.59 56.88 35.35 56.88 32.65C56.88 29.81 56.90 29.72 57.69 28.93L58.51 28.11L111.54 28.11C164.29 28.11 164.58 28.11 164.87 27.56C165.13 27.08 165.46 27.00 167.10 27.00C168.75 27.00 169.07 27.08 169.33 27.56C169.73 28.32 171.15 28.31 171.56 27.55C171.84 27.03 172.09 26.99 174.42 27.06L176.98 27.14L177.07 28.04C177.12 28.59 177.37 29.06 177.70 29.24C178.23 29.52 178.23 31.27 178.23 163.92L178.23 298.31L178.86 298.74L179.49 299.16L178.33 300.23C177.57 300.94 177.14 301.60 177.08 302.14L176.98 302.97L149.48 303.05L121.99 303.12L120.61 301.74C119.23 300.36 119.23 300.35 119.23 298.54C119.23 297.02 119.31 296.68 119.78 296.43C120.33 296.14 120.34 295.85 120.34 274.17C120.34 252.59 120.33 252.19 119.79 251.90C119.29 251.64 119.24 251.26 119.17 247.93L119.09 244.24L117.76 244.16C116.60 244.09 116.33 244.18 115.60 244.90L114.77 245.73L114.77 265.92C114.77 285.83 114.78 286.12 115.33 286.41C115.82 286.68 115.89 287.00 115.89 289.20C115.89 291.40 115.82 291.72 115.33 291.98C114.83 292.25 114.77 292.56 114.77 295.30C114.77 298.11 114.82 298.34 115.40 298.77L116.03 299.22L115.40 299.67C115.04 299.93 114.77 300.41 114.77 300.80C114.77 301.19 114.42 301.84 113.96 302.30L113.15 303.11L85.78 303.10L58.41 303.09L57.64 302.28ZM119.17 184.06C119.24 181.28 119.31 180.90 119.79 180.64C120.33 180.35 120.34 179.80 120.34 132.77C120.34 86.00 120.33 85.19 119.80 84.90C119.48 84.73 119.23 84.26 119.17 83.71C119.09 82.84 119.03 82.80 117.76 82.72C116.60 82.65 116.33 82.74 115.60 83.47L114.77 84.30L114.77 134.99L114.77 185.69L115.54 186.50C116.21 187.21 116.48 187.31 117.70 187.25L119.09 187.18L119.17 184.06Z" },
+  { key: "cyrillic", lang: "Cyrillic", label: "А", char: "А", cssVar: "--fit", fitName: "fit-vf" },
+  { key: "greek", lang: "Greek", label: "Α", char: "Α", cssVar: "--fit", fitName: "fit-vf" },
+  { key: "hebrew", lang: "Hebrew", label: "א", char: "א", cssVar: "--fit-hebrew", fitName: "fit-hebrew-vf" },
+  { key: "tamil", lang: "Tamil", label: "அ", char: "அ", cssVar: "--fit-tamil", fitName: "fit-tamil-vf", style: { fontVariationSettings: "'wdth' 482" }, vector: "M 36.600 12.473 C 29.340 15.458, 24.848 19.684, 21.816 26.382 C 19.534 31.425, 19.500 32.023, 19.500 67 L 19.500 102.500 50 102.500 L 80.500 102.500 80.764 69.750 C 80.930 49.064, 81.391 37, 82.014 37 C 82.643 37, 83 49.314, 83 71 L 83 105 46.500 105 L 10 105 10 133 L 10 161 49.318 161 C 93.424 161, 95.426 160.751, 102.930 154.328 C 107.526 150.394, 111.974 142.296, 111.990 137.832 C 112.002 134.536, 112.923 132, 114.107 132 C 114.598 132, 115 138.525, 115 146.500 L 115 161 130 161 L 145 161 145 85.500 L 145 10 130 10 L 115 10 115 57.500 C 115 88.500, 114.653 105, 114 105 C 113.347 105, 113 88.500, 113 57.500 L 113 10 77.750 10.024 C 42.752 10.047, 42.458 10.065, 36.600 12.473 M 49 56.500 C 49 68.833, 49.368 76, 50 76 C 50.632 76, 51 68.833, 51 56.500 C 51 44.167, 50.632 37, 50 37 C 49.368 37, 49 44.167, 49 56.500 M 41 133 C 41 133.635, 48.667 134, 62 134 C 75.333 134, 83 133.635, 83 133 C 83 132.365, 75.333 132, 62 132 C 48.667 132, 41 132.365, 41 133" },
+  // Armenian Ayb — traced from the real Fit-Armenian wordmark screenshot, so the
+  // leading A cycles in GENUINE Fit shapes (not a hand approximation). char/style
+  // retained to swap to the live -vf font once the Adobe kit is connected.
+  { key: "armenian", lang: "Armenian", label: "Ա", char: "Ա", cssVar: "--fit-armenian", fitName: "fit-armenian-vf", style: { fontVariationSettings: "'wdth' 500" }, vector: "M 18.544 7.589 C 13.470 9.447, 10.205 12.484, 7.890 17.500 C 6.295 20.955, 6.041 24.190, 6.022 41.250 L 6 61 18.500 61 L 31 61 31 109 L 31 157 28.500 157 L 26 157 26 111 L 26 65 16 65 L 6 65 6 120.500 L 6 176 32.134 176 C 49.720 176, 59.592 175.603, 62.315 174.787 C 67.704 173.173, 73.501 167.505, 74.884 162.500 C 75.632 159.791, 75.991 139.543, 75.994 99.750 L 76 41 63.500 41 L 51 41 51 23.500 L 51 6 36.750 6.070 C 26.953 6.119, 21.264 6.594, 18.544 7.589 M 26.667 25.667 C 26.300 26.033, 26 29.633, 26 33.667 C 26 40.822, 26.061 41, 28.500 41 C 30.958 41, 31 40.867, 31 33 C 31 25.909, 30.792 25, 29.167 25 C 28.158 25, 27.033 25.300, 26.667 25.667 M 51 109 C 51 156.333, 51.028 157, 53 157 C 54.972 157, 55 156.333, 55 109 C 55 61.667, 54.972 61, 53 61 C 51.028 61, 51 61.667, 51 109" },
+  { key: "arabic", lang: "Arabic", label: "ا", char: "ا", cssVar: "--fit-arabic", fitName: "fit-arabic-vf", style: { fontVariationSettings: "'wdth' 482" } },
+  // Third screenshot: a blocky CJK-style script (exact language unconfirmed) —
+  // leading glyph traced from the image. Rename `lang` if you know the script.
+  { key: "cjk", lang: "CJK", label: "字", vector: "M 5 28.500 L 5 52 23.500 52 C 39.278 52, 42 52.221, 42 53.500 C 42 54.779, 39.278 55, 23.500 55 L 5 55 5 65 L 5 75 41 75 L 77 75 77 40 L 77 5 41 5 L 5 5 5 28.500 M 80 59.809 C 80 98.539, 79.773 105.918, 78.532 107.559 C 77.220 109.293, 77.060 107.817, 77.032 93.750 L 77 78 59.526 78 L 42.052 78 41.776 93.002 C 41.408 113.028, 39.592 113.028, 39.224 93.002 L 38.948 78 21.974 78 L 5 78 5 104.500 L 5 131 26.532 131 C 49.446 131, 52.770 130.444, 57.736 125.778 L 60 123.651 60 127.383 L 60 131.114 80.327 130.807 C 100.600 130.501, 100.664 130.493, 104.807 127.749 C 107.091 126.236, 109.982 123.086, 111.230 120.749 C 113.493 116.512, 113.501 116.353, 113.785 65.250 L 114.069 14 97.035 14 L 80 14 80 59.809 M 39 29.500 C 39 32.833, 39.389 34, 40.500 34 C 41.611 34, 42 32.833, 42 29.500 C 42 26.167, 41.611 25, 40.500 25 C 39.389 25, 39 26.167, 39 29.500 M 42 145 L 42 156 59.500 156 L 77 156 77 145 L 77 134 59.500 134 L 42 134 42 145" },
+  // Kannada ಅ & Tamil அ are curvy/complex — a hand-blocked version would misread,
+  // so they stay genuine-Fit-only (appear when the kit loads), no fake stand-in. vector: "M 10 85.500 L 10 161 61.318 161 C 118.340 161, 119.239 160.911, 126.652 154.566 C 128.944 152.604, 131.760 148.778, 133.108 145.794 L 135.500 140.500 135.784 75.250 L 136.069 10 105.034 10 L 74 10 74 55.975 L 74 101.949 58.250 102.225 L 42.500 102.500 42.221 115.750 L 41.942 129 72.971 129 L 104 129 104 84.500 C 104 55.500, 104.348 40, 105 40 C 105.652 40, 106 55.833, 106 85.500 L 106 131 73 131 L 40 131 40 115.525 L 40 100.051 55.750 99.775 L 71.500 99.500 71.760 54.750 L 72.021 10 41.010 10 L 10 10 10 85.500 M 40 56.500 C 40 66.833, 40.374 73, 41 73 C 41.626 73, 42 66.833, 42 56.500 C 42 46.167, 41.626 40, 41 40 C 40.374 40, 40 46.167, 40 56.500" },
+];
+
 export function AparLogo({ onDark = false }: { onDark?: boolean }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [active, setActive] = useState<string[]>(["deva", "latin"]);
+  const [tf, setTf] = useState<Record<string, string>>(() => {
+    const seed: Record<string, string> = {};
+    for (const k of Object.keys(VECTOR_BOX)) {
+      const t = fitTransform(VECTOR_BOX[k]);
+      if (t) seed[k] = t;
+    }
+    return seed;
+  });
   const [i, setI] = useState(0);
-  const [scale, setScale] = useState<number[]>([1, 1, 1]); // per-script cap-height scale
-  const [slot, setSlot] = useState(1); // shared leading-A slot width, in em
-  const ref = useRef<HTMLSpanElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ---- cycle the leading glyph (swaps in place; no scale/translate) ----
+  // Detect which live Fit scripts are GENUINELY loaded. NOTE: document.fonts.check()
+  // is useless here — it returns true for an undeclared family (treats it as an
+  // available system font), which would let a script render in a fallback font.
+  // Instead we look for a real, *loaded* @font-face whose family matches — so with
+  // no Adobe kit nothing live qualifies and the mark stays strictly Fit (vectors).
+  useEffect(() => {
+    let alive = true;
+    const detect = async () => {
+      if (!alive || !document.fonts) return;
+      // Ask the browser to load any declared Fit faces (no-op if none are declared).
+      await Promise.all(
+        SCRIPTS.filter((s) => !s.vector).map((s) =>
+          document.fonts.load(`64px "${s.fitName}"`, s.char || "A").catch(() => {})
+        )
+      );
+      if (!alive) return;
+      const loaded = new Set<string>();
+      document.fonts.forEach((ff) => {
+        if (ff.status === "loaded")
+          loaded.add(ff.family.replace(/^["']|["']$/g, "").toLowerCase());
+      });
+      // Baked vectors (deva, latin) are always in the cycle; every other script
+      // joins ONLY once its real Fit family is actually loaded (via the Adobe
+      // kit) — never in a clashing fallback font. Additional scripts become
+      // always-on once their glyph is baked as a vector (see scripts/trace-glyph).
+      const ok = SCRIPTS.filter(
+        (s) => s.vector || (s.fitName && loaded.has(s.fitName.toLowerCase()))
+      ).map((s) => s.key);
+      setActive((prev) => (prev.join() === ok.join() ? prev : ok));
+    };
+    detect();
+    document.fonts?.ready.then(detect);
+    document.fonts?.addEventListener?.("loadingdone", detect);
+    const t = setTimeout(detect, 1500);
+    return () => {
+      alive = false;
+      clearTimeout(t);
+      document.fonts?.removeEventListener?.("loadingdone", detect);
+    };
+  }, []);
+
+  // Normalize each live glyph into the fixed slot (match cap-height, contain width).
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    let alive = true;
+    const measure = () => {
+      if (!alive) return;
+      const next: Record<string, string> = {};
+      SCRIPTS.forEach((s) => {
+        if (!active.includes(s.key)) return;
+        const el = svg.querySelector<SVGGraphicsElement>(`[data-k="${s.key}"]`);
+        if (!el) return;
+        let bb: DOMRect;
+        try {
+          bb = el.getBBox(); // intrinsic box — ignores the element's own transform
+        } catch {
+          return;
+        }
+        const t = fitTransform(bb);
+        if (t) next[s.key] = t;
+      });
+      if (Object.keys(next).length) setTf((prev) => ({ ...prev, ...next }));
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    const t = setTimeout(measure, 1600);
+    return () => {
+      alive = false;
+      clearTimeout(t);
+    };
+  }, [active]);
+
+  // Cross-fade through the available scripts, only while on screen.
   useEffect(() => {
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    const el = ref.current;
-    if (!el) return;
-
+    if (active.length < 2) return;
+    const svg = svgRef.current;
+    if (!svg) return;
     const start = Date.now();
-    let idx = 0;
     const tick = () => {
-      idx = (idx + 1) % SCRIPTS.length;
-      setI(idx);
-      const elapsed = Date.now() - start;
-      // fast on open (~1.8s flurry), then slow/calm at ~0.75 of a beat
-      const delay = elapsed < 1800 ? 80 : 1300;
+      setI((x) => (x + 1) % active.length);
+      const delay = Date.now() - start < 2000 ? 950 : 2400;
       timer.current = setTimeout(tick, delay);
     };
-    // Only cycle while the wordmark is actually on screen.
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        if (!timer.current) timer.current = setTimeout(tick, 80);
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!timer.current) timer.current = setTimeout(tick, 800);
       } else if (timer.current) {
         clearTimeout(timer.current);
         timer.current = null;
       }
     });
-    io.observe(el);
+    io.observe(svg);
     return () => {
       io.disconnect();
       if (timer.current) clearTimeout(timer.current);
       timer.current = null;
     };
-  }, []);
+  }, [active]);
 
-  // ---- normalize each script's glyph to PAR's cap height (kills size jump) ----
-  useEffect(() => {
-    const ctx = document.createElement("canvas").getContext("2d");
-    if (!ctx) return;
-    const root = getComputedStyle(document.documentElement);
-    // Resolve a CSS custom property to a concrete font stack canvas can parse
-    // (recursively expands nested var(), e.g. --fit -> ... -> var(--sans)).
-    const resolveVars = (val: string) => {
-      let v = val.trim();
-      let guard = 0;
-      while (v.includes("var(") && guard++ < 6) {
-        v = v.replace(/var\(\s*(--[\w-]+)\s*\)/g, (_, name) => root.getPropertyValue(name).trim());
-      }
-      return v;
-    };
-    const PX = 200;
-    const measure = (text: string, cssVar: string) => {
-      ctx.font = `900 ${PX}px ${resolveVars(root.getPropertyValue(cssVar))}`;
-      const m = ctx.measureText(text);
-      return { asc: m.actualBoundingBoxAscent || 0, w: m.width || 0 };
-    };
-    let alive = true;
-    const normalize = () => {
-      if (!alive) return;
-      const capRef = measure("P", "--fit").asc; // the cap height of "PAR"
-      if (!capRef) return;
-      const data = SCRIPTS.map((s) => {
-        const { asc, w } = measure(s.char, s.cssVar);
-        const sc = asc > 0 ? capRef / asc : 1;
-        return { sc, wEm: (w / PX) * sc };
-      });
-      setScale(data.map((d) => +d.sc.toFixed(3)));
-      setSlot(+(Math.max(...data.map((d) => d.wEm)) + 0.06).toFixed(3));
-    };
-    document.fonts?.ready.then(normalize);
-    const t = setTimeout(normalize, 1200);
-    document.fonts?.addEventListener?.("loadingdone", normalize);
-    return () => {
-      alive = false;
-      clearTimeout(t);
-      document.fonts?.removeEventListener?.("loadingdone", normalize);
-    };
-  }, []);
+  const activeScripts = SCRIPTS.filter((s) => active.includes(s.key));
+  const currentKey = activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
 
   return (
-    <span
-      ref={ref}
-      className={`apar-logo${onDark ? " on-dark" : ""}`}
-      aria-label="APAR"
-      role="img"
-      style={{ ["--apar-a-slot"]: slot } as React.CSSProperties}
-    >
-      <span className="apar-a" aria-hidden="true">
-        <span
-          className="apar-a-glyph"
-          style={{ fontFamily: `var(${SCRIPTS[i].cssVar})`, fontSize: `${scale[i]}em` }}
-        >
-          {SCRIPTS[i].char}
-        </span>
-      </span>
-      <span className="apar-rest" aria-hidden="true">
-        PAR
-      </span>
+    <span className={`apar-logo${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">
+      <svg
+        ref={svgRef}
+        className="apar-logo-svg"
+        viewBox={VIEWBOX}
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+        focusable="false"
+      >
+        {SCRIPTS.map((s) => {
+          const isActive = active.includes(s.key);
+          const visible = isActive && s.key === currentKey;
+          if (s.vector) {
+            return (
+              <path
+                key={s.key}
+                data-k={s.key}
+                className="apar-lead"
+                d={s.vector}
+                fill="currentColor"
+                fillRule="evenodd"
+                transform={tf[s.key]}
+                style={{ opacity: visible ? 1 : 0 }}
+              />
+            );
+          }
+          if (!isActive) return null;
+          return (
+            <text
+              key={s.key}
+              data-k={s.key}
+              className="apar-lead"
+              x="0"
+              y="0"
+              fontSize="200"
+              fill="currentColor"
+              style={{ fontFamily: `var(${s.cssVar})`, ...s.style, opacity: visible ? 1 : 0 }}
+              transform={tf[s.key] || "translate(-9999 0)"}
+            >
+              {s.char}
+            </text>
+          );
+        })}
+        <path d={PAR_PATH} fill="currentColor" fillRule="evenodd" />
+      </svg>
     </span>
   );
 }

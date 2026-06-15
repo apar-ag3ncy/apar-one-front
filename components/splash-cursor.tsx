@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef } from "react";
+import { isLowPowerDevice } from "@/lib/device";
 
 /**
  * SplashCursor — GPU fluid-simulation cursor trail (adapted from React Bits /
@@ -48,6 +49,7 @@ export function SplashCursor({
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (matchMedia("(pointer: coarse)").matches) return;
+    if (isLowPowerDevice()) return; // skip the fluid sim on weak GPUs
     const canvas = canvasRef.current;
     if (!canvas) return;
 

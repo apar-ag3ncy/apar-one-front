@@ -8,6 +8,7 @@ import Strands from "./strands";
  * light (React Bits "Strands", ogl/WebGL) in the brand's warm palette
  * (red -> orange -> gold) so the band feels related but distinct. Sits behind
  * the band content (z-index 0) on the same near-black base; click-through.
+ * Always renders (signature element); its loop parks off-screen / during scroll.
  */
 export function StrandsBackdrop() {
   return (
