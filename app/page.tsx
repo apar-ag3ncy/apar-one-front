@@ -13,7 +13,7 @@ import { CountUp } from "@/components/count-up";
 import { ImageSlot } from "@/components/image-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
-import { StrandsBackdrop } from "@/components/strands-backdrop";
+import { SideRaysBackdrop } from "@/components/side-rays-backdrop";
 
 const SERVICES = [
   { num: "01", name: "Branding", desc: "Identity, positioning & brand systems that hold up everywhere." },
@@ -147,7 +147,7 @@ export default function Home() {
 
       {/* ===== STATS ===== */}
       <section className="stats-band" data-screen-label="Home — Stats">
-        <StrandsBackdrop />
+        <SideRaysBackdrop />
         <div className="wrap">
           <div className="cols cols-3 stats-inner">
             <Reveal className="stat" i={0}>

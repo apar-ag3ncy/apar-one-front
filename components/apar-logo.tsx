@@ -27,17 +27,25 @@ const PAR_PATH = "M206.19 301.75L205.00 300.51L205.00 164.98L205.00 29.46L205.73
 // Leading slot, taken from the master अ outline (right edge 201, baseline 303,
 // cap-height 276). Every leading glyph is RIGHT-aligned to this edge, so it sits
 // the same small gap from "PĀR" — it "sticks" to the word at a constant cap-height.
-// No glyph floats off or resizes the wordmark as the script cycles.
-const SLOT = { right: 201, baseline: 303, capH: 276, maxW: 176 };
+// maxW = 173 = (right − viewBox left 28): the widest a glyph may grow leftward
+// before it would clip the viewBox. No glyph floats off or resizes the wordmark.
+const SLOT = { right: 201, baseline: 303, capH: 276, maxW: 173 };
 
-// Normalize any leading glyph into the slot: match cap-height (capped so a wide
-// glyph can't overlap PĀR) and right-align to the slot edge + baseline.
+// Normalize any leading glyph into the slot so its height ALWAYS equals the PĀR
+// cap-height — the leading "A" matches the rest of the wordmark in every script.
+// Height drives a single vertical scale (sy); width gets the same scale unless the
+// glyph is too wide to fit beside PĀR, in which case it is condensed horizontally
+// (sx < sy). Fit is an ultra-condensed display face, so condensing a wide traced
+// glyph (e.g. Tamil/CJK captured at Fit's default width) pulls it TOWARD the
+// wordmark's look, not away from it. Narrow glyphs (Latin अ, Armenian…) keep
+// sx === sy, so they are never distorted. Right-aligned + baseline-aligned.
 function fitTransform(bb: { x: number; y: number; width: number; height: number }): string | null {
   if (!bb.width || !bb.height) return null;
-  const scale = Math.min(SLOT.capH / bb.height, SLOT.maxW / bb.width);
-  const tx = SLOT.right - (bb.x + bb.width) * scale;
-  const ty = SLOT.baseline - (bb.y + bb.height) * scale;
-  return `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${scale.toFixed(4)})`;
+  const sy = SLOT.capH / bb.height; // always match the PĀR cap-height
+  const sx = Math.min(sy, SLOT.maxW / bb.width); // condense only if it won't fit
+  const tx = SLOT.right - (bb.x + bb.width) * sx;
+  const ty = SLOT.baseline - (bb.y + bb.height) * sy;
+  return `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${sx.toFixed(4)} ${sy.toFixed(4)})`;
 }
 
 // Intrinsic bboxes of the two baked Fit outlines — used to right-align them on the

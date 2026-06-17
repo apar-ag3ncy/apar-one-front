@@ -79,7 +79,7 @@ export function Hero({ start }: { start: boolean }) {
 
   return (
     <section ref={ref} className="hero-beam" data-screen-label="Home — Hero">
-      <BandBackdrop domeY={-0.3} intensity={0.98} />
+      <BandBackdrop domeY={-0.24} intensity={0.98} />
       <div className="wrap">
         <motion.div
           className="hero-beam-in"

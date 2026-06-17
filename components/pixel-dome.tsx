@@ -43,15 +43,15 @@ uniform vec2  uMouse;      // 0..1, bottom-up
 uniform float uMouseOn;    // 0..1
 uniform float uTime;       // seconds, for flicker
 
-// the reference image's measured shades hue-rotated to the BRAND RED #EE3A24
+// the reference image's measured shades hue-rotated to the BRAND RED #EE3926
 // (S/L preserved, exactly like the Algolia original's tint/shade ladder):
 //   pale lavender (192,190,236) -> pale rose (236,196,190) crest,
-//   electric blue (58,55,235)  -> brand red (238,58,36) glow,
+//   electric blue (58,55,235)  -> brand red #EE3926 (238,57,38) glow,
 //   fades = the vivid hue scaled toward the warm near-black base.
 const vec3 C_LIGHT = vec3(0.925, 0.770, 0.745);      // pale rose — thin bright crest
-const vec3 C_HOT   = vec3(0.933, 0.227, 0.141);      // brand red #EE3A24 — broad glow
-const vec3 C_MID   = vec3(0.513, 0.125, 0.078);      // C_HOT * 0.55 — fade, same hue
-const vec3 C_DARK  = vec3(0.084, 0.020, 0.013);      // C_HOT * 0.09 — fade end, same hue
+const vec3 C_HOT   = vec3(0.9333, 0.2235, 0.1490);   // brand red #EE3926 — the beam colour
+const vec3 C_MID   = vec3(0.6720, 0.1609, 0.1073);   // #EE3926 * 0.72 — body stays a true #EE3926 red, never maroon
+const vec3 C_DARK  = vec3(0.0840, 0.0201, 0.0134);   // #EE3926 * 0.09 — fade end, same hue
 
 // cheap per-cell hash -> 0..1
 float hash21(vec2 p){
@@ -77,7 +77,7 @@ vec2 beamAt(vec2 uv, float aspect){
   vec2 d = vec2((uv.x - 0.5) / rx, (uv.y - uDomeY) / ry);
   float dist = length(d);
   float t = dist - 0.92;                                 // signed distance across the strip
-  float w = (t > 0.0) ? 0.16 : 0.42;                     // soft (but tight) halo above; long mist-like dissolve below
+  float w = (t > 0.0) ? 0.16 : 0.17;                     // soft (but tight) halo above; the interior dissolves to dark just below the band (Algolia-style dark pocket for the copy)
   float glow = exp(-(t * t) / (w * w)) * uIntensity;
   float crown = clamp(d.y / max(dist, 0.001), 0.0, 1.0); // 1 at the crown -> 0 at the sides
   return vec2(glow * mix(0.55, 1.0, crown), t);
@@ -145,7 +145,7 @@ void main(){
   // the reference's dark background is not flat black: the tile grid stays
   // faintly visible everywhere. Blend the dark tiles up to a dim warm base so
   // the texture (and its junction stars) barely shows in the dark.
-  col = mix(vec3(0.180, 0.040, 0.026), col, smoothstep(0.03, 0.18, gCol));
+  col = mix(vec3(0.1867, 0.0447, 0.0298), col, smoothstep(0.03, 0.18, gCol)); // #EE3926 * 0.20 — dim base is a true shade of the brand red
 
   // ---- hover pop: blend the tiles under the cursor toward a bright brand-red
   //      (green/blue kept low so it can NEVER trend to the pale/white crest that
