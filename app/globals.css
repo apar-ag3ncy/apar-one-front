@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: 'fit-vf';
+  src: url('/fonts/FitMAXHGHTSHFTXOFFYOFFslntwdthwght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 25% 215%;
+  font-display: swap;
+}
+
 /* ============================================================
    shadcn / Radix theme tokens (used by the FAQ accordion + ui)
    ============================================================ */
@@ -169,18 +177,43 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
    "A" swaps between the three scripts Fit ships in (Latin / Devanagari / Kannada).
    It is STILL: the glyph just changes in place — no pop-in, no scale, no width
    breathing — matching the static original. */
-.apar-logo{display:inline-flex;align-items:center;
-  font-size:40px;line-height:1;color:var(--red);
+.apar-logo{display:inline-flex;align-items:baseline;
+  font-size:40px;line-height:0.85;color:var(--red);
+  font-weight:900;
   transition:font-size .4s var(--ease),color .35s var(--ease);user-select:none;}
 .apar-logo.on-dark{color:var(--cream);}
 .nav.scrolled .apar-logo{font-size:34px;}
-/* The wordmark is an exact vector trace of the Fit "अPĀR" lockup, sized off
-   font-size (cap-height ≈ 1em) and colored via currentColor so the same mark
-   works in red / cream / ink / white wherever .apar-logo's color is set. */
-.apar-logo .apar-logo-svg{height:1em;width:auto;display:block;overflow:visible;}
-/* Leading-"A" script transition: each Fit glyph cross-fades in the same slot. */
-.apar-logo .apar-lead{transition:opacity .5s var(--ease);}
-@media (prefers-reduced-motion: reduce){.apar-logo .apar-lead{transition:none;}}
+/* The wordmark is styled via the Fit variable font.
+   Anchored right-aligned script transition avoiding layout shifts. */
+.apar-logo-inner {
+  display: inline-flex;
+  align-items: baseline;
+}
+.apar-lead-wrap {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  width: 0.65em;
+  vertical-align: baseline;
+}
+.apar-lead-char {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  transition: opacity .5s var(--ease);
+  font-weight: 900;
+  font-stretch: 215%;
+}
+.apar-par-text {
+  font-family: var(--fit);
+  font-weight: 900;
+  font-stretch: 215%;
+}
+@media (prefers-reduced-motion: reduce){.apar-lead-char{transition:none;}}
 .nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
