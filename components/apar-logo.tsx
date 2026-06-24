@@ -40,7 +40,6 @@ const SCRIPTS: Script[] = [
   { key: "tamil", lang: "Tamil", label: "அ", char: "அ", cssVar: "--fit-tamil", fitName: "fit-tamil-vf", style: { fontVariationSettings: "'wdth' 482" } },
   { key: "armenian", lang: "Armenian", label: "Ա", char: "Ա", cssVar: "--fit-armenian", fitName: "fit-armenian-vf", style: { fontVariationSettings: "'wdth' 500" } },
   { key: "arabic", lang: "Arabic", label: "ا", char: "ا", cssVar: "--fit-arabic", fitName: "fit-arabic-vf", style: { fontVariationSettings: "'wdth' 482" } },
-  { key: "cjk", lang: "CJK", label: "字", char: "字", cssVar: "--fit", fitName: "fit-vf" },
   { key: "kannada", lang: "Kannada", label: "ಅ", char: "ಅ", cssVar: "--fit-kannada", fitName: "fit-kannada-vf" },
 ];
 

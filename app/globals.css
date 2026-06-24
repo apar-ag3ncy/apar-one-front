@@ -3,9 +3,21 @@
 
 @font-face {
   font-family: 'fit-vf';
-  src: url('/fonts/FitMAXHGHTSHFTXOFFYOFFslntwdthwght.ttf') format('truetype');
+  /* WOFF2 first (universal support, 638 KB vs 5.3 MB TTF); raw TTF as fallback. */
+  src: url('/fonts/fit-latin-vf.woff2') format('woff2'),
+       url('/fonts/FitMAXHGHTSHFTXOFFYOFFslntwdthwght.ttf') format('truetype');
   font-weight: 100 900;
   font-stretch: 25% 215%;
+  font-display: swap;
+}
+/* Real Fit Devanagari (local) — so the wordmark's leading अ renders in genuine
+   Fit, not a Noto fallback. Single `wdth` axis on the same instance scale as the
+   Latin (Condensed 293 · Normal 482 …); weight/height are baked into the cut.
+   WOFF2 first so Safari (which rejects this variable .otf) renders it too. */
+@font-face {
+  font-family: 'fit-devanagari-vf';
+  src: url('/fit-devnagari/Fit_Devanagari_Variable.woff2') format('woff2'),
+       url('/fit-devnagari/fonnts.com-Fit_Devanagari_Variable_Normal.otf') format('opentype');
   font-display: swap;
 }
 
@@ -189,29 +201,29 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   display: inline-flex;
   align-items: baseline;
 }
+/* All script variants stack in ONE grid cell so they cross-fade in place, every
+   one right-aligned ("stuck") to PĀR and — critically — sharing PĀR's baseline.
+   (The old absolute `bottom:0` aligned each glyph's descender box, not its
+   baseline, so the leading letter floated up by the font's descent.) */
 .apar-lead-wrap {
-  position: relative;
-  display: inline-block;
-  height: 1em;
-  width: 0.65em;
+  display: inline-grid;
   vertical-align: baseline;
+  justify-items: end;
+  align-items: baseline;
 }
 .apar-lead-char {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: flex-end;
+  grid-area: 1 / 1;
   transition: opacity .5s var(--ease);
   font-weight: 900;
-  font-stretch: 215%;
+  /* Fit's width axis is custom (wdth 100=Skyline … 3600=Ultra Extended), NOT
+     CSS-stretch percentages — so drive it explicitly. wdth 360 ≈ between
+     Condensed and Normal: the heavy, tall, narrow-counter display cut. */
+  font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
 .apar-par-text {
   font-family: var(--fit);
   font-weight: 900;
-  font-stretch: 215%;
+  font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
 @media (prefers-reduced-motion: reduce){.apar-lead-char{transition:none;}}
 .nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
