@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FooterEmbers } from "./footer-embers";
+import { AparLogo } from "./apar-logo";
 
 const SOCIAL = [
   { href: "https://instagram.com", label: "Instagram" },
@@ -9,14 +9,13 @@ const SOCIAL = [
 
 /**
  * Footer — Lusion-style: stripped to the essentials (contact · studio · social ·
- * copyright), with a giant "APAR" wordmark spanning the full width over the
- * gold/orange particle cloud. No CTA block, no sitemap, no watermark — the
- * wordmark is the statement.
+ * copyright), with a giant "APAR" wordmark spanning the full width on a solid
+ * black field. No CTA block, no sitemap, no watermark — the wordmark is the
+ * statement.
  */
 export function Footer() {
   return (
     <footer className="footer">
-      <FooterEmbers />
       <div className="wrap footer-inner">
         <div className="footer-row">
           <Link className="footer-talk" href="/#contact" data-magnetic>
@@ -44,8 +43,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="footer-word" aria-label="APAR" role="img">
-          APAR
+        <div className="footer-word">
+          <AparLogo />
         </div>
 
         <div className="footer-base">

@@ -96,7 +96,7 @@ export function Hero({ start }: { start: boolean }) {
               <i className="dot" /> Digital Marketing Agency
             </span>
             <span>Mumbai, IN</span>
-            <span>Est. 2024</span>
+            <span>Est. 2026</span>
           </motion.div>
 
           <motion.div
