@@ -1,13 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" — the Latin half of
+   the matched pair in /public/fit-devnagari/, sharing the SAME single `wdth` axis
+   as the Devanagari (weight + height are baked into the cut). WOFF2 first so Safari
+   renders the variable font; the source .otf is the fallback. */
 @font-face {
   font-family: 'fit-vf';
-  /* WOFF2 first (universal support, 638 KB vs 5.3 MB TTF); raw TTF as fallback. */
-  src: url('/fonts/fit-latin-vf.woff2') format('woff2'),
-       url('/fonts/FitMAXHGHTSHFTXOFFYOFFslntwdthwght.ttf') format('truetype');
-  font-weight: 100 900;
-  font-stretch: 25% 215%;
+  src: url('/fit-devnagari/Fit_Latin_Variable.woff2') format('woff2'),
+       url('/fit-devnagari/fonnts.com-Fit_Variable_Normal.otf') format('opentype');
+  /* Declare the cut AS weight 900 so a 900 request matches exactly — no faux bold. */
+  font-weight: 900;
   font-display: swap;
 }
 /* Real Fit Devanagari (local) — so the wordmark's leading अ renders in genuine
@@ -18,6 +21,7 @@
   font-family: 'fit-devanagari-vf';
   src: url('/fit-devnagari/Fit_Devanagari_Variable.woff2') format('woff2'),
        url('/fit-devnagari/fonnts.com-Fit_Devanagari_Variable_Normal.otf') format('opentype');
+  font-weight: 900;
   font-display: swap;
 }
 
@@ -215,6 +219,10 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   grid-area: 1 / 1;
   transition: opacity .5s var(--ease);
   font-weight: 900;
+  /* The Fit cuts are single-weight (no wght axis); never let the browser
+     fake bold to reach 900 — faux-bold floods the narrow counters into a
+     solid block. (font-weight 900 stays for the Roboto Flex fallback.) */
+  font-synthesis: none;
   /* Fit's width axis is custom (wdth 100=Skyline … 3600=Ultra Extended), NOT
      CSS-stretch percentages — so drive it explicitly. wdth 360 ≈ between
      Condensed and Normal: the heavy, tall, narrow-counter display cut. */
@@ -223,6 +231,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .apar-par-text {
   font-family: var(--fit);
   font-weight: 900;
+  font-synthesis: none;
   font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
 @media (prefers-reduced-motion: reduce){.apar-lead-char{transition:none;}}
