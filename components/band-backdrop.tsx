@@ -3,7 +3,7 @@
 import { PixelDome } from "./pixel-dome";
 
 /**
- * BandBackdrop — the dark-band background: the Algolia-style hero glow built
+ * BandBackdrop - the dark-band background: the Algolia-style hero glow built
  * from thousands of tiny tiles (one curved beam, pale peach crown + vivid
  * orange band). Sits behind the band content (z-index 0) on a near-black base,
  * click-through; a soft shimmer follows the pointer.

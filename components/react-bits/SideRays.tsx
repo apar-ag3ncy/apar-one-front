@@ -4,10 +4,10 @@ import { useRef, useEffect, useState } from "react";
 import { Renderer, Program, Triangle, Mesh } from "ogl";
 
 /**
- * SideRays (React Bits) — animated volumetric light rays fanning from a corner.
+ * SideRays (React Bits) - animated volumetric light rays fanning from a corner.
  * Ported to TypeScript; its `.side-rays-container` style lives in app/globals.css
  * (this project keeps CSS there, so there's no `import './SideRays.css'`).
- * Only renders while on-screen (IntersectionObserver) — cheap when scrolled away.
+ * Only renders while on-screen (IntersectionObserver) - cheap when scrolled away.
  */
 
 type Origin = "top-right" | "top-left" | "bottom-right" | "bottom-left";

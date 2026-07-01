@@ -7,7 +7,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 type RevealProps = {
   as?: ElementType;
-  /** stagger index — adds 90ms * i delay, matching the original .reveal --i */
+  /** stagger index - adds 90ms * i delay, matching the original .reveal --i */
   i?: number;
   delay?: number;
 } & ComponentProps<typeof motion.div> & { href?: string; "data-cat"?: string };
@@ -17,7 +17,7 @@ type RevealProps = {
 const motionCache = new Map<ElementType, ElementType>();
 
 /**
- * Framer Motion port of the design's `.reveal` — fade + rise on scroll-in,
+ * Framer Motion port of the design's `.reveal` - fade + rise on scroll-in,
  * spring-eased, with optional stagger index. `as` accepts a string tag or a
  * component (e.g. next/link's Link), so cards can be real routed links.
  */

@@ -6,10 +6,10 @@ import { useEffect, useRef } from "react";
 import { isLowPowerDevice } from "@/lib/device";
 
 /**
- * SplashCursor — GPU fluid-simulation cursor trail (adapted from React Bits /
+ * SplashCursor - GPU fluid-simulation cursor trail (adapted from React Bits /
  * Pavel Dobryakov's WebGL fluid sim), themed for APAR: instead of rainbow dye,
- * the splats are molten LAVA shades — hues locked to the brand's red→orange
- * band — so the trail reads as glowing lava over the cream and ink surfaces.
+ * the splats are molten LAVA shades - hues locked to the brand's red→orange
+ * band - so the trail reads as glowing lava over the cream and ink surfaces.
  *
  * Full-viewport fixed overlay, click-through, under the nav (z-50 < z-120).
  * Skipped entirely under prefers-reduced-motion and on coarse-pointer (touch)
@@ -158,7 +158,7 @@ export function SplashCursor({
     }
 
     const { gl, ext } = getWebGLContext(canvas);
-    if (!gl || !ext.formatRGBA) return; // no usable render formats — skip the effect
+    if (!gl || !ext.formatRGBA) return; // no usable render formats - skip the effect
     if (!ext.supportLinearFiltering) {
       config.DYE_RESOLUTION = 256;
       config.SHADING = false;
@@ -933,7 +933,7 @@ export function SplashCursor({
         // The parked canvas is fully transparent (dye dissipated), but a
         // full-viewport WebGL layer still costs the compositor to blend on every
         // scrolled frame. Hiding it removes that layer until the next pointer
-        // interaction — a real win on integrated GPUs during scroll.
+        // interaction - a real win on integrated GPUs during scroll.
         canvas!.style.visibility = "hidden";
         return;
       }

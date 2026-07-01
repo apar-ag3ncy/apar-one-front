@@ -16,14 +16,14 @@ interface VideoSlotProps {
 }
 
 /* ----------------------------------------------------------------------------
- * Shared playback coordinator — caps how many videos decode at once.
+ * Shared playback coordinator - caps how many videos decode at once.
  *
  * The work gallery alone holds a dozen <video>s. On weaker GPUs (Intel), letting
  * every video that drifts near the viewport call play() at once means several
  * H.264 streams decode + composite simultaneously, which stalls the main thread
  * for hundreds of ms during scroll (the "laggy scroll"). This module-level
- * coordinator keeps at most MAX_CONCURRENT playing — the ones closest to the
- * viewport centre — and pauses the rest. Reconciliation is rAF-batched so a
+ * coordinator keeps at most MAX_CONCURRENT playing - the ones closest to the
+ * viewport centre - and pauses the rest. Reconciliation is rAF-batched so a
  * burst of IntersectionObserver callbacks during a fast scroll collapses into a
  * single pass.
  * ------------------------------------------------------------------------- */
@@ -82,7 +82,7 @@ function releasePlay(v: HTMLVideoElement) {
 /**
  * Project video frame. Autoplays a muted, looping video from `src`. Until a
  * video file actually exists there, it shows the editorial drop-zone
- * placeholder — so dropping /public/videos/<slug>.mp4 is all that's needed,
+ * placeholder - so dropping /public/videos/<slug>.mp4 is all that's needed,
  * no code change (mirrors how the logos work). Playback is governed by the
  * shared coordinator above so only a couple of clips ever decode at once.
  */
@@ -118,7 +118,7 @@ export function VideoSlot({
   }, []);
 
   // React doesn't reliably set the `muted` DOM property from the attribute,
-  // which blocks autoplay — force it muted. Actual playback is routed through
+  // which blocks autoplay - force it muted. Actual playback is routed through
   // the shared coordinator (requestPlay/releasePlay): the frame registers
   // intent when it's near the viewport, and the coordinator decides whether it
   // gets to decode, capping concurrent playback to keep scrolling smooth.
@@ -157,7 +157,12 @@ export function VideoSlot({
           loop
           muted
           playsInline
-          preload="metadata"
+          // `none`, not `metadata`: a pinned gallery mounts ~12 tiles at once but
+          // the coordinator only ever plays 2. With `metadata` the other ~10 kick
+          // off a fetch that's immediately aborted when they're de-prioritised
+          // (net::ERR_ABORTED + wasted bandwidth). `none` defers the fetch until
+          // the coordinator actually calls play() on the 2 nearest tiles.
+          preload="none"
           data-ready={ready ? "true" : "false"}
           onLoadedData={() => setReady(true)}
           onCanPlay={() => setReady(true)}

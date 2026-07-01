@@ -1,5 +1,5 @@
 /**
- * APAR's brand wordmark is set in **Fit** — the variable-width display typeface
+ * APAR's brand wordmark is set in **Fit** - the variable-width display typeface
  * by David Jonathan Ross (DJR). Fit is a LICENSED Adobe Fonts / Type Network
  * face: its files must never be bundled or redistributed. The only legitimate
  * way to serve it on the web is the agency's own Adobe Fonts WEB PROJECT.
@@ -8,7 +8,7 @@
  * Latin "A" and Devanagari "अ" are baked vector outlines from the master art, so
  * they ALWAYS work with zero setup. The other Fit scripts only join the cycle once
  * their REAL Fit web family is loaded via the kit (the component verifies a loaded
- * @font-face before ever showing a script — it never falls back to a non-Fit face).
+ * @font-face before ever showing a script - it never falls back to a non-Fit face).
  *
  * One-time setup to light up ALL of Fit's scripts in the A-transition:
  *   1. fonts.adobe.com → sign in → "Add to Web Project" for each Fit family you
@@ -20,7 +20,7 @@
  *        Fit Tamil Variable ......... fit-tamil-variable
  *        Fit Kannada Variable ....... fit-kannada-variable
  *        Fit Arabic Variable ........ fit-arabic-variable
- *   2. Copy the kit id — the `xxxxxxx` in  https://use.typekit.net/xxxxxxx.css
+ *   2. Copy the kit id - the `xxxxxxx` in  https://use.typekit.net/xxxxxxx.css
  *   3. Set the env var  NEXT_PUBLIC_ADOBE_FONTS_KIT=xxxxxxx  (.env.local),
  *      or paste it directly into ADOBE_FONTS_KIT below.
  *

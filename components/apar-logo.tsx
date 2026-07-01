@@ -3,19 +3,19 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
- * APAR wordmark — strictly **Fit** (David Jonathan Ross). The leading "A"
+ * APAR wordmark - strictly **Fit** (David Jonathan Ross). The leading "A"
  * transitions across the languages Fit ships in, every form rendered in REAL Fit:
  *
  *  • Latin A and Devanagari अ are exact vector outlines traced from the master
- *    artwork — always available, always genuine Fit, no font kit needed.
+ *    artwork - always available, always genuine Fit, no font kit needed.
  *  • The other Fit scripts (Cyrillic А, Greek Α, Hebrew א, Armenian Ա, Tamil அ,
- *    Kannada ಅ, Arabic ا) render as live Fit text from their matching Fit family —
+ *    Kannada ಅ, Arabic ا) render as live Fit text from their matching Fit family -
  *    but ONLY join the cycle once document.fonts confirms that real Fit family is
  *    loaded (via the agency's Adobe Fonts kit). They are NEVER shown in a fallback
  *    font, so the mark is strictly Fit at all times.
  *
- * Every leading glyph is normalized into one fixed slot — matched to the master
- * cap-height, width-contained, baseline-aligned, and RIGHT-aligned to "PĀR" — so
+ * Every leading glyph is normalized into one fixed slot - matched to the master
+ * cap-height, width-contained, baseline-aligned, and RIGHT-aligned to "PĀR" - so
  * every script keeps the same gap to the word ("sticks" to it) and the transition
  * never shifts "PĀR" or changes the wordmark's size/spacing.
  * one mark render white / cream / red / ink via CSS color.

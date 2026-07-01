@@ -11,13 +11,13 @@ const FONTS_GIRVAAN: CaseFonts = {
   serif: "'Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
   sans: "'Optima','Optima Nova','Candara','Segoe UI',system-ui,sans-serif",
 };
-// Florentia + Balham aren't system/web fonts yet — they fall back to Bodoni 72
+// Florentia + Balham aren't system/web fonts yet - they fall back to Bodoni 72
 // (installed) / system sans until their font files are loaded via @font-face.
 const FONTS_MAISON: CaseFonts = {
   serif: "'Florentia','Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
   sans: "'Balham','Optima','Candara','Segoe UI',system-ui,sans-serif",
 };
-// Blisstwin isn't a system/web font yet — display falls back to Newsreader
+// Blisstwin isn't a system/web font yet - display falls back to Newsreader
 // until its font file is loaded via @font-face. Body keeps the site sans.
 const FONTS_ACHAL: CaseFonts = {
   serif: "'Blisstwin','Newsreader',Georgia,serif",
@@ -36,10 +36,10 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Chheda Jewellers",
       cat: "Jewellery",
-      blurb: "Heritage gold & diamond house — identity, festive campaigns and social growth.",
+      blurb: "Heritage gold & diamond house - identity, festive campaigns and social growth.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "A heritage gold & diamond house, reimagined for a new generation of buyers — without losing an ounce of its legacy.",
+    sub: "A heritage gold & diamond house, reimagined for a new generation of buyers - without losing an ounce of its legacy.",
     theme: {
       bg: "#0a2a20",
       bg2: "#0f3d2e",
@@ -57,11 +57,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Retainer" },
     ],
     brief: {
-      lead: "A trusted name for decades — but the brand looked the same as every other jeweller on the street.",
+      lead: "A trusted name for decades - but the brand looked the same as every other jeweller on the street.",
       challenge:
         "Chheda had loyalty and craftsmanship, but its identity didn't signal premium, and its social presence wasn't bringing younger buyers through the door. The festive season was being left on the table.",
       did: [
-        "Refreshed identity — emerald & gold system",
+        "Refreshed identity - emerald & gold system",
         "Festive & wedding-season campaigns",
         "Always-on social content engine",
         "Performance ads for store footfall",
@@ -70,7 +70,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          We made heritage feel <em>luxurious</em> again — gold on deep emerald, with stories worth
+          We made heritage feel <em>luxurious</em> again - gold on deep emerald, with stories worth
           sharing.
         </>
       ),
@@ -92,7 +92,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;They made us look like the <em>landmark</em> we&apos;ve always been.&rdquo;
         </>
       ),
-      by: "Director — Chheda Jewellers",
+      by: "Director - Chheda Jewellers",
     },
     next: { kicker: "Next case", name: "Girvaan", href: "/work/girvaan", color: "#985070", ink: "#EDCEDD" },
   },
@@ -104,11 +104,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Girvaan",
       cat: "Jewellery",
-      blurb: "A modern jewellery label — brand identity, content engine and performance ads.",
+      blurb: "A modern jewellery label - brand identity, content engine and performance ads.",
     },
     logoInvert: true,
     fonts: FONTS_GIRVAAN,
-    sub: "A modern jewellery label for a softer, contemporary buyer — built from a blush-and-white world that feels effortlessly elegant.",
+    sub: "A modern jewellery label for a softer, contemporary buyer - built from a blush-and-white world that feels effortlessly elegant.",
     theme: {
       bg: "#985070",
       bg2: "#7d3f5c",
@@ -126,11 +126,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Project + retainer" },
     ],
     brief: {
-      lead: "A beautiful product with no brand world to live in — and no consistent voice online.",
+      lead: "A beautiful product with no brand world to live in - and no consistent voice online.",
       challenge:
         "Girvaan needed to stand out in a crowded feed with a look that felt premium yet approachable. The pieces were lovely; the brand around them hadn't caught up.",
       did: [
-        "Brand identity — blush & white system",
+        "Brand identity - blush & white system",
         "Photography & content direction",
         "Always-on social calendar",
         "Performance campaigns to drive sales",
@@ -139,7 +139,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Soft, modern and unmistakably <em>Girvaan</em> — a world as delicate as the jewellery.
+          Soft, modern and unmistakably <em>Girvaan</em> - a world as delicate as the jewellery.
         </>
       ),
       gallery: [
@@ -158,11 +158,11 @@ export const CASES: Record<string, CaseData> = {
     quote: {
       text: (
         <>
-          &ldquo;They gave our jewellery a world to <em>live in</em> — and it sells itself
+          &ldquo;They gave our jewellery a world to <em>live in</em> - and it sells itself
           now.&rdquo;
         </>
       ),
-      by: "Founder — Girvaan",
+      by: "Founder - Girvaan",
     },
     next: { kicker: "Next case", name: "Diarah", href: "/work/diarah", color: "#0B444A", ink: "#F3E4D6" },
   },
@@ -174,10 +174,10 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Diarah",
       cat: "Jewellery",
-      blurb: "Luxury fine jewellery — refined rebrand and full-funnel digital campaigns.",
+      blurb: "Luxury fine jewellery - refined rebrand and full-funnel digital campaigns.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "Luxury fine jewellery, refined for the modern collector — a deep, warm world of wine and champagne that signals quiet confidence.",
+    sub: "Luxury fine jewellery, refined for the modern collector - a deep, warm world of wine and champagne that signals quiet confidence.",
     theme: {
       bg: "#0B444A",
       bg2: "#1B6B74",
@@ -195,11 +195,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Full-funnel" },
     ],
     brief: {
-      lead: "Exceptional craftsmanship that read as ordinary online — luxury that wasn't being felt.",
+      lead: "Exceptional craftsmanship that read as ordinary online - luxury that wasn't being felt.",
       challenge:
         "Diarah's pieces were genuinely high-end, but the brand didn't carry that weight digitally. The goal: a rebrand that signalled luxury instantly, plus marketing that reached serious buyers without cheapening the name.",
       did: [
-        "Refined rebrand — wine & champagne system",
+        "Refined rebrand - wine & champagne system",
         "Brand strategy & positioning",
         "Editorial campaign & AI content",
         "Full-funnel performance marketing",
@@ -208,7 +208,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Understated, warm and undeniably <em>luxe</em> — restraint that reads as confidence.
+          Understated, warm and undeniably <em>luxe</em> - restraint that reads as confidence.
         </>
       ),
       gallery: [
@@ -230,7 +230,7 @@ export const CASES: Record<string, CaseData> = {
           jewellery.&rdquo;
         </>
       ),
-      by: "Marketing Head — Diarah",
+      by: "Marketing Head - Diarah",
     },
     next: { kicker: "Next case", name: "Maison Mireyaa", href: "/work/maison-mireyaa", color: "#5F0627", ink: "#F5D0CE" },
   },
@@ -242,10 +242,10 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Maison Mireyaa",
       cat: "Florist",
-      blurb: "Where every bloom tells a story — branding, seasonal content and campaigns for an atelier florist.",
+      blurb: "Where every bloom tells a story - branding, seasonal content and campaigns for an atelier florist.",
     },
     fonts: FONTS_MAISON,
-    sub: "An atelier of seasonal flowers, composed like couture — given a brand world as romantic and considered as its bouquets.",
+    sub: "An atelier of seasonal flowers, composed like couture - given a brand world as romantic and considered as its bouquets.",
     theme: {
       bg: "#5F0627",
       bg2: "#8B0939",
@@ -255,7 +255,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(245,208,206,.16)",
       line: "rgba(245,208,206,.20)",
     },
-    heroPlaceholder: "Drop Maison Mireyaa hero image (blush & wine florals)",
+    heroPlaceholder: "Maison Mireyaa - signature blush & wine bouquet",
     meta: [
       { label: "Services", value: "Branding · Content · Campaigns" },
       { label: "Sector", value: "Florist · Lifestyle" },
@@ -263,11 +263,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Project + retainer" },
     ],
     brief: {
-      lead: "Beautiful flowers with no brand world to hold them — and a feed that didn't feel like the atelier.",
+      lead: "Beautiful flowers with no brand world to hold them - and a feed that didn't feel like the atelier.",
       challenge:
-        "Maison Mireyaa needed an identity as romantic and considered as its arrangements — premium, seasonal and unmistakably theirs — with content that turned admirers into regulars and occasions into orders.",
+        "Maison Mireyaa needed an identity as romantic and considered as its arrangements - premium, seasonal and unmistakably theirs - with content that turned admirers into regulars and occasions into orders.",
       did: [
-        "Brand identity — blush & wine system",
+        "Brand identity - blush & wine system",
         "Seasonal photography & content direction",
         "Always-on social calendar",
         "Occasion-led performance campaigns",
@@ -276,14 +276,18 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Romantic, seasonal and quietly <em>luxurious</em> — a world as composed as the bouquets.
+          Romantic, seasonal and quietly <em>luxurious</em> - a world as composed as the bouquets.
         </>
       ),
       gallery: [
-        { cls: "tall", placeholder: "Signature bouquet", ratio: "4/5" },
-        { cls: "wide", placeholder: "Seasonal campaign / key visual", ratio: "16/11" },
-        { cls: "half", placeholder: "Arrangement detail", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "tall", placeholder: "Maison Mireyaa - blush rose arrangement", ratio: "4/5" },
+        { cls: "tall", placeholder: "Maison Mireyaa - anemone basket campaign", ratio: "1/1" },
+        { cls: "tall", placeholder: "Maison Mireyaa - signature bouquet", ratio: "4/5" },
+        { cls: "tall", placeholder: "Maison Mireyaa - Blooming Soon campaign", ratio: "4/5" },
+        { cls: "tall", placeholder: "Maison Mireyaa - sunflower campaign", ratio: "2/3" },
+        { cls: "tall", placeholder: "Maison Mireyaa - seasonal arrangement", ratio: "4/5" },
+        { cls: "tall", placeholder: "Maison Mireyaa - hand-tied bouquet", ratio: "5/7" },
+        { cls: "tall", placeholder: "Maison Mireyaa - Crafted with intention", ratio: "4/5" },
       ],
     },
     stats: [
@@ -297,7 +301,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our brand finally feels as <em>considered</em> as our flowers.&rdquo;
         </>
       ),
-      by: "Founder — Maison Mireyaa",
+      by: "Founder - Maison Mireyaa",
     },
     next: { kicker: "Next case", name: "Achal", href: "/work/achal", color: "#2A3B59", ink: "#DCE4F2" },
   },
@@ -309,11 +313,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Achal",
       cat: "Real Estate",
-      blurb: "Where address becomes aspiration — branding, content and campaigns for premium real estate.",
+      blurb: "Where address becomes aspiration - branding, content and campaigns for premium real estate.",
     },
     logoTint: "#C9A062",
     fonts: FONTS_ACHAL,
-    sub: "Premium real estate, positioned with confidence — a navy world that makes an address feel like a landmark.",
+    sub: "Premium real estate, positioned with confidence - a navy world that makes an address feel like a landmark.",
     theme: {
       bg: "#2A3B59",
       bg2: "#38507A",
@@ -331,11 +335,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Project + retainer" },
     ],
     brief: {
-      lead: "Landmark projects that read as ordinary listings — premium real estate without a premium brand.",
+      lead: "Landmark projects that read as ordinary listings - premium real estate without a premium brand.",
       challenge:
-        "Achal needed a brand as considered as its developments — one that signalled trust and aspiration to serious buyers, with marketing that filled site visits and turned interest into bookings.",
+        "Achal needed a brand as considered as its developments - one that signalled trust and aspiration to serious buyers, with marketing that filled site visits and turned interest into bookings.",
       did: [
-        "Brand identity — navy & light system",
+        "Brand identity - navy & light system",
         "Project launch campaigns",
         "Always-on social & content",
         "Performance marketing for site visits",
@@ -344,7 +348,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Confident, architectural and quietly <em>premium</em> — a brand that makes an address aspirational.
+          Confident, architectural and quietly <em>premium</em> - a brand that makes an address aspirational.
         </>
       ),
       gallery: [
@@ -365,7 +369,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our projects finally feel like the <em>landmarks</em> they are.&rdquo;
         </>
       ),
-      by: "Director — Achal",
+      by: "Director - Achal",
     },
     next: { kicker: "Next case", name: "High on Smiles", href: "/work/high-on-smiles", color: "#4A80C6", ink: "#FFFFFF" },
   },
@@ -377,11 +381,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "High on Smiles",
       cat: "Dental",
-      blurb: "Smiles worth showing off — brand, content and campaigns for a modern dental clinic.",
+      blurb: "Smiles worth showing off - brand, content and campaigns for a modern dental clinic.",
     },
     logoInvert: true,
     fonts: FONTS_DEFAULT,
-    sub: "A modern dental clinic, made approachable — a bright, clean world that turns nervous first-timers into loyal, smiling regulars.",
+    sub: "A modern dental clinic, made approachable - a bright, clean world that turns nervous first-timers into loyal, smiling regulars.",
     theme: {
       bg: "#4A80C6",
       bg2: "#5E91D2",
@@ -399,11 +403,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Retainer" },
     ],
     brief: {
-      lead: "Great dentistry hidden behind a clinical, forgettable brand — and a feed that didn't build trust.",
+      lead: "Great dentistry hidden behind a clinical, forgettable brand - and a feed that didn't build trust.",
       challenge:
-        "High on Smiles needed to feel warm, modern and reassuring — a brand that eased anxiety and made booking effortless, with content and ads that filled the appointment book.",
+        "High on Smiles needed to feel warm, modern and reassuring - a brand that eased anxiety and made booking effortless, with content and ads that filled the appointment book.",
       did: [
-        "Friendly brand identity — bright & clean",
+        "Friendly brand identity - bright & clean",
         "Patient-education social content",
         "Reviews & reputation building",
         "Performance ads for appointments",
@@ -412,7 +416,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Bright, warm and reassuring — a clinic that feels more <em>welcome</em> than waiting room.
+          Bright, warm and reassuring - a clinic that feels more <em>welcome</em> than waiting room.
         </>
       ),
       gallery: [
@@ -430,10 +434,10 @@ export const CASES: Record<string, CaseData> = {
     quote: {
       text: (
         <>
-          &ldquo;Patients walk in already <em>smiling</em> — they feel like they know us.&rdquo;
+          &ldquo;Patients walk in already <em>smiling</em> - they feel like they know us.&rdquo;
         </>
       ),
-      by: "Founder — High on Smiles",
+      by: "Founder - High on Smiles",
     },
     next: { kicker: "Next case", name: "Silver Emporium", href: "/work/silver-emporium", color: "#11294A", ink: "#E5EAF2" },
   },
@@ -445,11 +449,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Silver Emporium",
       cat: "Silver",
-      blurb: "Silver worth passing down — branding, content and campaigns for a heritage silver house.",
+      blurb: "Silver worth passing down - branding, content and campaigns for a heritage silver house.",
     },
     logoInvert: true,
     fonts: FONTS_DEFAULT,
-    sub: "A house of fine silver articles, made to be lived with — a cool, polished world that turns everyday silver into heirlooms.",
+    sub: "A house of fine silver articles, made to be lived with - a cool, polished world that turns everyday silver into heirlooms.",
     theme: {
       bg: "#11294A",
       bg2: "#193B6B",
@@ -467,11 +471,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Retainer" },
     ],
     brief: {
-      lead: "Exquisite silver that looked like everyone else's online — craft without a brand to carry it.",
+      lead: "Exquisite silver that looked like everyone else's online - craft without a brand to carry it.",
       challenge:
-        "Silver Emporium needed an identity as refined as its pieces — cool, premium and timeless — with content and campaigns that brought gifting buyers and collectors through the door, festive season included.",
+        "Silver Emporium needed an identity as refined as its pieces - cool, premium and timeless - with content and campaigns that brought gifting buyers and collectors through the door, festive season included.",
       did: [
-        "Brand identity — navy & silver system",
+        "Brand identity - navy & silver system",
         "Festive & gifting campaigns",
         "Always-on social content",
         "Performance ads for footfall & enquiries",
@@ -480,7 +484,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Cool, polished and quietly <em>timeless</em> — silver framed like the heirloom it becomes.
+          Cool, polished and quietly <em>timeless</em> - silver framed like the heirloom it becomes.
         </>
       ),
       gallery: [
@@ -501,7 +505,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our silver finally looks as <em>precious</em> online as it does in hand.&rdquo;
         </>
       ),
-      by: "Director — Silver Emporium",
+      by: "Director - Silver Emporium",
     },
     next: { kicker: "Next case", name: "A Paramount", href: "/work/a-paramount", color: "#181712", ink: "#ECE6D6" },
   },
@@ -513,10 +517,10 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "A Paramount",
       cat: "Engineering",
-      blurb: "Engineered to exacting standards — branding, website and lead generation for an engineering works.",
+      blurb: "Engineered to exacting standards - branding, website and lead generation for an engineering works.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "An engineering works built on precision — given a brand and digital presence as solid and exacting as its output.",
+    sub: "An engineering works built on precision - given a brand and digital presence as solid and exacting as its output.",
     theme: {
       bg: "#181712",
       bg2: "#262318",
@@ -536,9 +540,9 @@ export const CASES: Record<string, CaseData> = {
     brief: {
       lead: "World-class engineering hidden behind a dated brand and an all-but-invisible web presence.",
       challenge:
-        "A Paramount needed to look as precise and dependable as its work — a brand and website that earned trust with serious B2B buyers, plus a steady pipeline of qualified enquiries.",
+        "A Paramount needed to look as precise and dependable as its work - a brand and website that earned trust with serious B2B buyers, plus a steady pipeline of qualified enquiries.",
       did: [
-        "Brand identity — industrial & refined",
+        "Brand identity - industrial & refined",
         "Website & technical content",
         "Lead-generation campaigns",
         "Company profile & catalogue design",
@@ -547,7 +551,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Solid, precise and quietly <em>premium</em> — engineering presented with the confidence it earns.
+          Solid, precise and quietly <em>premium</em> - engineering presented with the confidence it earns.
         </>
       ),
       gallery: [
@@ -568,7 +572,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;We finally look like the <em>precision</em> house we are.&rdquo;
         </>
       ),
-      by: "Director — A Paramount",
+      by: "Director - A Paramount",
     },
     next: { kicker: "Next case", name: "Kundan Jewellers", href: "/work/kundan-jewellers", color: "#34251A", ink: "#EBDFCD" },
   },
@@ -580,10 +584,10 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Kundan Jewellers",
       cat: "Jewellery",
-      blurb: "Timeless gold & kundan jewellery — identity, content and campaigns with a warm, modern glow.",
+      blurb: "Timeless gold & kundan jewellery - identity, content and campaigns with a warm, modern glow.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "A jewellery house of warm gold and kundan craft — given a soft, modern brand world as refined as its pieces.",
+    sub: "A jewellery house of warm gold and kundan craft - given a soft, modern brand world as refined as its pieces.",
     theme: {
       bg: "#34251A",
       bg2: "#473322",
@@ -601,11 +605,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Retainer" },
     ],
     brief: {
-      lead: "Exquisite gold and kundan work that looked ordinary in a crowded feed — craft without a brand to carry it.",
+      lead: "Exquisite gold and kundan work that looked ordinary in a crowded feed - craft without a brand to carry it.",
       challenge:
         "Kundan Jewellers needed a warm, modern identity that felt premium yet approachable, with content and campaigns that brought festive and wedding buyers through the door.",
       did: [
-        "Brand identity — warm gold & cream system",
+        "Brand identity - warm gold & cream system",
         "Festive & wedding-season campaigns",
         "Always-on social content",
         "Performance ads for footfall & enquiries",
@@ -614,7 +618,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Warm, modern and quietly <em>luxe</em> — gold craft framed in a soft, contemporary world.
+          Warm, modern and quietly <em>luxe</em> - gold craft framed in a soft, contemporary world.
         </>
       ),
       gallery: [
@@ -635,7 +639,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our jewellery finally has the <em>warmth</em> online that people feel in store.&rdquo;
         </>
       ),
-      by: "Director — Kundan Jewellers",
+      by: "Director - Kundan Jewellers",
     },
     next: { kicker: "Next case", name: "Jatubhai Velji", href: "/work/jatubhai-velji", color: "#A0544A", ink: "#F5EFE5" },
   },
@@ -647,11 +651,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Jatubhai Velji Jewellers",
       cat: "Jewellery",
-      blurb: "Heritage jewellery with a warm, earthy soul — identity, content and campaigns that honour the legacy.",
+      blurb: "Heritage jewellery with a warm, earthy soul - identity, content and campaigns that honour the legacy.",
     },
     logoInvert: true,
     fonts: FONTS_DEFAULT,
-    sub: "A trusted jewellery name with deep roots — given a warm, terracotta-and-cream brand world that carries its heritage into a new generation.",
+    sub: "A trusted jewellery name with deep roots - given a warm, terracotta-and-cream brand world that carries its heritage into a new generation.",
     theme: {
       bg: "#A0544A",
       bg2: "#B0685B",
@@ -669,11 +673,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Retainer" },
     ],
     brief: {
-      lead: "A name families have trusted for generations — but a presence online that didn't carry that weight.",
+      lead: "A name families have trusted for generations - but a presence online that didn't carry that weight.",
       challenge:
-        "Jatubhai Velji needed an identity as warm and dependable as its reputation — heritage made modern — with content and campaigns that reached the next generation without losing the old guard.",
+        "Jatubhai Velji needed an identity as warm and dependable as its reputation - heritage made modern - with content and campaigns that reached the next generation without losing the old guard.",
       did: [
-        "Brand identity — terracotta & cream system",
+        "Brand identity - terracotta & cream system",
         "Festive & wedding-season campaigns",
         "Always-on social content",
         "Performance ads for store footfall",
@@ -682,7 +686,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Warm, rooted and quietly <em>proud</em> — heritage framed for a new generation of buyers.
+          Warm, rooted and quietly <em>proud</em> - heritage framed for a new generation of buyers.
         </>
       ),
       gallery: [
@@ -703,7 +707,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our name finally looks online like it has always felt in <em>person</em>.&rdquo;
         </>
       ),
-      by: "Director — Jatubhai Velji Jewellers",
+      by: "Director - Jatubhai Velji Jewellers",
     },
     next: { kicker: "Next case", name: "Signi", href: "/work/signi", color: "#3A2F7A", ink: "#EFEDFB" },
   },
@@ -715,11 +719,11 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Signi",
       cat: "Lab-Grown Gems",
-      blurb: "Sublime sparkles, grown not mined — branding, content and campaigns for a modern lab-grown gem house.",
+      blurb: "Sublime sparkles, grown not mined - branding, content and campaigns for a modern lab-grown gem house.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "Lab-grown diamonds and gems with a conscience — given a deep-indigo brand world that makes sustainable sparkle feel anything but a compromise.",
-    // Signi mark (white, transparent) auto-loads from public/logos/signi.png —
+    sub: "Lab-grown diamonds and gems with a conscience - given a deep-indigo brand world that makes sustainable sparkle feel anything but a compromise.",
+    // Signi mark (white, transparent) auto-loads from public/logos/signi.png -
     // white-on-indigo, no tint/invert needed.
     theme: {
       bg: "#3c3073",
@@ -730,7 +734,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(255,255,255,.16)",
       line: "rgba(239,237,251,.20)",
     },
-    heroPlaceholder: "Drop Signi hero image (indigo / sparkle)",
+    heroPlaceholder: "Signi - Mother's Day campaign model in lilac",
     meta: [
       { label: "Services", value: "Branding · Content · Performance" },
       { label: "Sector", value: "Lab-Grown Gems" },
@@ -738,11 +742,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Project + retainer" },
     ],
     brief: {
-      lead: "Stunning lab-grown stones fighting an old perception — real sparkle that buyers didn't yet trust.",
+      lead: "Stunning lab-grown stones fighting an old perception - real sparkle that buyers didn't yet trust.",
       challenge:
-        "Signi needed a brand that made lab-grown feel premium and aspirational, not second-best — with content that educated and campaigns that turned curiosity into confident purchases.",
+        "Signi needed a brand that made lab-grown feel premium and aspirational, not second-best - with content that educated and campaigns that turned curiosity into confident purchases.",
       did: [
-        "Brand identity — deep-indigo sparkle system",
+        "Brand identity - deep-indigo sparkle system",
         "Education-led social content",
         "Launch & always-on campaigns",
         "Performance marketing for online sales",
@@ -751,14 +755,14 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Modern, brilliant and unapologetically <em>conscious</em> — sparkle with a clear conscience.
+          Modern, brilliant and unapologetically <em>conscious</em> - sparkle with a clear conscience.
         </>
       ),
       gallery: [
-        { cls: "tall", placeholder: "Stone / sparkle hero", ratio: "4/5" },
-        { cls: "wide", placeholder: "Campaign key visual", ratio: "16/11" },
-        { cls: "half", placeholder: "Product detail", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "tall", placeholder: "Signi - model portrait with diamond earrings", ratio: "4/5" },
+        { cls: "tall", placeholder: "Signi - model wearing diamond rings", ratio: "4/5" },
+        { cls: "tall", placeholder: "Signi - diamond pendant detail", ratio: "4/5" },
+        { cls: "tall", placeholder: "Signi - layered diamond jewellery on model", ratio: "4/5" },
       ],
     },
     stats: [
@@ -769,10 +773,10 @@ export const CASES: Record<string, CaseData> = {
     quote: {
       text: (
         <>
-          &ldquo;People finally see lab-grown as the <em>future</em> — and they buy with confidence.&rdquo;
+          &ldquo;People finally see lab-grown as the <em>future</em> - and they buy with confidence.&rdquo;
         </>
       ),
-      by: "Founder — Signi",
+      by: "Founder - Signi",
     },
     next: { kicker: "Next case", name: "Tarava", href: "/work/tarava", color: "#2A0E1E", ink: "#CAC1B6" },
   },
@@ -784,12 +788,12 @@ export const CASES: Record<string, CaseData> = {
     card: {
       name: "Tarava",
       cat: "Fine Silver",
-      blurb: "Fine silver jewellery with a soul — branding, content and campaigns as crafted as the pieces.",
+      blurb: "Fine silver jewellery with a soul - branding, content and campaigns as crafted as the pieces.",
     },
     fonts: FONTS_DEFAULT,
-    sub: "A house of fine silver jewellery, rooted in heritage — given a deep, earthy brand world where every piece feels considered, sacred and quietly luxurious.",
-    // Real Tarava mark (reclining bull + "TARAVA — Moments in Silver"), auto-loaded
-    // from public/logos/tarava.png. Silver-on-maroon — no tint/invert needed.
+    sub: "A house of fine silver jewellery, rooted in heritage - given a deep, earthy brand world where every piece feels considered, sacred and quietly luxurious.",
+    // Real Tarava mark (reclining bull + "TARAVA - Moments in Silver"), auto-loaded
+    // from public/logos/tarava.png. Silver-on-maroon - no tint/invert needed.
     theme: {
       bg: "#520825",
       bg2: "#6E0B33",
@@ -807,11 +811,11 @@ export const CASES: Record<string, CaseData> = {
       { label: "Engagement", value: "Project + retainer" },
     ],
     brief: {
-      lead: "Soulful silver craft that read as ordinary online — heritage without a brand to carry it.",
+      lead: "Soulful silver craft that read as ordinary online - heritage without a brand to carry it.",
       challenge:
-        "Tarava needed an identity as considered and rooted as its silver — earthy, premium and quietly spiritual — with content and campaigns that drew collectors and gifting buyers alike.",
+        "Tarava needed an identity as considered and rooted as its silver - earthy, premium and quietly spiritual - with content and campaigns that drew collectors and gifting buyers alike.",
       did: [
-        "Brand identity — aubergine & silver system",
+        "Brand identity - aubergine & silver system",
         "Photography & content direction",
         "Always-on social calendar",
         "Performance campaigns for sales",
@@ -820,7 +824,7 @@ export const CASES: Record<string, CaseData> = {
     approach: {
       lead: (
         <>
-          Earthy, sacred and quietly <em>luxurious</em> — silver framed with reverence.
+          Earthy, sacred and quietly <em>luxurious</em> - silver framed with reverence.
         </>
       ),
       gallery: [
@@ -841,7 +845,7 @@ export const CASES: Record<string, CaseData> = {
           &ldquo;Our silver finally feels as <em>soulful</em> online as it does in person.&rdquo;
         </>
       ),
-      by: "Founder — Tarava",
+      by: "Founder - Tarava",
     },
     next: { kicker: "Back to", name: "All clients", href: "/clients", color: "#F4EDE2", ink: "#1A1714" },
   },
@@ -852,7 +856,7 @@ export const CASE_SLUGS = Object.keys(CASES);
 /**
  * Single source of truth for the featured-client cards shown on the home page
  * and the clients page. Colours are pulled straight from each case `theme`, so
- * adding a new company = add one entry to CASES above — nothing else to touch.
+ * adding a new company = add one entry to CASES above - nothing else to touch.
  */
 export const FEATURED_CLIENTS = CASE_SLUGS.map((slug, idx) => {
   const c = CASES[slug];
@@ -876,7 +880,7 @@ export const FEATURED_CLIENTS = CASE_SLUGS.map((slug, idx) => {
 
 export type FeaturedClient = (typeof FEATURED_CLIENTS)[number];
 
-/** CSS custom properties that theme a `.fc-card` — colours + fonts from a case. */
+/** CSS custom properties that theme a `.fc-card` - colours + fonts from a case. */
 export function featuredCardVars(c: {
   theme: CaseData["theme"];
   fonts: CaseFonts;

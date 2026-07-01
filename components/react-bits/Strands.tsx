@@ -417,7 +417,7 @@ export default function Strands({
     };
 
     // Respect reduced-motion (render a single static frame) and never burn the
-    // GPU while the tab is hidden — keeps this off the scroll/idle frame budget.
+    // GPU while the tab is hidden - keeps this off the scroll/idle frame budget.
     if (reduceMotion) {
       draw(0);
     } else {

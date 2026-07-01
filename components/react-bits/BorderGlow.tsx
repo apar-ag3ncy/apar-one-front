@@ -4,7 +4,7 @@ import { useRef, useCallback, useEffect } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
- * BorderGlow (React Bits) — a cursor-following, edge-aware glow + mesh-gradient
+ * BorderGlow (React Bits) - a cursor-following, edge-aware glow + mesh-gradient
  * border for premium cards. Ported to TypeScript; its styles live in
  * app/globals.css (this project keeps all CSS there rather than co-located
  * files), so there is no `import './BorderGlow.css'` here.

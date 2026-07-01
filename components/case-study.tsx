@@ -8,6 +8,7 @@ import { PhotoSlot } from "./photo-slot";
 import { VideoSlot } from "./video-slot";
 import { NextCaseScroll } from "./next-case-scroll";
 import { useCaseTransition } from "./transition-provider";
+import type { CaseAssets } from "@/lib/case-assets";
 
 export interface CaseTheme {
   bg: string;
@@ -39,7 +40,7 @@ export interface CaseData {
   /** Render the logo as a solid silhouette of this exact colour (e.g. gold),
    *  via an image mask. Takes precedence over logoInvert. */
   logoTint?: string;
-  /** Per-company typography — drives both the case page and its featured card. */
+  /** Per-company typography - drives both the case page and its featured card. */
   fonts: CaseFonts;
   eyebrow: string;
   sub: string;
@@ -58,7 +59,7 @@ export interface CaseData {
   next: { kicker: string; name: string; href: string; color: string; ink: string };
 }
 
-export function CaseStudy({ data }: { data: CaseData }) {
+export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets }) {
   const t = data.theme;
   const startTransition = useCaseTransition();
 
@@ -83,7 +84,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
     "--c-accent": t.accent,
     "--c-accent-soft": t.accentSoft,
     "--c-line": t.line,
-    // Per-company typography — overrides the site default --serif/--sans for this page only.
+    // Per-company typography - overrides the site default --serif/--sans for this page only.
     "--serif": data.fonts.serif,
     "--sans": data.fonts.sans,
   } as React.CSSProperties;
@@ -97,7 +98,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
   return (
     <div className="case-page" data-case={data.slug} data-variant={variant} style={themeVars}>
       {/* HERO */}
-      <header className="case-hero" data-screen-label={`${data.slug} — Hero`}>
+      <header className="case-hero" data-screen-label={`${data.slug} - Hero`}>
         <div className="case-wrap case-hero-in">
           <Reveal className="case-eyebrow">
             <i /> {data.eyebrow}
@@ -117,7 +118,11 @@ export function CaseStudy({ data }: { data: CaseData }) {
             ))}
           </Reveal>
           <Reveal className="case-hero-fig">
-            <PhotoSlot src={`/work/${data.slug}/hero.jpg`} radius={7} placeholder={data.heroPlaceholder} />
+            <PhotoSlot
+              src={assets.hero ? `/work/${data.slug}/hero.jpg` : undefined}
+              radius={7}
+              placeholder={data.heroPlaceholder}
+            />
           </Reveal>
         </div>
       </header>
@@ -126,7 +131,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
       <section className="case-sec">
         <div className="case-wrap">
           <Reveal className="case-tag">
-            <span>01 — The brief</span>
+            <span>01 - The brief</span>
             <i className="ln" />
           </Reveal>
           <Reveal as="p" className="case-lead">
@@ -153,7 +158,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
       <section className="case-sec">
         <div className="case-wrap">
           <Reveal className="case-tag">
-            <span>02 — The work</span>
+            <span>02 - The work</span>
             <i className="ln" />
           </Reveal>
           <Reveal as="p" className="case-lead">
@@ -166,9 +171,10 @@ export function CaseStudy({ data }: { data: CaseData }) {
                   <VideoSlot src={g.video} placeholder={g.placeholder} radius={6} style={{ aspectRatio: g.ratio }} />
                 ) : (
                   <PhotoSlot
-                    src={`/work/${data.slug}/${i + 1}.jpg`}
+                    src={assets.photos[i] ? `/work/${data.slug}/${i + 1}.jpg` : undefined}
                     placeholder={g.placeholder}
                     radius={6}
+                    ratio={g.ratio}
                   />
                 )}
               </Reveal>
@@ -181,7 +187,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
       <section className="case-sec">
         <div className="case-wrap">
           <Reveal className="case-tag">
-            <span>03 — The results</span>
+            <span>03 - The results</span>
             <i className="ln" />
           </Reveal>
           <div className="case-stats">
@@ -224,7 +230,7 @@ export function CaseStudy({ data }: { data: CaseData }) {
             <div className="nx-l">{data.next.kicker}</div>
             <div className="nx-name">{data.next.name} ↗</div>
           </a>
-          <Link className="case-btn" href="/#contact">
+          <Link className="case-btn" href="/start">
             Start your project ↗
           </Link>
         </div>

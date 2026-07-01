@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Renderer, Triangle, Program, Mesh } from "ogl";
 
 /**
- * Prism (React Bits) — a raymarched glowing prism. Ported to TypeScript; its
+ * Prism (React Bits) - a raymarched glowing prism. Ported to TypeScript; its
  * `.prism-container` style lives in app/globals.css (this project keeps CSS
  * there, so there's no `import './Prism.css'`).
  *

@@ -16,7 +16,7 @@ function scheduleRefresh() {
 }
 
 /**
- * Scroll-fill text — each word inks in from grey to ink (red for accent words
+ * Scroll-fill text - each word inks in from grey to ink (red for accent words
  * wrapped in *asterisks*) as the statement scrolls through the viewport.
  * GSAP ScrollTrigger drives the progress. (Awwwards / Dribbble signature.)
  */

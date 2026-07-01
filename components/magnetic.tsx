@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /**
- * Magnetic wrapper — pulls its child toward the pointer, then springs back.
+ * Magnetic wrapper - pulls its child toward the pointer, then springs back.
  * Used for buttons / CTAs (Framer Motion).
  */
 export function Magnetic({

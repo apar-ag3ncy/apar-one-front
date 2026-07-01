@@ -3,7 +3,7 @@
 import SideRays from "./react-bits/SideRays";
 
 /**
- * SideRaysBackdrop — the stats-band background: volumetric light rays
+ * SideRaysBackdrop - the stats-band background: volumetric light rays
  * (React Bits "SideRays", ogl/WebGL) fanning across the near-black band in a
  * premium gold + orange mix. Replaces the earlier Prism. Click-through; the
  * component pauses itself when the band scrolls out of view.

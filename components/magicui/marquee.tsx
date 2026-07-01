@@ -13,7 +13,7 @@ interface MarqueeProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 /**
- * Magic UI — Marquee
+ * Magic UI - Marquee
  * A reusable, GPU-accelerated infinite marquee.
  */
 export function Marquee({

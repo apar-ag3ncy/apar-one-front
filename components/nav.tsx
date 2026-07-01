@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
 
-// Routes with a dark hero — the nav flips to cream (matches the design's
+// Routes with a dark hero - the nav flips to cream (matches the design's
 // data-nav="dark"). Home's beam landing is dark; Girvaan's hero is light, so
 // it keeps the default.
-const DARK_ROUTES = new Set(["/", "/work/chheda", "/work/diarah"]);
+const DARK_ROUTES = new Set(["/", "/start", "/work/chheda", "/work/diarah", "/creative/reel-cover"]);
 
 const LINKS = [
   { href: "/work", label: "Work" },
-  { href: "/#services", label: "Services" },
+  { href: "/what-we-do", label: "What we do" },
   { href: "/clients", label: "Clients" },
   { href: "/#manifesto", label: "Manifesto" },
   { href: "/#studio", label: "Studio" },
@@ -63,7 +63,7 @@ export function Nav() {
     <>
       <header className={cn("nav", onDark && "on-dark", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
-          <Link className="brand" href="/" aria-label="APAR — Digital Marketing Agency">
+          <Link className="brand" href="/" aria-label="APAR - Digital Marketing Agency">
             <AparLogo onDark={onDark} />
             <span className="brand-tag">
               Digital Marketing
@@ -79,7 +79,7 @@ export function Nav() {
             ))}
           </nav>
           <Magnetic strength={0.25}>
-            <Link className="nav-cta" href="/#contact" data-magnetic>
+            <Link className="nav-cta" href="/start" data-magnetic>
               Start a project
             </Link>
           </Magnetic>

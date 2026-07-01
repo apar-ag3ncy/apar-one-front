@@ -1,5 +1,5 @@
 /**
- * APAR voice concierge — ElevenLabs Agents (Conversational AI) config.
+ * APAR voice concierge - ElevenLabs Agents (Conversational AI) config.
  *
  * The floating "Talk to us" orb becomes a real, Siri-like voice call with the
  * APAR brand concierge. It connects to an ElevenLabs Agent you create once in
@@ -13,7 +13,7 @@
  *      (or paste it into ELEVENLABS_AGENT_ID below).
  *
  * Until an Agent ID is set, the orb gracefully falls back to its original
- * behaviour — a link to the on-page contact section. Nothing breaks.
+ * behaviour - a link to the on-page contact section. Nothing breaks.
  */
 export const ELEVENLABS_AGENT_ID =
   process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID ?? "";

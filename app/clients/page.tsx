@@ -5,8 +5,8 @@ import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
 
 export const metadata: Metadata = {
-  title: "Clients — APAR Digital Marketing Agency",
-  description: "The brands APAR works with — jewellery houses and lifestyle brands across India.",
+  title: "Clients - APAR Digital Marketing Agency",
+  description: "The brands APAR works with - jewellery houses and lifestyle brands across India.",
 };
 
 const ROSTER = [
@@ -28,7 +28,7 @@ const ROSTER = [
 export default function ClientsPage() {
   return (
     <>
-      <section className="page-hero" data-screen-label="Clients — Hero">
+      <section className="page-hero" data-screen-label="Clients - Hero">
         <div className="wrap">
           <Reveal className="eyebrow">
             <i className="dot" /> Our clients
@@ -37,13 +37,13 @@ export default function ClientsPage() {
             The brands behind the <em>work.</em>
           </Reveal>
           <Reveal as="p" className="lead" i={1}>
-            From heritage jewellery houses to fast-moving lifestyle brands — a focused roster we
+            From heritage jewellery houses to fast-moving lifestyle brands - a focused roster we
             partner with closely. Our twelve featured stories lead the way.
           </Reveal>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 30 }} data-screen-label="Clients — Featured">
+      <section className="section" style={{ paddingTop: 30 }} data-screen-label="Clients - Featured">
         <div className="wrap">
           <Reveal className="tag-line">
             <span>Featured stories</span>
@@ -57,7 +57,7 @@ export default function ClientsPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }} data-screen-label="Clients — Roster">
+      <section className="section" style={{ paddingTop: 0 }} data-screen-label="Clients - Roster">
         <div className="wrap">
           <Reveal className="tag-line">
             <span>The full roster</span>
@@ -85,7 +85,7 @@ export default function ClientsPage() {
         </div>
       </section>
 
-      <section className="section-sm" style={{ paddingTop: 0 }} data-screen-label="Clients — CTA">
+      <section className="section-sm" style={{ paddingTop: 0 }} data-screen-label="Clients - CTA">
         <div className="wrap">
           <div className="divline" />
           <div className="clients-foot">
@@ -93,7 +93,7 @@ export default function ClientsPage() {
               Join the <em>roster.</em>
             </Reveal>
             <Reveal i={1}>
-              <Link className="btn" href="/#contact">
+              <Link className="btn" href="/start">
                 <span>Start a project</span>
                 <span className="arr">↗</span>
               </Link>

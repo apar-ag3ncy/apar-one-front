@@ -12,7 +12,7 @@ const LINE_1 = "Brands worth".split(" ");
 const LINE_2 = "remembering.".split(" ");
 
 /**
- * Home hero — the brand's Algolia-style beam promoted to the landing screen:
+ * Home hero - the brand's Algolia-style beam promoted to the landing screen:
  * the red pixel-dome arc sweeps behind the giant APAR wordmark (tinted to the
  * beam's pale-rose crest so it sits IN the light, not against it) and the
  * brand statement. Entrance choreography is gated on the intro overlay lift;
@@ -29,7 +29,7 @@ export function Hero({ start }: { start: boolean }) {
   const copyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
   // Lusion-style: the scroll cue dissolves as soon as the user starts scrolling
-  // (plain scroll listener + CSS transition — kept out of framer's opacity
+  // (plain scroll listener + CSS transition - kept out of framer's opacity
   // arbitration, which suppresses derived MotionValues here).
   const cueRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -78,27 +78,13 @@ export function Hero({ start }: { start: boolean }) {
   };
 
   return (
-    <section ref={ref} className="hero-beam" data-screen-label="Home — Hero">
+    <section ref={ref} className="hero-beam" data-screen-label="Home - Hero">
       <BandBackdrop domeY={-0.24} intensity={0.98} />
       <div className="wrap">
         <motion.div
           className="hero-beam-in"
           style={{ y: copyY, opacity: copyOpacity, willChange: "transform, opacity" }}
         >
-          <motion.div
-            className="meta-row"
-            initial={{ y: 18, opacity: 0 }}
-            animate={animate}
-            variants={{ hidden: { y: 18, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.7, ease: EASE, delay: base }}
-          >
-            <span>
-              <i className="dot" /> Digital Marketing Agency
-            </span>
-            <span>Mumbai, IN</span>
-            <span>Est. 2026</span>
-          </motion.div>
-
           <motion.div
             className="hb-wordmark"
             initial={reduce ? { opacity: 1 } : { opacity: 0, scale: 1.06, filter: "blur(14px)" }}
@@ -122,17 +108,6 @@ export function Hero({ start }: { start: boolean }) {
             <span className="hl">{LINE_2.map(word)}</span>
           </h1>
 
-          <motion.p
-            className="lead"
-            initial={{ y: 24, opacity: 0 }}
-            animate={animate}
-            variants={{ hidden: { y: 24, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.85, ease: EASE, delay: base + 1.45 }}
-          >
-            A digital marketing &amp; branding agency for jewellery houses and premium brands — we
-            turn attention into growth with strategy, content and campaigns.
-          </motion.p>
-
           <motion.div
             className="hero-actions"
             initial={{ y: 22, opacity: 0 }}
@@ -146,7 +121,7 @@ export function Hero({ start }: { start: boolean }) {
                 <span className="arr">↗</span>
               </a>
             </Magnetic>
-            <a className="btn-ghost light" href="/#services">
+            <a className="btn-ghost light" href="/what-we-do">
               What we do
             </a>
           </motion.div>

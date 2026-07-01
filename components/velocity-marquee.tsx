@@ -22,7 +22,7 @@ const WORDS = [
 ];
 
 /**
- * Oversized velocity marquee — Magic UI Marquee for the infinite scroll,
+ * Oversized velocity marquee - Magic UI Marquee for the infinite scroll,
  * Framer Motion scroll-velocity mapped to a live skewY (the "velocity skew").
  */
 export function VelocityMarquee() {

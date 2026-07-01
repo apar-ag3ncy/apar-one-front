@@ -9,7 +9,7 @@ import { CONCIERGE_NAME, ELEVENLABS_AGENT_ID } from "@/lib/elevenlabs";
 /** Brand strand palette (red → orange → gold), shared with the stats band. */
 const STRAND_COLORS = ["#EB3B25", "#F0883B", "#F6C57A"] as const;
 
-/** The living "siri" glass orb — same look as the original floating button. */
+/** The living "siri" glass orb - same look as the original floating button. */
 const ORB_PROPS = {
   colors: [...STRAND_COLORS],
   count: 5,

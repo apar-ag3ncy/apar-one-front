@@ -7,12 +7,12 @@ import { VoiceConcierge } from "@/components/voice-concierge";
 import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
 
 /**
- * Floating contact orb — a refractive glass "siri" (react-bits Strands) docked
+ * Floating contact orb - a refractive glass "siri" (react-bits Strands) docked
  * bottom-right on every page. Lit with the brand's exact strand palette
  * (red → orange → gold), matching the stats band.
  *
  * When an ElevenLabs Agent is configured (NEXT_PUBLIC_ELEVENLABS_AGENT_ID), the
- * orb becomes a real, Siri-like voice call with APAR's concierge — tap to talk,
+ * orb becomes a real, Siri-like voice call with APAR's concierge - tap to talk,
  * audio-reactive waveform, live captions. See lib/elevenlabs.ts + VOICE-CONCIERGE.md.
  *
  * Until then it gracefully falls back to its original behaviour: a link to the

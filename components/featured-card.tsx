@@ -32,7 +32,7 @@ function hexToHsl(hex: string): string {
 
 /**
  * Featured-client card. At rest it shows the brand logo (once it has actually
- * loaded; otherwise the brand name — so a missing file never shows a broken
+ * loaded; otherwise the brand name - so a missing file never shows a broken
  * image). The logo scales/fades in, a glassy shine sweeps across as the card
  * enters view, and on hover/focus/press it cross-fades to the case info.
  *
@@ -45,7 +45,7 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
   const [logoLoaded, setLogoLoaded] = useState(false);
 
   // Cached images can finish loading before React attaches onLoad, so check
-  // the image's completed state on mount as well — otherwise the logo would
+  // the image's completed state on mount as well - otherwise the logo would
   // silently never appear and the card would look empty.
   useEffect(() => {
     const img = imgRef.current;

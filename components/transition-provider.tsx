@@ -33,7 +33,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
 
   const onComplete = () => {
     if (phase === "cover" && target) {
-      // Screen is fully covered — navigate underneath, then lift to reveal.
+      // Screen is fully covered - navigate underneath, then lift to reveal.
       router.push(target.href);
       window.setTimeout(() => setPhase("reveal"), 140);
     } else if (phase === "reveal") {

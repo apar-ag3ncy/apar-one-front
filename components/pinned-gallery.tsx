@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VideoSlot } from "./video-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 
-// Derived from the single source of truth (lib/cases.tsx) — every case auto-appears
+// Derived from the single source of truth (lib/cases.tsx) - every case auto-appears
 // in the horizontal scroll, in order, with no manual sync as cases are added.
 // Each frame plays /videos/<slug>.mp4 (drop the file in and it appears).
 
@@ -43,7 +43,7 @@ const CARDS = FEATURED_CLIENTS.map((c) => ({
 const PIN_HEIGHT = `${Math.round((CARDS.length + 2) * 74)}vh`;
 
 /**
- * Pinned horizontal-scroll work gallery — projects slide sideways through a
+ * Pinned horizontal-scroll work gallery - projects slide sideways through a
  * sticky stage with a live progress bar. GSAP ScrollTrigger scrubs the track.
  */
 export function PinnedGallery() {
@@ -77,7 +77,7 @@ export function PinnedGallery() {
           onUpdate: (self) => {
             // Only the lightweight progress bar updates here. (The old
             // velocity-skew write per frame triggered a full-document style
-            // recalc — see .pin-card in globals.css — and has been removed.)
+            // recalc - see .pin-card in globals.css - and has been removed.)
             if (progressRef.current) {
               progressRef.current.style.setProperty(
                 "--pp-scale",
@@ -100,7 +100,7 @@ export function PinnedGallery() {
     <section
       ref={sectionRef}
       className="pin"
-      data-screen-label="Home — Work Gallery"
+      data-screen-label="Home - Work Gallery"
       style={{ height: PIN_HEIGHT }}
     >
       <div className="pin-sticky">

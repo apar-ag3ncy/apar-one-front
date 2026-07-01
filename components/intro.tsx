@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AparLogo } from "./apar-logo";
 
 /**
- * Intro reveal overlay — APAR logo + count-up wipes away on first visit
+ * Intro reveal overlay - APAR logo + count-up wipes away on first visit
  * (once per session). The hero entrance is synced to this lift.
  */
 export function Intro({ onDone }: { onDone?: () => void }) {

@@ -6,7 +6,7 @@ import { type ElementType } from "react";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Masked word-stagger reveal (Framer Motion) — each word rises out of an
+ * Masked word-stagger reveal (Framer Motion) - each word rises out of an
  * overflow-hidden box with a slight rotate, matching the design's
  * `.split-words` effect.
  */

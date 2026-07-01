@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 /**
- * PixelDome — an Algolia-style hero beam: ONE single curved strip of light,
+ * PixelDome - an Algolia-style hero beam: ONE single curved strip of light,
  * rendered as thousands of tiny rounded-rectangle tiles on a strict, perfectly
  * aligned grid (tiles almost touching, subtle corner radius). The beam is
  * brightest at the top-centre crown, dimmer toward the sides, and dissolves into
@@ -48,10 +48,10 @@ uniform float uTime;       // seconds, for flicker
 //   pale lavender (192,190,236) -> pale rose (236,196,190) crest,
 //   electric blue (58,55,235)  -> brand red #EE3926 (238,57,38) glow,
 //   fades = the vivid hue scaled toward the warm near-black base.
-const vec3 C_LIGHT = vec3(0.925, 0.770, 0.745);      // pale rose — thin bright crest
-const vec3 C_HOT   = vec3(0.9333, 0.2235, 0.1490);   // brand red #EE3926 — the beam colour
-const vec3 C_MID   = vec3(0.6720, 0.1609, 0.1073);   // #EE3926 * 0.72 — body stays a true #EE3926 red, never maroon
-const vec3 C_DARK  = vec3(0.0840, 0.0201, 0.0134);   // #EE3926 * 0.09 — fade end, same hue
+const vec3 C_LIGHT = vec3(0.925, 0.770, 0.745);      // pale rose - thin bright crest
+const vec3 C_HOT   = vec3(0.9333, 0.2235, 0.1490);   // brand red #EE3926 - the beam colour
+const vec3 C_MID   = vec3(0.6720, 0.1609, 0.1073);   // #EE3926 * 0.72 - body stays a true #EE3926 red, never maroon
+const vec3 C_DARK  = vec3(0.0840, 0.0201, 0.0134);   // #EE3926 * 0.09 - fade end, same hue
 
 // cheap per-cell hash -> 0..1
 float hash21(vec2 p){
@@ -61,7 +61,7 @@ float hash21(vec2 p){
 }
 
 // ---- ONE single curved beam (the Algolia arc): an ellipse whose centre sits
-//      below the frame, so the bright strip sweeps the full width — apex at the
+//      below the frame, so the bright strip sweeps the full width - apex at the
 //      top-centre crown, sides running off the edges. Crisp-ish dissolve above
 //      the strip, long dissolve below it; a falloff ALONG the arc keeps it
 //      brightest at the crown and dimmer toward the sides.
@@ -93,12 +93,12 @@ void main(){
   vec2 uvF = gl_FragCoord.xy / uRes;        // per-fragment sample (soft in-tile shading)
 
   // ---- hover: a small, in-hue "pop" that follows the cursor. The lit tiles get
-  //      a touch brighter and warmer — they must NOT trend to the pale/white
+  //      a touch brighter and warmer - they must NOT trend to the pale/white
   //      crest colour (that read as ugly blown-out white blocks). So the hover
   //      lifts only the tile ALPHA here, and a warm RED pop is added to the
   //      final colour below; it never feeds the colour ramp's white crest.
   //      Radius kept tight (sigma 0.06) so the cursor's reach is felt but
-  //      contained — present, not a bloom. ----
+  //      contained - present, not a bloom. ----
   float md = length((uvC - uMouse) * vec2(aspect, 1.0));
   float near = exp(-(md * md) / (2.0 * 0.06 * 0.06)) * uMouseOn;
   float rnd = hash21(cellId + 0.5);
@@ -111,7 +111,7 @@ void main(){
   vec2 bC = beamAt(uvC, aspect);
   vec2 bF = beamAt(uvF, aspect);
   // hover lifts the tile ALPHA (so the popped patch emerges) but NOT the colour
-  // ramp — the warm pop is added straight to the final colour below, keeping it
+  // ramp - the warm pop is added straight to the final colour below, keeping it
   // in-hue (no white crest).
   float gA   = clamp(bC.x + hov, 0.0, 1.3);
   float gCol = clamp(mix(bC.x, bF.x, 0.30), 0.0, 1.3);
@@ -121,7 +121,7 @@ void main(){
   //      where four rounded corners meet the groove deepens into the small dark
   //      4-pointed star. ----
   vec2 local = fract(gl_FragCoord.xy / uCell) - 0.5;
-  float hs = 0.485;                                     // tiles all but touch — hairline seam
+  float hs = 0.485;                                     // tiles all but touch - hairline seam
   float cr = 0.17;                                      // soft squircle corners
   vec2 qd = abs(local) - vec2(hs - cr);
   float box = length(max(qd, 0.0)) + min(max(qd.x, qd.y), 0.0) - cr; // rounded-box SDF
@@ -145,16 +145,16 @@ void main(){
   // the reference's dark background is not flat black: the tile grid stays
   // faintly visible everywhere. Blend the dark tiles up to a dim warm base so
   // the texture (and its junction stars) barely shows in the dark.
-  col = mix(vec3(0.1867, 0.0447, 0.0298), col, smoothstep(0.03, 0.18, gCol)); // #EE3926 * 0.20 — dim base is a true shade of the brand red
+  col = mix(vec3(0.1867, 0.0447, 0.0298), col, smoothstep(0.03, 0.18, gCol)); // #EE3926 * 0.20 - dim base is a true shade of the brand red
 
   // ---- hover pop: blend the tiles under the cursor toward a bright brand-red
   //      (green/blue kept low so it can NEVER trend to the pale/white crest that
   //      read as ugly blown-out blocks). The tiles just "pop" a little warmer and
-  //      brighter — in-hue, contained, enough to feel the cursor, not a bloom. ----
-  vec3 POP = vec3(1.0, 0.32, 0.18);                     // bright brand-red — low G/B = stays red, never white
+  //      brighter - in-hue, contained, enough to feel the cursor, not a bloom. ----
+  vec3 POP = vec3(1.0, 0.32, 0.18);                     // bright brand-red - low G/B = stays red, never white
   col = mix(col, POP, clamp(hov * 2.2, 0.0, 0.8));
 
-  col *= 1.0 - 0.22 * seam;                             // hairline grooves + soft junction dots — gaps barely read, like the reference
+  col *= 1.0 - 0.22 * seam;                             // hairline grooves + soft junction dots - gaps barely read, like the reference
 
   // ---- emergence from darkness: the beam opacity curve plus a gentle low-glow
   //      gate, over a faint alpha floor that keeps the grid texture barely
@@ -215,7 +215,7 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.clearColor(0, 0, 0, 0); // transparent — every frame starts clean
+    gl.clearColor(0, 0, 0, 0); // transparent - every frame starts clean
 
     const u = (n: string) => gl.getUniformLocation(prog, n);
     const uRes = u("uRes");
@@ -232,7 +232,7 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
     let h = 0;
     let dpr = 1;
     // canvas rect cached at resize time (the canvas fills its inset:0 host, so
-    // it only moves via scroll — onMove offsets by the scroll delta instead of
+    // it only moves via scroll - onMove offsets by the scroll delta instead of
     // re-measuring per pointer event)
     let rl = 0;
     let rt = 0;
@@ -287,7 +287,7 @@ export function PixelDome({ cell = 20, domeY = -0.15, intensity = 1, className }
       sy += (my - sy) * k;
       onSmooth += (onTarget - onSmooth) * k;
       draw();
-      // Park the loop when settled (no hover, smoothing converged) — the dome is
+      // Park the loop when settled (no hover, smoothing converged) - the dome is
       // static at rest and the compositor keeps the last frame on screen, so
       // an idle band costs nothing. Pointer movement wakes it back up.
       const settled =

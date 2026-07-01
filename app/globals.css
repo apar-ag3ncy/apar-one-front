@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" — the Latin half of
+/* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" - the Latin half of
    the matched pair in /public/fit-devnagari/, sharing the SAME single `wdth` axis
    as the Devanagari (weight + height are baked into the cut). WOFF2 first so Safari
    renders the variable font; the source .otf is the fallback. */
@@ -9,11 +9,11 @@
   font-family: 'fit-vf';
   src: url('/fit-devnagari/Fit_Latin_Variable.woff2') format('woff2'),
        url('/fit-devnagari/fonnts.com-Fit_Variable_Normal.otf') format('opentype');
-  /* Declare the cut AS weight 900 so a 900 request matches exactly — no faux bold. */
+  /* Declare the cut AS weight 900 so a 900 request matches exactly - no faux bold. */
   font-weight: 900;
   font-display: swap;
 }
-/* Real Fit Devanagari (local) — so the wordmark's leading अ renders in genuine
+/* Real Fit Devanagari (local) - so the wordmark's leading अ renders in genuine
    Fit, not a Noto fallback. Single `wdth` axis on the same instance scale as the
    Latin (Condensed 293 · Normal 482 …); weight/height are baked into the cut.
    WOFF2 first so Safari (which rejects this variable .otf) renders it too. */
@@ -62,12 +62,15 @@
 }
 
 /* ============================================================
-   APAR — Editorial Press · Shared design system
+   APAR - Editorial Press · Shared design system
    (ported from the design bundle: site.css + motion.css)
    ============================================================ */
 :root{
   --red:#EB3B25;
   --red-deep:#C42A17;
+  /* signature APAR gradient (deep-red -> red -> warm orange) - reuse everywhere
+     an accent should feel premium instead of flat, so the site stays cohesive */
+  --grad:linear-gradient(120deg,#C42A17,#EB3B25 46%,#FF7A45);
   --cream:#F4EDE2;
   --cream-2:#EBE0CE;
   --paper:#FBF7EF;
@@ -82,7 +85,7 @@
   --sans:'Archivo',system-ui,sans-serif;
   /* APAR wordmark = Fit (DJR), variable-width, across the 9 scripts it ships in.
      Real Fit (Adobe Fonts kit) wins; the logo's leading-"A" transition only
-     renders a script live once its real Fit family is confirmed loaded — see
+     renders a script live once its real Fit family is confirmed loaded - see
      components/apar-logo.tsx. Stand-ins below are only for non-logo Fit usage. */
   /* Real Adobe Fonts family names for Fit are the `-vf` variants (from the Fit
      web-project source). Arabic/Armenian/Kannada confirmed; the rest follow the
@@ -99,15 +102,15 @@
 }
 *{box-sizing:border-box;}
 /* clip (NOT hidden) guards horizontal overflow without making html/body a scroll
-   container — `overflow-x:hidden` coerces overflow-y to `auto`, which breaks every
+   container - `overflow-x:hidden` coerces overflow-y to `auto`, which breaks every
    position:sticky pin on the page (.pin-sticky work gallery, .split-sticky). */
 html{overflow-x:clip;}
 html:not(.lenis){scroll-behavior:smooth;}
-/* lava fluid cursor trail — full-viewport overlay, click-through, under the nav */
+/* lava fluid cursor trail - full-viewport overlay, click-through, under the nav */
 .splash-cursor{position:fixed;inset:0;z-index:50;pointer-events:none;}
 .splash-cursor canvas{width:100vw;height:100vh;display:block;}
 
-/* Lenis inertial scroll (Lusion feel) — native smooth-behavior must yield to it */
+/* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
 html.lenis,html.lenis body{height:auto;}
 .lenis.lenis-smooth{scroll-behavior:auto!important;}
 .lenis.lenis-stopped{overflow:hidden;}
@@ -136,7 +139,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   display:inline-flex;align-items:center;gap:11px;
 }
-.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--grad);flex:none;}
 .eyebrow.on-red{color:rgba(244,237,226,.85);}
 .eyebrow.on-red .dot{background:var(--cream);}
 
@@ -152,7 +155,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 /* ---------- buttons ---------- */
 .btn{
   display:inline-flex;align-items:center;gap:12px;cursor:pointer;border:none;
-  background:var(--red);color:#fff;font-family:var(--sans);font-weight:700;
+  background:var(--grad);color:#fff;font-family:var(--sans);font-weight:700;
   font-size:15px;letter-spacing:.01em;padding:17px 28px;border-radius:100px;white-space:nowrap;
   position:relative;overflow:hidden;transition:transform .5s var(--ease);
 }
@@ -162,7 +165,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .btn:hover::before{transform:translateY(0);}
 .btn:hover .arr{transform:translate(4px,-4px);}
 .btn.ink{background:var(--ink);}
-.btn.ink::before{background:var(--red);}
+.btn.ink::before{background:var(--grad);}
 .btn.cream{background:var(--cream);color:var(--ink);}
 .btn.cream::before{background:var(--ink);}
 .btn.cream:hover{color:var(--cream);}
@@ -185,20 +188,21 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .nav-in{display:flex;align-items:center;justify-content:space-between;width:100%;
   max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
 /* Near-opaque solid (no backdrop blur): a frosted sticky bar re-blurs the
-   backdrop every scrolled frame it overlaps moving content — a real scroll cost
+   backdrop every scrolled frame it overlaps moving content - a real scroll cost
    on tablet/desktop. The solid reads the same and composites for free. */
 .nav.scrolled{background:rgba(244,237,226,.96);box-shadow:0 1px 0 var(--line);height:70px;}
 .nav .brand{display:flex;align-items:center;gap:13px;}
-/* APAR wordmark — the heavy, blocky Fit (DJR) of the OG company logo. The leading
+/* APAR wordmark - the heavy, blocky Fit (DJR) of the OG company logo. The leading
    "A" swaps between the three scripts Fit ships in (Latin / Devanagari / Kannada).
-   It is STILL: the glyph just changes in place — no pop-in, no scale, no width
-   breathing — matching the static original. */
+   It is STILL: the glyph just changes in place - no pop-in, no scale, no width
+   breathing - matching the static original. */
 .apar-logo{display:inline-flex;align-items:baseline;
   font-size:40px;line-height:0.85;color:var(--red);
   font-weight:900;
   transition:font-size .4s var(--ease),color .35s var(--ease);user-select:none;}
 .apar-logo.on-dark{color:var(--cream);}
-.nav.scrolled .apar-logo{font-size:34px;}
+.nav .apar-logo{font-size:46px;}
+.nav.scrolled .apar-logo{font-size:40px;}
 /* The wordmark is styled via the Fit variable font.
    Anchored right-aligned script transition avoiding layout shifts. */
 .apar-logo-inner {
@@ -206,7 +210,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   align-items: baseline;
 }
 /* All script variants stack in ONE grid cell so they cross-fade in place, every
-   one right-aligned ("stuck") to PĀR and — critically — sharing PĀR's baseline.
+   one right-aligned ("stuck") to PĀR and - critically - sharing PĀR's baseline.
    (The old absolute `bottom:0` aligned each glyph's descender box, not its
    baseline, so the leading letter floated up by the font's descent.) */
 .apar-lead-wrap {
@@ -220,11 +224,11 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   transition: opacity .5s var(--ease);
   font-weight: 900;
   /* The Fit cuts are single-weight (no wght axis); never let the browser
-     fake bold to reach 900 — faux-bold floods the narrow counters into a
+     fake bold to reach 900 - faux-bold floods the narrow counters into a
      solid block. (font-weight 900 stays for the Roboto Flex fallback.) */
   font-synthesis: none;
   /* Fit's width axis is custom (wdth 100=Skyline … 3600=Ultra Extended), NOT
-     CSS-stretch percentages — so drive it explicitly. wdth 360 ≈ between
+     CSS-stretch percentages - so drive it explicitly. wdth 360 ≈ between
      Condensed and Normal: the heavy, tall, narrow-counter display cut. */
   font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
@@ -235,7 +239,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
 @media (prefers-reduced-motion: reduce){.apar-lead-char{transition:none;}}
-.nav .brand-tag{font-size:9.5px;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
+.nav .brand-tag{font-size:11px;line-height:1.15;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
 @media (max-width:1180px){.nav .brand-tag{display:none;}}
@@ -244,7 +248,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:-2px;height:2px;background:var(--red);transition:right .4s var(--ease);}
 .nav-links a:hover::after,.nav-links a.active::after{right:0;}
 .nav-cta{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--cream);background:var(--ink);padding:11px 20px;border-radius:100px;transition:background .35s var(--ease);}
-.nav-cta:hover{background:var(--red);}
+.nav-cta:hover{background:var(--grad);}
 .nav-burger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;
   width:44px;height:44px;cursor:pointer;background:none;border:none;padding:0;margin-right:-10px;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:2;}
@@ -265,7 +269,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   display:flex;flex-direction:column;justify-content:center;padding:0 var(--gut);
   transform:translateY(-100%);transition:transform .6s var(--ease);}
 .mobile-menu.open{transform:translateY(0);}
-/* stack the links vertically — adjacent inline <a>s (no whitespace between
+/* stack the links vertically - adjacent inline <a>s (no whitespace between
    them in JSX) would otherwise run off-screen on one line */
 .mobile-menu .mm-links{display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
 .mobile-menu a{display:block;width:fit-content;font-family:var(--serif);font-size:clamp(40px,11vw,72px);line-height:1.15;padding:8px 0;color:var(--cream);touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
@@ -278,22 +282,27 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .footer-inner{display:flex;flex-direction:column;min-height:80vh;}
 /* minimal top row: single CTA + sparse contact columns (Lusion-style restraint) */
 .footer-row{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
-.footer-talk{display:inline-flex;align-items:center;gap:14px;font-size:17px;font-weight:600;color:var(--cream);}
+.footer-talk{display:inline-flex;align-items:center;gap:14px;font-size:19px;font-weight:600;color:var(--cream);}
 .footer-talk .circ{width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .5s var(--ease);}
 .footer-talk:hover .circ{transform:rotate(45deg) scale(1.08);}
 .footer-cols{display:flex;gap:56px;flex-wrap:wrap;}
 .fcol{display:flex;flex-direction:column;gap:9px;}
-.fcol-h{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mid);font-weight:700;margin-bottom:6px;}
-.fcol a,.fcol span{color:rgba(244,237,226,.82);font-size:15px;transition:color .3s;}
+.fcol-h{font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mid);font-weight:700;margin-bottom:8px;}
+.fcol a,.fcol span{color:rgba(244,237,226,.85);font-size:17px;transition:color .3s;}
 .fcol a:hover{color:var(--red);}
+/* Social links: brand-coloured glyph + label, glyph lifts on hover. */
+.fsocial{display:inline-flex;align-items:center;gap:11px;}
+.fsocial-ic{display:inline-flex;width:21px;height:21px;flex:none;transition:transform .3s var(--ease);}
+.fsocial-ic svg{width:100%;height:100%;display:block;}
+.fsocial:hover .fsocial-ic{transform:translateY(-2px) scale(1.1);}
 /* the statement: giant APAR wordmark spanning the width, pinned to the bottom */
 /* full-bleed: break out of the .wrap so the wordmark spans the viewport edge-to-edge */
 .footer-word{margin-top:auto;width:100vw;margin-left:calc(50% - 50vw);padding-top:6vh;
   display:flex;justify-content:center;line-height:.72;white-space:nowrap;user-select:none;}
 /* identical wordmark to the landing-page hero (same Fit cut, natural spacing,
-   and the PĀR macron) — just scaled up to the full-bleed footer size */
+   and the PĀR macron) - just scaled up to the full-bleed footer size */
 .footer-word .apar-logo{font-size:min(30vw,460px);line-height:.72;color:var(--cream);}
-.footer-base{display:flex;justify-content:space-between;align-items:center;margin-top:26px;font-size:13px;color:var(--ink-mid);flex-wrap:wrap;gap:16px;}
+.footer-base{display:flex;justify-content:space-between;align-items:center;margin-top:26px;font-size:14.5px;color:var(--ink-mid);flex-wrap:wrap;gap:16px;}
 @media (max-width:760px){
   .footer-row{flex-direction:column;gap:30px;}
   .footer-cols{gap:32px;}
@@ -318,8 +327,13 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .svc-item:hover .s-go{background:var(--red);border-color:var(--red);color:#fff;transform:rotate(-45deg);}
 
 /* ---------- work cards ---------- */
-.work-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:32px 32px;}
-.work-card{position:relative;cursor:pointer;}
+/* Masonry via CSS grid + JS row-spans (see app/work/page.tsx): each card keeps
+   its photo's true height and packs with no gaps or cropping - full images,
+   clean alignment across varied ratios, and no card ever splits. */
+.work-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1px;column-gap:32px;}
+@media (max-width:1080px){.work-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:600px){.work-grid{grid-template-columns:1fr;}}
+.work-card{position:relative;cursor:pointer;align-self:start;}
 .work-card .frame{position:relative;overflow:hidden;border-radius:4px;background:var(--cream-2);}
 .work-card .img-slot,.work-card .ph-img{width:100%;display:block;transition:transform 1s var(--ease);}
 .work-card:hover .img-slot,.work-card:hover .ph-img{transform:scale(1.04);}
@@ -375,28 +389,13 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
    section). Never animate transform/filter/perspective on <body>. */
 @keyframes pageReveal{ from{ opacity:0; } to{ opacity:1; } }
 
-/* ---------- custom cursor (brand-red ring + trailing dot) ---------- */
-.has-cursor, .has-cursor *{ cursor:none !important; }
-.cursor-ring{position:fixed;top:0;left:0;width:40px;height:40px;border:2px solid var(--red);border-radius:50%;
-  pointer-events:none;z-index:99999;display:flex;align-items:center;justify-content:center;
-  background:rgba(235,59,37,.06);opacity:0;
-  box-shadow:0 0 0 1px rgba(244,237,226,.35), 0 4px 18px rgba(0,0,0,.18);
-  transition:opacity .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease);
-  will-change:transform;}
-.cursor-ring.ready{opacity:1;}
-.cursor-ring.active{background:rgba(235,59,37,.12);}
-/* labelled state = solid brand-red disc with a context label */
-.cursor-ring.labelled{background:var(--red);border-color:var(--red);box-shadow:0 8px 30px rgba(235,59,37,.5);}
-.cursor-ring.down{background:rgba(235,59,37,.22);}
-.cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;background:var(--red);border-radius:50%;
-  pointer-events:none;z-index:99999;opacity:0;transition:opacity .3s var(--ease);will-change:transform;
-  box-shadow:0 0 0 1px rgba(244,237,226,.4);}
-.cursor-dot.ready{opacity:1;}
-.cursor-label{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--cream);opacity:0;transform:scale(.4);transition:opacity .25s var(--ease),transform .25s var(--ease);white-space:nowrap;}
-.cursor-ring.labelled .cursor-label{opacity:1;transform:scale(.32);}
-/* Hide only on pure touch (no hover capability); hybrid laptops keep it. */
-@media (hover:none){ .cursor-ring,.cursor-dot{display:none;} }
+/* ---------- site cursor: a single black navigation arrow ---------- */
+/* The whole site uses one cursor - a charcoal navigation arrow (thin white
+   outline so it stays visible on the dark hero / case pages). Forced
+   everywhere with !important so it overrides the various `cursor:pointer`
+   rules; the hotspot (26 2) sits on the arrow tip. `auto` is the fallback if
+   the image ever fails to load. */
+*, *::before, *::after{ cursor:url('/cursor-arrow.svg') 2 2, auto !important; }
 
 /* ---------- horizontal pinned gallery ---------- */
 .pin{position:relative;background:var(--ink);color:var(--cream);}
@@ -410,7 +409,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .pin-intro p{color:rgba(244,237,226,.72);max-width:36ch;font-size:16px;}
 /* No per-card scroll-velocity skew: it re-skewed every video card each frame
    AND was driven by an inherited registered custom property, forcing a full
-   document style recalc per frame — the dominant scroll-jank source. The track
+   document style recalc per frame - the dominant scroll-jank source. The track
    translateX alone (one composited layer) carries the horizontal motion. */
 .pin-card{flex:none;width:clamp(220px,40vh,400px);align-self:center;}
 .pin-card .frame{position:relative;overflow:hidden;border-radius:5px;background:#241f1b;}
@@ -427,7 +426,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .pin-hint{position:absolute;right:var(--gut);bottom:60px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,237,226,.6);z-index:3;}
 @media (max-width:900px){
   /* Collapse the horizontal scrub to a vertical stack at ≤900px (kept in sync
-     with the GSAP matchMedia in pinned-gallery.tsx) — scroll-jacking feels bad
+     with the GSAP matchMedia in pinned-gallery.tsx) - scroll-jacking feels bad
      on portrait / touch tablets. */
   .pin{height:auto !important;}
   .pin-sticky{position:static;height:auto;display:block;padding:80px 0;}
@@ -497,11 +496,11 @@ body.intro-lock{overflow:hidden;}
 .img-slot .img-slot-cap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   text-align:center;padding:18px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
   color:rgba(244,237,226,.5);font-weight:600;}
-/* video frame — fills the slot, fades in once it can play */
+/* video frame - fills the slot, fades in once it can play */
 .video-slot-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
   opacity:0;transition:opacity .6s var(--ease);}
 .video-slot-el[data-ready="true"]{opacity:1;}
-/* photo frame — fills the slot, fades in once loaded */
+/* photo frame - fills the slot, fades in once loaded */
 .photo-slot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
   opacity:0;transition:opacity .6s var(--ease);}
 .photo-slot-img[data-loaded="true"]{opacity:1;}
@@ -510,32 +509,55 @@ body.intro-lock{overflow:hidden;}
    HOME PAGE styles (ported from index.html #page-styles)
    ============================================================ */
 /* ---- beam landing hero: the Algolia arc as the first screen. Dark base,
-   red pixel-dome behind a centred stack — kicker, giant APAR wordmark tinted
+   red pixel-dome behind a centred stack - kicker, giant APAR wordmark tinted
    to the beam's pale-rose crest (so the type sits IN the light), the brand
    statement, lead and CTAs. Lusion-style restraint: one light source, lots of
    black, serif statement, slow choreography. ---- */
 .hero-beam{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);
   min-height:100svh;display:flex;align-items:center;}
-.hero-beam .wrap{position:relative;z-index:2;width:100%;}
-/* Nudge the whole hero copy block down (internal spacing preserved) so the
-   beam's bright crest clears the wordmark instead of sitting behind it. The
-   beam canvas is anchored to the section, so shifting only .wrap reveals more
-   crest above the mark. Gated to tall viewports that have the vertical slack —
-   short laptops keep the original position so the CTAs/scroll cue never slip
-   below the fold. vh-scaled and capped. */
-@media (min-height:840px){
-  .hero-beam .wrap{transform:translateY(clamp(40px,5.5vh,76px));}
-}
+.hero-beam .wrap{position:relative;z-index:2;width:100%;
+  /* Lift the copy block up so the giant APAR wordmark sits centered-but-slightly-
+     high, ON the beam's bright crest (the beam canvas is anchored to the section,
+     so shifting only .wrap moves the mark up into the light). Moving up frees
+     space below, so the CTAs/scroll cue never slip off-screen. vh-scaled + capped
+     so it lifts more on tall displays and stays gentle on short laptops. */
+  transform:translateY(clamp(-46px,-3.4vh,-24px));}
+/* Vertical rhythm is viewport-height-aware so the whole hero (mark, headline,
+   lead, CTAs, scroll cue) always fits on screen without cropping - it breathes
+   on tall displays and compresses on short laptops. */
 .hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:130px 0 110px;}
+  padding:clamp(52px,6.5svh,120px) 0 clamp(46px,5.5svh,100px);}
 .hero-beam .meta-row{color:rgba(244,237,226,.6);justify-content:center;}
-.hb-wordmark{display:flex;justify-content:center;pointer-events:none;margin-top:40px;
+.hb-wordmark{display:flex;justify-content:center;pointer-events:none;margin-top:clamp(16px,2.2vh,40px);
   will-change:transform,filter,opacity;}
-.hb-wordmark .apar-logo{font-size:clamp(72px,12.5vw,184px);line-height:.9;color:#F3DAD3;
+/* min(20.5vw,30.5svh): the mark is sized by width on tall screens (stays big) but
+   capped by viewport height on short laptops so it can't push the CTAs off-screen. */
+.hb-wordmark .apar-logo{font-size:clamp(89px,min(20.5vw,30.5svh),356px);line-height:1;letter-spacing:0.0083em;color:#F3DAD3;
   filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}
-.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);margin:38px 0 0;}
-.hero-beam .hero-h1 .hl{color:#ECC4BE;} /* the crest tint — the italic line glows like the beam */
-.hero-beam .lead{color:rgba(244,237,226,.66);max-width:52ch;margin:24px auto 0;}
+/* Consistent tracking: the leading-glyph gap (अ / A) is kept equal to the P-A-R
+   letter-spacing above so the whole mark is evenly spaced - compact but never
+   touching/overlapping. */
+.hb-wordmark .apar-logo-inner{gap:0.0083em;}
+/* Match the logo mark's proportions: apar-logo-red.png sets its Fit width axis
+   wide (word ratio ≈ 1.85:1). The shared wdth 360 rendered the hero mark too
+   narrow/tall; wdth 482 reproduces the logo's blocky proportions here (hero only,
+   so the nav/footer/brand-band marks are untouched). */
+.hb-wordmark .apar-lead-char,
+.hb-wordmark .apar-par-text{
+  font-variation-settings:'wght' 1000,'wdth' 482,'HGHT' 100,'slnt' 0;
+}
+/* Reduced-motion: the framer entrance can leave the mark stuck at its non-reduce
+   initial (opacity:0 + blur(14px) + scale(1.06)) because the reduce variants never
+   clear those inline styles - so the logo would be invisible or a soft blob. Pin it
+   visible, crisp and settled so it still reads as the logo. */
+@media (prefers-reduced-motion: reduce){
+  .hb-wordmark{opacity:1!important;filter:none!important;transform:none!important;}
+}
+/* The wordmark is lifted onto the beam crest; open a bigger gap under it so the
+   tagline + CTAs drop back into the dark BELOW the beam and never overlap it. */
+.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);margin:clamp(56px,8vh,104px) 0 0;}
+.hero-beam .hero-h1 .hl{color:#ECC4BE;} /* the crest tint - the italic line glows like the beam */
+.hero-beam .lead{color:rgba(244,237,226,.66);max-width:52ch;margin:clamp(12px,1.7vh,24px) auto 0;}
 .hero-beam .hero-actions{justify-content:center;}
 .hero-beam .scroll-hint{position:absolute;left:0;right:0;bottom:30px;display:flex;
   justify-content:center;margin:0;z-index:2;}
@@ -557,7 +579,7 @@ body.intro-lock{overflow:hidden;}
 .hero-feature-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-style:italic;color:var(--cream);font-size:24px;z-index:2;mix-blend-mode:difference;}
 .hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:12px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
 .hero-home .hero-copy,.hero-home .hero-feature-par{will-change:transform,opacity;}
-/* Lusion-style scroll cue — a mouse outline whose wheel-dot drops on a loop,
+/* Lusion-style scroll cue - a mouse outline whose wheel-dot drops on a loop,
    beside quiet microcopy. The whole cue dissolves as scrolling starts (wired
    to scroll progress in hero.tsx). */
 .scroll-hint{margin-top:54px;transition:opacity .5s var(--ease);}
@@ -593,31 +615,15 @@ body.intro-lock{overflow:hidden;}
 /* ---- band backdrop: orange pixel-grid glowing dome (Algolia-style) ---- */
 .band-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#120302;}
 .pixel-dome{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;}
-/* React Bits Prism container (components/react-bits/Prism.tsx) — fills .band-bg */
+/* React Bits Prism container (components/react-bits/Prism.tsx) - fills .band-bg */
 .prism-container{position:relative;width:100%;height:100%;}
-/* React Bits SideRays container (components/react-bits/SideRays.tsx) — fills .band-bg */
+/* React Bits SideRays container (components/react-bits/SideRays.tsx) - fills .band-bg */
 .side-rays-container{position:relative;width:100%;height:100%;pointer-events:none;overflow:hidden;}
 .side-rays-container canvas{display:block;width:100%;height:100%;}
 
 /* ---- stats band backdrop: woven ribbons of light (React Bits Strands) ---- */
 .strands-container{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
 .strands-container canvas{display:block;width:100%;height:100%;}
-
-/* ---- logo / brand band ---- */
-.brand-band{position:relative;background:var(--ink);color:var(--cream);padding:120px 0;overflow:hidden;text-align:center;}
-.brand-band-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}
-.bb-kick{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:rgba(244,237,226,.55);margin-bottom:26px;}
-.bb-logo{width:100%;}
-
-/* ---- APAR wordmark (real logo image, focus-in reveal) ---- */
-.bb-wordmark{display:flex;justify-content:center;pointer-events:none;}
-.bb-wordmark .apar-logo{font-size:clamp(64px,12.5vw,190px);line-height:.9;}
-/* keep the warm red glow the type wordmark had */
-.bb-wordmark .apar-logo{filter:drop-shadow(0 12px 54px rgba(235,59,37,.26));}
-.bb-line{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:34px;}
-.bb-line span{font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--cream);}
-.bb-line i{width:6px;height:6px;border-radius:50%;background:var(--red);}
-.bb-sub{margin-top:24px;max-width:46ch;color:rgba(244,237,226,.72);font-size:17px;}
 
 /* ---- process ---- */
 .proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;}
@@ -654,7 +660,7 @@ body.intro-lock{overflow:hidden;}
 .fc-card .fc-cat,.fc-card .fc-i{color:var(--fc-accent,var(--red));}
 .fc-card h3{color:var(--fc-accent,var(--ink));}
 
-/* ── Glassy sheen on hover / press — all cards ──────────────────────────── */
+/* ── Glassy sheen on hover / press - all cards ──────────────────────────── */
 .fc-card::after{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;
   opacity:0;transition:opacity .45s var(--ease);
@@ -680,7 +686,7 @@ body.intro-lock{overflow:hidden;}
   position:absolute;inset:0;z-index:3;opacity:1;pointer-events:none;
   transition:opacity .45s var(--ease),transform .45s var(--ease);
 }
-/* logo image is invisible until it actually loads — a missing file shows nothing.
+/* logo image is invisible until it actually loads - a missing file shows nothing.
    Scales + fades in for a sleek entrance. */
 .fc-logo-img{
   position:absolute;inset:0;margin:auto;width:auto;height:auto;
@@ -721,7 +727,7 @@ body.intro-lock{overflow:hidden;}
 }
 
 /* ════════════════════════════════════════════════════════════════════════
-   BorderGlow (React Bits) — cursor-following edge glow + mesh-gradient border.
+   BorderGlow (React Bits) - cursor-following edge glow + mesh-gradient border.
    Component: components/react-bits/BorderGlow.tsx. Used to give each featured
    card a premium halo tinted to its own brand colour (.fc-glow override below).
    ════════════════════════════════════════════════════════════════════════ */
@@ -865,7 +871,7 @@ body.intro-lock{overflow:hidden;}
   font-family:var(--serif);font-size:clamp(21px,2.4vw,32px);color:var(--ink);text-align:left;padding:28px 4px;transition:color .35s;}
 .faq-q:hover{color:var(--red);}
 .faq-q .ic{flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);transition:.45s var(--ease);}
-.faq-item[data-state="open"] .faq-q .ic{background:var(--red);border-color:var(--red);color:#fff;transform:rotate(135deg);}
+.faq-item[data-state="open"] .faq-q .ic{background:var(--grad);border-color:transparent;color:#fff;transform:rotate(135deg);}
 .faq-a{overflow:hidden;}
 .faq-a p{color:var(--ink-soft);font-size:17px;line-height:1.6;max-width:64ch;margin:0 4px 30px;}
 .faq-a[data-state="open"]{animation:accordion-down .55s var(--ease);}
@@ -894,7 +900,7 @@ body.intro-lock{overflow:hidden;}
 .chip-row{display:flex;gap:10px;flex-wrap:wrap;}
 .chip{font-size:14px;padding:9px 16px;border:1.5px solid var(--line-strong);border-radius:100px;cursor:pointer;transition:.3s var(--ease);user-select:none;white-space:nowrap;}
 .chip:hover{border-color:var(--ink);}
-.chip.sel{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.chip.sel{background:var(--grad);color:#fff;border-color:transparent;}
 
 /* ============================================================
    WORK page
@@ -903,9 +909,7 @@ body.intro-lock{overflow:hidden;}
 .work-foot{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:48px;flex-wrap:wrap;}
 .empty-note{text-align:center;color:var(--ink-soft);padding:60px 0;font-family:var(--serif);font-style:italic;font-size:22px;}
 .work-card .cap p{font-size:14px;color:var(--ink-soft);margin:2px 0 0;}
-@media (max-width:760px){
-  .work-card[style*="span 7"],.work-card[style*="span 5"],.work-card[style*="span 4"]{grid-column:1/-1!important;}
-}
+/* (work grid is masonry via CSS columns - responsive column count set on .work-grid) */
 
 /* ============================================================
    CLIENTS page (roster)
@@ -935,7 +939,7 @@ body.intro-lock{overflow:hidden;}
    CASE STUDY (themeable via .case-page wrapper --c-* vars)
    ============================================================ */
 /* Per-company colours (--c-*) and fonts (--serif/--sans) are set inline on
-   .case-page from each case theme/fonts — see CaseStudy / lib/cases.tsx. */
+   .case-page from each case theme/fonts - see CaseStudy / lib/cases.tsx. */
 .case-page{background:var(--c-bg);color:var(--c-ink);min-height:100vh;}
 .case-page ::selection{background:var(--c-accent);color:var(--c-bg);}
 .case-wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
@@ -952,7 +956,7 @@ body.intro-lock{overflow:hidden;}
 .case-meta{display:flex;flex-wrap:wrap;gap:38px;margin-top:48px;padding-top:30px;border-top:1px solid var(--c-line);}
 .case-meta .m h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-soft);font-weight:700;margin:0 0 9px;}
 .case-meta .m p{font-family:var(--serif);font-size:19px;margin:0;color:var(--c-ink);}
-/* Hero shows the full 9:16 creative — centered portrait, height-capped. */
+/* Hero shows the full 9:16 creative - centered portrait, height-capped. */
 .case-hero-fig{margin:44px auto 0;width:fit-content;max-width:100%;border-radius:7px;overflow:hidden;border:1px solid var(--c-line);}
 .case-hero-fig .img-slot{aspect-ratio:9/16;height:clamp(360px,56vh,580px);width:auto;display:block;}
 @media (max-width:560px){ .case-hero-fig{width:100%;} .case-hero-fig .img-slot{width:100%;height:auto;} }
@@ -971,12 +975,12 @@ body.intro-lock{overflow:hidden;}
 .case-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:20px;}
 .case-stat .n{font-family:var(--serif);font-size:clamp(46px,6vw,88px);line-height:1;letter-spacing:-.02em;color:var(--c-accent);}
 .case-stat .l{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--c-soft);margin-top:12px;}
-/* Clean gallery — tiles match the creatives' 9:16 so nothing gets cropped. */
+/* Clean gallery - tiles match the creatives' 9:16 so nothing gets cropped. */
 .case-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:54px;align-items:start;}
 .case-gallery .g{border-radius:6px;overflow:hidden;border:1px solid var(--c-line);grid-column:auto;}
 .case-gallery .g .img-slot,.case-gallery .img-slot{width:100%;aspect-ratio:9/16;display:block;}
 
-/* Per-page rhythm — different columns, spacing & alignment per case (all 9:16,
+/* Per-page rhythm - different columns, spacing & alignment per case (all 9:16,
    so creatives are never cropped) so the case studies don't look copy-pasted. */
 .case-page[data-variant="b"] .case-gallery{grid-template-columns:repeat(4,1fr);gap:14px;}
 .case-page[data-variant="b"] .case-lead{text-align:center;margin-inline:auto;}
@@ -1040,18 +1044,18 @@ body.intro-lock{overflow:hidden;}
   :root{--gut:22px;}
   .section{padding:84px 0;}
   .cols-2,.cols-3{grid-template-columns:1fr;}
-  .work-grid{gap:40px 20px;}
+  .work-grid{column-gap:20px;}
   .svc-item{grid-template-columns:40px 1fr;gap:18px;}
   .svc-item .s-go{display:none;}
   .footer-grid{grid-template-columns:1fr;}
   .meta-row{gap:18px;}
 }
 
-/* floating contact "siri" — bare react-bits Strands glass orb (no pill, no
+/* floating contact "siri" - bare react-bits Strands glass orb (no pill, no
    persistent label). A soft, small "Talk to us" message fades in only on hover. */
 .ttu{
   position:fixed;right:28px;bottom:28px;z-index:100;
-  /* Siri-style glass ball: compact, and fluidly responsive — scales with the
+  /* Siri-style glass ball: compact, and fluidly responsive - scales with the
      viewport between a 44px touch-target floor and a 58px cap (was a fixed,
      oversized 100px). The Strands canvas fills 100% of this and re-renders on
      resize, so the orb stays crisp at every size. */
@@ -1065,7 +1069,7 @@ body.intro-lock{overflow:hidden;}
     0 0 34px -6px rgba(240,136,59,.40);
   transition:transform .45s var(--ease),box-shadow .45s var(--ease);
 }
-/* faint specular crescent on the rim — the glass catch-light that sells "premium" */
+/* faint specular crescent on the rim - the glass catch-light that sells "premium" */
 .ttu::after{
   content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
   background:radial-gradient(120% 90% at 32% 22%,rgba(255,255,255,.16),rgba(255,255,255,0) 42%);
@@ -1084,7 +1088,7 @@ body.intro-lock{overflow:hidden;}
   background:#0c0a08;
   transform:translateZ(0);
 }
-/* hover-only message: small, soft, warm — sits to the LEFT so it never clips
+/* hover-only message: small, soft, warm - sits to the LEFT so it never clips
    the right edge; tinted with the orb's gold strand shade. */
 .ttu-tip{
   position:absolute;right:calc(100% + 14px);top:50%;
@@ -1112,7 +1116,7 @@ body.intro-lock{overflow:hidden;}
   .ttu{right:18px;bottom:18px;}
   .ttu-tip{font-size:10px;}
 }
-/* the launcher is now a <button> when the voice concierge is live — strip the
+/* the launcher is now a <button> when the voice concierge is live - strip the
    native button chrome so it stays a bare glass orb identical to the link form. */
 .ttu-button{
   appearance:none;-webkit-appearance:none;
@@ -1121,7 +1125,7 @@ body.intro-lock{overflow:hidden;}
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Voice concierge — the Siri-like call panel the orb expands into.
+   Voice concierge - the Siri-like call panel the orb expands into.
    Dark gallery glass, brand-lit; audio-reactive waveform + orb halo.
    ───────────────────────────────────────────────────────────────────────── */
 .vc-panel{
@@ -1257,6 +1261,10 @@ body.intro-lock{overflow:hidden;}
 
 @media (max-width:760px){
   .vc-panel{right:12px;left:12px;bottom:14px;width:auto;}
+  /* The BorderGlow halo bleeds ~15px past the card edge; on narrow viewports
+     that pokes past the screen. It's a hover effect anyway, so drop it (the
+     pointer:coarse rule below already does this on real touch devices). */
+  .border-glow-card > .edge-light{display:none;}
 }
 @media (prefers-reduced-motion:reduce){
   .vc-panel{animation:none;}
@@ -1292,7 +1300,7 @@ body.intro-lock{overflow:hidden;}
   .chip{padding:12px 18px;}
   .roster-row{padding:22px 6px;}
   .btn,.btn-ghost,.nav-cta,.fc-go,.rr-go{min-height:44px;display:inline-flex;align-items:center;}
-  /* The BorderGlow halo is a hover effect — useless on touch, and its bloom
+  /* The BorderGlow halo is a hover effect - useless on touch, and its bloom
      extends past the viewport edge. Drop the layer entirely on touch (no
      overflow, fewer compositor layers). */
   .border-glow-card > .edge-light{display:none;}
@@ -1312,8 +1320,7 @@ body.intro-lock{overflow:hidden;}
   :root{--gut:18px;}
   .section{padding-top:56px;padding-bottom:56px;}
   .footer{padding:64px 0 32px;}
-  .hb-wordmark .apar-logo{font-size:clamp(52px,16vw,72px);}
-  .bb-wordmark .apar-logo{font-size:clamp(48px,15vw,72px);filter:drop-shadow(0 8px 28px rgba(235,59,37,.22));}
+  .hb-wordmark .apar-logo{font-size:clamp(80px,24vw,150px);}
   .sector{min-height:340px;padding:26px;}
   .hero-actions{flex-wrap:wrap;gap:14px;}
   .page-wipe-label{font-size:clamp(34px,11vw,64px);white-space:normal;text-align:center;}
@@ -1324,3 +1331,675 @@ body.intro-lock{overflow:hidden;}
 @media (max-width:560px){
   .footer-mark{width:58%;bottom:-10%;opacity:.04;}
 }
+
+/* ============================================================
+   INSTAGRAM REEL COVER SHOWCASE STYLES
+   ============================================================ */
+.rc-showcase-container {
+  display: grid;
+  grid-template-columns: minmax(320px, 480px) 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 56px;
+}
+
+@media (max-width: 1024px) {
+  .rc-showcase-container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+/* Grid/flex items default to min-width:auto and refuse to shrink below their
+   content's min-content size, forcing horizontal overflow on small phones.
+   min-width:0 lets the columns and cards shrink to the viewport. */
+.rc-showcase-container,
+.rc-showcase-container > * { min-width: 0; }
+
+@media (max-width: 560px) {
+  .rc-showcase-container { gap: 32px; }
+  .rc-glass-card { padding: 20px; }
+  /* stack each control's label above its control when they can't fit side-by-side */
+  .rc-control-row { gap: 12px; flex-wrap: wrap; }
+  .rc-segments { flex-wrap: wrap; }
+  .rc-segment-btn { padding: 6px 10px; }
+}
+
+/* Phone Mockup Frame */
+.rc-phone-mockup {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #0d0d0d;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: 
+    0 0 0 4px #262626,
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    inset 0 0 15px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rc-phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  background: #111;
+  user-select: none;
+}
+
+/* 4:5 Instagram Reel Cover Container */
+.rc-cover-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: filter 0.5s ease;
+  overflow: hidden;
+}
+
+/* Spotlight Hover Mask overlay */
+.rc-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: var(--spotlight-opacity, 0.6);
+  background: radial-gradient(
+    circle 240px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 220, 150, 0.12) 0%,
+    rgba(0, 0, 0, 0.35) 60%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 0.3s ease;
+}
+
+/* Speed Lines Layer */
+.rc-speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.rc-speed-line {
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 200%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.18) 50%, transparent);
+  transform: rotate(45deg);
+  animation: speedSwipe var(--speed-duration, 4s) linear infinite;
+  opacity: 0;
+}
+
+.rc-speed-line:nth-child(1) { animation-delay: 0s; top: -30%; }
+.rc-speed-line:nth-child(2) { animation-delay: 1.2s; top: -10%; }
+.rc-speed-line:nth-child(3) { animation-delay: 2.5s; top: 10%; }
+
+@keyframes speedSwipe {
+  0% {
+    transform: translate(-100%, -100%) rotate(-35deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate(100%, 100%) rotate(-35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+/* Moving SVG Courier Ribbon */
+.rc-ribbon-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.rc-ribbon-path {
+  fill: none;
+  stroke: url(#gold-ribbon-gradient);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+  animation: ribbonFlow var(--ribbon-duration, 8s) linear infinite;
+}
+
+@keyframes ribbonFlow {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+/* Ambient Embers sparks */
+.rc-embers-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Instagram Crop Safe Guides */
+.rc-safe-zones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  box-sizing: border-box;
+}
+
+.rc-safe-zone-label {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* 1:1 Square Feed Crop Bounding Box */
+.rc-crop-square {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12.5%;
+  height: 75%; /* 4:5 center square crop */
+  border-top: 1.5px dashed rgba(235, 59, 37, 0.5);
+  border-bottom: 1.5px dashed rgba(235, 59, 37, 0.5);
+}
+
+.rc-crop-square::before {
+  content: "1:1 Feed Crop Area";
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(235, 59, 37, 0.8);
+  font-weight: 700;
+}
+
+/* Instagram Interactive Overlay Mock (avatar, handle, icons) */
+.rc-instagram-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 20%, transparent 75%, rgba(0,0,0,0.65) 100%);
+  color: #fff;
+  font-family: var(--sans);
+}
+
+.rc-ig-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rc-ig-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 1.5px;
+}
+
+.rc-ig-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #111;
+  border: 1px solid #000;
+}
+
+.rc-ig-username {
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.rc-ig-description {
+  font-size: 11.5px;
+  line-height: 1.4;
+  opacity: 0.9;
+  max-width: 78%;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 12px;
+}
+
+.rc-ig-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.rc-ig-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rc-ig-icon svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.rc-ig-icon span {
+  font-size: 9px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Typography Text Overlays */
+.rc-text-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 14%;
+  pointer-events: none;
+  text-align: center;
+}
+
+.rc-headline {
+  font-family: var(--serif);
+  font-size: clamp(26px, 6.2vw, 36px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #FFEAB5 0%, #E2BE5E 35%, #D4AF37 60%, #AA7D20 85%, #FFF0D0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #D4AF37;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+  margin-bottom: 8px;
+}
+
+.rc-subheadline {
+  font-family: var(--sans);
+  font-size: clamp(8px, 1.8vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: #f4ede2;
+  opacity: 0.95;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 0 10px;
+}
+
+/* Control Panel */
+.rc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rc-glass-card {
+  background: rgba(26, 23, 20, 0.45);
+  border: 1px solid rgba(244, 237, 226, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rc-glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.rc-controls-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--cream);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rc-control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(244, 237, 226, 0.06);
+}
+
+.rc-control-row:last-child {
+  border-bottom: none;
+}
+
+.rc-control-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rc-control-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(244, 237, 226, 0.9);
+}
+
+.rc-control-desc {
+  font-size: 11px;
+  color: var(--ink-mid);
+}
+
+/* Toggle Switch Styling */
+.rc-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.rc-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rc-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(244, 237, 226, 0.12);
+  transition: .4s var(--ease);
+  border-radius: 24px;
+  border: 1px solid rgba(244, 237, 226, 0.1);
+}
+
+.rc-slider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--cream-2);
+  transition: .4s var(--ease);
+  border-radius: 50%;
+}
+
+input:checked + .rc-slider {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+input:checked + .rc-slider::before {
+  transform: translateX(20px);
+  background-color: #fff;
+}
+
+/* Range input */
+.rc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(244, 237, 226, 0.12);
+  outline: none;
+}
+
+.rc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--red);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.rc-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Selection Segment Controls */
+.rc-segments {
+  display: flex;
+  background: rgba(244, 237, 226, 0.06);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 237, 226, 0.06);
+}
+
+.rc-segment-btn {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.rc-segment-btn.active {
+  background-color: var(--red);
+  color: #fff;
+}
+
+/* AI Prompt Spec Drawer */
+.rc-prompt-drawer {
+  background: rgba(26, 23, 20, 0.45);
+  border: 1px solid rgba(244, 237, 226, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 24px;
+}
+
+.rc-prompt-header {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.rc-prompt-content {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cream-2);
+  border-top: 1px solid rgba(244, 237, 226, 0.06);
+  padding-top: 18px;
+}
+
+.rc-prompt-code {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(244, 237, 226, 0.06);
+  padding: 16px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  color: rgba(246, 197, 122, 0.95);
+  margin-top: 12px;
+}
+
+/* ============================================================
+   START A PROJECT - full-page brief form (/start)
+   Dark ink base + APAR warm red->orange gradient. Self-contained.
+   ============================================================ */
+.start{position:relative;min-height:100svh;background:var(--ink);color:var(--cream);overflow-x:clip;
+  display:flex;flex-direction:column;
+  padding:clamp(94px,12vh,120px) var(--gut) clamp(40px,5vh,64px);}
+.start-glow{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 52% at 80% 26%, rgba(235,59,37,.42), transparent 62%),
+    radial-gradient(46% 42% at 66% 96%, rgba(255,122,69,.26), transparent 62%),
+    radial-gradient(80% 66% at 12% 6%, rgba(196,42,23,.30), transparent 56%);}
+.start > *:not(.start-glow){position:relative;z-index:1;}
+
+.start-top{display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.start-eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(244,237,226,.72);font-weight:600;}
+.start-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red);}
+.start-close{font-size:13px;letter-spacing:.03em;color:rgba(244,237,226,.72);padding:9px 17px;
+  border:1px solid rgba(244,237,226,.2);border-radius:100px;transition:.3s var(--ease);}
+.start-close:hover{color:var(--cream);border-color:rgba(244,237,226,.5);background:rgba(244,237,226,.06);}
+
+.start-h1{font-family:var(--serif);font-weight:500;font-size:clamp(33px,3.8vw,52px);line-height:1.04;
+  letter-spacing:-.01em;margin:0;}
+.start-h1 em{font-style:italic;color:#FF8352;}
+.start-lead{color:rgba(244,237,226,.66);font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.6;max-width:44ch;margin:14px 0 0;}
+.start-lead em{font-style:italic;color:var(--cream);}
+.start-lead strong{color:#FF8352;font-weight:600;}
+
+.start-form{margin-top:clamp(18px,3.5vh,40px);}
+.start-done{margin:auto 0;}
+/* DOM order: .start-aesthetic (dial) is the FIRST child = LEFT column,
+   .start-left (form) is the SECOND child = RIGHT column, so the form column
+   gets the wider track and the input fields stay comfortable. */
+.start-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(30px,5vw,80px);align-items:center;}
+@media (max-width:900px){.start-grid{grid-template-columns:1fr;gap:46px;justify-items:center;}
+  .start-left{align-items:flex-start;}}
+.start-left{display:flex;flex-direction:column;gap:clamp(22px,3.2vh,36px);max-width:560px;width:100%;}
+
+.start-fields{display:flex;flex-direction:column;gap:18px;}
+.fld{display:flex;flex-direction:column;gap:9px;}
+.fld-l{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:rgba(244,237,226,.55);}
+.fld-in{width:100%;background:rgba(244,237,226,.05);border:1px solid rgba(244,237,226,.16);border-radius:14px;
+  padding:15px 18px;color:var(--cream);font-family:var(--sans);font-size:16px;line-height:1.4;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.25s var(--ease);}
+.fld-in::placeholder{color:rgba(244,237,226,.34);}
+.fld-in:focus{outline:none;border-color:rgba(235,59,37,.7);background:rgba(244,237,226,.08);
+  box-shadow:0 0 0 4px rgba(235,59,37,.14);}
+.fld-area{resize:vertical;min-height:92px;}
+.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:520px){.fld-row{grid-template-columns:1fr;}}
+
+.start-submit{margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;
+  padding:16px 30px;border:none;border-radius:100px;cursor:pointer;color:#fff;
+  font-family:var(--sans);font-weight:700;font-size:15px;letter-spacing:.02em;
+  background:linear-gradient(120deg,#C42A17,#EB3B25 46%,#FF7A45);
+  box-shadow:0 10px 34px rgba(235,59,37,.34);transition:transform .3s var(--spring),box-shadow .3s var(--spring);}
+.start-submit:hover{transform:translateY(-2px);box-shadow:0 16px 46px rgba(235,59,37,.46);}
+.start-submit .arr{font-size:17px;}
+
+.start-aesthetic{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.start-aesthetic .fld-l{align-self:center;}
+.start-aesthetic-hint{font-size:13px;color:rgba(244,237,226,.5);margin:0 0 14px;text-align:center;}
+
+/* success state */
+.start-done{max-width:34ch;}
+.start-done .start-h1{margin-top:14px;}
+.start-done-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;}
+
+/* ---- the rotary "tyre" dial ---- */
+.dial{--dial-size:clamp(258px,29vw,372px);--dr:calc(var(--dial-size)/2 - 25px);
+  display:flex;flex-direction:column;align-items:center;gap:24px;user-select:none;}
+.dial-face{position:relative;width:var(--dial-size);height:var(--dial-size);border-radius:50%;
+  display:grid;place-items:center;cursor:grab;touch-action:none;}
+.dial-face.dragging{cursor:grabbing;}
+.dial-tread{position:absolute;inset:0;border-radius:50%;transition:transform .6s var(--spring);
+  background:conic-gradient(from 0deg,#3a1109,#7c2414,#EB3B25,#FF7A45,#EB3B25,#7c2414,#3a1109);
+  box-shadow:inset 0 0 0 1px rgba(255,150,110,.25),inset 0 14px 44px rgba(0,0,0,.5),0 26px 64px rgba(120,20,10,.42);}
+.dial-face.dragging .dial-tread{transition:none;}
+.dial-tread::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,224,210,.55) 0 .55deg,transparent .55deg 6deg);
+  -webkit-mask:radial-gradient(circle,transparent 68%,#000 69% 82%,transparent 83%);
+          mask:radial-gradient(circle,transparent 68%,#000 69% 82%,transparent 83%);}
+.dial-mark{position:absolute;top:50%;left:50%;width:10px;height:10px;margin:-5px;padding:0;border:none;
+  border-radius:50%;background:rgba(255,224,210,.4);cursor:pointer;
+  transition:background .3s,box-shadow .3s,width .3s,height .3s,margin .3s;}
+.dial-mark.on{background:var(--cream);width:15px;height:15px;margin:-7.5px;
+  box-shadow:0 0 0 4px rgba(244,237,226,.22),0 0 18px rgba(255,180,140,.95);}
+.dial-pointer{position:absolute;top:-3px;left:50%;transform:translateX(-50%);z-index:3;width:0;height:0;
+  border-left:11px solid transparent;border-right:11px solid transparent;border-top:16px solid #FF8A5C;
+  filter:drop-shadow(0 2px 7px rgba(255,90,40,.7));}
+.dial-hub{position:relative;z-index:2;width:63%;aspect-ratio:1;border-radius:50%;padding:8%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 34%,rgba(42,16,10,.97),rgba(13,5,3,.98));
+  border:1px solid rgba(255,150,110,.16);box-shadow:inset 0 1px 0 rgba(255,180,140,.2),0 12px 32px rgba(0,0,0,.5);}
+.dial-count{font-size:11px;letter-spacing:.2em;color:rgba(255,180,140,.82);font-weight:600;}
+.dial-count i{font-style:normal;opacity:.5;margin:0 3px;}
+.dial-name{font-family:var(--serif);font-weight:500;font-size:clamp(21px,2.5vw,31px);line-height:1;color:var(--cream);}
+.dial-desc{font-size:12px;line-height:1.4;color:rgba(244,237,226,.6);max-width:15ch;}
+.dial-controls{display:flex;align-items:center;gap:16px;}
+.dial-arrow{width:40px;height:40px;border-radius:50%;border:1px solid rgba(244,237,226,.2);
+  background:rgba(244,237,226,.05);color:var(--cream);font-size:20px;line-height:1;cursor:pointer;
+  display:grid;place-items:center;transition:.25s var(--ease);}
+.dial-arrow:hover{background:var(--red);border-color:transparent;transform:translateY(-1px);}
+.dial-dots{display:flex;gap:9px;align-items:center;}
+.dial-dot{width:8px;height:8px;border-radius:50%;border:none;padding:0;cursor:pointer;
+  background:rgba(244,237,226,.28);transition:.25s var(--ease);}
+.dial-dot.on{background:linear-gradient(120deg,#EB3B25,#FF7A45);width:22px;border-radius:100px;}
+/* Decision-aid panel under the dial: "Best for" + signal chips update per spin so
+   the client can weigh whether a direction fits their brand. Fades in on change. */
+.aesthetic-guide{width:100%;max-width:340px;margin-top:6px;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:13px;padding-top:18px;
+  border-top:1px solid rgba(244,237,226,.12);animation:agFade .45s var(--ease);}
+@keyframes agFade{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+.ag-row{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 9px;align-items:baseline;}
+.ag-k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:rgba(255,180,140,.9);}
+.ag-v{font-size:14.5px;line-height:1.45;color:rgba(244,237,226,.84);}
+.ag-traits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.ag-tag{font-size:12px;letter-spacing:.02em;color:var(--cream);padding:6px 14px;border-radius:100px;
+  background:rgba(244,237,226,.06);border:1px solid rgba(255,150,110,.22);}
+

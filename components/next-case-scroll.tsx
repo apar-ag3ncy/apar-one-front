@@ -8,7 +8,7 @@ import { useCaseTransition } from "./transition-provider";
  * When the visitor reaches the very bottom of a case study and keeps
  * scrolling, a "pull" meter fills; once full, a seamless full-screen
  * transition (via TransitionProvider) plays and routes straight to the next
- * client. Normal scrolling is untouched — the meter only accumulates once
+ * client. Normal scrolling is untouched - the meter only accumulates once
  * already at the bottom.
  */
 export function NextCaseScroll({
@@ -114,7 +114,7 @@ export function NextCaseScroll({
   return (
     <div ref={wrapRef} className="next-pull" aria-hidden>
       <span className="next-pull-label">
-        Keep scrolling — Next: <strong>{name}</strong>
+        Keep scrolling - Next: <strong>{name}</strong>
       </span>
       <div className="next-pull-bar">
         <i ref={barRef} />
