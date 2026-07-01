@@ -906,6 +906,43 @@ export function SplashCursor({
       pointer.color = color;
     }
 
+    // ---- background-adaptive compositing: a bright glow only reads over a dark
+    //      field. Over light/cream sections we flip the fluid layer to `multiply`
+    //      so the warm dye tints the page and the pixel trail stays visible on
+    //      every page - not only the dark hero/footer. Toggled per cursor pos. ----
+    const splashEl = canvas.parentElement; // the .splash-cursor overlay
+    let overLight = false;
+    let lastBgCheck = 0;
+    function parseRGB(str: string) {
+      const m = str.match(/rgba?\(([^)]+)\)/);
+      if (!m) return null;
+      const p = m[1].split(",").map((s) => parseFloat(s));
+      return { r: p[0], g: p[1], b: p[2], a: p[3] === undefined ? 1 : p[3] };
+    }
+    function isPointOverLight(x: number, y: number) {
+      // walk up from the element under the cursor to the first painted background
+      let node: Element | null = document.elementFromPoint(x, y);
+      while (node && node !== document.documentElement) {
+        const c = parseRGB(getComputedStyle(node).backgroundColor);
+        if (c && c.a > 0.3) {
+          const lum = (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255; // Rec.709
+          return lum > 0.5;
+        }
+        node = node.parentElement;
+      }
+      return false; // nothing opaque found -> treat as dark (keep the glow)
+    }
+    function updateAdaptiveBlend(x: number, y: number) {
+      const now = Date.now();
+      if (now - lastBgCheck < 90) return; // throttle the DOM read
+      lastBgCheck = now;
+      const light = isPointOverLight(x, y);
+      if (light !== overLight) {
+        overLight = light;
+        splashEl?.classList.toggle("splash-on-light", light);
+      }
+    }
+
     // ---- idle parking: the sim only runs while the cursor is active or dye is
     //      still dissipating. ~1.6s after the last interaction the loop stops
     //      entirely (zero GPU/CPU cost) and wakes on the next mouse event. ----
@@ -974,10 +1011,41 @@ export function SplashCursor({
         updatePointerMoveData(pointer, posX, posY, pointer.color);
       }
       if (pointer.moved) wake(); // only genuine movement resets the idle timer
+      updateAdaptiveBlend(e.clientX, e.clientY); // keep the trail visible on light sections
+    }
+
+    // ---- scroll-driven glow: emit a dye splat at the cursor as the page
+    //      scrolls, so the pixel trail follows you anywhere on the site - not
+    //      only on pointer movement. Streaks in the direction of scroll. ----
+    let lastScrollY = window.scrollY;
+    let scrollColorAt = 0;
+    function handleScroll() {
+      const y = window.scrollY;
+      let d = y - lastScrollY;
+      lastScrollY = y;
+      if (d === 0) return;
+      d = Math.max(-150, Math.min(150, d)); // a fast flick shouldn't blow out the sim
+      const pointer = pointers[0];
+      // until the cursor has moved once, park the emitter at viewport centre
+      const cx = lastClientX >= 0 ? lastClientX : window.innerWidth / 2;
+      const cy = lastClientY >= 0 ? lastClientY : window.innerHeight / 2;
+      updateAdaptiveBlend(cx, cy); // the section under the cursor changes as you scroll
+      const texcoordX = scaleByPixelRatio(cx) / canvas!.width;
+      const texcoordY = 1 - scaleByPixelRatio(cy) / canvas!.height;
+      // cycle the hue every ~120ms so the scroll trail shifts like the cursor one
+      if (Date.now() - scrollColorAt > 120) {
+        pointer.color = generateColor();
+        scrollColorAt = Date.now();
+      }
+      // scroll down (d>0) pushes the dye up-screen, matching content motion
+      const dy = (d / canvas!.height) * config.SPLAT_FORCE * 0.15;
+      splat(texcoordX, texcoordY, 0, dy, pointer.color);
+      wake();
     }
 
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     updateFrame();
 
@@ -989,6 +1057,7 @@ export function SplashCursor({
       }
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
       sizeObserver.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -109,6 +109,10 @@ html:not(.lenis){scroll-behavior:smooth;}
 /* lava fluid cursor trail - full-viewport overlay, click-through, under the nav */
 .splash-cursor{position:fixed;inset:0;z-index:50;pointer-events:none;}
 .splash-cursor canvas{width:100vw;height:100vh;display:block;}
+/* Background-adaptive fluid: bright amber glow over dark fields (default), and a
+   warm multiply-tint over light/cream sections so the pixel trail stays visible
+   on every page - not just the dark hero. Class toggled per cursor position. */
+.splash-cursor.splash-on-light canvas{mix-blend-mode:multiply;}
 
 /* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
 html.lenis,html.lenis body{height:auto;}
@@ -239,6 +243,12 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   font-variation-settings: 'wght' 1000, 'wdth' 360, 'HGHT' 100, 'slnt' 0;
 }
 @media (prefers-reduced-motion: reduce){.apar-lead-char{transition:none;}}
+/* Nav logo: use the same wide, blocky Fit cut (wdth 482) as the landing-page
+   wordmark, so it doesn't read thin/skinny next to the hero. */
+.nav .apar-lead-char,
+.nav .apar-par-text{
+  font-variation-settings:'wght' 1000,'wdth' 482,'HGHT' 100,'slnt' 0;
+}
 .nav .brand-tag{font-size:11px;line-height:1.15;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
@@ -302,6 +312,12 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 /* identical wordmark to the landing-page hero (same Fit cut, natural spacing,
    and the PĀR macron) - just scaled up to the full-bleed footer size */
 .footer-word .apar-logo{font-size:min(30vw,460px);line-height:.72;color:var(--cream);}
+/* Match the landing-page wordmark thickness: the wide, blocky Fit cut (wdth 482)
+   instead of the default narrow 360, so the footer APAR reads as heavy as the hero. */
+.footer-word .apar-lead-char,
+.footer-word .apar-par-text{
+  font-variation-settings:'wght' 1000,'wdth' 482,'HGHT' 100,'slnt' 0;
+}
 .footer-base{display:flex;justify-content:space-between;align-items:center;margin-top:26px;font-size:14.5px;color:var(--ink-mid);flex-wrap:wrap;gap:16px;}
 @media (max-width:760px){
   .footer-row{flex-direction:column;gap:30px;}
