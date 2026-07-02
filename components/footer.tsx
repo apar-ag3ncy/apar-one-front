@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AparLogo } from "./apar-logo";
+import { BandBackdrop } from "./band-backdrop";
 
 /* Brand social glyphs in their own colours (Simple Icons paths). */
 const InstagramIcon = (
@@ -51,6 +52,10 @@ const SOCIAL = [
 export function Footer() {
   return (
     <footer className="footer">
+      {/* Same signature pixel beam as the landing hero (Algolia-style dome, WebGL),
+          sweeping behind the giant footer wordmark. The global pixel-trail cursor
+          plus the dome's own hover shimmer both play over it. */}
+      <BandBackdrop domeY={-0.2} intensity={0.95} />
       <div className="wrap footer-inner">
         <div className="footer-row">
           <Link className="footer-talk" href="/#contact" data-magnetic>

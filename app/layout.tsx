@@ -5,7 +5,7 @@ import { ConditionalFooter } from "@/components/conditional-footer";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 import { TransitionProvider } from "@/components/transition-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { SplashCursor } from "@/components/splash-cursor";
+import { PixelTrail } from "@/components/pixel-trail";
 import { TalkToUs } from "@/components/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
 
@@ -48,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body data-page="index">
         <SmoothScroll />
-        <SplashCursor />
+        {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere).
+            Swap back to <SplashCursor /> for the fluid lava trail. */}
+        <PixelTrail />
         <ScrollProgressBar />
         <Nav />
         <TalkToUs />

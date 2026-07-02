@@ -665,7 +665,18 @@ export function SplashCursor({
     // ---- GOLD palette: amber -> rich gold, with a slight saturation shimmer
     //      so highlights read as champagne. No red, no blood. ----
     function generateColor() {
-      // hue locked between amber (~0.09) and rich gold (~0.155)
+      // The display shader sets the dye's ALPHA = max(r,g,b), so a dim dye is also
+      // a near-transparent dye: it glows over black but washes out over a light
+      // background (you see the cream straight through it). So the trail adapts:
+      if (overLight) {
+        // Light/cream sections: the SAME warm trail, but brighter + more saturated
+        // and skewed red-orange (lower green/blue than gold). High max channel ->
+        // high alpha -> it actually COVERS the cream; the low g/b gives real
+        // contrast against it. This is why the trail now shows off the hero.
+        const c = HSVtoRGB(0.03 + Math.random() * 0.04, 0.98, 1.0);
+        return { r: c.r * 0.62, g: c.g * 0.62, b: c.b * 0.62 };
+      }
+      // Dark sections: the ORIGINAL dim amber glow, untouched (hue amber->gold).
       const c = HSVtoRGB(0.09 + Math.random() * 0.065, 0.82 + Math.random() * 0.18, 1.0);
       return { r: c.r * 0.15, g: c.g * 0.15, b: c.b * 0.15 };
     }
@@ -906,11 +917,10 @@ export function SplashCursor({
       pointer.color = color;
     }
 
-    // ---- background-adaptive compositing: a bright glow only reads over a dark
-    //      field. Over light/cream sections we flip the fluid layer to `multiply`
-    //      so the warm dye tints the page and the pixel trail stays visible on
-    //      every page - not only the dark hero/footer. Toggled per cursor pos. ----
-    const splashEl = canvas.parentElement; // the .splash-cursor overlay
+    // ---- background detection: only the emitted dye adapts (see generateColor) -
+    //      dim amber glow over dark sections, brighter/opaque red-orange over
+    //      light/cream ones so the SAME trail stays visible everywhere. Throttled
+    //      DOM read on pointer move; nothing else about the sim changes. ----
     let overLight = false;
     let lastBgCheck = 0;
     function parseRGB(str: string) {
@@ -930,17 +940,13 @@ export function SplashCursor({
         }
         node = node.parentElement;
       }
-      return false; // nothing opaque found -> treat as dark (keep the glow)
+      return false; // nothing opaque found -> treat as dark (original glow)
     }
-    function updateAdaptiveBlend(x: number, y: number) {
+    function updateBg(x: number, y: number) {
       const now = Date.now();
-      if (now - lastBgCheck < 90) return; // throttle the DOM read
+      if (now - lastBgCheck < 100) return; // throttle the DOM read
       lastBgCheck = now;
-      const light = isPointOverLight(x, y);
-      if (light !== overLight) {
-        overLight = light;
-        splashEl?.classList.toggle("splash-on-light", light);
-      }
+      overLight = isPointOverLight(x, y);
     }
 
     // ---- idle parking: the sim only runs while the cursor is active or dye is
@@ -1002,6 +1008,7 @@ export function SplashCursor({
       if (firstMouseMoveHandled && e.clientX === lastClientX && e.clientY === lastClientY) return; // synthetic scroll-under-cursor mousemove: zero work
       lastClientX = e.clientX;
       lastClientY = e.clientY;
+      updateBg(e.clientX, e.clientY); // detect light vs dark before the dye is picked
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
       if (!firstMouseMoveHandled) {
@@ -1011,41 +1018,10 @@ export function SplashCursor({
         updatePointerMoveData(pointer, posX, posY, pointer.color);
       }
       if (pointer.moved) wake(); // only genuine movement resets the idle timer
-      updateAdaptiveBlend(e.clientX, e.clientY); // keep the trail visible on light sections
-    }
-
-    // ---- scroll-driven glow: emit a dye splat at the cursor as the page
-    //      scrolls, so the pixel trail follows you anywhere on the site - not
-    //      only on pointer movement. Streaks in the direction of scroll. ----
-    let lastScrollY = window.scrollY;
-    let scrollColorAt = 0;
-    function handleScroll() {
-      const y = window.scrollY;
-      let d = y - lastScrollY;
-      lastScrollY = y;
-      if (d === 0) return;
-      d = Math.max(-150, Math.min(150, d)); // a fast flick shouldn't blow out the sim
-      const pointer = pointers[0];
-      // until the cursor has moved once, park the emitter at viewport centre
-      const cx = lastClientX >= 0 ? lastClientX : window.innerWidth / 2;
-      const cy = lastClientY >= 0 ? lastClientY : window.innerHeight / 2;
-      updateAdaptiveBlend(cx, cy); // the section under the cursor changes as you scroll
-      const texcoordX = scaleByPixelRatio(cx) / canvas!.width;
-      const texcoordY = 1 - scaleByPixelRatio(cy) / canvas!.height;
-      // cycle the hue every ~120ms so the scroll trail shifts like the cursor one
-      if (Date.now() - scrollColorAt > 120) {
-        pointer.color = generateColor();
-        scrollColorAt = Date.now();
-      }
-      // scroll down (d>0) pushes the dye up-screen, matching content motion
-      const dy = (d / canvas!.height) * config.SPLAT_FORCE * 0.15;
-      splat(texcoordX, texcoordY, 0, dy, pointer.color);
-      wake();
     }
 
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("scroll", handleScroll, { passive: true });
 
     updateFrame();
 
@@ -1057,7 +1033,6 @@ export function SplashCursor({
       }
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("scroll", handleScroll);
       sizeObserver.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

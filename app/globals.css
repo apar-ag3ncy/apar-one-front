@@ -106,13 +106,20 @@
    position:sticky pin on the page (.pin-sticky work gallery, .split-sticky). */
 html{overflow-x:clip;}
 html:not(.lenis){scroll-behavior:smooth;}
-/* lava fluid cursor trail - full-viewport overlay, click-through, under the nav */
+/* lava fluid cursor trail - full-viewport overlay, click-through, under the nav.
+   One dye, plain `normal` blend on every page: the bright warm dye reads as a
+   glow over dark sections and as the same golden trail over light/cream ones, so
+   it's visible site-wide. (Do NOT add mix-blend-mode:multiply here - a bright dye
+   multiplied against a light background composites to nothing = invisible trail.) */
 .splash-cursor{position:fixed;inset:0;z-index:50;pointer-events:none;}
 .splash-cursor canvas{width:100vw;height:100vh;display:block;}
-/* Background-adaptive fluid: bright amber glow over dark fields (default), and a
-   warm multiply-tint over light/cream sections so the pixel trail stays visible
-   on every page - not just the dark hero. Class toggled per cursor position. */
-.splash-cursor.splash-on-light canvas{mix-blend-mode:multiply;}
+
+/* pixel cursor trail - the hero pixel-dome tiles promoted site-wide. Full-viewport
+   overlay, click-through, under the nav (z-50 < z-120). Normal alpha blend (no
+   mix-blend-mode) so the light orange-red tiles read over BOTH the cream and the
+   dark sections. The canvas is fixed at the viewport, so it stays put on scroll. */
+.pixel-trail{position:fixed;inset:0;z-index:50;pointer-events:none;}
+.pixel-trail canvas{width:100vw;height:100vh;display:block;}
 
 /* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
 html.lenis,html.lenis body{height:auto;}
@@ -289,6 +296,19 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 /* ---------- footer ---------- */
 .footer{background:#000;color:var(--cream);padding:96px 0 40px;position:relative;overflow:hidden;}
 .footer .wrap{position:relative;z-index:1;}
+
+/* ---------- footer pixel beam ---------- */
+/* The signature hero pixel-dome (BandBackdrop) reused behind the footer wordmark.
+   It fills the footer (.band-bg is inset:0) so the mark sits IN the beam, exactly
+   like the landing hero. On narrow screens the stacked contact column is tall, so
+   the beam is dropped to the lower portion - that keeps the contact/social text on
+   a dark, readable field and keeps the beam behind the mark rather than the copy. */
+.footer .band-bg{background:#000;}
+@media (max-width:760px){
+  .footer .band-bg{top:auto;bottom:0;height:64%;
+    -webkit-mask:linear-gradient(to bottom, transparent 0, #000 14%);
+            mask:linear-gradient(to bottom, transparent 0, #000 14%);}
+}
 .footer-inner{display:flex;flex-direction:column;min-height:80vh;}
 /* minimal top row: single CTA + sparse contact columns (Lusion-style restraint) */
 .footer-row{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}

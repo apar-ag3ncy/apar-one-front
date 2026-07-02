@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test:cursor": "node e2e/cursor-check.mjs",
+    "test:pixeltrail": "node e2e/pixeltrail-check.mjs",
     "test:mobile": "node e2e/mobile-menu-check.mjs"
   },
   "dependencies": {
