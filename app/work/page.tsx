@@ -98,13 +98,15 @@ export default function WorkPage() {
           </Reveal>
           <Reveal className="filter-row" i={2}>
             {FILTERS.map((f) => (
-              <span
+              <button
                 key={f.key}
+                type="button"
                 className={"chip" + (filter === f.key ? " sel" : "")}
+                aria-pressed={filter === f.key}
                 onClick={() => setFilter(f.key)}
               >
                 {f.label}
-              </span>
+              </button>
             ))}
           </Reveal>
         </div>

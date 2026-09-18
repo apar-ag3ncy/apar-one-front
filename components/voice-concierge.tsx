@@ -64,9 +64,14 @@ export function VoiceConcierge() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const speakingRef = useRef(isSpeaking);
   speakingRef.current = isSpeaking;
+  // Generation counter: closing the panel while the mic prompt is still open
+  // used to let the (later-granted) prompt start a session behind a closed
+  // panel with the mic live, and a re-open then sat on "Connecting…" forever.
+  const callId = useRef(0);
 
   // ── Start / end the call ────────────────────────────────────────────────
   const startCall = useCallback(async () => {
+    const id = ++callId.current;
     setOpen(true);
     setCaption("");
     setPhase("requesting");
@@ -75,9 +80,10 @@ export function VoiceConcierge() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((t) => t.stop());
     } catch {
-      setPhase("denied");
+      if (id === callId.current) setPhase("denied");
       return;
     }
+    if (id !== callId.current) return; // panel was closed while the prompt was pending
     setPhase("connecting");
     conversation.startSession({
       agentId: ELEVENLABS_AGENT_ID,
@@ -86,6 +92,7 @@ export function VoiceConcierge() {
   }, [conversation]);
 
   const endCall = useCallback(() => {
+    callId.current++;
     conversation.endSession();
     setOpen(false);
     setPhase("idle");
@@ -94,7 +101,9 @@ export function VoiceConcierge() {
 
   // End the session if the component unmounts mid-call.
   useEffect(() => {
+    const generation = callId; // the ref object itself is stable
     return () => {
+      generation.current++;
       conversation.endSession();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

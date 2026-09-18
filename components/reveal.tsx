@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, type ComponentProps, type ElementType } from "react";
+import { useMemo, type ComponentProps, type ComponentType, type ElementType } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -13,8 +13,11 @@ type RevealProps = {
 } & ComponentProps<typeof motion.div> & { href?: string; "data-cat"?: string };
 
 // Cache motion-wrapped custom components (e.g. next/link) so motion.create()
-// isn't called on every render.
-const motionCache = new Map<ElementType, ElementType>();
+// isn't called on every render. Typed as a component (not `ElementType`):
+// @react-three/fiber merges its three.js element types into the global JSX
+// map, and JSX on a bare `ElementType` union resolves its props to `never`.
+type MotionComponent = ComponentType<Record<string, unknown>>;
+const motionCache = new Map<ElementType, MotionComponent>();
 
 /**
  * Framer Motion port of the design's `.reveal` - fade + rise on scroll-in,
@@ -22,13 +25,13 @@ const motionCache = new Map<ElementType, ElementType>();
  * component (e.g. next/link's Link), so cards can be real routed links.
  */
 export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: RevealProps) {
-  const MotionTag = useMemo<ElementType>(() => {
+  const MotionTag = useMemo<MotionComponent>(() => {
     if (typeof as === "string") {
-      return (motion as unknown as Record<string, ElementType>)[as];
+      return (motion as unknown as Record<string, MotionComponent>)[as];
     }
     let cached = motionCache.get(as);
     if (!cached) {
-      cached = motion.create(as as React.ComponentType) as ElementType;
+      cached = motion.create(as as React.ComponentType) as unknown as MotionComponent;
       motionCache.set(as, cached);
     }
     return cached;

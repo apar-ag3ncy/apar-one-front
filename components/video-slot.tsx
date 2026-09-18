@@ -28,9 +28,16 @@ interface VideoSlotProps {
  * single pass.
  * ------------------------------------------------------------------------- */
 const MAX_CONCURRENT = 2;
+// A clip that just started keeps its slot for this long even if a nearer one
+// appears: with preload="none" every play() starts the fetch, and pausing it a
+// frame later aborts that fetch (net::ERR_ABORTED) and refetches it on the next
+// pass - the audit saw the same files fetched twice and three aborted mid-way.
+const HOLD_MS = 1500;
 const wanting = new Set<HTMLVideoElement>(); // near viewport, would like to play
 const playing = new Set<HTMLVideoElement>(); // currently allowed to play
+const startedAt = new WeakMap<HTMLVideoElement, number>();
 let scheduled = false;
+let holdTimer = 0;
 
 function centreDistance(v: HTMLVideoElement) {
   const r = v.getBoundingClientRect();
@@ -41,8 +48,18 @@ function centreDistance(v: HTMLVideoElement) {
 
 function reconcile() {
   scheduled = false;
+  const now = performance.now();
   const ranked = [...wanting].sort((a, b) => centreDistance(a) - centreDistance(b));
   const allow = new Set(ranked.slice(0, MAX_CONCURRENT));
+  // recently started clips still near the viewport keep playing (hysteresis)
+  let youngest = Infinity;
+  for (const v of playing) {
+    const age = now - (startedAt.get(v) ?? 0);
+    if (wanting.has(v) && age < HOLD_MS) {
+      allow.add(v);
+      youngest = Math.min(youngest, HOLD_MS - age);
+    }
+  }
   for (const v of playing) {
     if (!allow.has(v)) {
       v.pause();
@@ -55,8 +72,12 @@ function reconcile() {
         /* autoplay can still be blocked; the loaded frame stays visible */
       });
       playing.add(v);
+      startedAt.set(v, now);
     }
   }
+  // re-evaluate once the hold expires so the cap is restored
+  window.clearTimeout(holdTimer);
+  if (allow.size > MAX_CONCURRENT && youngest !== Infinity) holdTimer = window.setTimeout(schedulePlayback, youngest + 16);
 }
 
 function schedulePlayback() {
@@ -148,7 +169,6 @@ export function VideoSlot({
       aria-label={placeholder}
     >
       {near && (
-        // eslint-disable-next-line jsx-a11y/media-has-caption
         <video
           ref={ref}
           className="video-slot-el"

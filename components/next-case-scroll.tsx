@@ -29,6 +29,10 @@ export function NextCaseScroll({
 
   useEffect(() => {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // The pull meter is hidden by CSS under reduced motion; without it the
+    // overscroll would navigate with no affordance at all. The visible "Next
+    // case" link already covers navigation, so the gesture is off entirely.
+    if (reduce) return;
     const pull = { v: 0 };
     let locked = false;
     let raf = 0;
@@ -58,8 +62,7 @@ export function NextCaseScroll({
     const trigger = () => {
       if (locked) return;
       locked = true;
-      if (reduce) router.push(href);
-      else startTransition({ href, color, ink, label: name });
+      startTransition({ href, color, ink, label: name });
     };
 
     const add = (amount: number) => {

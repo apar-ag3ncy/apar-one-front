@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { markScrolling } from "@/lib/scroll-state";
+import { markScrolling, setLenis } from "@/lib/scroll-state";
 
 /**
  * Lusion-style inertial scrolling (Lenis), driven from GSAP's ticker so
@@ -13,6 +14,25 @@ import { markScrolling } from "@/lib/scroll-state";
  * No-ops entirely under prefers-reduced-motion.
  */
 export function SmoothScroll() {
+  const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+
+  // A wheel notch starts a ~1.7s glide. If a route changes mid-glide, Next
+  // scrolls the new page to the top natively but Lenis ignores that while it
+  // animates and writes the OLD page's offset back on the next tick - the
+  // destination opened scrolled down. Reset the glide before Next's own scroll
+  // handling runs (layout effect: SmoothScroll mounts before the page tree).
+  useLayoutEffect(() => {
+    const l = lenisRef.current;
+    // stop() + start() is the public way to reset(): both cancel the running
+    // animation and re-sync the animated scroll to the real one. When Lenis is
+    // already stopped (mobile menu open) it holds no glide, so nothing to cancel.
+    if (l && !l.isStopped) {
+      l.stop();
+      l.start();
+    }
+  }, [pathname]);
+
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -41,6 +61,8 @@ export function SmoothScroll() {
       ScrollTrigger.update();
       markScrolling();
     });
+    setLenis(lenis);
+    lenisRef.current = lenis;
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
@@ -74,6 +96,8 @@ export function SmoothScroll() {
       ScrollTrigger.removeEventListener("refresh", onRefresh);
       window.removeEventListener("load", onLoad);
       gsap.ticker.remove(raf);
+      setLenis(null);
+      lenisRef.current = null;
       lenis.destroy();
     };
   }, []);

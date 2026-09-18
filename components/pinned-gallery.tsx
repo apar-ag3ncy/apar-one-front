@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VideoSlot } from "./video-slot";
@@ -119,7 +120,7 @@ export function PinnedGallery() {
           </div>
 
           {CARDS.map((c) => (
-            <a className="pin-card" href={c.href} key={c.num}>
+            <Link className="pin-card" href={c.href} key={c.num}>
               <div className="frame">
                 <span className="num">{c.num}</span>
                 <span className="tagpill">{c.tag}</span>
@@ -132,17 +133,17 @@ export function PinnedGallery() {
                 </div>
                 <span>{c.year}</span>
               </div>
-            </a>
+            </Link>
           ))}
 
           <div
             className="pin-card"
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <a className="btn cream" href="/clients">
+            <Link className="btn cream" href="/clients">
               <span>See all clients</span>
               <span className="arr">↗</span>
-            </a>
+            </Link>
           </div>
         </div>
         <div className="pin-progress">

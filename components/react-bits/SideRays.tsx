@@ -99,7 +99,12 @@ const SideRays = ({
       await new Promise((resolve) => setTimeout(resolve, 10));
       if (!containerRef.current) return;
 
-      const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), alpha: true });
+      let renderer: Renderer;
+      try {
+        renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), alpha: true });
+      } catch {
+        return; // no WebGL: the band keeps its plain dark background
+      }
       rendererRef.current = renderer;
 
       const gl = renderer.gl;

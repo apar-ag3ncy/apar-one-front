@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { Intro } from "@/components/intro";
 import { Hero } from "@/components/hero";
 import { VelocityMarquee } from "@/components/velocity-marquee";
 import { SplitWords } from "@/components/split-words";
@@ -14,6 +12,7 @@ import { ImageSlot } from "@/components/image-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
 import { SideRaysBackdrop } from "@/components/side-rays-backdrop";
+import Link from "next/link";
 
 const SERVICES = [
   { num: "01", name: "Branding", desc: "Identity, positioning & brand systems that hold up everywhere." },
@@ -34,13 +33,9 @@ const WALL = [
 ];
 
 export default function Home() {
-  const [introDone, setIntroDone] = useState(false);
-
   return (
     <>
-      <Intro onDone={() => setIntroDone(true)} />
-
-      <Hero start={introDone} />
+      <Hero start />
 
       <VelocityMarquee />
 
@@ -63,10 +58,10 @@ export default function Home() {
                 brand gets obsessive attention - from the first idea to the last pixel.
               </Reveal>
               <Reveal style={{ marginTop: 32 }}>
-                <a className="btn ink" href="#studio">
+                <Link className="btn ink" href="/what-we-do">
                   <span>Inside the studio</span>
                   <span className="arr">↗</span>
-                </a>
+                </Link>
               </Reveal>
             </div>
             <div className="split-stack">
@@ -90,7 +85,8 @@ export default function Home() {
       </section>
 
       {/* ===== SCROLL-FILL STATEMENT ===== */}
-      <section className="fill-band" data-screen-label="Home - Statement">
+      {/* id="manifesto": the nav's "Manifesto" link targets this statement */}
+      <section className="fill-band" id="manifesto" data-screen-label="Home - Statement">
         <div className="wrap">
           <ScrollFill
             className="fill-statement"
@@ -108,7 +104,7 @@ export default function Home() {
           </div>
           <div className="svc-list">
             {SERVICES.map((s, i) => (
-              <Reveal key={s.num} i={i} as="a" className="svc-item" href="#services" data-cursor-label="Explore">
+              <Reveal key={s.num} i={i} as={Link} className="svc-item" href="/what-we-do" data-cursor-label="Explore">
                 <span className="s-num">{s.num}</span>
                 <span className="s-name">{s.name}</span>
                 <span className="s-go">↗</span>
@@ -223,10 +219,10 @@ export default function Home() {
             ))}
           </div>
           <Reveal style={{ marginTop: 44 }}>
-            <a className="btn ink" href="/clients">
+            <Link className="btn ink" href="/clients">
               <span>See all clients</span>
               <span className="arr">↗</span>
-            </a>
+            </Link>
           </Reveal>
         </div>
       </section>

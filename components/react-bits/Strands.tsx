@@ -1,6 +1,7 @@
 "use client";
 
 import { Renderer, Program, Mesh, Color, Triangle, RenderTarget } from "ogl";
+import { isLowPowerDevice } from "@/lib/device";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
@@ -279,12 +280,27 @@ export default function Strands({
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: true,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
-    });
+    // No WebGL at all (Lockdown Mode, hardware acceleration off, a crashed GPU
+    // process, VDI): ogl's Renderer throws on the null context. This component
+    // mounts on EVERY route (the "Talk to us" orb in the layout), so an uncaught
+    // throw here blanked the whole site for those visitors. Keep the CSS orb.
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: true,
+        dpr: Math.min(window.devicePixelRatio || 1, 2)
+      });
+    } catch {
+      return;
+    }
+    // The shaders are GLSL ES 3.00 (WebGL2). On a WebGL1-only fallback they fail
+    // to compile (ogl only warns) and the rAF loop would draw nothing forever.
+    if (!renderer.isWebgl2) {
+      renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return;
+    }
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
@@ -401,17 +417,43 @@ export default function Strands({
 
     let rafId = 0;
     let running = false;
+    // On low-power devices (<= 4 cores) the orb renders at 30Hz: the strands
+    // drift slowly enough that the halved rate is invisible, and it frees frame
+    // budget for the page's own motion (the hero entrance, Lenis).
+    const halfRate = isLowPowerDevice();
+    let tick = 0;
+    let startedOnce = false;
     const loop = (t: number) => {
-      draw(t);
+      if (!(halfRate && tick++ & 1)) draw(t);
       if (running) rafId = requestAnimationFrame(loop);
     };
+    let startTimer = 0;
     const start = () => {
       if (running || reduceMotion) return;
       running = true;
+      if (halfRate && !startedOnce && document.documentElement.dataset.heroEntrance) {
+        // Low-power devices: show the first frame at once, but let the page's
+        // own load-in motion (the hero entrance, which flags itself on <html>)
+        // finish before the orb starts drifting - its glass pass competes for
+        // the same frame budget. Polled, capped at 8s.
+        startedOnce = true;
+        draw(performance.now());
+        const waited = performance.now();
+        const poll = () => {
+          if (!running) return;
+          if (!document.documentElement.dataset.heroEntrance || performance.now() - waited > 8000) rafId = requestAnimationFrame(loop);
+          else startTimer = window.setTimeout(poll, 250);
+        };
+        window.clearTimeout(startTimer);
+        startTimer = window.setTimeout(poll, 250);
+        return;
+      }
+      startedOnce = true;
       rafId = requestAnimationFrame(loop);
     };
     const stop = () => {
       running = false;
+      window.clearTimeout(startTimer);
       if (rafId) cancelAnimationFrame(rafId);
       rafId = 0;
     };

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { BandBackdrop } from "./band-backdrop";
 import { AparLogo } from "./apar-logo";
@@ -15,12 +16,33 @@ const LINE_2 = "remembering.".split(" ");
  * Home hero - the brand's Algolia-style beam promoted to the landing screen:
  * the red pixel-dome arc sweeps behind the giant APAR wordmark (tinted to the
  * beam's pale-rose crest so it sits IN the light, not against it) and the
- * brand statement. Entrance choreography is gated on the intro overlay lift;
+ * brand statement. Entrance choreography plays on mount (`start`);
  * the copy parallax-fades on scroll-out, Lusion-style.
  */
 export function Hero({ start }: { start: boolean }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+
+  // Butter: begin the choreography only once the main thread is calm. On load
+  // it used to start 250ms in - right on top of hydration, the web fonts and
+  // three WebGL contexts compiling - so its first second ran at 12-20fps and
+  // the mark popped in late. Wait for the fonts (capped) plus two frames.
+  const [calm, setCalm] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    let raf = 0;
+    const fonts = document.fonts?.ready ?? Promise.resolve();
+    const cap = new Promise<void>((r) => setTimeout(r, 900));
+    Promise.race([fonts, cap]).then(() => {
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => alive && setCalm(true));
+      });
+    });
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -49,8 +71,28 @@ export function Hero({ start }: { start: boolean }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const animate = reduce ? "show" : start ? "show" : "hidden";
-  const base = 0.25;
+  const animate = reduce ? "show" : start && calm ? "show" : "hidden";
+  const base = 0.08;
+  // The wordmark's drop-shadow (a 64px blur filter on a ~400x275px layer) is
+  // re-rendered by the compositor on every frame its transform animates - it
+  // alone cost the entrance ~half its frame rate on integrated GPUs. It is
+  // applied once the choreography has settled (data-settled), so the entrance
+  // animates a plain layer and the rest state looks exactly as before.
+  const [settled, setSettled] = useState(false);
+  const isSettled = settled || !!reduce;
+  // Tell decorative loops (the "Talk to us" orb on low-power devices) that the
+  // page's own load-in motion is running, so they hold until it has settled.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isSettled) {
+      delete root.dataset.heroEntrance;
+      return;
+    }
+    root.dataset.heroEntrance = "1";
+    return () => {
+      delete root.dataset.heroEntrance;
+    };
+  }, [isSettled]);
 
   // word index across both lines for a continuous stagger
   let wi = -1;
@@ -68,7 +110,7 @@ export function Hero({ start }: { start: boolean }) {
               hidden: { y: "120%", opacity: 0 },
               show: { y: "0%", opacity: 1 },
             }}
-            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.85 + idx * 0.055 }}
+            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.6 + idx * 0.055 }}
           >
             {txt}
           </motion.span>
@@ -78,7 +120,7 @@ export function Hero({ start }: { start: boolean }) {
   };
 
   return (
-    <section ref={ref} className="hero-beam" data-screen-label="Home - Hero">
+    <section ref={ref} className="hero-beam" data-screen-label="Home - Hero" data-settled={isSettled ? "1" : undefined}>
       <BandBackdrop domeY={-0.24} intensity={0.98} />
       <div className="wrap">
         <motion.div
@@ -87,17 +129,17 @@ export function Hero({ start }: { start: boolean }) {
         >
           <motion.div
             className="hb-wordmark"
-            initial={reduce ? { opacity: 1 } : { opacity: 0, scale: 1.06, filter: "blur(14px)" }}
+            // opacity + scale only: these are composited. The old blur(14px) ->
+            // 0 animation re-rasterised the ~400x275px mark (with its drop
+            // shadow) on every frame of a 1.3s tween.
+            initial={reduce ? { opacity: 1 } : { opacity: 0, scale: 1.04 }}
             animate={animate}
             variants={
               reduce
                 ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
-                : {
-                    hidden: { opacity: 0, scale: 1.06, filter: "blur(14px)" },
-                    show: { opacity: 1, scale: 1, filter: "blur(0px)", transitionEnd: { filter: "none" } },
-                  }
+                : { hidden: { opacity: 0, scale: 1.04 }, show: { opacity: 1, scale: 1 } }
             }
-            transition={{ duration: 1.3, ease: EASE, delay: base + 0.25 }}
+            transition={{ duration: 1.2, ease: EASE, delay: base + 0.05 }}
           >
             <AparLogo />
           </motion.div>
@@ -113,17 +155,17 @@ export function Hero({ start }: { start: boolean }) {
             initial={{ y: 22, opacity: 0 }}
             animate={animate}
             variants={{ hidden: { y: 22, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.7, ease: EASE, delay: base + 1.65 }}
+            transition={{ duration: 0.7, ease: EASE, delay: base + 1.3 }}
           >
             <Magnetic strength={0.3}>
-              <a className="btn cream" href="/work">
+              <Link className="btn cream" href="/work">
                 <span>See the work</span>
                 <span className="arr">↗</span>
-              </a>
+              </Link>
             </Magnetic>
-            <a className="btn-ghost light" href="/what-we-do">
+            <Link className="btn-ghost light" href="/what-we-do">
               What we do
-            </a>
+            </Link>
           </motion.div>
         </motion.div>
       </div>
@@ -134,7 +176,8 @@ export function Hero({ start }: { start: boolean }) {
           initial={{ opacity: 0, y: 10 }}
           animate={animate}
           variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-          transition={{ duration: 0.6, ease: EASE, delay: base + 2.0 }}
+          transition={{ duration: 0.6, ease: EASE, delay: base + 1.65 }}
+          onAnimationComplete={() => setSettled(true)}
         >
           <span className="cue-mouse" aria-hidden />
           <span>Scroll to explore</span>

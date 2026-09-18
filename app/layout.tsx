@@ -5,11 +5,15 @@ import { ConditionalFooter } from "@/components/conditional-footer";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 import { TransitionProvider } from "@/components/transition-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { SlowMo } from "@/components/slow-mo";
 import { PixelTrail } from "@/components/pixel-trail";
 import { TalkToUs } from "@/components/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
 
 export const metadata: Metadata = {
+  // Absolute base for OG/canonical URLs (silences the build warning and makes
+  // social previews resolve). Update when the custom domain goes live.
+  metadataBase: new URL("https://apar-one-front.vercel.app"),
   title: "APAR - Digital Marketing & Branding Agency, Mumbai",
   description:
     "APAR is a digital marketing and branding agency in Mumbai for jewellery houses and premium brands. Strategy, branding, performance marketing, AI content and campaigns.",
@@ -48,6 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body data-page="index">
         <SmoothScroll />
+        {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
+            skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
+        <SlowMo />
         {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere).
             Swap back to <SplashCursor /> for the fluid lava trail. */}
         <PixelTrail />

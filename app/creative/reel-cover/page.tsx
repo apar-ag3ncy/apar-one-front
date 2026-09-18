@@ -31,22 +31,27 @@ export default function ReelCoverShowcase() {
   const [promptOpen, setPromptOpen] = useState(true);
 
   // Mouse coords for physical spotlight highlight
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
   const coverRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Track mouse coordinates over the cover preview for the spotlight shader effect
+  // Track mouse coordinates over the cover preview for the spotlight shader
+  // effect. Written straight to the CSS variables: keeping them in React state
+  // re-rendered the whole page (ribbon SVG, panels, drawer) on every pointer move.
+  const setSpot = (x: number, y: number) => {
+    const el = coverRef.current;
+    if (!el) return;
+    el.style.setProperty("--mouse-x", `${x}%`);
+    el.style.setProperty("--mouse-y", `${y}%`);
+  };
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!spotlight || !coverRef.current) return;
     const rect = coverRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePos({ x, y });
+    setSpot(((e.clientX - rect.left) / rect.width) * 100, ((e.clientY - rect.top) / rect.height) * 100);
   };
 
   const handleMouseLeave = () => {
     // Return spotlight to center when cursor leaves
-    setMousePos({ x: 50, y: 50 });
+    setSpot(50, 50);
   };
 
   // Canvas particle sparks emitter loop
@@ -133,7 +138,13 @@ export default function ReelCoverShowcase() {
   const speedLineDuration = speed === "elegant" ? "6s" : speed === "balanced" ? "3.5s" : "2.2s";
 
   return (
-    <main className="case-page" style={{ paddingTop: 120, minHeight: "100vh" }}>
+    <main
+      className="case-page"
+      // This page borrows the case-page shell but has no CaseStudy to set the
+      // --c-* palette; without these the background fell through to cream under
+      // the nav's on-dark (cream) mode.
+      style={{ paddingTop: 120, minHeight: "100vh", "--c-bg": "#0d0d0d", "--c-ink": "#f4ede2" } as React.CSSProperties}
+    >
       <section className="section" style={{ paddingBottom: 64 }}>
         <div className="wrap">
           {/* Eyebrow & Headline in APAR's agency web style */}
@@ -170,8 +181,8 @@ export default function ReelCoverShowcase() {
                       backgroundImage: `url('/assets/luxury_jewelry_showroom.png')`,
                       filter: `sepia(${warmth / 140}) saturate(${1 + warmth / 300}) contrast(1.02)`,
                       // Inject mouse coordinates as CSS variables for spotlight shader effect
-                      ["--mouse-x" as string]: `${mousePos.x}%`,
-                      ["--mouse-y" as string]: `${mousePos.y}%`,
+                      ["--mouse-x" as string]: "50%",
+                      ["--mouse-y" as string]: "50%",
                     }}
                   >
                     {/* 1. Dynamic Cursor Spotlight Overlay */}
@@ -446,8 +457,10 @@ export default function ReelCoverShowcase() {
 
               {/* Collapsible Design Spec Drawer */}
               <div className="rc-prompt-drawer">
-                <div 
+                <button
+                  type="button"
                   className="rc-prompt-header"
+                  aria-expanded={promptOpen}
                   onClick={() => setPromptOpen(!promptOpen)}
                 >
                   <span className="flex items-center gap-2">
@@ -467,7 +480,7 @@ export default function ReelCoverShowcase() {
                       </svg>
                     )}
                   </span>
-                </div>
+                </button>
 
                 <AnimatePresence>
                   {promptOpen && (

@@ -4,13 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getLenis } from "@/lib/scroll-state";
 import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
 
 // Routes with a dark hero - the nav flips to cream (matches the design's
-// data-nav="dark"). Home's beam landing is dark; Girvaan's hero is light, so
-// it keeps the default.
-const DARK_ROUTES = new Set(["/", "/start", "/work/chheda", "/work/diarah", "/creative/reel-cover"]);
+// data-nav="dark"). Home's beam landing is dark. Every case study under
+// /work/<slug> paints the page in the client's own (dark or mid-tone) palette
+// with light ink, so they are matched by pattern rather than listed one by one
+// - the old fixed list only knew two of the twelve and left the ink nav
+// unreadable on the rest.
+const DARK_ROUTES = new Set(["/", "/start", "/creative/reel-cover", "/creative/exploded-ring"]);
+const isCasePage = (path: string) => /^\/work\/[^/]+$/.test(path);
 
 const LINKS = [
   { href: "/work", label: "Work" },
@@ -26,7 +31,7 @@ export function Nav() {
   const scrolledRef = useRef(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const onDark = DARK_ROUTES.has(pathname);
+  const onDark = DARK_ROUTES.has(pathname) || isCasePage(pathname);
 
   useEffect(() => {
     const onScroll = () => {
@@ -41,8 +46,23 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Lock the page while the menu is open. body{overflow:hidden} stops native
+  // scrolling; Lenis drives the window programmatically and ignores it, so it is
+  // stopped explicitly too (it re-adds its own `lenis-stopped` class).
   useEffect(() => {
+    // html carries overflow-x:clip, which stops body's overflow from propagating
+    // to the viewport - so the lock has to sit on <html> to hold native touch
+    // scrolling as well.
+    document.documentElement.style.overflow = open ? "hidden" : "";
     document.body.style.overflow = open ? "hidden" : "";
+    const lenis = getLenis();
+    if (open) lenis?.stop();
+    else lenis?.start();
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      getLenis()?.start();
+    };
   }, [open]);
 
   // Close the menu on route change and on Escape.
@@ -99,6 +119,9 @@ export function Nav() {
 
       <div
         className={cn("mobile-menu", open && "open")}
+        // Closed, the menu is only slid off-screen: `inert` keeps its seven links
+        // out of the tab order and the accessibility tree at every viewport width.
+        inert={!open}
         onClick={() => setOpen(false)}
       >
         <div className="mm-links">

@@ -115,10 +115,14 @@ html:not(.lenis){scroll-behavior:smooth;}
 .splash-cursor canvas{width:100vw;height:100vh;display:block;}
 
 /* pixel cursor trail - the hero pixel-dome tiles promoted site-wide. Full-viewport
-   overlay, click-through, under the nav (z-50 < z-120). Normal alpha blend (no
-   mix-blend-mode) so the light orange-red tiles read over BOTH the cream and the
-   dark sections. The canvas is fixed at the viewport, so it stays put on scroll. */
-.pixel-trail{position:fixed;inset:0;z-index:50;pointer-events:none;}
+   overlay, click-through, under the nav (z-50 < z-120). The beam's cursor comet
+   on the beam's own 3:2 tiles, in the beam's dark shade (pixel-trail.tsx picks
+   it from the page's background). The canvas is fixed at the viewport, so it
+   stays put on scroll; its size is locked to whole device pixels inline. */
+.pixel-trail{position:fixed;inset:0;z-index:50;pointer-events:none;transition:opacity .25s var(--ease);}
+/* over a beam band (hero, footer) the beam's own tiles are the cursor - the
+   separate trail hides so two pixel grids never overlap (set by pixel-dome.tsx) */
+html[data-on-dome="1"] .pixel-trail{opacity:0;}
 .pixel-trail canvas{width:100vw;height:100vh;display:block;}
 
 /* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
@@ -495,18 +499,6 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .vmarquee .out{color:transparent;-webkit-text-stroke:1.4px var(--ink);}
 .vmarquee.on-ink .out{-webkit-text-stroke-color:var(--cream);}
 
-/* ---------- intro reveal overlay ---------- */
-body.intro-lock{overflow:hidden;}
-#intro{position:fixed;inset:0;z-index:10000;background:var(--ink);color:var(--cream);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:transform 1s var(--spring);}
-#intro.done{transform:translateY(-101%);}
-#intro .intro-logo{display:flex;align-items:center;justify-content:center;}
-#intro .intro-logo .apar-logo{font-size:clamp(54px,6.5vw,86px);}
-#intro .intro-count{position:absolute;bottom:48px;right:var(--gut);font-family:var(--serif);font-style:italic;font-size:clamp(40px,7vw,90px);}
-#intro .intro-tag{position:absolute;bottom:60px;left:var(--gut);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-mid);}
-@media (prefers-reduced-motion:reduce){ #intro{display:none;} }
-
 /* ---------- scroll progress bar ---------- */
 .scroll-progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--red);z-index:200;
   transform:scaleX(0);transform-origin:0 50%;will-change:transform;}
@@ -550,26 +542,44 @@ body.intro-lock{overflow:hidden;}
    statement, lead and CTAs. Lusion-style restraint: one light source, lots of
    black, serif statement, slow choreography. ---- */
 .hero-beam{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);
-  min-height:100svh;display:flex;align-items:center;}
+  min-height:100svh;display:flex;align-items:center;
+  /* The copy block is centred in the band BETWEEN the fixed nav and the scroll
+     cue's zone, with a small optical lift so the wordmark sits on the beam's
+     crest. Done with whole-pixel padding, not a transform: the old fractional
+     translateY(-3.4vh) left every element resting on sub-pixel positions. */
+  --hero-nav:84px;
+  --hero-cue:clamp(80px,12svh,112px);--hero-cue:round(clamp(80px,12svh,112px),2px);
+  --hero-lift:clamp(4px,1.4vh,12px);--hero-lift:round(clamp(4px,1.4vh,12px),1px);}
 .hero-beam .wrap{position:relative;z-index:2;width:100%;
-  /* Lift the copy block up so the giant APAR wordmark sits centered-but-slightly-
-     high, ON the beam's bright crest (the beam canvas is anchored to the section,
-     so shifting only .wrap moves the mark up into the light). Moving up frees
-     space below, so the CTAs/scroll cue never slip off-screen. vh-scaled + capped
-     so it lifts more on tall displays and stays gentle on short laptops. */
-  transform:translateY(clamp(-46px,-3.4vh,-24px));}
-/* Vertical rhythm is viewport-height-aware so the whole hero (mark, headline,
-   lead, CTAs, scroll cue) always fits on screen without cropping - it breathes
-   on tall displays and compresses on short laptops. */
-.hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;
-  padding:clamp(52px,6.5svh,120px) 0 clamp(46px,5.5svh,100px);}
+  padding-top:var(--hero-nav);
+  padding-bottom:calc(var(--hero-cue) + var(--hero-lift) * 2);
+  /* every vertical term is rounded to 2px and the viewport's parity is absorbed
+     here, so the flex centring (which halves the leftover) lands the block on a
+     whole pixel at any viewport height - no 50%-blended button edges */
+  padding-bottom:calc(var(--hero-cue) + var(--hero-lift) * 2 + mod(100svh,2px));}
+/* symmetric inside the centred block - the nav/cue bands above own the offsets */
+.hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0;}
 .hero-beam .meta-row{color:rgba(244,237,226,.6);justify-content:center;}
-.hb-wordmark{display:flex;justify-content:center;pointer-events:none;margin-top:clamp(16px,2.2vh,40px);
-  will-change:transform,filter,opacity;}
+.hb-wordmark{display:flex;justify-content:center;pointer-events:none;
+  will-change:transform,opacity;}
 /* min(20.5vw,30.5svh): the mark is sized by width on tall screens (stays big) but
-   capped by viewport height on short laptops so it can't push the CTAs off-screen. */
-.hb-wordmark .apar-logo{font-size:clamp(89px,min(20.5vw,30.5svh),356px);line-height:1;letter-spacing:0.0083em;color:#F3DAD3;
-  filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}
+   capped by viewport height on short laptops so it can't push the CTAs off-screen.
+   round(): whole-pixel font size -> crisp, pixel-aligned glyphs (browsers without
+   round() keep the plain clamp). */
+.hb-wordmark .apar-logo{font-size:clamp(89px,min(20.5vw,30.5svh),356px);font-size:round(clamp(89px,min(20.5vw,30.5svh),356px),2px);
+  line-height:1;letter-spacing:0.0083em;color:#F3DAD3;}
+/* Optical centre: the lead-glyph slot is as wide as अ and the narrower Latin A
+   is right-aligned inside it, so the visible mark read ~0.07em right of centre
+   whenever A showed (and centred on अ). Split the swing so both states sit
+   within ~0.03em of true centre. (Inside this flex-centred parent a negative
+   margin moves the box by half its value.) Reduced motion never cycles - it
+   stays on the centred अ - so it keeps the plain centring. */
+@media (prefers-reduced-motion:no-preference){ .hb-wordmark .apar-logo{margin-left:-.062em;} }
+/* the soft dark halo that lifts the mark off the bright crest - applied once the
+   entrance has settled (see hero.tsx): animating a filtered layer re-renders the
+   64px blur every frame */
+.hero-beam[data-settled="1"] .hb-wordmark .apar-logo{filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}
+@media (prefers-reduced-motion:reduce){.hero-beam .hb-wordmark .apar-logo{filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}}
 /* Consistent tracking: the leading-glyph gap (अ / A) is kept equal to the P-A-R
    letter-spacing above so the whole mark is evenly spaced - compact but never
    touching/overlapping. */
@@ -591,7 +601,11 @@ body.intro-lock{overflow:hidden;}
 }
 /* The wordmark is lifted onto the beam crest; open a bigger gap under it so the
    tagline + CTAs drop back into the dark BELOW the beam and never overlap it. */
-.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);margin:clamp(56px,8vh,104px) 0 0;}
+.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);font-size:round(clamp(32px,4.4vw,64px),2px);
+  line-height:round(.96em,1px); /* two whole-pixel lines -> even box */
+  margin:clamp(44px,7.5vh,104px) 0 0;margin:round(clamp(44px,7.5vh,104px),2px) 0 0;}
+.hero-beam .hero-actions{margin-top:clamp(28px,4.2vh,38px);margin-top:round(clamp(28px,4.2vh,38px),2px);
+  align-items:baseline;} /* the ghost link's label shares the pill label's baseline (it sat 3px high) */
 .hero-beam .hero-h1 .hl{color:#ECC4BE;} /* the crest tint - the italic line glows like the beam */
 .hero-beam .lead{color:rgba(244,237,226,.66);max-width:52ch;margin:clamp(12px,1.7vh,24px) auto 0;}
 .hero-beam .hero-actions{justify-content:center;}
@@ -600,8 +614,7 @@ body.intro-lock{overflow:hidden;}
 .hero-beam .scroll-cue{color:rgba(244,237,226,.5);}
 .hero-beam .cue-mouse{border-color:rgba(244,237,226,.4);}
 @media (max-width:740px){
-  .hero-beam-in{padding:110px 0 96px;}
-  .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);}
+  .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);font-size:round(clamp(30px,8.6vw,44px),2px);}
 }
 
 .hero-home{padding:152px 0 60px;position:relative;}
@@ -934,7 +947,10 @@ body.intro-lock{overflow:hidden;}
 .page-hero .eyebrow{margin-bottom:28px;}
 .page-hero .lead{margin-top:30px;}
 .chip-row{display:flex;gap:10px;flex-wrap:wrap;}
-.chip{font-size:14px;padding:9px 16px;border:1.5px solid var(--line-strong);border-radius:100px;cursor:pointer;transition:.3s var(--ease);user-select:none;white-space:nowrap;}
+.chip{font-size:14px;padding:9px 16px;border:1.5px solid var(--line-strong);border-radius:100px;cursor:pointer;transition:.3s var(--ease);user-select:none;white-space:nowrap;
+  /* the filters are real <button>s (keyboard + screen-reader operable) styled exactly as the chips were */
+  background:transparent;color:inherit;font:inherit;font-size:14px;line-height:inherit;appearance:none;}
+.chip:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
 .chip:hover{border-color:var(--ink);}
 .chip.sel{background:var(--grad);color:#fff;border-color:transparent;}
 
@@ -983,37 +999,38 @@ body.intro-lock{overflow:hidden;}
   padding:150px 0 64px;overflow:hidden;}
 .case-hero::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(80% 60% at 18% 12%, var(--c-accent-soft), transparent 60%);}
-.case-hero-in{position:relative;}
+.case-hero-in{position:relative;width:100%;} /* width:100% - as a flex item, the wrap's margin:auto would otherwise shrink-wrap it to its widest line and centre it */
 .case-eyebrow{display:inline-flex;align-items:center;gap:11px;font-size:12.5px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--c-accent);}
 .case-eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--c-accent);}
 .case-title{font-family:var(--serif);font-weight:500;font-size:clamp(56px,11vw,164px);line-height:.9;letter-spacing:-.02em;margin:22px 0 0;}
 .case-title em{font-style:italic;color:var(--c-accent);}
 .case-sub{font-size:clamp(18px,1.6vw,22px);line-height:1.5;max-width:54ch;margin:26px 0 0;color:var(--c-soft);}
-.case-meta{display:flex;flex-wrap:wrap;gap:38px;margin-top:48px;padding-top:30px;border-top:1px solid var(--c-line);}
+.case-meta{display:flex;flex-wrap:wrap;gap:32px 44px;margin-top:44px;}
 .case-meta .m h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-soft);font-weight:700;margin:0 0 9px;}
 .case-meta .m p{font-family:var(--serif);font-size:19px;margin:0;color:var(--c-ink);}
 /* Hero shows the full 9:16 creative - centered portrait, height-capped. */
-.case-hero-fig{margin:44px auto 0;width:fit-content;max-width:100%;border-radius:7px;overflow:hidden;border:1px solid var(--c-line);}
+.case-hero-fig{margin:44px auto 0;width:fit-content;max-width:100%;}
 .case-hero-fig .img-slot{aspect-ratio:9/16;height:clamp(360px,56vh,580px);width:auto;display:block;}
 @media (max-width:560px){ .case-hero-fig{width:100%;} .case-hero-fig .img-slot{width:100%;height:auto;} }
-.case-sec{padding:104px 0;border-top:1px solid var(--c-line);}
+/* the glass panes do the sectioning (no full-bleed rules under inset panes) */
+.case-sec{padding:104px 0;}
 .case-tag{display:flex;align-items:center;gap:18px;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--c-soft);}
 .case-tag .ln{flex:1;height:1px;background:var(--c-line);}
 .case-lead{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.8vw,52px);line-height:1.18;letter-spacing:-.01em;
   max-width:22ch;margin:34px 0 0;text-wrap:balance;}
 .case-lead em{font-style:italic;color:var(--c-accent);}
-.case-cols{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:54px;}
+.case-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:54px;align-items:start;}
 .case-cols h3{font-family:var(--serif);font-size:27px;margin:0 0 14px;}
 .case-cols p{color:var(--c-soft);font-size:16.5px;line-height:1.65;margin:0;}
 .case-list{list-style:none;padding:0;margin:18px 0 0;}
 .case-list li{position:relative;padding:14px 0 14px 26px;border-top:1px solid var(--c-line);font-size:16px;}
 .case-list li::before{content:"";position:absolute;left:0;top:21px;width:8px;height:8px;border-radius:50%;background:var(--c-accent);}
-.case-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:20px;}
+.case-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:20px;}
 .case-stat .n{font-family:var(--serif);font-size:clamp(46px,6vw,88px);line-height:1;letter-spacing:-.02em;color:var(--c-accent);}
 .case-stat .l{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--c-soft);margin-top:12px;}
 /* Clean gallery - tiles match the creatives' 9:16 so nothing gets cropped. */
 .case-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:54px;align-items:start;}
-.case-gallery .g{border-radius:6px;overflow:hidden;border:1px solid var(--c-line);grid-column:auto;}
+.case-gallery .g{grid-column:auto;}
 .case-gallery .g .img-slot,.case-gallery .img-slot{width:100%;aspect-ratio:9/16;display:block;}
 
 /* Per-page rhythm - different columns, spacing & alignment per case (all 9:16,
@@ -1027,12 +1044,12 @@ body.intro-lock{overflow:hidden;}
 @media (max-width:900px){
   .case-page[data-variant="b"] .case-gallery{grid-template-columns:repeat(2,1fr);}
 }
-.case-quote{padding:110px 0;text-align:center;border-top:1px solid var(--c-line);}
+.case-quote{padding:110px 0;text-align:center;}
 .case-quote blockquote{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.2vw,58px);line-height:1.18;letter-spacing:-.01em;
   max-width:20ch;margin:0 auto;}
 .case-quote blockquote em{font-style:italic;color:var(--c-accent);}
 .case-quote .by{margin-top:30px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c-soft);}
-.case-next{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;padding:84px 0;border-top:1px solid var(--c-line);}
+.case-next{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;}
 .case-next .nx-l{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--c-soft);margin-bottom:10px;}
 .case-next .nx-name{font-family:var(--serif);font-size:clamp(34px,5vw,64px);letter-spacing:-.01em;}
 .case-next a.nx{color:var(--c-ink);text-decoration:none;transition:color .35s;}
@@ -1318,7 +1335,7 @@ body.intro-lock{overflow:hidden;}
 
 /* Full-height elements: use small-viewport-height so mobile browser chrome can't
    cause 100vh overflow or a jump when the URL bar shows/hides. */
-.pin-sticky{height:100svh;}
+@media (min-width:901px){.pin-sticky{height:100svh;}} /* desktop only: at <=900px the gallery is a vertical stack (height:auto) - an unconditional 100svh here clipped it to one screen, hiding 11 of 12 cards */
 .case-page{min-height:100svh;}
 .case-hero{min-height:min(94svh,760px);}
 .splash-cursor canvas{width:100%;height:100svh;}
@@ -1356,7 +1373,7 @@ body.intro-lock{overflow:hidden;}
   :root{--gut:18px;}
   .section{padding-top:56px;padding-bottom:56px;}
   .footer{padding:64px 0 32px;}
-  .hb-wordmark .apar-logo{font-size:clamp(80px,24vw,150px);}
+  .hb-wordmark .apar-logo{font-size:clamp(80px,24vw,150px);font-size:round(clamp(80px,24vw,150px),2px);}
   .sector{min-height:340px;padding:26px;}
   .hero-actions{flex-wrap:wrap;gap:14px;}
   .page-wipe-label{font-size:clamp(34px,11vw,64px);white-space:normal;text-align:center;}
@@ -1894,7 +1911,14 @@ input:checked + .rc-slider::before {
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  /* it is a real <button> now (keyboard-operable) - strip the UA button chrome */
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
 }
+.rc-prompt-header:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; border-radius: 6px; }
 
 .rc-prompt-content {
   margin-top: 20px;
@@ -1969,6 +1993,8 @@ input:checked + .rc-slider::before {
 .fld-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media (max-width:520px){.fld-row{grid-template-columns:1fr;}}
 
+.start-error{margin:0 0 4px;font-size:14px;line-height:1.5;color:#FFB4A6;max-width:52ch;}
+.start-submit[disabled]{opacity:.65;cursor:progress;}
 .start-submit{margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;
   padding:16px 30px;border:none;border-radius:100px;cursor:pointer;color:#fff;
   font-family:var(--sans);font-weight:700;font-size:15px;letter-spacing:.02em;
@@ -2039,3 +2065,300 @@ input:checked + .rc-slider::before {
 .ag-tag{font-size:12px;letter-spacing:.02em;color:var(--cream);padding:6px 14px;border-radius:100px;
   background:rgba(244,237,226,.06);border:1px solid rgba(255,150,110,.22);}
 
+/* ---------- slow-mo layer (components/slow-mo.tsx) ---------- */
+/* the inner image is what parallaxes/zooms (scrubbed by GSAP), so it needs a stable
+   origin and a compositor layer; its .img-slot wrapper already clips (overflow:hidden) */
+.img-slot > img{transform-origin:50% 50%;will-change:transform;}
+/* frames take the velocity skew - a compositor layer keeps the stretch smooth */
+.work-card .frame,.split-stack .si .si-fig,.hero-feature .frame{will-change:transform;transform-origin:50% 50%;}
+/* SplitText line masks: each line rises out of its own overflow-hidden wrapper */
+.sm-line{display:block;}
+.footer-word{will-change:transform;}
+
+/* ============================================================
+   LIQUID GLASS (case pages) - components/liquid-glass.tsx + the .glass recipe.
+   See docs/adr/0002-case-page-liquid-glass.md. Everything derives from the
+   page's own --c-* palette, so there are no per-client rules: the liquid is
+   the client's colours moving under frost, the glass is light on top.
+
+   Deliberately NO backdrop-filter and NO mix-blend-mode: both were measured
+   (ADR-0002) to cost the case pages 2-3x their scroll frame rate - every pane
+   re-blurred / re-blended each frame while the backdrop moved beneath it. The
+   blobs are pre-softened gradients, so a blur added nothing visible anyway;
+   the frost is the fill + rim + sheen + grain, all static raster.
+
+   Layering: .case-page is NOT a stacking context (that would trap the fixed
+   overscroll meter and the page wipe under the body-level cursor canvas).
+   Instead the fixed backdrop sits at z 0 and the header/sections at z 1, so it
+   paints above .case-page's own background and under all content.
+   ============================================================ */
+.case-page{position:relative;
+  /* the on-pane variant of --c-soft (see .glass); computed here, off the theme
+     vars set inline on this element, so the pane can adopt it without a cycle */
+  --c-soft-pane:color-mix(in srgb,var(--c-soft) 55%,var(--c-ink) 45%);}
+.case-page > header,.case-page > section{position:relative;z-index:1;}
+/* one grain texture, shared by the liquid and every pane (SVG fractal noise,
+   white, alpha-only) */
+.case-page{--lg-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");}
+
+/* ---- the liquid: fixed, click-through, behind the content. Four big
+        PRE-SOFT radial gradients (no filter:blur - softness is in the stops).
+        Their drift is driven from JS on 2-D transforms and only while the page
+        is still (see liquid-glass.tsx) - no CSS animation, so nothing here is
+        a promoted layer during scroll. ---- */
+.lg-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict;background:var(--c-bg);}
+.lg-blob{position:absolute;width:min(78vmax,1100px);height:min(78vmax,1100px);border-radius:50%;}
+.lg-a{left:-24vmax;top:-32vmax;background:radial-gradient(closest-side,var(--c-bg2),transparent 72%);}
+.lg-b{right:-30vmax;top:-10vmax;background:radial-gradient(closest-side,var(--c-accent-soft),transparent 70%);}
+.lg-c{left:-16vmax;bottom:-36vmax;
+  background:radial-gradient(closest-side,rgba(255,255,255,.10),transparent 70%);
+  background:radial-gradient(closest-side,color-mix(in oklab,var(--c-ink) 15%,transparent),transparent 70%);}
+.lg-d{right:-20vmax;bottom:-28vmax;background:radial-gradient(closest-side,rgba(0,0,0,.36),transparent 72%);}
+/* top light + a diagonal sheen across the whole liquid, then a fine grain so
+   the surface reads as material rather than a flat fill (plain alpha, no blend) */
+.lg-backdrop::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(70% 55% at 50% -12%,rgba(255,255,255,.12),transparent 60%),
+             linear-gradient(118deg,rgba(255,255,255,.07),transparent 38%,transparent 62%,rgba(0,0,0,.16));}
+.lg-backdrop::after{content:"";position:absolute;inset:0;background-size:160px 160px;
+  background-image:var(--lg-grain);}
+
+/* ---- the glass: one recipe for every surface, ONE element per pane. The
+        sheen and grain are painted into the pane's own background stack (no
+        pseudo layers, no isolation - measured: 13 isolated panes x 2 pseudo
+        layers over a fixed backdrop cost more scroll frames than the fill
+        itself). Translucent fill with a faint accent tint, a directional lit
+        rim over a dark hairline (holds on light themes and near-black), an
+        inset specular top edge, a tight drop shadow. Text sits on top of the
+        stack, so it is never washed. Media frames (.glass-media) are a bezel:
+        same fill and rim, no grain, no outer shadow, and the photo covers the
+        stack - nothing is ever painted over the picture. ---- */
+.case-page .glass{position:relative;
+  --g-fill:rgba(255,255,255,.09);--g-fill2:rgba(255,255,255,.03);
+  --g-rim:rgba(255,255,255,.18);--g-hi:rgba(255,255,255,.55);
+  --g-sheen:radial-gradient(120% 70% at 10% 0%,rgba(255,255,255,.16),transparent 46%),
+            linear-gradient(165deg,rgba(255,255,255,.05),transparent 34%,transparent 70%,rgba(255,255,255,.035));
+  background:var(--lg-grain) 0 0/160px 160px repeat,
+             var(--g-sheen),
+             linear-gradient(135deg,var(--g-fill),var(--g-fill2)),
+             linear-gradient(160deg,var(--c-accent-soft),transparent 32%);
+  border:1px solid var(--g-rim);border-radius:18px;
+  box-shadow:inset 0 1px 0 var(--g-hi),inset 1px 1px 0 rgba(255,255,255,.34),inset -1px -1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(0,0,0,.09),inset 0 -1px 0 rgba(0,0,0,.2),
+    0 18px 40px -22px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.18);
+  /* secondary copy sits a touch brighter ON a pane than on the bare page: the
+     white fill lifts the pane, and the theme's --c-soft alpha was tuned for
+     the bare bg. Mixed toward the ink (keeps hue + hierarchy) so 16px body
+     copy and the 11-12px labels stay >= 4.5:1 over the fill. */
+  --c-soft:var(--c-soft-pane);}
+.case-page .glass-media{
+  background:radial-gradient(110% 60% at 12% 0%,rgba(255,255,255,.10),transparent 44%),
+             linear-gradient(135deg,var(--g-fill),var(--g-fill2)),
+             linear-gradient(160deg,var(--c-accent-soft),transparent 32%);
+  box-shadow:inset 0 1px 0 var(--g-hi),inset 1px 1px 0 rgba(255,255,255,.34),inset -1px -1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(0,0,0,.09),inset 0 -1px 0 rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.18);}
+
+/* ---- smoked glass for the mid-light themes (bg luminance > .09: Girvaan,
+        Jatubhai Velji, High on Smiles - data-glass is derived in CaseStudy).
+        White glass would brighten a background that is already marginal for
+        light ink and push body copy under WCAG AA; toning the pane DOWN keeps
+        every text tier above 4.5:1 and still reads as glass. The liquid's
+        light-adding layers flip to shade for the same reason. ---- */
+.case-page[data-glass="dark"] .glass{--g-fill:rgba(0,0,0,.30);--g-fill2:rgba(0,0,0,.18);--g-rim:rgba(255,255,255,.26);
+  --g-sheen:radial-gradient(120% 70% at 10% 0%,rgba(255,255,255,.07),transparent 46%);
+  background:var(--lg-grain) 0 0/160px 160px repeat,var(--g-sheen),linear-gradient(135deg,var(--g-fill),var(--g-fill2));}
+.case-page[data-glass="dark"] .glass-media{
+  background:radial-gradient(110% 60% at 12% 0%,rgba(255,255,255,.06),transparent 44%),linear-gradient(135deg,var(--g-fill),var(--g-fill2));}
+.case-page[data-glass="dark"] .lg-c{background:radial-gradient(closest-side,rgba(0,0,0,.22),transparent 70%);}
+.case-page[data-glass="dark"] .lg-backdrop::before{
+  background:radial-gradient(70% 55% at 50% -12%,rgba(255,255,255,.05),transparent 60%),
+             linear-gradient(118deg,transparent 40%,rgba(0,0,0,.18));}
+
+/* ---- frames with no photo yet: a finished, branded card instead of a
+        drop-zone note. Panel in the page's own colours (bg2 -> bg with the
+        accent glow), the client's logo centred and contained. The visible
+        "Drop ... image" caption is suppressed on case pages (it stays as the
+        frame's accessible name). ---- */
+.case-page .ph-img{background:
+  radial-gradient(90% 70% at 30% 18%,var(--c-accent-soft),transparent 60%),
+  radial-gradient(70% 60% at 80% 90%,rgba(0,0,0,.28),transparent 65%),
+  linear-gradient(160deg,var(--c-bg2),var(--c-bg));}
+.case-page .img-slot-cap{display:none;}
+.case-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18%;}
+.case-ph-logo{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:.92;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.28));}
+.case-ph-logo--invert{filter:brightness(0) invert(1) drop-shadow(0 8px 24px rgba(0,0,0,.28));}
+.case-ph-mask{display:block;width:100%;height:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;opacity:.92;}
+.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;color:var(--c-soft);opacity:.85;}
+/* the four fallback tiles are one logo four times: vary the glow corner and
+   the logo scale down the grid so the row reads as a set, not a repeat */
+.case-page .case-gallery .g:nth-child(2n) .ph-img{background:
+  radial-gradient(90% 70% at 72% 80%,var(--c-accent-soft),transparent 60%),
+  radial-gradient(70% 60% at 15% 10%,rgba(0,0,0,.26),transparent 65%),
+  linear-gradient(200deg,var(--c-bg2),var(--c-bg));}
+.case-page .case-gallery .g:nth-child(3n) .case-ph{padding:26%;}
+.case-page .case-gallery .g:nth-child(4n) .case-ph{padding:14%;}
+@media (max-width:860px){ .case-ph-cap{left:16px;bottom:14px;font-size:10px;} }
+/* hero without a creative: a wide branded panel across the wrap, not an empty phone */
+.case-page .case-hero-fig.is-fallback{width:100%;}
+.case-page .case-hero-fig.is-fallback .img-slot{width:100%;height:auto;aspect-ratio:21/9;}
+.case-page .case-hero-fig.is-fallback .case-ph{padding:12% 24%;}
+@media (max-width:860px){
+  .case-page .case-hero-fig.is-fallback .img-slot{aspect-ratio:4/3;}
+  .case-page .case-hero-fig.is-fallback .case-ph{padding:16% 20%;}
+}
+/* gallery: branded fallbacks share one portrait ratio (set by the template),
+   so a placeholder page's rows stay level - real photos keep their natural
+   ratio, exactly as before */
+
+/* ---- surfaces: which parts of the case template are glass ---- */
+.case-page .case-hero-fig.glass{border-radius:20px;padding:10px;}
+.case-page .case-gallery .g.glass{border-radius:18px;padding:9px;}
+.case-page .case-meta.glass{border-radius:18px;padding:28px 32px;width:fit-content;max-width:100%;}
+.case-page .case-cols .glass{border-radius:20px;padding:36px;}
+.case-page .case-stat.glass{border-radius:20px;padding:34px 30px;}
+.case-page .glass-quote{border-radius:24px;padding:clamp(44px,7vw,84px) clamp(24px,5vw,72px);max-width:920px;margin-inline:auto;}
+
+@media (max-width:860px){
+  .case-page .case-meta.glass{padding:22px;}
+  .case-page .case-cols .glass{padding:26px;}
+  .case-page .case-stat.glass{padding:26px 24px;}
+  .case-page .case-hero-fig.glass{padding:8px;}
+  .case-page .case-gallery .g.glass{padding:7px;}
+  .lg-d{display:none;}
+}
+/* users who turn transparency off get solid panes on a still, flat page */
+@media (prefers-reduced-transparency:reduce){
+  .case-page .glass{background:var(--c-bg2);}
+  .lg-blob,.lg-backdrop::before,.lg-backdrop::after{display:none;}
+}
+
+/* ============================================================
+   CASE PAGE COMPOSITION - hero, next-case card, phone rhythm
+   (after the glass rules on purpose: same specificity, later wins)
+   ============================================================ */
+/* ---- hero: copy left, creative right, bottom-aligned on one baseline, so
+        eyebrow / title / sub / meta AND the whole frame sit inside the first
+        screen. The frame column is as wide as the height-capped 9:16 creative
+        (or the 4:5 brand card on pages without one). ---- */
+@media (min-width:901px){
+  .case-hero-in{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:clamp(32px,4vw,64px);align-items:end;}
+  .case-hero-copy{min-width:0;container-type:inline-size;}
+  /* the title is sized by its COLUMN (cqi), not the viewport, so a one-word
+     name like "Paramount" never breaks mid-word beside the frame; browsers
+     without container units keep the viewport clamp declared above */
+  .case-title{font-size:clamp(56px,min(11vw,17.5cqi),164px);overflow-wrap:normal;hyphens:manual;}
+  .case-hero-fig{margin:0;justify-self:end;}
+  .case-hero-fig .img-slot{height:clamp(360px,calc(100svh - 234px),580px);}
+  .case-page .case-hero-fig.is-fallback{width:auto;}
+  .case-page .case-hero-fig.is-fallback .img-slot{aspect-ratio:4/5;width:auto;height:clamp(360px,calc(100svh - 234px),580px);}
+  .case-page .case-hero-fig.is-fallback .case-ph{padding:22%;}
+  .case-page .case-meta.glass{width:auto;}
+}
+/* ---- next-case card: the next client's own colours (the wipe uses the same
+        `next.color`), so the card is a preview of the page it opens ---- */
+.case-page .case-next{background:var(--nx-bg);color:var(--nx-ink);border-radius:22px;padding:56px 52px;
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.55);}
+.case-page .case-next .nx-l{color:var(--nx-ink);opacity:.72;}
+.case-page .case-next a.nx{color:var(--nx-ink);}
+.case-page .case-next a.nx:hover .nx-name{color:var(--nx-ink);opacity:.8;}
+.case-page .case-next .case-btn{background:var(--nx-ink);color:var(--nx-bg);}
+/* ---- phones + small tablets: tighter rhythm (the desktop 104-122px section
+        padding reads as 160-220px of flat colour between blocks on a phone),
+        a 2x2 meta grid, stats as compact rows, no lead indent ---- */
+@media (max-width:860px){
+  .case-page[data-variant="c"] .case-lead{margin-left:0;}
+  .case-stats{gap:12px;}
+  .case-page .case-stat.glass{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:20px 22px;}
+  .case-stat .l{margin-top:0;text-align:right;max-width:18ch;}
+  .case-page .case-next{padding:36px 26px;}
+  /* galleries of brand cards (no photos yet) go 2-up on phones - four
+     full-width logo cards in a row made the page a screen and a half longer */
+  .case-page .case-gallery:has(.has-brand){grid-template-columns:1fr 1fr;gap:12px;}
+  .case-page .case-gallery:has(.has-brand) .g.glass{padding:6px;grid-column:auto !important;}
+  .case-page .case-gallery:has(.has-brand) .case-ph{padding:22%;}
+  .case-page .case-gallery:has(.has-brand) .case-ph-cap{left:12px;bottom:10px;font-size:9.5px;letter-spacing:.16em;}
+}
+@media (max-width:760px){
+  .case-hero{padding:112px 0 40px;}
+  .case-sec,.case-page[data-variant="b"] .case-sec,.case-page[data-variant="c"] .case-sec{padding:72px 0;}
+  .case-quote{padding:80px 0;}
+  .case-meta,.case-page .case-meta.glass{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;width:100%;}
+  .case-meta .m:first-child{grid-column:1/-1;}
+  .case-meta .m p{font-size:17px;}
+}
+@media (max-width:480px){
+  .case-sec,.case-page[data-variant="b"] .case-sec,.case-page[data-variant="c"] .case-sec{padding:56px 0;}
+  .case-quote{padding:64px 0;}
+  .case-eyebrow{font-size:11.5px;letter-spacing:.2em;align-items:flex-start;}
+  .case-eyebrow i{margin-top:4px;flex:none;}
+}
+
+/* ============================================================
+   FIXES (audit 2026-09-16) - behaviour only, no visual change at rest
+   ============================================================ */
+/* closed mobile menu: also visibility:hidden (transform alone leaves its links
+   focusable and announced); the delay keeps the slide-up animation */
+.mobile-menu{visibility:hidden;transition:transform .6s var(--ease),visibility 0s .6s;}
+.mobile-menu.open{visibility:visible;transition:transform .6s var(--ease),visibility 0s;}
+@media (max-width:900px){
+  /* the nav keeps `scrolled` while the menu is open: its cream bar hid the
+     cream close icon on light routes - let the menu's ink show through */
+  .nav.menu-open{background:transparent;box-shadow:none;}
+}
+/* the case pages' fixed "keep scrolling" meter (z 300) sat above the open menu */
+body:has(.mobile-menu.open) .next-pull{display:none;}
+
+/* ============================================================
+   EXPLODED RING (creative studio showcase) - components/exploded/*
+   A tall scroll section with a sticky stage; the R3F canvas fills the stage,
+   HTML captions and the scroll hint sit over it. Dark page in the site's ink,
+   same type and tokens as the case pages.
+   ============================================================ */
+.xr-page{background:var(--ink);color:var(--cream);min-height:100svh;}
+.xr-page ::selection{background:var(--red);color:var(--cream);}
+.xr-intro{padding:150px 0 28px;}
+.xr-intro .display{color:var(--cream);}
+.xr-intro .display em{color:#ECC4BE;}
+.xr-lead{color:rgba(244,237,226,.72);margin-top:26px;}
+.xr{position:relative;height:320svh;}
+.xr-stage{position:sticky;top:0;height:100svh;overflow:hidden;
+  background:radial-gradient(70% 55% at 50% 58%,rgba(235,59,37,.14),transparent 62%),var(--ink);}
+.xr-canvas{position:absolute;inset:0;}
+.xr-canvas canvas{display:block;width:100%!important;height:100%!important;}
+.xr-loading{background:radial-gradient(40% 30% at 50% 55%,rgba(244,237,226,.05),transparent 70%);}
+.xr-caps{position:absolute;inset:0;pointer-events:none;}
+.xr-cap{position:absolute;display:grid;gap:6px;opacity:0;transform:translateY(10px);max-width:26ch;}
+.xr-cap-k{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:#ECC4BE;}
+.xr-cap-v{font-family:var(--serif);font-size:clamp(20px,2vw,26px);line-height:1.15;color:var(--cream);}
+.xr-cap-0{left:var(--gut);bottom:22svh;}           /* band - low left */
+.xr-cap-1{right:var(--gut);top:24svh;text-align:right;}  /* prongs & head - upper right */
+.xr-cap-2{left:var(--gut);top:20svh;}              /* stone - upper left */
+.xr-hint{position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;align-items:center;gap:14px;
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,237,226,.5);pointer-events:none;}
+.xr-hint .cue-mouse{border-color:rgba(244,237,226,.4);}
+.xr-fallback{position:absolute;inset:0;display:grid;place-content:center;gap:10px;padding:0 var(--gut);text-align:center;color:rgba(244,237,226,.72);}
+.xr-fallback-eyebrow{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:#ECC4BE;}
+.xr-fallback p{max-width:44ch;margin:0 auto;font-size:16px;line-height:1.6;}
+.xr-notes{padding:96px 0 120px;}
+.xr-tagline{color:rgba(244,237,226,.6);}
+.xr-tagline .ln{background:rgba(244,237,226,.16);}
+.xr-note-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:40px;}
+.xr-note h3{font-family:var(--serif);font-size:26px;margin:0 0 12px;color:var(--cream);}
+.xr-note p{color:rgba(244,237,226,.66);font-size:16px;line-height:1.6;margin:0;max-width:34ch;}
+.xr-foot{display:flex;align-items:center;gap:28px;margin-top:56px;flex-wrap:wrap;}
+@media (max-width:900px){
+  .xr-note-grid{grid-template-columns:1fr;gap:28px;}
+  .xr{height:280svh;}
+  .xr-cap{max-width:20ch;}
+  .xr-cap-v{font-size:18px;}
+  .xr-cap-1{top:18svh;}
+  .xr-cap-2{top:14svh;}
+  .xr-cap-0{bottom:18svh;}
+}
+@media (prefers-reduced-motion:reduce){
+  .xr{height:100svh;}
+  .xr-hint{display:none;}
+  .xr-cap{opacity:1;transform:none;}
+}

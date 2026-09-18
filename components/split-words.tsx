@@ -1,7 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { type ElementType } from "react";
+import type { ComponentType, ElementType, ReactNode } from "react";
+
+// The wrapper tag is rendered through a component-typed alias on purpose:
+// @react-three/fiber (used by the exploded-ring stage) merges its three.js
+// element types into the global JSX map, and JSX on a bare `ElementType`
+// union then resolves its props to `never`.
+type TagProps = { className?: string; children?: ReactNode };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -20,8 +26,9 @@ export function SplitWords({
   className?: string;
 }) {
   const words = text.trim().split(/\s+/);
+  const Wrapper = Tag as ComponentType<TagProps>;
   return (
-    <Tag className={className}>
+    <Wrapper className={className}>
       {words.map((w, i) => (
         <span key={i}>
           <span
@@ -46,6 +53,6 @@ export function SplitWords({
           {i < words.length - 1 ? " " : ""}
         </span>
       ))}
-    </Tag>
+    </Wrapper>
   );
 }

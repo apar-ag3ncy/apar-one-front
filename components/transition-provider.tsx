@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 export interface TransitionTarget {
@@ -18,11 +18,17 @@ export const useCaseTransition = () => useContext(TransitionContext);
 
 type Phase = "idle" | "cover" | "reveal";
 
+// If the next route hasn't rendered by then, lift anyway rather than trap the
+// visitor behind the wipe (slow network, failed chunk).
+const REVEAL_TIMEOUT_MS = 2500;
+
 export function TransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [target, setTarget] = useState<TransitionTarget | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const busy = useRef(false);
+  const revealTimer = useRef<number>(0);
 
   const start = useCallback((t: TransitionTarget) => {
     if (busy.current) return;
@@ -31,11 +37,28 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     setPhase("cover");
   }, []);
 
+  // Lift the wipe once the NEW page is actually on screen (pathname changed),
+  // not on a fixed timer - a fixed 140ms lifted early on anything slower than a
+  // warm cache and showed the old page sliding out from under it before the new
+  // one snapped in. The timeout is the safety net if navigation never lands.
+  useEffect(() => {
+    if (phase !== "cover" || !target) return;
+    const targetPath = target.href.split(/[?#]/)[0];
+    if (pathname === targetPath) {
+      window.clearTimeout(revealTimer.current);
+      setPhase("reveal");
+    }
+  }, [pathname, phase, target]);
+
+  useEffect(() => () => window.clearTimeout(revealTimer.current), []);
+
   const onComplete = () => {
     if (phase === "cover" && target) {
-      // Screen is fully covered - navigate underneath, then lift to reveal.
+      // Screen is fully covered - navigate underneath; the reveal follows the
+      // route change (effect above), or the timeout.
       router.push(target.href);
-      window.setTimeout(() => setPhase("reveal"), 140);
+      window.clearTimeout(revealTimer.current);
+      revealTimer.current = window.setTimeout(() => setPhase("reveal"), REVEAL_TIMEOUT_MS);
     } else if (phase === "reveal") {
       setPhase("idle");
       setTarget(null);

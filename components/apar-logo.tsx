@@ -95,9 +95,18 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
       const delay = Date.now() - start < 2000 ? 950 : 2400;
       timer.current = setTimeout(tick, delay);
     };
+    // While the hero's load-in choreography runs (it flags itself on <html>),
+    // hold the first swap so the lead glyph never hard-cuts mid-fade.
+    const firstTick = () => {
+      if (document.documentElement.dataset.heroEntrance) {
+        timer.current = setTimeout(firstTick, 250);
+        return;
+      }
+      timer.current = setTimeout(tick, 800);
+    };
     const io = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) {
-        if (!timer.current) timer.current = setTimeout(tick, 800);
+        if (!timer.current) firstTick();
       } else if (timer.current) {
         clearTimeout(timer.current);
         timer.current = null;

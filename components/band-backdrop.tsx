@@ -15,7 +15,7 @@ import { PixelDome } from "./pixel-dome";
 export function BandBackdrop({ domeY = -0.15, intensity = 1 }: { domeY?: number; intensity?: number }) {
   return (
     <div className="band-bg" aria-hidden>
-      <PixelDome cell={20} domeY={domeY} intensity={intensity} />
+      <PixelDome cell={10} domeY={domeY} intensity={intensity} />
     </div>
   );
 }

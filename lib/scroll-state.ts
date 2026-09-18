@@ -17,3 +17,16 @@ export function markScrolling() {
 export function isScrolling() {
   return scrolling;
 }
+
+// The live Lenis instance (registered by components/smooth-scroll.tsx) so the
+// nav can actually lock scrolling while the mobile menu is open: `body{overflow:
+// hidden}` only blocks user scrolling of the viewport, while Lenis scrolls the
+// window programmatically and sails straight through it.
+type ScrollLock = { stop: () => void; start: () => void };
+let lenisRef: ScrollLock | null = null;
+export function setLenis(l: ScrollLock | null) {
+  lenisRef = l;
+}
+export function getLenis() {
+  return lenisRef;
+}

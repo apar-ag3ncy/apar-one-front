@@ -4,6 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { AestheticDial, type DialOption } from "./aesthetic-dial";
 
+/**
+ * Where the brief goes. Set NEXT_PUBLIC_BRIEF_ENDPOINT to any endpoint that
+ * accepts a JSON POST (a form backend such as Formspree/Basin, or your own API
+ * route) and the brief is delivered there with proper busy/error handling.
+ * Without it, the form hands the brief to the visitor's email app addressed to
+ * the studio - so a submission is never silently dropped.
+ */
+const BRIEF_ENDPOINT = process.env.NEXT_PUBLIC_BRIEF_ENDPOINT ?? "";
+const BRIEF_MAILTO = "info@apar.agency";
+
 /** Aesthetic directions we lift brands toward - the rotary dial cycles these. */
 const AESTHETICS: DialOption[] = [
   { key: "minimal", label: "Minimal", desc: "Clean, restrained, generous space.",
@@ -35,15 +45,44 @@ export function StartForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [aesthetic, setAesthetic] = useState(0);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<"" | "endpoint" | "mail">("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // No backend yet - capture the brief client-side and confirm. (Wire to an
-    // endpoint / email service later; the shape is ready.)
+    if (busy) return;
     const brief = { brand, offer, name, email, aesthetic: AESTHETICS[aesthetic].key };
-    if (typeof console !== "undefined") console.info("APAR brief", brief);
-    setSent(true);
+
+    if (!BRIEF_ENDPOINT) {
+      // No endpoint configured: hand the brief to the visitor's email app.
+      const body = [
+        `Brand: ${brand}`,
+        `What they offer: ${offer}`,
+        `Aesthetic direction: ${AESTHETICS[aesthetic].label}`,
+        `Name: ${name}`,
+        `Email: ${email}`,
+      ].join("\n");
+      window.location.href = `mailto:${BRIEF_MAILTO}?subject=${encodeURIComponent(`Project brief - ${brand}`)}&body=${encodeURIComponent(body)}`;
+      setSent("mail");
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch(BRIEF_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(brief),
+      });
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      setSent("endpoint");
+    } catch {
+      setError(`We couldn't send the brief just now. Please try again, or email it to ${BRIEF_MAILTO}.`);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -68,9 +107,20 @@ export function StartForm() {
             Thanks{name ? `, ${name.split(" ")[0]}` : ""}. We&apos;ve got it.
           </h1>
           <p className="start-lead">
-            We&apos;ll study <em>{brand || "your brand"}</em> and come back within two working days
-            with a first point of view - shaped for a{" "}
-            <strong>{AESTHETICS[aesthetic].label.toLowerCase()}</strong> direction.
+            {sent === "mail" ? (
+              <>
+                Your email app has opened with the brief addressed to {BRIEF_MAILTO} - hit send and
+                we&apos;ll study <em>{brand || "your brand"}</em> and come back within two working
+                days with a first point of view, shaped for a{" "}
+                <strong>{AESTHETICS[aesthetic].label.toLowerCase()}</strong> direction.
+              </>
+            ) : (
+              <>
+                We&apos;ll study <em>{brand || "your brand"}</em> and come back within two working
+                days with a first point of view - shaped for a{" "}
+                <strong>{AESTHETICS[aesthetic].label.toLowerCase()}</strong> direction.
+              </>
+            )}
           </p>
           <div className="start-done-actions">
             <Link className="btn cream" href="/work">
@@ -169,8 +219,13 @@ export function StartForm() {
                 </label>
               </div>
 
-                <button className="start-submit" type="submit">
-                  <span>Send the brief</span>
+                {error && (
+                  <p className="start-error" role="alert">
+                    {error}
+                  </p>
+                )}
+                <button className="start-submit" type="submit" disabled={busy} aria-busy={busy}>
+                  <span>{busy ? "Sending…" : "Send the brief"}</span>
                   <span className="arr">↗</span>
                 </button>
               </div>

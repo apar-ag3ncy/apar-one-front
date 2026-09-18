@@ -16,9 +16,11 @@ Marketing site for **APAR**, a Mumbai digital marketing and branding agency for 
 - `/` — home (hero, brand band, pinned work gallery, services, stats, process, testimonials, clients, FAQ)
 - `/work` — filterable work grid
 - `/clients` — featured stories + full roster
-- `/work/[slug]` — themed case studies (`chheda`, `girvaan`, `diarah`)
+- `/work/[slug]` — twelve themed case studies (one per client in `lib/cases.tsx`)
+- `/what-we-do` — services
+- `/start` — project brief form (delivers to `NEXT_PUBLIC_BRIEF_ENDPOINT`, or opens an email to the studio)
 
-Case studies are footer-less and chain via a "keep scrolling" overscroll transition into the next client. A custom inverting/brand-red cursor and an intro reveal run site-wide; everything degrades for reduced-motion and touch.
+Case studies are footer-less and chain via a "keep scrolling" overscroll transition into the next client. A site-wide pixel cursor trail (the hero's pixel-dome language) and Lenis smooth scrolling run everywhere; everything degrades for reduced-motion and touch.
 
 ## Getting started
 
@@ -30,4 +32,6 @@ npm run build   # production build
 
 ## Notes
 
-Project imagery uses styled placeholders (`components/image-slot.tsx`) — drop real campaign images in later.
+Case pages without photography yet show a branded logo card (`components/photo-slot.tsx`); drop `hero.jpg` / `1.jpg…` into `public/work/<slug>/` and the real images take over.
+
+Optional env (`.env.example`): `NEXT_PUBLIC_BRIEF_ENDPOINT` (brief form delivery), `NEXT_PUBLIC_ELEVENLABS_AGENT_ID` (voice concierge), `NEXT_PUBLIC_ADOBE_FONTS_KIT` (Fit wordmark scripts).
