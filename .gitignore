@@ -33,3 +33,13 @@ next-env.d.ts
 # editor / OS
 .idea/
 .vscode/
+
+# raw client source material dumped into the project root (large; not site assets)
+/CHHEDA/
+/GIRVAAN/
+/ACHAL/
+/PROPERTY PE/
+/images/
+/maison mireyaa/
+/signi insta/
+/signi story informative/

@@ -1,19 +1,50 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ImageSlot } from "./image-slot";
+import { VideoSlot } from "./video-slot";
+import { FEATURED_CLIENTS } from "@/lib/cases";
 
-const CARDS = [
-  { href: "/work/chheda", num: "01", tag: "Jewellery", title: "Chheda Jewellers", desc: "Brand identity, festive campaigns & social growth", year: "'26", slot: "Drop Chheda image" },
-  { href: "/work/girvaan", num: "02", tag: "Jewellery", title: "Girvaan", desc: "Identity & content for a modern jewellery label", year: "'25", slot: "Drop Girvaan image" },
-  { href: "/work/diarah", num: "03", tag: "Jewellery", title: "Diarah", desc: "Luxury rebrand & performance campaigns", year: "'25", slot: "Drop Diarah image" },
-  { href: "/clients", num: "04", tag: "Lifestyle", title: "High on Smiles", desc: "Brand world & always-on social", year: "'24", slot: "Drop High on Smiles image" },
-];
+// Derived from the single source of truth (lib/cases.tsx) - every case auto-appears
+// in the horizontal scroll, in order, with no manual sync as cases are added.
+// Each frame plays /videos/<slug>.mp4 (drop the file in and it appears).
+
+// Temporary fills so no frame sits empty while per-client films are produced:
+// clients without their own /videos/<slug>.mp4 cycle through the available
+// brand films (no two adjacent frames repeat). To replace one, drop a real
+// <slug>.mp4 into /public/videos and delete the slug from this map.
+const VIDEO_FILL: Record<string, string> = {
+  diarah: "/videos/girvaan-hanuman-jayanti.mp4",
+  "maison-mireyaa": "/videos/girvaan-fathers-day.mp4",
+  achal: "/videos/girvaan-mahavir.mp4",
+  "high-on-smiles": "/videos/girvaan.mp4",
+  "silver-emporium": "/videos/chheda.mp4",
+  "a-paramount": "/videos/girvaan-hanuman-jayanti.mp4",
+  "kundan-jewellers": "/videos/girvaan-fathers-day.mp4",
+  "jatubhai-velji": "/videos/girvaan-mahavir.mp4",
+  signi: "/videos/girvaan.mp4",
+  tarava: "/videos/chheda.mp4",
+};
+
+const CARDS = FEATURED_CLIENTS.map((c) => ({
+  href: c.href,
+  num: c.i,
+  tag: c.cat,
+  title: c.name,
+  desc: c.blurb,
+  year: c.year ? `'${c.year.slice(-2)}` : "",
+  video: VIDEO_FILL[c.slug] ?? `/videos/${c.slug}.mp4`,
+  slot: `Drop ${c.name} video`,
+}));
+
+// Scroll length scales with card count (+2 fixed panels: intro & CTA) so the pin
+// pacing stays consistent as cases are added. 4 cards ≈ 440vh baseline.
+const PIN_HEIGHT = `${Math.round((CARDS.length + 2) * 74)}vh`;
 
 /**
- * Pinned horizontal-scroll work gallery — projects slide sideways through a
+ * Pinned horizontal-scroll work gallery - projects slide sideways through a
  * sticky stage with a live progress bar. GSAP ScrollTrigger scrubs the track.
  */
 export function PinnedGallery() {
@@ -29,9 +60,10 @@ export function PinnedGallery() {
     gsap.registerPlugin(ScrollTrigger);
 
     const mm = gsap.matchMedia();
-    // Only drive the horizontal scrub above the mobile breakpoint; below it the
-    // CSS collapses the pin into a normal vertical stack.
-    mm.add("(min-width: 761px)", () => {
+    // Only drive the horizontal scrub on wider/landscape screens; at ≤900px the
+    // CSS collapses the pin into a vertical stack (scroll-jacking feels bad on
+    // portrait / touch tablets). Kept in sync with the @media(max-width:900px).
+    mm.add("(min-width: 901px)", () => {
       const tween = gsap.to(track, {
         x: () => -(track.scrollWidth - window.innerWidth),
         ease: "none",
@@ -39,16 +71,26 @@ export function PinnedGallery() {
           trigger: section,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.5,
+          // Lenis already smooths the scroll; a smaller scrub keeps the track
+          // tight to it (less double-lag "trailing" through the pinned section).
+          scrub: 0.3,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
+            // Only the lightweight progress bar updates here. (The old
+            // velocity-skew write per frame triggered a full-document style
+            // recalc - see .pin-card in globals.css - and has been removed.)
             if (progressRef.current) {
-              progressRef.current.style.width = (8 + self.progress * 92).toFixed(1) + "%";
+              progressRef.current.style.setProperty(
+                "--pp-scale",
+                String(0.08 + self.progress * 0.92)
+              );
             }
           },
         },
       });
-      return () => tween.scrollTrigger?.kill();
+      return () => {
+        tween.scrollTrigger?.kill();
+      };
     });
 
     requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -59,8 +101,8 @@ export function PinnedGallery() {
     <section
       ref={sectionRef}
       className="pin"
-      data-screen-label="Home — Work Gallery"
-      style={{ height: "440vh" }}
+      data-screen-label="Home - Work Gallery"
+      style={{ height: PIN_HEIGHT }}
     >
       <div className="pin-sticky">
         <div ref={trackRef} className="pin-track">
@@ -78,11 +120,11 @@ export function PinnedGallery() {
           </div>
 
           {CARDS.map((c) => (
-            <a className="pin-card" href={c.href} key={c.num}>
+            <Link className="pin-card" href={c.href} key={c.num}>
               <div className="frame">
                 <span className="num">{c.num}</span>
                 <span className="tagpill">{c.tag}</span>
-                <ImageSlot shape="rounded" radius={5} placeholder={c.slot} style={{ width: "100%" }} />
+                <VideoSlot src={c.video} radius={5} placeholder={c.slot} style={{ width: "100%" }} />
               </div>
               <div className="cap">
                 <div>
@@ -91,17 +133,17 @@ export function PinnedGallery() {
                 </div>
                 <span>{c.year}</span>
               </div>
-            </a>
+            </Link>
           ))}
 
           <div
             className="pin-card"
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
-            <a className="btn cream" href="/clients">
+            <Link className="btn cream" href="/clients">
               <span>See all clients</span>
               <span className="arr">↗</span>
-            </a>
+            </Link>
           </div>
         </div>
         <div className="pin-progress">

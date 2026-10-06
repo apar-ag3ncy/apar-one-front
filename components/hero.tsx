@@ -1,8 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ImageSlot } from "./image-slot";
+import { BandBackdrop } from "./band-backdrop";
+import { AparLogo } from "./apar-logo";
+import { Magnetic } from "./magnetic";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -10,22 +13,86 @@ const LINE_1 = "Brands worth".split(" ");
 const LINE_2 = "remembering.".split(" ");
 
 /**
- * Home hero — choreographed entrance (Framer Motion), synced to the moment
- * the intro overlay lifts, plus scroll-linked parallax + fade on exit.
+ * Home hero - the brand's Algolia-style beam promoted to the landing screen:
+ * the red pixel-dome arc sweeps behind the giant APAR wordmark (tinted to the
+ * beam's pale-rose crest so it sits IN the light, not against it) and the
+ * brand statement. Entrance choreography plays on mount (`start`);
+ * the copy parallax-fades on scroll-out, Lusion-style.
  */
 export function Hero({ start }: { start: boolean }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+
+  // Butter: begin the choreography only once the main thread is calm. On load
+  // it used to start 250ms in - right on top of hydration, the web fonts and
+  // three WebGL contexts compiling - so its first second ran at 12-20fps and
+  // the mark popped in late. Wait for the fonts (capped) plus two frames.
+  const [calm, setCalm] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    let raf = 0;
+    const fonts = document.fonts?.ready ?? Promise.resolve();
+    const cap = new Promise<void>((r) => setTimeout(r, 900));
+    Promise.race([fonts, cap]).then(() => {
+      raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => alive && setCalm(true));
+      });
+    });
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
+  }, []);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
   const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
   const copyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const featY = useTransform(scrollYProgress, [0, 1], ["0%", "-26%"]);
 
-  const animate = reduce ? "show" : start ? "show" : "hidden";
-  const base = 0.25;
+  // Lusion-style: the scroll cue dissolves as soon as the user starts scrolling
+  // (plain scroll listener + CSS transition - kept out of framer's opacity
+  // arbitration, which suppresses derived MotionValues here).
+  const cueRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = cueRef.current;
+    if (!el) return;
+    if (window.scrollY > 60) {
+      el.classList.add("gone");
+      return;
+    }
+    const onScroll = () => {
+      if (window.scrollY > 60) {
+        el.classList.add("gone");
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const animate = reduce ? "show" : start && calm ? "show" : "hidden";
+  const base = 0.08;
+  // The wordmark's drop-shadow (a 64px blur filter on a ~400x275px layer) is
+  // re-rendered by the compositor on every frame its transform animates - it
+  // alone cost the entrance ~half its frame rate on integrated GPUs. It is
+  // applied once the choreography has settled (data-settled), so the entrance
+  // animates a plain layer and the rest state looks exactly as before.
+  const [settled, setSettled] = useState(false);
+  const isSettled = settled || !!reduce;
+  // Tell decorative loops (the "Talk to us" orb on low-power devices) that the
+  // page's own load-in motion is running, so they hold until it has settled.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isSettled) {
+      delete root.dataset.heroEntrance;
+      return;
+    }
+    root.dataset.heroEntrance = "1";
+    return () => {
+      delete root.dataset.heroEntrance;
+    };
+  }, [isSettled]);
 
   // word index across both lines for a continuous stagger
   let wi = -1;
@@ -43,7 +110,7 @@ export function Hero({ start }: { start: boolean }) {
               hidden: { y: "120%", opacity: 0 },
               show: { y: "0%", opacity: 1 },
             }}
-            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.3 + idx * 0.055 }}
+            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.6 + idx * 0.055 }}
           >
             {txt}
           </motion.span>
@@ -53,21 +120,28 @@ export function Hero({ start }: { start: boolean }) {
   };
 
   return (
-    <section ref={ref} className="hero-home" data-screen-label="Home — Hero">
-      <div className="wrap hero-home-in">
-        <motion.div className="hero-copy" style={{ y: copyY, opacity: copyOpacity }}>
+    <section ref={ref} className="hero-beam" data-screen-label="Home - Hero" data-settled={isSettled ? "1" : undefined}>
+      <BandBackdrop domeY={-0.24} intensity={0.98} />
+      <div className="wrap">
+        <motion.div
+          className="hero-beam-in"
+          style={{ y: copyY, opacity: copyOpacity, willChange: "transform, opacity" }}
+        >
           <motion.div
-            className="meta-row"
-            initial={{ y: 18, opacity: 0 }}
+            className="hb-wordmark"
+            // opacity + scale only: these are composited. The old blur(14px) ->
+            // 0 animation re-rasterised the ~400x275px mark (with its drop
+            // shadow) on every frame of a 1.3s tween.
+            initial={reduce ? { opacity: 1 } : { opacity: 0, scale: 1.04 }}
             animate={animate}
-            variants={{ hidden: { y: 18, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.7, ease: EASE, delay: base }}
+            variants={
+              reduce
+                ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
+                : { hidden: { opacity: 0, scale: 1.04 }, show: { opacity: 1, scale: 1 } }
+            }
+            transition={{ duration: 1.2, ease: EASE, delay: base + 0.05 }}
           >
-            <span>
-              <i className="dot" /> Digital Marketing Agency
-            </span>
-            <span>Mumbai, IN</span>
-            <span>Est. 2024</span>
+            <AparLogo />
           </motion.div>
 
           <h1 className="display hero-h1">
@@ -76,99 +150,39 @@ export function Hero({ start }: { start: boolean }) {
             <span className="hl">{LINE_2.map(word)}</span>
           </h1>
 
-          <motion.p
-            className="lead"
-            initial={{ y: 24, opacity: 0 }}
-            animate={animate}
-            variants={{ hidden: { y: 24, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.85, ease: EASE, delay: base + 0.9 }}
-          >
-            A digital marketing &amp; branding agency for jewellery houses and premium brands — we
-            turn attention into growth with strategy, content and campaigns.
-          </motion.p>
-
           <motion.div
             className="hero-actions"
             initial={{ y: 22, opacity: 0 }}
             animate={animate}
             variants={{ hidden: { y: 22, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.7, ease: EASE, delay: base + 1.15 }}
+            transition={{ duration: 0.7, ease: EASE, delay: base + 1.3 }}
           >
-            <a className="btn" href="/work">
-              <span>See the work</span>
-              <span className="arr">↗</span>
-            </a>
-            <a className="btn-ghost" href="/#services">
+            <Magnetic strength={0.3}>
+              <Link className="btn cream" href="/work">
+                <span>See the work</span>
+                <span className="arr">↗</span>
+              </Link>
+            </Magnetic>
+            <Link className="btn-ghost light" href="/what-we-do">
               What we do
-            </a>
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="hero-feature"
-          initial={{ opacity: 0 }}
-          animate={animate}
-          variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-          transition={{ duration: 0.5, ease: EASE, delay: base + 0.3 }}
-        >
-          <motion.div className="hero-feature-par" style={{ y: featY }}>
-            <motion.div
-              className="frame"
-              data-cursor-label="Featured"
-              initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
-              animate={animate}
-              variants={{
-                hidden: { clipPath: "inset(0% 0% 100% 0%)" },
-                show: { clipPath: "inset(0% 0% 0% 0%)" },
-              }}
-              transition={{ duration: 1.25, ease: [0.65, 0, 0.35, 1], delay: base + 0.4 }}
-            >
-              <motion.div
-                initial={{ scale: 1.14 }}
-                animate={animate}
-                variants={{ hidden: { scale: 1.14 }, show: { scale: 1 } }}
-                transition={{ duration: 1.7, ease: EASE, delay: base + 0.4 }}
-              >
-                <ImageSlot
-                  shape="rounded"
-                  radius={4}
-                  placeholder="Drop a featured campaign image"
-                  style={{ width: "100%", aspectRatio: "4/5" }}
-                />
-              </motion.div>
-              <motion.span
-                className="hero-feature-num"
-                initial={{ opacity: 0, y: 12 }}
-                animate={animate}
-                variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.6, ease: EASE, delay: base + 1.0 }}
-              >
-                01
-              </motion.span>
-              <motion.span
-                className="hero-feature-cap"
-                initial={{ opacity: 0, y: 12 }}
-                animate={animate}
-                variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.6, ease: EASE, delay: base + 1.12 }}
-              >
-                Featured — Chheda Jewellers
-              </motion.span>
-            </motion.div>
+            </Link>
           </motion.div>
         </motion.div>
       </div>
 
-      <motion.div
-        className="scroll-hint"
-        initial={{ opacity: 0, y: 10 }}
-        animate={animate}
-        variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-        transition={{ duration: 0.6, ease: EASE, delay: base + 1.5 }}
-      >
-        <span>Scroll</span>
-        <i />
-      </motion.div>
+      <div ref={cueRef} className="scroll-hint">
+        <motion.div
+          className="scroll-cue"
+          initial={{ opacity: 0, y: 10 }}
+          animate={animate}
+          variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+          transition={{ duration: 0.6, ease: EASE, delay: base + 1.65 }}
+          onAnimationComplete={() => setSettled(true)}
+        >
+          <span className="cue-mouse" aria-hidden />
+          <span>Scroll to explore</span>
+        </motion.div>
+      </div>
     </section>
   );
 }
