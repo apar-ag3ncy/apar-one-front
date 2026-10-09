@@ -49,16 +49,22 @@ function centreDistance(v: HTMLVideoElement) {
 function reconcile() {
   scheduled = false;
   const now = performance.now();
-  const ranked = [...wanting].sort((a, b) => centreDistance(a) - centreDistance(b));
-  const allow = new Set(ranked.slice(0, MAX_CONCURRENT));
+  const ranked = [...wanting].map(video => ({ video, distance: centreDistance(video) }))
+    .sort((a, b) => a.distance - b.distance).map(({ video }) => video);
+  const allow = new Set<HTMLVideoElement>();
   // recently started clips still near the viewport keep playing (hysteresis)
   let youngest = Infinity;
   for (const v of playing) {
     const age = now - (startedAt.get(v) ?? 0);
-    if (wanting.has(v) && age < HOLD_MS) {
+    if (wanting.has(v) && age < HOLD_MS && allow.size < MAX_CONCURRENT) {
       allow.add(v);
       youngest = Math.min(youngest, HOLD_MS - age);
     }
+  }
+  // Held clips reserve a slot rather than being added on top of the cap.
+  for (const v of ranked) {
+    if (allow.size >= MAX_CONCURRENT) break;
+    allow.add(v);
   }
   for (const v of playing) {
     if (!allow.has(v)) {
@@ -75,9 +81,9 @@ function reconcile() {
       startedAt.set(v, now);
     }
   }
-  // re-evaluate once the hold expires so the cap is restored
+  // Reconsider waiting clips once a reserved slot expires.
   window.clearTimeout(holdTimer);
-  if (allow.size > MAX_CONCURRENT && youngest !== Infinity) holdTimer = window.setTimeout(schedulePlayback, youngest + 16);
+  if (wanting.size > allow.size && youngest !== Infinity) holdTimer = window.setTimeout(schedulePlayback, youngest + 16);
 }
 
 function schedulePlayback() {

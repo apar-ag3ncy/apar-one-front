@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { AparLogo } from "./apar-logo";
-import { BandBackdrop } from "./band-backdrop";
+import { GalaxyFooterArt } from "./cosmic-footer";
 
 /* Brand social glyphs in their own colours (Simple Icons paths). */
 const InstagramIcon = (
@@ -43,19 +42,10 @@ const SOCIAL = [
   { href: "https://behance.net", label: "Behance", icon: BehanceIcon },
 ];
 
-/**
- * Footer - Lusion-style: stripped to the essentials (contact · studio · social ·
- * copyright), with a giant "APAR" wordmark spanning the full width on a solid
- * black field. No CTA block, no sitemap, no watermark - the wordmark is the
- * statement.
- */
+/** Contact footer followed by its interactive APĀR galaxy. */
 export function Footer() {
   return (
-    <footer className="footer">
-      {/* Same signature pixel beam as the landing hero (Algolia-style dome, WebGL),
-          sweeping behind the giant footer wordmark. The global pixel-trail cursor
-          plus the dome's own hover shimmer both play over it. */}
-      <BandBackdrop domeY={-0.2} intensity={0.95} />
+    <footer className="footer cosmic-footer">
       <div className="wrap footer-inner">
         <div className="footer-row">
           <Link className="footer-talk" href="/#contact" data-magnetic>
@@ -84,9 +74,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="footer-word">
-          <AparLogo />
-        </div>
+        <GalaxyFooterArt />
 
         <div className="footer-base">
           <span>© 2026 APAR Agency</span>

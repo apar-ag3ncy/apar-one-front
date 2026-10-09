@@ -34,7 +34,6 @@ uniform float uRadius;     // corner radius of the tile body (device px, a whole
 uniform sampler2D uPop;    // the comet, ONE texel per tile: how lit that tile is (0..1)
 uniform vec2  uGrid;       // tiles across / down (the texture's size)
 uniform float uTime;       // seconds, for the twinkle
-uniform vec3  uInk;        // the tile colour (the landing beam's popped-tile red)
 ${TILE_GLSL}
 void main(){
   // the grid is anchored at the viewport's TOP-left, like the beam's
@@ -47,14 +46,9 @@ void main(){
   // the same red a touch darker (never a hole), so the tiles almost touch
   vec3 tm = tileMask(fc, uCell, uSeam, uRadius);
   float seam = max(max(tm.x * 0.38, tm.y * 0.55), tm.z * 0.8);
-  gl_FragColor = vec4(uInk * (1.0 - 0.22 * seam), pop * 0.95);
+  gl_FragColor = vec4(cometGrade(pop) * (1.0 - 0.22 * seam), pow(pop, 0.85) * 0.88);
 }
 `;
-
-// The colour of a popped tile on the landing beam (the beam's POP red mixed
-// in at 85% over its dark base) - the very shade the blob has on the hero,
-// used everywhere on the site.
-const INK: [number, number, number] = [0.878, 0.279, 0.157]; // #E04728
 
 function compile(gl: WebGLRenderingContext, type: number, src: string) {
   const s = gl.createShader(type);
@@ -130,7 +124,6 @@ export function PixelTrail() {
     const uRadius = u("uRadius");
     const uGrid = u("uGrid");
     const uTime = u("uTime");
-    const uInk = u("uInk");
     const pop = new PopTexture(gl);
     gl.uniform1i(u("uPop"), 0);
 
@@ -175,7 +168,6 @@ export function PixelTrail() {
     let t = 0; // elapsed seconds
     let lastMoveT = -100; // t at the last pointer move
     let blanked = false; // hidden over a beam band and already cleared
-    gl.uniform3f(uInk, INK[0], INK[1], INK[2]);
     const headAge = () => Math.max(0, t - lastMoveT - REST);
 
     const setUniforms = () => {

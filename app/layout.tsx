@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <link rel="stylesheet" href={`https://use.typekit.net/${ADOBE_FONTS_KIT}.css`} />
         ) : null}
       </head>
-      <body data-page="index">
+      <body id="top" data-page="index">
         <SmoothScroll />
         {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
             skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}

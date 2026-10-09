@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Footer } from "./footer";
+import { PeopleOfApar } from "./cosmic-footer";
 
 /**
  * The brand/case-study pages (/work/<slug>) intentionally have no footer -
@@ -12,5 +13,5 @@ export function ConditionalFooter() {
   const pathname = usePathname();
   const isCasePage = /^\/work\/[^/]+$/.test(pathname);
   if (isCasePage) return null;
-  return <Footer />;
+  return <><Footer /><PeopleOfApar /></>;
 }

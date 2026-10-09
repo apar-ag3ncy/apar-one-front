@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useMemo, type ComponentProps, type ComponentType, type ElementType } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -25,6 +25,7 @@ const motionCache = new Map<ElementType, MotionComponent>();
  * component (e.g. next/link's Link), so cards can be real routed links.
  */
 export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: RevealProps) {
+  const reduce = useReducedMotion();
   const MotionTag = useMemo<MotionComponent>(() => {
     if (typeof as === "string") {
       return (motion as unknown as Record<string, MotionComponent>)[as];
@@ -39,10 +40,10 @@ export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: Rev
 
   return (
     <MotionTag
-      initial={{ opacity: 0, y: 38 }}
+      initial={reduce ? false : { opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -7% 0px" }}
-      transition={{ duration: 1, ease: EASE, delay: delay + i * 0.09 }}
+      transition={{ duration: reduce ? 0 : 0.8, ease: EASE, delay: reduce ? 0 : delay + i * 0.07 }}
       {...props}
     >
       {children}

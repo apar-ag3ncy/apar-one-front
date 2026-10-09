@@ -27,8 +27,7 @@ type PixelDomeProps = {
    *  are snapped to WHOLE device pixels at render time, so the grid is exact
    *  on every display.) Default 10. */
   cell?: number;
-  /** ellipse centre of the arc, bottom-up; small/negative (below the frame) so
-   *  the beam sweeps the full width with its crown near the top. Default -0.15. */
+  /** Vertical framing adjustment around the default circular arc (-0.15). */
   domeY?: number;
   /** overall glow strength. Default 1. */
   intensity?: number;
@@ -66,6 +65,8 @@ uniform float uIntensity;
 uniform sampler2D uPop;  // cursor comet, ONE texel per tile: how lit that tile is (0..1)
 uniform vec2  uGrid;       // tiles across / down (the texture's size)
 uniform float uTime;       // seconds, for the twinkle
+uniform vec2 uHead;        // eased pointer, bottom-up UV
+uniform float uRide;       // movement impulse, smoothly settles to zero
 
 // the reference image's measured shades hue-rotated to the BRAND RED #EE3926
 // (S/L preserved, exactly like the Algolia original's tint/shade ladder):
@@ -79,50 +80,29 @@ const vec3 C_DARK  = vec3(0.0840, 0.0201, 0.0134);   // #EE3926 * 0.09 - fade en
 
 ${TILE_GLSL}
 
-// ---- ONE single curved beam (the Algolia arc): an ellipse whose centre sits
-//      below the frame, so the bright strip sweeps the full width - apex at the
-//      top-centre crown, sides running off the edges. Crisp-ish dissolve above
-//      the strip, long dissolve below it; a falloff ALONG the arc keeps it
-//      brightest at the crown and dimmer toward the sides.
-//      uDomeY = ellipse centre (bottom-up; negative = below the frame). ----
-// returns vec2(glow, t): t is the signed distance across the strip
-// (positive = outer/top side, negative = inner/below side)
+// A circle in screen space, never a stretched UV ellipse. The desktop
+// chord joins the lower corners; the hidden remainder sits below the viewport.
 vec2 beamAt(vec2 uv, float aspect){
-  // flatten the arc on narrow/tall bands (mobile) so it still reads as a wide
-  // sweep instead of bunching into a steep dome; desktop (aspect >= ~1.55)
-  // keeps the reference curvature.
-  float rx = 0.62 * max(1.0, 1.55 / aspect);
-  float ry = 0.98;                       // vertical radius (uv)
-  vec2 d = vec2((uv.x - 0.5) / rx, (uv.y - uDomeY) / ry);
+  float halfWidth = aspect * 0.5;
+  float mobile = 1.0 - smoothstep(0.8, 1.3, aspect);
+  float edgeY = mobile * 0.43;
+  float rise = min(0.78, halfWidth * 0.98);
+  float radius = (halfWidth * halfWidth + rise * rise) / (2.0 * rise);
+  float centreY = edgeY + rise - radius + (uDomeY + 0.15) * 0.2;
+  vec2 d = vec2((uv.x - 0.5) * aspect, uv.y - centreY);
   float dist = length(d);
-  float t = dist - 0.92;                                 // signed distance across the strip
-  float w = (t > 0.0) ? 0.16 : 0.17;                     // soft (but tight) halo above; the interior dissolves to dark just below the band (Algolia-style dark pocket for the copy)
-  float glow = exp(-(t * t) / (w * w)) * uIntensity;
-  float crown = clamp(d.y / max(dist, 0.001), 0.0, 1.0); // 1 at the crown -> 0 at the sides
-  return vec2(glow * mix(0.55, 1.0, crown), t);
+  float t = dist - radius;
+  float width = mix(0.15, 0.104, mobile);
+  float glow = exp(-(t * t) / (width * width)) * uIntensity;
+  glow *= mix(1.0, smoothstep(-0.015, 0.065, d.y), mobile);
+  return vec2(glow, t);
 }
 
-void main(){
+// The underlying beam colour belongs to a tile, even while its face lifts.
+vec4 surfaceAt(vec2 cellId, float pop){
   float aspect = uRes.x / uRes.y;
-
-  // ---- grid cell this fragment belongs to. The grid is anchored at the
-  //      canvas's TOP-left (gl_FragCoord's origin is bottom-left), so when the
-  //      height isn't a whole number of tiles the partial row sits at the
-  //      bottom edge, under the fold, never along the crest. ----
-  vec2 fc = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y); // top-down device px
-  vec2 cellId = floor(fc / uCell);
-  vec2 cellCenterTD = (cellId + 0.5) * uCell;
-  vec2 cellCenter = vec2(cellCenterTD.x, uRes.y - cellCenterTD.y); // back to bottom-up
-  vec2 uvC = cellCenter / uRes;             // per-cell sample (tile colour stepping)
-
-  // ---- the cursor comet, ONE value per tile. The field (a union of round
-  //      splats at the head and each recent position, tapering head -> tail,
-  //      each fading with age - the site-wide trail's field) is evaluated at
-  //      the tile centres on the CPU and uploaded as a tiny texture, so a tile
-  //      costs one texture read here instead of 32 splats per fragment. ----
-  // per-tile pop 0..1 (whole tiles light up, the rim scatters into single
-  // tiles), with a subtle twinkle so it feels alive
-  float pop = texture2D(uPop, (cellId + 0.5) / uGrid).r * twinkle(cellId, uTime);
+  vec2 centre = (cellId + 0.5) * uCell;
+  vec2 uvC = vec2(centre.x, uRes.y - centre.y) / uRes;
   float hov = pop * 0.3;
 
   // ONE sample per tile: every fragment of a tile gets exactly the same colour
@@ -137,28 +117,6 @@ void main(){
   // in-hue (no white crest).
   float gA   = clamp(bC.x + hov, 0.0, 1.3);
   float gCol = clamp(bC.x, 0.0, 1.3);
-
-  // ---- tile texture, snapped to DEVICE PIXELS: the seam between tiles is
-  //      exactly uSeam whole pixels wide (a darker groove in the tile's own
-  //      colour, never a hole), the corner pixel of every tile is knocked back a
-  //      touch more so the grid reads softly rounded, and there is no
-  //      anti-aliasing anywhere - every edge lands on a pixel boundary. ----
-  //      (tileMask - shared with the site-wide trail - returns the groove,
-  //      the cut corner and the crossing for this fragment)
-  vec3 tm = tileMask(fc, uCell, uSeam, uRadius);
-  float inSeam = tm.x;                                  // in a groove
-  float cut = tm.y;                                     // a body pixel outside the rounded corner
-  float junction = tm.z;                                // where four grooves cross
-  // ---- rounded corners with BINARY coverage: the tile body is a rounded
-  //      rectangle of radius uRadius; a pixel belongs to the body iff its centre
-  //      is inside it. No anti-aliasing - every tile carries the identical crisp
-  //      corner pattern, and the four cut corners around each crossing form the
-  //      small dark star the reference shows at every junction. ----
-  // 0..1 darkness weight: edge groove .38, cut corners .55, crossing .8 - from
-  // reading distance the grid melts into the gradient with only a hint of the
-  // lattice; up close the tiles are still clearly parted and the junction
-  // stars still read.
-  float seam = max(max(inSeam * 0.38, cut * 0.55), junction * 0.8);
 
   // ---- band mapping measured from the reference image: both sides stay
   //      saturated (no grey rows). Above the bright zone: warm dark ->
@@ -184,10 +142,10 @@ void main(){
   //      (green/blue kept low so it can NEVER trend to the pale/white crest that
   //      read as ugly blown-out blocks). The tiles just "pop" a little warmer and
   //      brighter - in-hue, contained, enough to feel the cursor, not a bloom. ----
-  vec3 POP = vec3(1.0, 0.32, 0.18);                     // bright brand-red - low G/B = stays red, never white
-  col = mix(col, POP, pop * 0.85);
+  // Keep the crest luminous while graded red tiles rise in the dark pocket.
+  vec3 hoverColour = mix(cometGrade(pop), max(col, cometGrade(pop)), smoothstep(0.45, 0.95, gCol));
+  col = mix(col, hoverColour, pop * 0.82);
 
-  col *= 1.0 - 0.22 * seam;                             // grooves ~8% darker, corner cuts ~12%, crossings ~18% - same hue; seamless from afar
 
   // ---- emergence from darkness: the beam opacity curve plus a gentle low-glow
   //      gate, over a faint alpha floor that keeps the grid texture barely
@@ -198,7 +156,67 @@ void main(){
   // the reference (a barely-there dot matrix, never a flat black field)
   float a = max(aBeam, 0.2);
   a = max(a, pop * 0.95);                               // popped tiles surface fully, even across the dark
-  gl_FragColor = vec4(col, a);
+  return vec4(col, a);
+}
+
+float energyAt(vec2 id){
+  if (id.x < 0.0 || id.y < 0.0 || id.x >= uGrid.x || id.y >= uGrid.y) return 0.0;
+  return texture2D(uPop, (id + 0.5) / uGrid).r;
+}
+
+// A rounded tile face with a small physical lift; no warping of the grid.
+float faceMask(vec2 local, vec2 size, float radius){
+  vec2 q = abs(local - size * 0.5) - (size * 0.5 - radius);
+  float sd = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+  return 1.0 - step(0.0, sd);
+}
+
+float rideAt(vec2 id, float energy){
+  vec2 centre = (id + 0.5) * uCell;
+  vec2 uv = vec2(centre.x, uRes.y - centre.y) / uRes;
+  float beam = smoothstep(0.06, 0.5, beamAt(uv, uRes.x / uRes.y).x);
+  vec2 headPx = vec2(uHead.x, 1.0 - uHead.y) * uRes;
+  float distanceInTiles = length((centre - headPx) / uCell);
+  // Broad travelling crest, followed by a quieter second crest along the trace.
+  float wave = 0.5 + 0.5 * sin(distanceInTiles * 0.72 - uTime * 9.0);
+  return uRide * sqrt(energy) * beam * (0.55 + 0.45 * wave);
+}
+
+void main(){
+  vec2 fc = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  vec2 id = floor(fc / uCell);
+  float energy = energyAt(id);
+  vec4 base = surfaceAt(id, energy * twinkle(id, uTime));
+  vec3 tm = tileMask(fc, uCell, uSeam, uRadius);
+  base.rgb *= 1.0 - 0.22 * max(max(tm.x * 0.38, tm.y * 0.55), tm.z * 0.8);
+
+  if (uRide > 0.001) {
+    // Recess beneath a rising face gives the pop real depth, rather than a flash.
+    float ownRide = rideAt(id, energy);
+    base.rgb *= 1.0 - ownRide * 0.42;
+    // A tile can rise by less than one row. Sample this row and the row below
+    // to draw the whole face across its boundary, with no sliced-off tops.
+    for (int row = 0; row < 2; row++) {
+      vec2 tile = id + vec2(0.0, float(row));
+      float e = energyAt(tile);
+      if (e < 0.012) continue;
+      float ride = rideAt(tile, e);
+      if (ride < 0.002) continue;
+      float lift = floor(uCell.y * 0.58 * ride + 0.5);
+      vec2 origin = tile * uCell + vec2(uSeam, uSeam - lift);
+      vec2 size = uCell - uSeam;
+      vec2 local = floor(fc) + 0.5 - origin;
+      float mask = faceMask(local, size, uRadius);
+      vec4 face = surfaceAt(tile, e);
+      // Warm specular edge above, shaded edge below; never cold white sparkles.
+      float topEdge = 1.0 - smoothstep(0.0, max(1.0, uCell.y * 0.16), local.y);
+      float bottomEdge = smoothstep(size.y - uCell.y * 0.18, size.y, local.y);
+      face.rgb = mix(face.rgb, vec3(1.0, 0.78, 0.63), ride * (0.20 + topEdge * 0.58));
+      face.rgb *= 1.0 - bottomEdge * ride * 0.23;
+      base = mix(base, face, mask * smoothstep(0.0, 0.10, ride));
+    }
+  }
+  gl_FragColor = base;
 }
 `;
 
@@ -273,6 +291,8 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     const uDomeY = u("uDomeY");
     const uGrid = u("uGrid");
     const uTime = u("uTime");
+    const uHead = u("uHead");
+    const uRide = u("uRide");
     gl.uniform1f(u("uIntensity"), intensity);
     gl.uniform1f(uDomeY, domeY);
     // the per-tile comet texture (one byte per tile), unit 0
@@ -303,7 +323,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     let rsy = 0;
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
-      const rect = canvas.getBoundingClientRect();
+      const rect = (canvas.parentElement ?? canvas).getBoundingClientRect();
       rl = rect.left;
       rt = rect.top;
       rw = rect.width;
@@ -338,7 +358,8 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     let onScreen = true;
     let prev = 0;
     let t = 0; // elapsed seconds
-    let lastMoveT = 0; // t at the last pointer move (the loop parks once the pointer is still)
+    let ride = 0;
+    let lastMoveT = -100; // t at the last pointer move (the loop parks once the pointer is still)
 
     const setUniforms = () => {
       gl.uniform2f(uRes, w, h);
@@ -347,6 +368,8 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       gl.uniform1f(uRadius, radiusPx);
       gl.uniform2f(uGrid, pop.gridC, pop.gridR);
       gl.uniform1f(uTime, t);
+      gl.uniform2f(uHead, comet.hx, comet.hy);
+      gl.uniform1f(uRide, ride);
     };
     // Full pass: the whole beam (static at rest).
     const draw = () => {
@@ -383,6 +406,9 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       const dt = prev ? Math.min((now - prev) / 1000, 0.05) : 0.016;
       prev = now;
       t += dt;
+      const targetRide = inside ? Math.exp(-Math.max(0, t - lastMoveT - 0.06) * 5.5) : 0;
+      ride += (targetRide - ride) * (1 - Math.exp(-dt / 0.07));
+      if (ride < 0.002 && targetRide < 0.002) ride = 0;
       if (inside) comet.chase(dt, t); // ease the head toward the pointer, lay the tail
       comet.retire(t);
       drawHover();
@@ -391,8 +417,8 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       // band with the tail gone (the head stays lit under it). The hero is a
       // full screen, so "cursor somewhere on it" is the normal state and must
       // cost nothing while nothing moves.
-      const gone = !inside && comet.hist.length === 0 && (leftAt < 0 || t - leftAt > LIFE + 0.1);
-      const still = inside && comet.converged && comet.hist.length === 0 && t - lastMoveT > 0.6;
+      const gone = !inside && ride === 0 && comet.hist.length === 0 && (leftAt < 0 || t - leftAt > LIFE + 0.1);
+      const still = inside && ride === 0 && comet.converged && comet.hist.length === 0 && t - lastMoveT > 0.6;
       if (!onScreen || gone || still) {
         if (gone) {
           active = false;
@@ -409,7 +435,9 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       raf = requestAnimationFrame(frame);
     };
 
+    let pointerX = -1, pointerY = -1;
     const onMove = (e: PointerEvent) => {
+      pointerX = e.clientX; pointerY = e.clientY;
       const top = rt - (window.scrollY - rsy);
       const isIn =
         rw > 0 && rh > 0 && e.clientX >= rl && e.clientX <= rl + rw && e.clientY >= top && e.clientY <= top + rh;
@@ -447,6 +475,11 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       wake();
     };
 
+    const onScroll = () => {
+      const top = rt - (window.scrollY - rsy);
+      if (inside && (pointerX < rl || pointerX > rl + rw || pointerY < top || pointerY > top + rh)) leave();
+    };
+
     const io = new IntersectionObserver(([en]) => {
       onScreen = en?.isIntersecting ?? true;
       if (onScreen) wake();
@@ -461,7 +494,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       boxes.reset();
       draw();
     });
-    ro.observe(canvas);
+    ro.observe(canvas.parentElement ?? canvas);
 
     resize();
     draw(); // initial static dome
@@ -469,6 +502,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     if (!reduce) {
       window.addEventListener("pointermove", onMove, { passive: true });
       window.addEventListener("blur", leave);
+      window.addEventListener("scroll", onScroll, { passive: true });
     }
 
     return () => {
@@ -478,6 +512,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       ro.disconnect();
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("blur", leave);
+      window.removeEventListener("scroll", onScroll);
       pop.dispose(gl);
       gl.deleteProgram(prog);
       gl.deleteShader(vs);

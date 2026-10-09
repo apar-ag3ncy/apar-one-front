@@ -1,9 +1,10 @@
 "use client";
 
-import { Hero } from "@/components/hero";
+import { HomeArrival } from "@/components/hyperspace-intro";
 import { VelocityMarquee } from "@/components/velocity-marquee";
 import { SplitWords } from "@/components/split-words";
 import { ScrollFill } from "@/components/scroll-fill";
+import { MJShowcase } from "@/components/mj-showcase";
 import { PinnedGallery } from "@/components/pinned-gallery";
 import { Faq } from "@/components/faq";
 import { Reveal } from "@/components/reveal";
@@ -35,7 +36,7 @@ const WALL = [
 export default function Home() {
   return (
     <>
-      <Hero start />
+      <HomeArrival />
 
       <VelocityMarquee />
 
@@ -116,6 +117,8 @@ export default function Home() {
       </section>
 
       <PinnedGallery />
+
+      <MJShowcase />
 
       {/* ===== STATS ===== */}
       <section className="stats-band" data-screen-label="Home - Stats">

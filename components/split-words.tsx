@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { ComponentType, ElementType, ReactNode } from "react";
 
 // The wrapper tag is rendered through a component-typed alias on purpose:
@@ -25,6 +25,7 @@ export function SplitWords({
   as?: ElementType;
   className?: string;
 }) {
+  const reduce = useReducedMotion();
   const words = text.trim().split(/\s+/);
   const Wrapper = Tag as ComponentType<TagProps>;
   return (
@@ -42,10 +43,10 @@ export function SplitWords({
           >
             <motion.span
               style={{ display: "inline-block" }}
-              initial={{ y: "112%", rotate: 3, opacity: 0.2 }}
+              initial={reduce ? false : { y: "105%", rotate: 1, opacity: 0.2 }}
               whileInView={{ y: 0, rotate: 0, opacity: 1 }}
               viewport={{ once: true, margin: "0px 0px -7% 0px" }}
-              transition={{ duration: 1, ease: EASE, delay: i * 0.055 }}
+              transition={{ duration: reduce ? 0 : 0.8, ease: EASE, delay: reduce ? 0 : i * 0.04 }}
             >
               {w}
             </motion.span>

@@ -12,18 +12,17 @@ import { SplitText } from "gsap/SplitText";
  * re-armed on every route change. Four effects, all declarative by selector:
  *
  *  1. MEDIA PARALLAX + SLOW ZOOM  - every real image inside a frame drifts slower
- *     than the page and slowly zooms out. `scrub: 1.4` makes the tween LAG the
- *     scroll by ~1.4s - that lag is the slow-motion feel. Animated on the inner
+ *     than the page and slowly zooms out. `scrub: 0.45` makes the tween LAG the
+ *     scroll by ~0.45s - that lag is the slow-motion feel. Animated on the inner
  *     <img> so it never fights the framer <Reveal> wrappers or CSS hover scales.
- *  2. VELOCITY SKEW - frames skew/stretch with scroll speed and settle over ~1.1s
+ *  2. VELOCITY SKEW - frames skew/stretch with scroll speed and settle over ~0.55s
  *     (Lusion's signature), via quickTo on the frame wrappers.
  *  3. SLOW LINE REVEALS - large statements split (SplitText, free in GSAP 3.13+)
- *     into masked lines that rise over 1.6s with a long stagger. Headings that
+ *     into masked lines that rise over 1.1s with a long stagger. Headings that
  *     already use the framer word-split are skipped.
  *  4. FOOTER WORDMARK - the giant mark rises in slow parallax as the footer enters.
  *
- * No-ops under prefers-reduced-motion; the pinned gallery is excluded (it scrubs
- * its own track).
+ * No-ops under prefers-reduced-motion; the horizontal gallery is excluded (it owns its native scroll).
  */
 export function SlowMo() {
   const pathname = usePathname();
@@ -43,12 +42,12 @@ export function SlowMo() {
         const wrap = (img.closest(".frame, .si-fig, .img-slot") as HTMLElement) ?? img;
         gsap.fromTo(
           img,
-          { yPercent: -6, scale: 1.24 },
+          { yPercent: -3, scale: 1.12 },
           {
-            yPercent: 6,
-            scale: 1.14, // stays > 1.12 so the +-6% drift never shows an edge
+            yPercent: 3,
+            scale: 1.08, // enough overscan for the three-percent drift
             ease: "none",
-            scrollTrigger: { trigger: wrap, start: "top bottom", end: "bottom top", scrub: 1.4 },
+            scrollTrigger: { trigger: wrap, start: "top bottom", end: "bottom top", scrub: 0.45 },
           }
         );
       }
@@ -58,13 +57,13 @@ export function SlowMo() {
         (el) => !el.closest(".pin")
       );
       if (frames.length) {
-        const skewTo = frames.map((el) => gsap.quickTo(el, "skewY", { duration: 1.1, ease: "expo.out" }));
-        const scaleTo = frames.map((el) => gsap.quickTo(el, "scaleY", { duration: 1.1, ease: "expo.out" }));
+        const skewTo = frames.map((el) => gsap.quickTo(el, "skewY", { duration: 0.55, ease: "power3.out" }));
+        const scaleTo = frames.map((el) => gsap.quickTo(el, "scaleY", { duration: 0.55, ease: "power3.out" }));
         let vel = 0;
         ScrollTrigger.create({ onUpdate: (self) => (vel = self.getVelocity()) });
         let idle = false;
-        const tick = () => {
-          vel *= 0.86; // settle toward stillness between scroll events
+        const tick = (_time: number, deltaTime: number) => {
+          vel *= Math.exp(-Math.min(deltaTime, 64) / 120); // settle toward stillness between scroll events
           // Snap to rest: the geometric decay never reaches 0, and every quickTo
           // call restarts a 1.1s tween - so at rest this was ~2 tween restarts
           // and a transform write per frame per frame element, forever.
@@ -73,9 +72,10 @@ export function SlowMo() {
             vel = 0;
             idle = true;
           } else idle = false;
-          const skew = gsap.utils.clamp(-2.4, 2.4, vel / -900);
-          const stretch = 1 + Math.min(0.045, Math.abs(vel) / 26000);
+          const skew = gsap.utils.clamp(-1.0, 1.0, vel / -1600);
+          const stretch = 1 + Math.min(0.018, Math.abs(vel) / 50000);
           for (let i = 0; i < frames.length; i++) {
+            if (!frames[i].isConnected) continue;
             skewTo[i](skew);
             scaleTo[i](stretch);
           }
@@ -107,9 +107,9 @@ export function SlowMo() {
                 gsap.from(self.lines, {
                   yPercent: 112,
                   opacity: 0.4,
-                  duration: 1.6,
+                  duration: 1.1,
                   ease: "expo.out",
-                  stagger: 0.12,
+                  stagger: 0.08,
                   scrollTrigger: { trigger: el, start: "top 88%", once: true },
                 }),
             })
@@ -127,7 +127,7 @@ export function SlowMo() {
         gsap.fromTo(
           fw,
           { yPercent: 22 },
-          { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".footer", start: "top bottom", end: "bottom bottom", scrub: 1.6 } }
+          { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".footer", start: "top bottom", end: "bottom bottom", scrub: 0.55 } }
         );
       }
     });

@@ -42,15 +42,12 @@ export function SmoothScroll() {
     // stuttery "catching-up" scroll. Time-based easing stays a consistent glide
     // regardless of frame rate.
     const lenis = new Lenis({
-      // Premium "slow-mo" glide: a longer duration (1.7s) plus a gentle
-      // expo-out easing stretches each scroll into a long, weighty settle
-      // while staying time-based so it never stutters. wheelMultiplier 0.85
-      // makes each wheel notch travel a touch less, so the motion reads
-      // heavy/controlled rather than fast - responsive, not sluggish.
-      duration: 1.7,
+      // One responsive easing layer. Scroll-linked media uses a short settle
+      // below, so wheel input never queues up behind multiple long glides.
+      duration: 1.1,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      wheelMultiplier: 0.85,
+      wheelMultiplier: 1,
       // touch is left NATIVE (syncTouch defaults false); keep the multiplier at
       // 1 so finger-drag stays 1:1 - 1.6 made phone scroll feel fast/floaty.
       touchMultiplier: 1,

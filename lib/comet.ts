@@ -16,10 +16,10 @@
 
 export const NODES = 32; // head + tail
 export const LIFE = 0.95; // s - a node dissolves over this long
-export const SIG_H = 0.052; // head splat sigma, in units of the canvas height
-export const SIG_T = 0.03; // tail tip sigma
+export const SIG_H = 0.045; // head splat sigma, in units of the canvas height
+export const SIG_T = 0.021; // tail tip sigma
 export const MIN_STEP = 0.013; // uv distance between tail nodes (even, dense = smooth)
-export const TAU = 0.06; // head ease time constant (s)
+export const TAU = 0.045; // head ease time constant (s)
 export const REACH = 3.2 * SIG_H; // how far (in canvas heights) a splat can still light a tile
 export const TILE_CELL = 10; // tile height in css px; the width is 1.5x (3:2)
 
@@ -64,7 +64,15 @@ vec3 tileMask(vec2 fc, vec2 cell, float seam, float radius){
 // the comet's twinkle for a tile: a subtle per-tile flicker so it feels alive
 float twinkle(vec2 cellId, float time){
   float rnd = hash21(cellId + 0.5);
-  return 0.90 + 0.10 * (sin(time * (4.0 + rnd * 6.0) + rnd * 38.0) * 0.5 + 0.5);
+  return 0.98 + 0.02 * (sin(time * (4.0 + rnd * 6.0) + rnd * 38.0) * 0.5 + 0.5);
+}
+// Same red/peach light grade on both canvases; each tile stays flat-coloured.
+vec3 cometGrade(float energy){
+  vec3 warm = vec3(0.94, 0.40, 0.29);
+  vec3 red = vec3(0.969, 0.224, 0.137);
+  vec3 core = vec3(0.82, 0.17, 0.105);
+  vec3 col = mix(warm, red, smoothstep(0.08, 0.65, energy));
+  return mix(col, core, smoothstep(0.72, 1.0, energy) * 0.48);
 }
 `;
 
@@ -111,13 +119,20 @@ export class Comet {
     this.hy += (this.ty - this.hy) * k;
     const ddx = this.hx - this.lsx,
       ddy = this.hy - this.lsy;
-    if (ddx * ddx + ddy * ddy > MIN_STEP * MIN_STEP) {
-      this.hist.unshift({ x: this.hx, y: this.hy, b: t });
-      if (this.hist.length > NODES - 1) this.hist.pop();
+    const distance = Math.hypot(ddx, ddy);
+    if (distance > MIN_STEP) {
+      // Fill the travelled segment even when a frame is dropped; no beads or gaps.
+      const steps = Math.min(NODES - 1, Math.ceil(distance / MIN_STEP));
+      for (let i = 1; i <= steps; i++) {
+        const f = i / steps;
+        this.hist.unshift({ x: this.lsx + ddx * f, y: this.lsy + ddy * f, b: t - dt * (1 - f) });
+      }
+      this.hist.length = Math.min(this.hist.length, NODES - 1);
       this.lsx = this.hx;
       this.lsy = this.hy;
     }
   }
+
   /** Retire tail nodes older than LIFE (the tail dissolves smoothly). */
   retire(t: number) {
     const h = this.hist;
@@ -188,7 +203,7 @@ export class Comet {
       const v = Math.exp(-(dx * dx + dy * dy) / (2 * r * r)) * lf;
       if (v > inten) inten = v;
     }
-    const e = Math.min(1, Math.max(0, (inten - 0.03) / 0.27)); // smoothstep(0.03, 0.30, inten)
+    const e = Math.min(1, Math.max(0, (inten - 0.025) / 0.70)); // broader tonal shoulder: rounded core, softly tapered trace
     return Math.round(e * e * (3 - 2 * e) * 255);
   }
 }

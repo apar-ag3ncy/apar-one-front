@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { VideoSlot } from "./video-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 
@@ -36,76 +35,109 @@ const CARDS = FEATURED_CLIENTS.map((c) => ({
   desc: c.blurb,
   year: c.year ? `'${c.year.slice(-2)}` : "",
   video: VIDEO_FILL[c.slug] ?? `/videos/${c.slug}.mp4`,
-  slot: `Drop ${c.name} video`,
+  slot: `${c.name} campaign film`,
 }));
 
-// Scroll length scales with card count (+2 fixed panels: intro & CTA) so the pin
-// pacing stays consistent as cases are added. 4 cards ≈ 440vh baseline.
-const PIN_HEIGHT = `${Math.round((CARDS.length + 2) * 74)}vh`;
-
-/**
- * Pinned horizontal-scroll work gallery - projects slide sideways through a
- * sticky stage with a live progress bar. GSAP ScrollTrigger scrubs the track.
- */
+/** Native horizontal work rail: horizontal input stays horizontal; vertical input
+ * continues down the page. GSAP only eases explicit previous/next actions. */
 export function PinnedGallery() {
-  const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLElement>(null);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
+  const [position, setPosition] = useState({ index: 0, end: false });
+
+  const move = (direction: number) => {
+    const rail = trackRef.current;
+    if (!rail) return;
+    const cards = Array.from(rail.querySelectorAll<HTMLElement>(".pin-card"));
+    const gutter = parseFloat(getComputedStyle(rail).paddingLeft);
+    const closest = cards.reduce((best, card, i) =>
+      Math.abs(card.offsetLeft - gutter - rail.scrollLeft) < Math.abs(cards[best].offsetLeft - gutter - rail.scrollLeft) ? i : best, 0);
+    const index = Math.max(0, Math.min(cards.length - 1, closest + direction));
+    tweenRef.current?.kill();
+    rail.dataset.sliding = "true";
+    tweenRef.current = gsap.to(rail, {
+      scrollLeft: Math.min(rail.scrollWidth - rail.clientWidth, cards[index].offsetLeft - gutter),
+      duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 0.65,
+      ease: "power3.out",
+      onComplete: () => { delete rail.dataset.sliding; },
+    });
+  };
 
   useEffect(() => {
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    if (!section || !track) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const mm = gsap.matchMedia();
-    // Only drive the horizontal scrub on wider/landscape screens; at ≤900px the
-    // CSS collapses the pin into a vertical stack (scroll-jacking feels bad on
-    // portrait / touch tablets). Kept in sync with the @media(max-width:900px).
-    mm.add("(min-width: 901px)", () => {
-      const tween = gsap.to(track, {
-        x: () => -(track.scrollWidth - window.innerWidth),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom bottom",
-          // Lenis already smooths the scroll; a smaller scrub keeps the track
-          // tight to it (less double-lag "trailing" through the pinned section).
-          scrub: 0.3,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            // Only the lightweight progress bar updates here. (The old
-            // velocity-skew write per frame triggered a full-document style
-            // recalc - see .pin-card in globals.css - and has been removed.)
-            if (progressRef.current) {
-              progressRef.current.style.setProperty(
-                "--pp-scale",
-                String(0.08 + self.progress * 0.92)
-              );
-            }
-          },
-        },
-      });
-      return () => {
-        tween.scrollTrigger?.kill();
-      };
-    });
-
-    requestAnimationFrame(() => ScrollTrigger.refresh());
-    return () => mm.revert();
+    const rail = trackRef.current;
+    if (!rail) return;
+    let pointer = -1, startX = 0, startY = 0, startScroll = 0, dragging = false, suppressClick = false;
+    const cards = Array.from(rail.querySelectorAll<HTMLElement>(".pin-card"));
+    let offsets: number[] = [], maxScroll = 0, frame = 0;
+    const update = () => {
+      frame = 0;
+      const left = rail.scrollLeft;
+      const index = offsets.reduce((best, offset, i) =>
+        Math.abs(offset - left) < Math.abs(offsets[best] - left) ? i : best, 0);
+      const end = left >= maxScroll - 2;
+      setPosition(old => old.index === index && old.end === end ? old : { index, end });
+    };
+    const scheduleUpdate = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const measure = () => {
+      const gutter = parseFloat(getComputedStyle(rail).paddingLeft);
+      offsets = cards.map(card => card.offsetLeft - gutter);
+      maxScroll = rail.scrollWidth - rail.clientWidth;
+      scheduleUpdate();
+    };
+    const interrupt = () => { tweenRef.current?.kill(); delete rail.dataset.sliding; };
+    const wheel = (e: WheelEvent) => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) interrupt(); };
+    const down = (e: PointerEvent) => {
+      interrupt();
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      pointer = e.pointerId; startX = e.clientX; startY = e.clientY; startScroll = rail.scrollLeft;
+      dragging = false; suppressClick = false;
+    };
+    const drag = (e: PointerEvent) => {
+      if (e.pointerId !== pointer) return;
+      const dx = e.clientX - startX;
+      if (!dragging && Math.abs(dx) > 7 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+        dragging = true; suppressClick = true;
+        rail.setPointerCapture(pointer); rail.dataset.sliding = "true";
+      }
+      if (dragging) { e.preventDefault(); rail.scrollLeft = startScroll - dx; }
+    };
+    const up = () => {
+      if (pointer >= 0 && rail.hasPointerCapture(pointer)) rail.releasePointerCapture(pointer);
+      pointer = -1; dragging = false; delete rail.dataset.sliding;
+    };
+    const click = (e: MouseEvent) => { if (suppressClick) { e.preventDefault(); e.stopPropagation(); suppressClick = false; } };
+    const preventDrag = (e: DragEvent) => e.preventDefault();
+    rail.addEventListener("scroll", scheduleUpdate, { passive: true });
+    rail.addEventListener("pointerdown", down);
+    rail.addEventListener("pointermove", drag);
+    rail.addEventListener("pointerup", up);
+    rail.addEventListener("pointercancel", up);
+    rail.addEventListener("lostpointercapture", up);
+    rail.addEventListener("click", click, true);
+    rail.addEventListener("dragstart", preventDrag);
+    rail.addEventListener("wheel", wheel, { passive: true });
+    const ro = new ResizeObserver(measure); ro.observe(rail); cards.forEach(card => ro.observe(card)); measure();
+    return () => {
+      tweenRef.current?.kill(); ro.disconnect(); cancelAnimationFrame(frame);
+      rail.removeEventListener("scroll", scheduleUpdate);
+      rail.removeEventListener("pointerdown", down);
+      rail.removeEventListener("pointermove", drag);
+      rail.removeEventListener("pointerup", up);
+      rail.removeEventListener("pointercancel", up);
+      rail.removeEventListener("lostpointercapture", up);
+      rail.removeEventListener("click", click, true);
+      rail.removeEventListener("dragstart", preventDrag);
+      rail.removeEventListener("wheel", wheel);
+    };
   }, []);
 
   return (
     <section
-      ref={sectionRef}
       className="pin"
       data-screen-label="Home - Work Gallery"
-      style={{ height: PIN_HEIGHT }}
+      aria-label="Selected work"
     >
       <div className="pin-sticky">
-        <div ref={trackRef} className="pin-track">
           <div className="pin-intro">
             <div className="eyebrow">
               <i className="dot" /> Selected work
@@ -115,10 +147,18 @@ export function PinnedGallery() {
             </h2>
             <p>
               A focused body of branding, marketing and campaign work for jewellery and real-estate
-              brands. Keep scrolling →
+              brands. Swipe left to explore →
             </p>
           </div>
 
+          <div className="pin-controls">
+            <span aria-live="polite">{String(Math.min(position.index + 1, CARDS.length)).padStart(2, "0")} / {CARDS.length}</span>
+            <button type="button" aria-label="Previous project" aria-controls="work-rail" disabled={position.index === 0} onClick={() => move(-1)}>←</button>
+            <button type="button" aria-label="Next project" aria-controls="work-rail" disabled={position.end} onClick={() => move(1)}>→</button>
+          </div>
+        <div ref={trackRef} id="work-rail" className="pin-track" data-lenis-prevent-horizontal tabIndex={0} role="region" aria-label="Project carousel — swipe horizontally" onKeyDown={e => {
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); }
+        }}>
           {CARDS.map((c) => (
             <Link className="pin-card" href={c.href} key={c.num}>
               <div className="frame">
@@ -146,10 +186,7 @@ export function PinnedGallery() {
             </Link>
           </div>
         </div>
-        <div className="pin-progress">
-          <i ref={progressRef} />
-        </div>
-        <div className="pin-hint">Drag · Scroll</div>
+
       </div>
     </section>
   );
