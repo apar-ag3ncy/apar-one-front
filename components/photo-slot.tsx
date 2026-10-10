@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useImagePixelTrail } from "./use-image-pixel-trail";
 import type { CSSProperties } from "react";
 
 interface PhotoSlotProps {
@@ -62,6 +63,7 @@ export function PhotoSlot({
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [natRatio, setNatRatio] = useState<string>();
+  useImagePixelTrail(ref, loaded && !failed);
 
   const onReady = (img: HTMLImageElement) => {
     setLoaded(true);
@@ -101,6 +103,7 @@ export function PhotoSlot({
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
+          draggable={false}
           data-loaded={loaded ? "true" : "false"}
           onLoad={(e) => onReady(e.currentTarget)}
           onError={() => setFailed(true)}

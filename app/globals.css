@@ -123,6 +123,8 @@ html:not(.lenis){scroll-behavior:smooth;}
 /* over a beam band (hero, footer) the beam's own tiles are the cursor - the
    separate trail hides so two pixel grids never overlap (set by pixel-dome.tsx) */
 html[data-on-dome="1"] .pixel-trail{opacity:0;}
+html[data-on-image="1"] .pixel-trail{opacity:0;}
+.image-pixel-trail{position:absolute;left:0;top:0;pointer-events:none;visibility:hidden;transform-origin:50% 50%;}
 .pixel-trail canvas{width:100vw;height:100vh;display:block;}
 
 /* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */

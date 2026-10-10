@@ -198,11 +198,11 @@ export function PixelTrail() {
       const dt = prev ? Math.min((now - prev) / 1000, 0.05) : 0.016;
       prev = now;
       t += dt;
-      // Over a beam band the beam's own tiles are the cursor and this canvas is
+      // Over a beam or photo its own tiles are the cursor and this canvas is
       // faded out by CSS: keep the head on the pointer, drop the tail (so it
       // restarts fresh off the band, never trailing back over the beam), blank
       // once, and park - there is nothing to draw.
-      if (document.documentElement.dataset.onDome === "1") {
+      if (document.documentElement.dataset.onDome === "1" || document.documentElement.dataset.onImage === "1") {
         comet.snap(comet.tx, comet.ty);
         comet.clearTail();
         if (!blanked) {
