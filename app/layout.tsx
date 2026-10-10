@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./home-flow.css";
 import { Nav } from "@/components/nav";
 import { ConditionalFooter } from "@/components/conditional-footer";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";

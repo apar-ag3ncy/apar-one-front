@@ -36,7 +36,7 @@ export function SlowMo() {
     const ctx = gsap.context((self) => {
       // ---- 1) media parallax + slow zoom ---------------------------------------
       const imgs = Array.from(document.querySelectorAll<HTMLImageElement>(".img-slot > img")).filter(
-        (img) => !img.closest(".pin, .hero-beam, .footer, .nav, #intro")
+        (img) => !img.closest(".pin, .flow-project, .hero-beam, .footer, .nav, #intro")
       );
       for (const img of imgs) {
         const wrap = (img.closest(".frame, .si-fig, .img-slot") as HTMLElement) ?? img;

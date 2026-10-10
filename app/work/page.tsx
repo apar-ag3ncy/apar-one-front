@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { VelocityMarquee } from "@/components/velocity-marquee";
+import { PinnedGallery } from "@/components/pinned-gallery";
 import { ImageSlot } from "@/components/image-slot";
 
 type Cat = "all" | "jewellery" | "lifestyle";
@@ -151,6 +152,8 @@ export default function WorkPage() {
           {shown.length === 0 && <p className="empty-note">No projects in this category yet.</p>}
         </div>
       </section>
+
+      <div id="showreel"><PinnedGallery /></div>
 
       <section className="section-sm" style={{ paddingTop: 0 }} data-screen-label="Work - CTA strip">
         <div className="wrap">

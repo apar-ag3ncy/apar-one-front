@@ -14,7 +14,7 @@ import { Magnetic } from "./magnetic";
 // with light ink, so they are matched by pattern rather than listed one by one
 // - the old fixed list only knew two of the twelve and left the ink nav
 // unreadable on the rest.
-const DARK_ROUTES = new Set(["/", "/start", "/creative/reel-cover", "/creative/exploded-ring"]);
+const DARK_ROUTES = new Set(["/", "/team", "/start", "/creative/reel-cover", "/creative/exploded-ring"]);
 const isCasePage = (path: string) => /^\/work\/[^/]+$/.test(path);
 
 const LINKS = [
@@ -83,12 +83,12 @@ export function Nav() {
     <>
       <header className={cn("nav", onDark && "on-dark", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
-          <Link className="brand" href="/" aria-label="APAR - Digital Marketing Agency">
+          <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
             <AparLogo onDark={onDark} />
             <span className="brand-tag">
-              Digital Marketing
+              AGENTIVE
               <br />
-              Agency
+              CREACY
             </span>
           </Link>
           <nav className="nav-links">
