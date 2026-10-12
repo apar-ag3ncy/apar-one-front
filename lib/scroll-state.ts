@@ -22,7 +22,7 @@ export function isScrolling() {
 // nav can actually lock scrolling while the mobile menu is open: `body{overflow:
 // hidden}` only blocks user scrolling of the viewport, while Lenis scrolls the
 // window programmatically and sails straight through it.
-type ScrollLock = { stop: () => void; start: () => void };
+type ScrollLock = { stop: () => void; start: () => void; isStopped?: boolean; scrollTo?: (target: number, options?: { duration?: number }) => void };
 let lenisRef: ScrollLock | null = null;
 export function setLenis(l: ScrollLock | null) {
   lenisRef = l;

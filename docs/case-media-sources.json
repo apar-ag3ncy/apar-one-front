@@ -1,0 +1,159 @@
+{
+  "sourceFolders": {
+    "chheda": "Nav Chheda/akwork_cj-29-07-24_-edited_2024-08-12_1644",
+    "a-paramount": "final paramount assets"
+  },
+  "export": {
+    "format": "webp",
+    "quality": 86,
+    "maxWidth": 2000,
+    "maxHeight": 1800,
+    "crop": false
+  },
+  "assets": [
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 557 copy.jpg",
+      "file": "/work/chheda/curated/bridal-red.webp",
+      "width": 2000,
+      "height": 1334,
+      "bytes": 225502,
+      "sourceBytes": 28743327
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 1165 copy.jpg",
+      "file": "/work/chheda/curated/bridal-veil.webp",
+      "width": 2000,
+      "height": 1334,
+      "bytes": 138038,
+      "sourceBytes": 23497680
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 1380 S.jpg",
+      "file": "/work/chheda/curated/diamond-editorial.webp",
+      "width": 2000,
+      "height": 1334,
+      "bytes": 349758,
+      "sourceBytes": 33613656
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 1516 S.jpg",
+      "file": "/work/chheda/curated/diamond-detail.webp",
+      "width": 1201,
+      "height": 1800,
+      "bytes": 259668,
+      "sourceBytes": 31179276
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 668 copy.jpg",
+      "file": "/work/chheda/curated/emerald-detail.webp",
+      "width": 1201,
+      "height": 1800,
+      "bytes": 115910,
+      "sourceBytes": 21523569
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 842 copy.jpg",
+      "file": "/work/chheda/curated/gold-editorial.webp",
+      "width": 2000,
+      "height": 1334,
+      "bytes": 208774,
+      "sourceBytes": 23107771
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 1142 copy.jpg",
+      "file": "/work/chheda/curated/bridal-detail.webp",
+      "width": 1201,
+      "height": 1800,
+      "bytes": 127172,
+      "sourceBytes": 24717188
+    },
+    {
+      "slug": "chheda",
+      "source": "CJ 29.07.24_ 1505.jpg",
+      "file": "/work/chheda/curated/diamond-portrait.webp",
+      "width": 2000,
+      "height": 1334,
+      "bytes": 162494,
+      "sourceBytes": 22187003
+    },
+    {
+      "slug": "a-paramount",
+      "source": "Door/Inlay emboss jaali/magnific_a-grand-jain-temple-sanct_e8NXMFjdqL.png",
+      "file": "/work/a-paramount/curated/inlay-entrance.webp",
+      "width": 2000,
+      "height": 1493,
+      "bytes": 406416,
+      "sourceBytes": 6675414
+    },
+    {
+      "slug": "a-paramount",
+      "source": "Door/BRASS EMBOSS/magnific_cinematic-product-photogr_WMU1JytcXe.png",
+      "file": "/work/a-paramount/curated/brass-emboss-door.webp",
+      "width": 1344,
+      "height": 1800,
+      "bytes": 505706,
+      "sourceBytes": 7621702
+    },
+    {
+      "slug": "a-paramount",
+      "source": "Bajot/magnific_a-highly-photorealistic-c_l7v5k4wgv9.png",
+      "file": "/work/a-paramount/curated/silver-bajot.webp",
+      "width": 2000,
+      "height": 1493,
+      "bytes": 477140,
+      "sourceBytes": 7330236
+    },
+    {
+      "slug": "a-paramount",
+      "source": "Chattar/magnific_subject-of-the-image-in-t_XtivKSKBfo (3).png",
+      "file": "/work/a-paramount/curated/ornate-chattar.webp",
+      "width": 2000,
+      "height": 1493,
+      "bytes": 218372,
+      "sourceBytes": 5674469
+    },
+    {
+      "slug": "a-paramount",
+      "source": "Rath/magnific_place-the-rath-outside-of_9RS9ICqNYZ.png",
+      "file": "/work/a-paramount/curated/ceremonial-rath.webp",
+      "width": 2000,
+      "height": 1577,
+      "bytes": 395902,
+      "sourceBytes": 12058786
+    },
+    {
+      "slug": "a-paramount",
+      "source": "PAKSHAL-KALASH-HERO.png",
+      "file": "/work/a-paramount/curated/pakshal-kalash.webp",
+      "width": 2000,
+      "height": 1493,
+      "bytes": 363772,
+      "sourceBytes": 6395686
+    },
+    {
+      "slug": "a-paramount",
+      "source": "ShatrunjayPat/magnific_a-large-ornate-metal-repo_CHcigZsEEy.png",
+      "file": "/work/a-paramount/curated/shatrunjay-panel.webp",
+      "width": 2000,
+      "height": 1493,
+      "bytes": 501680,
+      "sourceBytes": 7404242
+    },
+    {
+      "slug": "a-paramount",
+      "source": "108-DIYA-HERO.png",
+      "file": "/work/a-paramount/curated/diya-sanctum.webp",
+      "width": 1800,
+      "height": 1800,
+      "bytes": 265102,
+      "sourceBytes": 5674360
+    }
+  ]
+}

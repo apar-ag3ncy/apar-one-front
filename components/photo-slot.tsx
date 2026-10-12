@@ -17,6 +17,8 @@ interface PhotoSlotProps {
    *  right cell shape and avoid layout shift. Once loaded, the image's true
    *  natural ratio takes over. */
   ratio?: string;
+  /** Uniform catalogue frame; natural image ratio remains the default elsewhere. */
+  fixedRatio?: string;
   /** Brand logo (e.g. /logos/<slug>.png). With no photo, the frame renders a
    *  finished branded card - the logo centred on a panel in the page's own
    *  colours (`.case-ph`) - instead of a drop-zone note. Same flags as the
@@ -46,11 +48,18 @@ interface PhotoSlotProps {
  * cropping - whatever shape the photo is, the grid cell matches it. This
  * overrides the gallery's default fixed cell ratio.
  */
-export function PhotoSlot({
+export function PhotoSlot(props: PhotoSlotProps) {
+  // A replacement asset starts with its own load/error state, natural ratio and
+  // sampled pixel canvas. Keep priority updates on the same mounted image.
+  return <PhotoFrame key={props.src ?? `identity:${props.logo ?? "empty"}`} {...props} />;
+}
+
+function PhotoFrame({
   src,
   placeholder = "Drop an image",
   radius = 12,
   ratio,
+  fixedRatio,
   logo,
   logoTint,
   logoInvert,
@@ -83,12 +92,12 @@ export function PhotoSlot({
 
   // Natural ratio wins once known; fall back to the hint; otherwise leave the
   // cell's CSS default (keeps the placeholder shape when there's no image).
-  const aspectRatio = natRatio ?? ratio;
-  const showLogoCard = !loaded && !!logo;
+  const aspectRatio = fixedRatio ?? natRatio ?? ratio;
+  const showLogoCard = (!loaded || failed) && !!logo;
 
   return (
     <div
-      className={cn("img-slot", !loaded && "ph-img", showLogoCard && "has-brand", className)}
+      className={cn("img-slot", (!loaded || failed) && "ph-img", showLogoCard && "has-brand", className)}
       style={{ borderRadius: `${radius}px`, ...style, ...(aspectRatio ? { aspectRatio } : null) }}
       aria-label={showLogoCard ? placeholder : undefined}
       role={showLogoCard ? "img" : undefined}
@@ -106,7 +115,7 @@ export function PhotoSlot({
           draggable={false}
           data-loaded={loaded ? "true" : "false"}
           onLoad={(e) => onReady(e.currentTarget)}
-          onError={() => setFailed(true)}
+          onError={() => { setFailed(true); setLoaded(false); }}
         />
       )}
       {showLogoCard ? (

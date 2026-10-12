@@ -1,28 +1,13 @@
 import type { CaseData, CaseFonts } from "@/components/case-study";
 
-// ── Per-company typography ──────────────────────────────────────────────────
-// Each company gets its own stack. FONTS_DEFAULT matches the site-wide look
-// (Newsreader + Archivo); add a new const per company that wants custom fonts.
+// Every case and featured card uses the same supplied Argon pair.
 const FONTS_DEFAULT: CaseFonts = {
-  serif: "'Newsreader',Georgia,serif",
-  sans: "'Archivo',system-ui,sans-serif",
+  serif: "'APAR Argon',sans-serif",
+  sans: "'APAR Argon',sans-serif",
 };
-const FONTS_GIRVAAN: CaseFonts = {
-  serif: "'Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
-  sans: "'Optima','Optima Nova','Candara','Segoe UI',system-ui,sans-serif",
-};
-// Florentia + Balham aren't system/web fonts yet - they fall back to Bodoni 72
-// (installed) / system sans until their font files are loaded via @font-face.
-const FONTS_MAISON: CaseFonts = {
-  serif: "'Florentia','Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
-  sans: "'Balham','Optima','Candara','Segoe UI',system-ui,sans-serif",
-};
-// Blisstwin isn't a system/web font yet - display falls back to Newsreader
-// until its font file is loaded via @font-face. Body keeps the site sans.
-const FONTS_ACHAL: CaseFonts = {
-  serif: "'Blisstwin','Newsreader',Georgia,serif",
-  sans: "'Archivo',system-ui,sans-serif",
-};
+const FONTS_GIRVAAN = FONTS_DEFAULT;
+const FONTS_MAISON = FONTS_DEFAULT;
+const FONTS_ACHAL = FONTS_DEFAULT;
 
 export const CASES: Record<string, CaseData> = {
   chheda: {
@@ -49,7 +34,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(216,182,91,.18)",
       line: "rgba(244,233,200,.18)",
     },
-    heroPlaceholder: "Drop Chheda hero image (gold/emerald)",
+    heroPlaceholder: "Chheda Jewellers — brand campaign",
     meta: [
       { label: "Services", value: "Branding · Social · Campaigns" },
       { label: "Sector", value: "Jewellery Retail" },
@@ -75,10 +60,14 @@ export const CASES: Record<string, CaseData> = {
         </>
       ),
       gallery: [
-        { cls: "wide", placeholder: "Campaign key visual", ratio: "16/11" },
-        { cls: "tall", placeholder: "Product / social post", ratio: "4/5" },
-        { cls: "half", placeholder: "Festive creative", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "wide", placeholder: "Bridal jewellery · Red editorial", ratio: "3/2" },
+        { cls: "wide", placeholder: "Bridal jewellery · Through the veil", ratio: "3/2" },
+        { cls: "wide", placeholder: "Diamond jewellery · Blue editorial", ratio: "3/2" },
+        { cls: "tall", placeholder: "Diamond necklace · The details", ratio: "2/3" },
+        { cls: "tall", placeholder: "Emerald jewellery · Close-up", ratio: "2/3" },
+        { cls: "wide", placeholder: "Gold jewellery · Layered elegance", ratio: "3/2" },
+        { cls: "tall", placeholder: "Bridal jewellery · Earring detail", ratio: "2/3" },
+        { cls: "wide", placeholder: "Diamond jewellery · Portrait", ratio: "3/2" },
       ],
     },
     stats: [
@@ -530,7 +519,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(162,142,79,.20)",
       line: "rgba(236,230,214,.16)",
     },
-    heroPlaceholder: "Drop A Paramount hero image (industrial / gold on dark)",
+    heroPlaceholder: "A Paramount — carved temple ceiling",
     meta: [
       { label: "Services", value: "Branding · Website · Lead Gen" },
       { label: "Sector", value: "Engineering · Manufacturing" },
@@ -555,10 +544,14 @@ export const CASES: Record<string, CaseData> = {
         </>
       ),
       gallery: [
-        { cls: "wide", placeholder: "Facility / machinery key visual", ratio: "16/11" },
-        { cls: "tall", placeholder: "Product / component", ratio: "4/5" },
-        { cls: "half", placeholder: "Website / catalogue", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / signage", ratio: "5/4" },
+        { cls: "wide", placeholder: "Temple entrance · Inlay and jaali", ratio: "4/3" },
+        { cls: "tall", placeholder: "Brass door · Embossed detail", ratio: "3/4" },
+        { cls: "wide", placeholder: "Silver bajot · Sculpted form", ratio: "4/3" },
+        { cls: "wide", placeholder: "Chattar · Ornate metalwork", ratio: "4/3" },
+        { cls: "wide", placeholder: "Ceremonial rath · Architecture in miniature", ratio: "4/3" },
+        { cls: "wide", placeholder: "Pakshal kalash · Ritual craft", ratio: "4/3" },
+        { cls: "wide", placeholder: "Shatrunjay panel · Relief detail", ratio: "4/3" },
+        { cls: "wide", placeholder: "Diya sanctum · Light and atmosphere", ratio: "1/1" },
       ],
     },
     stats: [

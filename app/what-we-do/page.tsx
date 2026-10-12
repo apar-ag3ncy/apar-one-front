@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
-  title: "What we do - APAR Digital Marketing & Branding Agency",
+  title: "What we do — APAR AGENTIVE CREACY",
   description:
     "APAR builds brands, runs their marketing and manages the social handles for a focused roster of jewellery houses and premium brands. Founded by Preyansh Vora.",
 };

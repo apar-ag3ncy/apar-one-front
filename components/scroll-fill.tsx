@@ -31,13 +31,14 @@ export function ScrollFill({ text, className }: { text: string; className?: stri
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const spans = Array.from(el.querySelectorAll<HTMLSpanElement>(".fw"));
-    if (reduce) {
-      spans.forEach((s) => s.classList.add("lit"));
-      return;
-    }
     gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    media.add({ reduced: "(prefers-reduced-motion: reduce)", motion: "(prefers-reduced-motion: no-preference)" }, context => {
+    if (context.conditions?.reduced) {
+      spans.forEach(s => s.classList.add("lit"));
+      return () => spans.forEach(s => s.classList.remove("lit"));
+    }
     let prevLit = 0;
     const st = ScrollTrigger.create({
       trigger: el,
@@ -53,8 +54,10 @@ export function ScrollFill({ text, className }: { text: string; className?: stri
       },
     });
     scheduleRefresh();
-    return () => st.kill();
-  }, []);
+    return () => { st.kill(); spans.forEach(s => s.classList.remove("lit")); };
+    }, el);
+    return () => media.revert();
+  }, [text]);
 
   return (
     <p ref={ref} className={className} data-fill>

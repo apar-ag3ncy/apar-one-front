@@ -1,128 +1,98 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { gsap } from "gsap";
 import { Reveal } from "./reveal";
-import BorderGlow from "./react-bits/BorderGlow";
+import { PhotoSlot } from "./photo-slot";
+import { useCaseTransition } from "./transition-provider";
 import { featuredCardVars, type FeaturedClient } from "@/lib/cases";
+import { caseMotion } from "@/lib/case-motion";
 
-/** #rrggbb (or #rgb) → "H S L" string for BorderGlow's glowColor prop. */
-function hexToHsl(hex: string): string {
-  let h = hex.replace("#", "").trim();
-  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
-  const r = parseInt(h.slice(0, 2), 16) / 255;
-  const g = parseInt(h.slice(2, 4), 16) / 255;
-  const b = parseInt(h.slice(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  let s = 0;
-  let hue = 0;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    if (max === r) hue = (g - b) / d + (g < b ? 6 : 0);
-    else if (max === g) hue = (b - r) / d + 2;
-    else hue = (r - g) / d + 4;
-    hue /= 6;
-  }
-  return `${Math.round(hue * 360)} ${Math.round(s * 100)} ${Math.round(l * 100)}`;
-}
-
-/**
- * Featured-client card. At rest it shows the brand logo (once it has actually
- * loaded; otherwise the brand name - so a missing file never shows a broken
- * image). The logo scales/fades in, a glassy shine sweeps across as the card
- * enters view, and on hover/focus/press it cross-fades to the case info.
- *
- * Wrapped in <BorderGlow> (React Bits) so a soft, cursor-following halo lights
- * the card edges in its OWN brand colour (each card's `theme.accent`).
- * Shared by the home and clients pages so the markup lives in one place.
- */
+/** A visible editorial caption, with a separate, brand-directed moving artwork layer. */
 export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number }) {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [logoLoaded, setLogoLoaded] = useState(false);
-
-  // Cached images can finish loading before React attaches onLoad, so check
-  // the image's completed state on mount as well - otherwise the logo would
-  // silently never appear and the card would look empty.
+  const root = useRef<HTMLDivElement>(null);
+  const transition = useCaseTransition();
+  const profile = caseMotion(client.slug);
   useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) setLogoLoaded(true);
-  }, []);
+    const el = root.current;
+    if (!el) return;
+    const media = gsap.matchMedia();
+    media.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+      const card = el.querySelector<HTMLElement>(".client-story-link")!;
+      const art = el.querySelector<HTMLElement>(".client-story-art")!;
+      const seal = el.querySelector<HTMLElement>(".client-story-seal");
+      const title = el.querySelector<HTMLElement>(".client-story-name")!;
+      const arrow = el.querySelector<HTMLElement>(".client-story-arrow")!;
+      const ctx = gsap.context(() => {
+        const x = gsap.quickTo(art, "x", { duration: .8, ease: "power3.out" });
+        const y = gsap.quickTo(art, "y", { duration: .8, ease: "power3.out" });
+        // quickTo bypasses CSS shorthand expansion: scaleX/Y are real setters.
+        const scaleX = gsap.quickTo(art, "scaleX", { duration: 1, ease: "power3.out" });
+        const scaleY = gsap.quickTo(art, "scaleY", { duration: 1, ease: "power3.out" });
+        const turn = seal ? gsap.quickTo(seal, "rotation", { duration: 1.2, ease: "power3.out" }) : () => {};
+        const shift = gsap.quickTo(title, "x", { duration: .55, ease: "power3.out" });
+        const arrowX = gsap.quickTo(arrow, "x", { duration: .55, ease: "power3.out" });
+        let over = false, focus = false;
+        let bounds = card.getBoundingClientRect();
+        const update = () => {
+          const active = over || focus;
+          scaleX(active ? 1.055 : 1); scaleY(active ? 1.055 : 1);
+          turn(active ? profile.direction * 24 : 0);
+          shift(active ? 12 : 0); arrowX(active ? 0 : -9);
+          if (!active) { x(0); y(0); }
+        };
+        const enter = () => { over = true; bounds = card.getBoundingClientRect(); update(); };
+        const leave = () => { over = false; update(); };
+        const focused = () => { focus = true; update(); };
+        const blurred = () => { focus = false; update(); };
+        const move = (event: PointerEvent) => {
+          if (!over || event.pointerType !== "mouse") return;
+          x(gsap.utils.clamp(-5, 5, (event.clientX - bounds.left - bounds.width / 2) / bounds.width * -10));
+          y(gsap.utils.clamp(-4, 4, (event.clientY - bounds.top - bounds.height / 2) / bounds.height * -8));
+        };
+        card.addEventListener("pointerenter", enter); card.addEventListener("pointerleave", leave);
+        card.addEventListener("pointermove", move, { passive: true });
+        card.addEventListener("focusin", focused); card.addEventListener("focusout", blurred);
+        return () => {
+          card.removeEventListener("pointerenter", enter); card.removeEventListener("pointerleave", leave);
+          card.removeEventListener("pointermove", move);
+          card.removeEventListener("focusin", focused); card.removeEventListener("focusout", blurred);
+        };
+      }, el);
+      return () => ctx.revert();
+    });
+    return () => media.revert();
+  }, [profile]);
 
-  const theme = client.theme;
-
-  return (
-    <BorderGlow
-      className="fc-glow"
-      glowColor={hexToHsl(theme.accent)}
-      colors={[theme.accent, theme.ink, theme.accent]}
-      backgroundColor={theme.bg}
-      borderRadius={14}
-      glowRadius={34}
-      glowIntensity={1.6}
-      coneSpread={34}
-      edgeSensitivity={24}
-      fillOpacity={0.35}
-    >
-    <Reveal
-      i={i}
-      as={Link}
-      href={client.href}
-      className="fc-card"
-      style={featuredCardVars(client)}
-    >
-      {/* Rest face: the logo if it loads, otherwise the name (no broken image). */}
-      <span className="fc-logo" aria-hidden="true">
-        {client.logo && client.logoTint ? (
-          // Solid-colour silhouette (e.g. gold) via image mask.
-          <span
-            className="fc-logo-mask"
-            style={{
-              WebkitMaskImage: `url("${client.logo}")`,
-              maskImage: `url("${client.logo}")`,
-              backgroundColor: client.logoTint,
-            }}
-          />
-        ) : client.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            ref={imgRef}
-            className={`fc-logo-img${client.logoInvert ? " fc-logo-img--invert" : ""}`}
-            src={client.logo}
-            alt=""
-            data-loaded={logoLoaded ? "true" : "false"}
-            onLoad={() => setLogoLoaded(true)}
-            onError={() => setLogoLoaded(false)}
-          />
-        ) : null}
-        {!client.logoTint && !logoLoaded && <span className="fc-logo-name">{client.name}</span>}
-      </span>
-
-      {/* Glassy shine that sweeps across once as the card scrolls into view. */}
-      <motion.span
-        className="fc-shine"
-        aria-hidden="true"
-        initial={{ x: "-160%", skewX: -14 }}
-        whileInView={{ x: "320%", skewX: -14 }}
-        viewport={{ once: true, margin: "0px 0px -8% 0px" }}
-        transition={{ duration: 1.15, ease: "easeInOut", delay: 0.3 + i * 0.08 }}
-      />
-
-      <span className="fc-body">
-        <span className="fc-top">
-          <span className="fc-i">{client.i}</span>
-          <span className="fc-cat">{client.cat}</span>
-        </span>
-        <h3>{client.name}</h3>
-        <p>{client.blurb}</p>
-        <span className="fc-go">
-          View case <i>↗</i>
-        </span>
-      </span>
+  return <div ref={root} className="client-story" data-form={profile.form}>
+    <Reveal i={i % 2}>
+      <Link className="client-story-link" href={client.href} style={featuredCardVars(client)}
+        aria-label={`Explore ${client.name}'s case study`}
+        onClick={event => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          transition({ href: client.href, label: client.name, color: client.theme.bg, ink: client.theme.ink });
+        }}>
+        <div className={`client-story-media${profile.cover ? " has-photo" : ""}`}>
+          <div className="client-story-art">
+            {profile.cover && <PhotoSlot src={profile.cover} fixedRatio="20/13" radius={16} placeholder={`${client.name} — selected work`} />}
+            {!profile.cover && <span className="client-story-seal" aria-hidden="true"><i /><i /><i /></span>}
+          </div>
+          <span className="client-story-index">{client.i} / APĀR</span>
+          <span className={`client-story-mark${client.logoTint || client.logoInvert ? " mono" : ""}`}
+            style={client.logoTint ? { color: client.logoTint } : undefined} aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={client.logo} alt="" loading="lazy" draggable={false} />
+          </span>
+          <span className="client-story-explore" aria-hidden="true">Explore the story <i>↗</i></span>
+        </div>
+        <div className="client-story-caption">
+          <div className="client-story-meta"><span>{client.cat}</span><span>{client.year}</span></div>
+          <h3><span className="client-story-arrow" aria-hidden="true">→</span><span className="client-story-name">{client.name}</span></h3>
+          <p>{client.blurb}</p>
+        </div>
+      </Link>
     </Reveal>
-    </BorderGlow>
-  );
+  </div>;
 }

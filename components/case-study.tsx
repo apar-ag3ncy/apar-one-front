@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Reveal } from "./reveal";
 import { CountUp } from "./count-up";
 import { PhotoSlot } from "./photo-slot";
-import { VideoSlot } from "./video-slot";
 import { NextCaseScroll } from "./next-case-scroll";
-import { LiquidGlass } from "./liquid-glass";
 import { useCaseTransition } from "./transition-provider";
+import { CaseGalleryJourney } from "./case-motion/case-gallery";
+import { useCaseMotion } from "./case-motion/use-case-motion";
+import { caseMotion } from "@/lib/case-motion";
+import { CASE_PAGE_THEME } from "@/lib/case-presentation";
 import type { CaseAssets } from "@/lib/case-assets";
 
 export interface CaseTheme {
@@ -19,21 +21,9 @@ export interface CaseTheme {
   accent: string;
   accentSoft: string;
   line: string;
-  /** Glass tone for the case page. Derived from `bg` luminance when omitted:
-   *  white glass on dark backgrounds, smoked glass on mid-light ones (so light
-   *  ink keeps WCAG AA contrast over the panes). Set to force either. */
+  /** Legacy brand-surface metadata. Internal story presentation is configured
+   *  independently in lib/case-presentation.ts. */
   glass?: "light" | "dark";
-}
-
-/** WCAG relative luminance of a #rrggbb colour (null if not 6-digit hex). */
-function relLum(hex: string): number | null {
-  const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());
-  if (!m) return null;
-  const [r, g, b] = [0, 2, 4].map((i) => {
-    const c = parseInt(m[1].slice(i, i + 2), 16) / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 export interface CaseFonts {
@@ -76,13 +66,14 @@ export interface CaseData {
 }
 
 export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets }) {
-  const t = data.theme;
+  const root = useRef<HTMLDivElement>(null);
+  const profile = caseMotion(data.slug);
+  useCaseMotion(root, profile);
+  const nextProfile = caseMotion(data.next.href.split("/").pop() ?? "");
+  const t = CASE_PAGE_THEME;
   const startTransition = useCaseTransition();
-  // Smoked glass above bg luminance .09 (Girvaan .136, Jatubhai .143, High on
-  // Smiles .210); the other nine themes sit at or below .047 -> white glass.
-  const glass = t.glass ?? ((relLum(t.bg) ?? 0) > 0.09 ? "dark" : "light");
 
-  // Paint the whole page (incl. body / overscroll) in the case theme colour,
+  // Paint the whole page (incl. body / overscroll) in the internal-page colour,
   // then restore the cream default on unmount.
   useEffect(() => {
     // Start each case at the top so a scroll-to-next from the previous page
@@ -93,7 +84,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
     return () => {
       document.body.style.backgroundColor = prevBg;
     };
-  }, [t.bg]);
+  }, [data.slug, t.bg]);
 
   const themeVars = {
     "--c-bg": t.bg,
@@ -108,64 +99,58 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
     "--sans": data.fonts.sans,
   } as React.CSSProperties;
 
-  // Branded fallback for frames with no photo yet: the client's logo on a panel
-  // in the page's own colours (same logo + flags the featured cards use), so no
-  // page ever shows a drop-zone note to a visitor.
+  // Missing artwork uses a dark client identity on white; white/gold logo
+  // variants intended for the coloured cards would disappear here.
   const brand = {
     logo: data.logo ?? `/logos/${data.slug}.png`,
-    logoTint: data.logoTint,
-    logoInvert: data.logoInvert,
+    logoTint: t.ink,
   };
 
-  // Give each case page a different gallery rhythm / spacing / alignment so the
-  // case studies don't all look like the same template. Deterministic per slug.
+  // Preserve the existing brief/section spacing variants. Motion is configured
+  // explicitly per brand in lib/case-motion.ts.
   const variant = ["a", "b", "c"][
     [...data.slug].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 3
   ];
 
   return (
-    <div className="case-page" data-case={data.slug} data-variant={variant} data-glass={glass} style={themeVars}>
-      {/* The liquid under the glass: the page's own colours drifting behind every
-          frosted .glass surface below (see docs/adr/0002). */}
-      <LiquidGlass />
-
+    <div ref={root} className="case-page case-cinematic" data-form={profile.form} data-case={data.slug} data-variant={variant} data-glass="light" data-presentation="white" style={themeVars}>
       {/* HERO */}
       <header className="case-hero" data-screen-label={`${data.slug} - Hero`}>
         <div className="case-wrap case-hero-in">
-          {/* Desktop: copy on the left, the creative on the right, bottom-aligned
-              on one baseline so the whole hero sits in the first screen. Phones
-              and tablets stack. */}
+          {/* Desktop pairs the copy with the original-ratio artwork. Touch
+              layouts stack; each page owns its opening choreography. */}
           <div className="case-hero-copy">
-            <Reveal className="case-eyebrow">
+            <div className="case-eyebrow">
               <i /> {data.eyebrow}
-            </Reveal>
-            <Reveal as="h1" className="case-title">
+            </div>
+            <h1 className="case-title">
               {data.title}
-            </Reveal>
-            <Reveal as="p" className="case-sub">
+            </h1>
+            <p className="case-sub">
               {data.sub}
-            </Reveal>
-            <Reveal className="case-meta glass">
+            </p>
+            <div className="case-meta">
               {data.meta.map((m) => (
                 <div className="m" key={m.label}>
                   <h4>{m.label}</h4>
                   <p>{m.value}</p>
                 </div>
               ))}
-            </Reveal>
+            </div>
+            <a className="case-explore" href="#case-work">Explore the work <span aria-hidden="true">↓</span></a>
           </div>
-          {/* With a real creative: the full 9:16 post, centred and height-capped.
-              Without one: a wide branded panel across the wrap (is-fallback) -
-              a designed hero visual rather than an empty phone. */}
-          <Reveal className={`case-hero-fig glass glass-media${assets.hero ? "" : " is-fallback"}`}>
+          {/* Actual artwork keeps its measured aspect ratio. Missing campaign
+              assets use the existing client identity rather than a blank frame. */}
+          <div className={`case-hero-fig${assets.hero ? "" : " is-fallback"}`} style={{ "--hero-ratio": assets.heroRatio ?? .8 } as React.CSSProperties}><div className="case-hero-media">
             <PhotoSlot
-              src={assets.hero ? `/work/${data.slug}/hero.jpg` : undefined}
-              radius={11}
-              placeholder={data.heroPlaceholder}
+              src={assets.heroSrc}
+              radius={18}
+              ratio={String(assets.heroRatio ?? .8)}
+              placeholder={data.card.name}
               priority
               {...brand}
             />
-          </Reveal>
+          </div></div>
         </div>
       </header>
 
@@ -196,42 +181,11 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
         </div>
       </section>
 
-      {/* APPROACH */}
-      <section className="case-sec">
-        <div className="case-wrap">
-          <Reveal className="case-tag">
-            <span>02 - The work</span>
-            <i className="ln" />
-          </Reveal>
-          <Reveal as="p" className="case-lead">
-            {data.approach.lead}
-          </Reveal>
-          <div className="case-gallery">
-            {data.approach.gallery.map((g, i) => (
-              <Reveal key={i} className={`g glass glass-media ${g.cls}`}>
-                {g.video ? (
-                  <VideoSlot src={g.video} placeholder={g.placeholder} radius={11} style={{ aspectRatio: g.ratio }} />
-                ) : (
-                  <PhotoSlot
-                    src={assets.photos[i] ? `/work/${data.slug}/${i + 1}.jpg` : undefined}
-                    placeholder={g.placeholder}
-                    radius={11}
-                    // A real photo takes its natural ratio (the hint only reserves
-                    // space); branded fallbacks all share one portrait ratio so
-                    // the grid rows stay level instead of ragged.
-                    ratio={assets.photos[i] ? g.ratio : "4/5"}
-                    caption={g.placeholder}
-                    {...brand}
-                  />
-                )}
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* A native gallery on touch/reduced motion; a pinned horizontal journey on desktop. */}
+      <div id="case-work"><CaseGalleryJourney data={data} assets={assets} /></div>
 
       {/* RESULTS */}
-      <section className="case-sec">
+      <section className="case-sec" id="case-results">
         <div className="case-wrap">
           <Reveal className="case-tag">
             <span>03 - The results</span>
@@ -263,11 +217,10 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
       {/* NEXT */}
       <section className="case-sec">
         <div className="case-wrap">
-          {/* Painted in the NEXT client's colours: a preview of where the wipe
-              (same `next.color`) is about to take the visitor. */}
+          {/* The next story keeps the same white surface and transition motion. */}
           <div
             className="case-next"
-            style={{ "--nx-bg": data.next.color, "--nx-ink": data.next.ink } as React.CSSProperties}
+            style={{ "--nx-bg": t.bg, "--nx-ink": t.ink } as React.CSSProperties}
           >
             <a
               className="nx"
@@ -279,8 +232,8 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
                 e.preventDefault();
                 startTransition({
                   href: data.next.href,
-                  color: data.next.color,
-                  ink: data.next.ink,
+                  color: t.bg,
+                  ink: t.ink,
                   label: data.next.name,
                 });
               }}
@@ -288,6 +241,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
               <div className="nx-l">{data.next.kicker}</div>
               <div className="nx-name">{data.next.name} ↗</div>
             </a>
+            {nextProfile.cover && <div className="case-next-art" aria-hidden="true"><PhotoSlot src={nextProfile.cover} fixedRatio="20/13" radius={15} /></div>}
             <Link className="case-btn" href="/start">
               Start your project ↗
             </Link>
@@ -298,8 +252,8 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
       <NextCaseScroll
         href={data.next.href}
         name={data.next.name}
-        color={data.next.color}
-        ink={data.next.ink}
+        color={t.bg}
+        ink={t.ink}
       />
     </div>
   );

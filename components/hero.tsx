@@ -31,15 +31,19 @@ export function Hero({ start }: { start: boolean }) {
   useEffect(() => {
     let alive = true;
     let raf = 0;
+    let timer = 0;
     const fonts = document.fonts?.ready ?? Promise.resolve();
-    const cap = new Promise<void>((r) => setTimeout(r, 900));
+    const cap = new Promise<void>((r) => { timer = window.setTimeout(r, 900); });
     Promise.race([fonts, cap]).then(() => {
+      if (!alive) return;
+      window.clearTimeout(timer);
       raf = requestAnimationFrame(() => {
         raf = requestAnimationFrame(() => alive && setCalm(true));
       });
     });
     return () => {
       alive = false;
+      window.clearTimeout(timer);
       cancelAnimationFrame(raf);
     };
   }, []);

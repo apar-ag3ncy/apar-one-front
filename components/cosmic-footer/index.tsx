@@ -27,6 +27,7 @@ function CosmicCanvas({ kind }: { kind:"galaxy"|"portrait"|"character" }) {
       timeout=window.setTimeout(()=>{runtime?.dispose();runtime=null;disposed=true;setStatus('fallback');},12000);
       try{
         const create=kind==='galaxy'?(await import('./galaxy-scene')).createGalaxy:kind==='character'?(await import('./character-scene')).createCharacter:(await import('./portrait-scene')).createPortrait;
+        if(kind==='character')await document.fonts.load('19px "APAR Argon"');
         if(disposed)return;
         runtime=create(host,()=>{if(!disposed){clearTimeout(timeout);setStatus('ready');}},fallback);
         runtime.progress(state.progress);

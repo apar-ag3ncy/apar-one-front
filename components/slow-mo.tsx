@@ -28,15 +28,16 @@ export function SlowMo() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
     const splits: SplitText[] = [];
     let alive = true;
     const ctx = gsap.context((self) => {
       // ---- 1) media parallax + slow zoom ---------------------------------------
       const imgs = Array.from(document.querySelectorAll<HTMLImageElement>(".img-slot > img")).filter(
-        (img) => !img.closest(".pin, .flow-project, .hero-beam, .footer, .nav, #intro")
+        (img) => !img.closest(".pin, .flow-project, .client-story, .case-page, .hero-beam, .footer, .nav, #intro")
       );
       for (const img of imgs) {
         const wrap = (img.closest(".frame, .si-fig, .img-slot") as HTMLElement) ?? img;
@@ -143,6 +144,8 @@ export function SlowMo() {
       for (const s of splits) s.revert();
       ctx.revert();
     };
+    });
+    return () => media.revert();
   }, [pathname]);
 
   return null;

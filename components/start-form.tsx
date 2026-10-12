@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AestheticDial, type DialOption } from "./aesthetic-dial";
 
@@ -48,6 +48,8 @@ export function StartForm() {
   const [sent, setSent] = useState<"" | "endpoint" | "mail">("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const request = useRef<AbortController | null>(null);
+  useEffect(() => () => { request.current?.abort(); request.current = null; }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,18 +72,25 @@ export function StartForm() {
 
     setBusy(true);
     setError("");
+    const controller = new AbortController();
+    request.current = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
     try {
       const res = await fetch(BRIEF_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(brief),
+        signal: controller.signal,
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
-      setSent("endpoint");
+      if (request.current === controller) setSent("endpoint");
     } catch {
-      setError(`We couldn't send the brief just now. Please try again, or email it to ${BRIEF_MAILTO}.`);
+      if (request.current === controller) setError(controller.signal.aborted
+        ? `The request is taking too long. Please try again, or email your brief to ${BRIEF_MAILTO}.`
+        : `We couldn't send the brief just now. Please try again, or email it to ${BRIEF_MAILTO}.`);
     } finally {
-      setBusy(false);
+      window.clearTimeout(timeout);
+      if (request.current === controller) { request.current = null; setBusy(false); }
     }
   };
 

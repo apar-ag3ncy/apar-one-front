@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Reveal } from "../reveal";
 import { PhotoSlot } from "../photo-slot";
+import { useFeaturedHover } from "./use-featured-hover";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 
 export function ProgressiveQuote({ id, label, text, explanation, dark = false }: {
@@ -67,25 +68,103 @@ export function ProgressiveQuote({ id, label, text, explanation, dark = false }:
 }
 
 const SELECTED = [
-  { slug: "chheda", src: "/work/chheda/hero.jpg", title: "Chheda Jewellers", type: "Identity · Campaigns", ratio: "9/16" },
-  { slug: "girvaan", src: "/work/girvaan/hero.jpg", title: "Girvaan", type: "Art direction · Brand storytelling", ratio: "9/16" },
-  { slug: "maison-mireyaa", src: "/work/maison-mireyaa/hero.jpg", title: "Maison Mireyaa", type: "Branding · Content", ratio: "4/5" },
-  { slug: "signi", src: "/work/signi/3.jpg", title: "Signi", type: "Product imagery · Campaigns", ratio: "4/5" },
-  { slug: "chheda", src: "/work/chheda/1.jpg", title: "Chheda Jewellers", type: "Campaign detail", ratio: "9/16" },
-  { slug: "girvaan", src: "/work/girvaan/1.jpg", title: "Girvaan", type: "Campaign detail", ratio: "9/16" },
-  { slug: "maison-mireyaa", src: "/work/maison-mireyaa/1.jpg", title: "Maison Mireyaa", type: "Floral storytelling", ratio: "4/5" },
-  { slug: "achal", src: "/work/achal/1.jpg", title: "Achal", type: "Real estate · Campaigns", ratio: "4/5" },
-  { slug: "signi", src: "/work/signi/1.jpg", title: "Signi", type: "Product imagery", ratio: "4/5" },
-  { slug: "chheda", src: "/work/chheda/2.jpg", title: "Chheda Jewellers", type: "Festive creative", ratio: "9/16" },
-  { slug: "girvaan", src: "/work/girvaan/2.jpg", title: "Girvaan", type: "Brand storytelling", ratio: "9/16" },
-  { slug: "maison-mireyaa", src: "/work/maison-mireyaa/3.jpg", title: "Maison Mireyaa", type: "Editorial content", ratio: "4/5" },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-banner.webp",
+    "title": "Chheda Jewellers",
+    "type": "Campaign direction",
+    "ratio": "1920/1080"
+  },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-heritage.webp",
+    "title": "Chheda Jewellers",
+    "type": "Heritage collection",
+    "ratio": "2000/1334"
+  },
+  {
+    "slug": "achal",
+    "src": "/work/featured/achal-one-signage.webp",
+    "title": "Achal One",
+    "type": "Brand identity",
+    "ratio": "2000/1200"
+  },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-classic.webp",
+    "title": "Chheda Jewellers",
+    "type": "Collection campaign",
+    "ratio": "1996/1400"
+  },
+  {
+    "slug": "a-paramount",
+    "src": "/work/featured/paramount-ceiling.webp",
+    "title": "A Paramount",
+    "type": "Architectural craft",
+    "ratio": "1875/1400"
+  },
+  {
+    "slug": "maison-mireyaa",
+    "src": "/work/featured/mireyaa-botanical.webp",
+    "title": "Maison Mireyaa",
+    "type": "Botanical identity",
+    "ratio": "1980/1400"
+  },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-diamond.webp",
+    "title": "Chheda Jewellers",
+    "type": "Diamond collection",
+    "ratio": "2000/1334"
+  },
+  {
+    "slug": "achal",
+    "src": "/work/featured/achal-one-interior.webp",
+    "title": "Achal One",
+    "type": "Identity in context",
+    "ratio": "2000/1125"
+  },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-bridal.webp",
+    "title": "Chheda Jewellers",
+    "type": "Bridal collection",
+    "ratio": "2000/1334"
+  },
+  {
+    "slug": "achal",
+    "src": "/work/featured/achal-one-emblem.webp",
+    "title": "Achal One",
+    "type": "Brand system",
+    "ratio": "2000/1200"
+  },
+  {
+    "slug": "chheda",
+    "src": "/work/featured/chheda-red.webp",
+    "title": "Chheda Jewellers",
+    "type": "Editorial campaign",
+    "ratio": "2000/1334"
+  },
+  {
+    "slug": "achal",
+    "src": "/work/featured/achal-one-space.webp",
+    "title": "Achal One",
+    "type": "Environmental branding",
+    "ratio": "2000/1125"
+  }
 ];
 export function FeaturedProjects() {
+  const grid = useRef<HTMLDivElement>(null);
+  useFeaturedHover(grid);
   return <section id="featured-work" className="flow-featured flow-section"><div className="wrap">
-    <div className="flow-heading"><div><span className="flow-kicker">02 / Featured work</span><Reveal as="h2">Different worlds.<br /><em>One considered approach.</em></Reveal></div><p>A closer look at our brands, campaigns and creative details. Strategy and craft, made visible.</p></div>
-    <div className="flow-project-grid">{SELECTED.map((project, i) => <Reveal as={Link} href={`/work/${project.slug}`} className="flow-project" style={{ maxWidth: project.ratio === "9/16" ? 247.5 : 352 }} key={project.src} i={i % 2}>
-      <div className="flow-project-image"><PhotoSlot src={project.src} placeholder={`${project.title} campaign`} ratio={project.ratio} radius={0} style={{ width: "100%" }} /></div>
-      <div className="flow-project-caption"><h3>{project.title}</h3><span>{project.type}</span><i className="flow-project-arrow" aria-hidden="true">↗</i></div>
+    <div className="flow-heading"><Reveal as="h2">Featured Work</Reveal><p>A selection of brand identities, campaigns and digital experiences created for ambitious brands.</p></div>
+    <div ref={grid} className="flow-project-grid">{SELECTED.map((project, i) => <Reveal as={Link} href={`/work/${project.slug}`} className="flow-project" key={project.src} i={i % 2}>
+      <div className="flow-project-image"><PhotoSlot src={project.src} placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} /></div>
+      <div className="flow-project-caption"><span>{project.type}</span>
+        <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true">→</i>
+          <span aria-hidden="true">{project.title.split(" ").map((word, wi) => <span key={wi} className="flow-title-word">{[...word].map((letter, li) => <span className="flow-letter-window" key={li}><span className="flow-letter-stack"><span>{letter}</span><span>{letter}</span></span></span>)}{wi < project.title.split(" ").length - 1 ? " " : ""}</span>)}</span>
+        </h3>
+      </div>
     </Reveal>)}</div>
     <div className="flow-project-end"><Link className="btn ink" href="/clients"><span>See all projects</span><span className="arr" aria-hidden="true">↗</span></Link></div>
   </div></section>;

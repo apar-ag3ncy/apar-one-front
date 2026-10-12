@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 // the segment layout carries its title/description instead. Case pages under
 // /work/[slug] set their own via generateMetadata and override this.
 export const metadata: Metadata = {
-  title: "Work - APAR Digital Marketing Agency",
+  title: "Work — APAR AGENTIVE CREACY",
   description:
     "Selected work by APAR - identities, campaigns and content engines for jewellery houses and ambitious lifestyle brands.",
 };

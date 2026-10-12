@@ -28,6 +28,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
     let sampleCtx: CanvasRenderingContext2D | null = null;
     let width = 0, height = 0, raf = 0, inside = false;
     let sampledSource = "";
+    let sampledPosition = "";
     let pointerX = 0, pointerY = 0;
     let points: { x: number; y: number; time: number }[] = [];
 
@@ -81,9 +82,10 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
       const scale = Math.max(0.1, Math.hypot(matrix.a, matrix.b));
 
       if (inside && !host.contains(document.elementFromPoint(pointerX, pointerY))) leave();
-      if (w !== width || h !== height || sampledSource !== img.currentSrc) {
+      if (w !== width || h !== height || sampledSource !== img.currentSrc || sampledPosition !== style.objectPosition) {
         width = w; height = h;
         sampledSource = img.currentSrc;
+        sampledPosition = style.objectPosition;
         points = [];
         const dpr = Math.min(devicePixelRatio || 1, 1.5);
         canvas.width = Math.round(w * dpr);
@@ -92,10 +94,14 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
         canvas.style.height = `${h}px`;
         sample.width = Math.ceil(w / CELL_X);
         sample.height = Math.ceil(h / CELL_Y);
-        // Both photo components use object-fit: cover and a centered crop.
+        // Sample the same cover crop and alignment as the displayed photograph.
         const fit = Math.max(w / img.naturalWidth, h / img.naturalHeight);
         const sourceW = w / fit, sourceH = h / fit;
-        sampleCtx.drawImage(img, (img.naturalWidth - sourceW) / 2, (img.naturalHeight - sourceH) / 2,
+        const position = style.objectPosition.split(" ");
+        const fraction = (value: string | undefined) => value?.endsWith("%")
+          ? Math.max(0, Math.min(1, parseFloat(value) / 100)) : 0.5;
+        sampleCtx.drawImage(img, (img.naturalWidth - sourceW) * fraction(position[0]),
+          (img.naturalHeight - sourceH) * fraction(position[1]),
           sourceW, sourceH, 0, 0, w / CELL_X, h / CELL_Y);
       }
       points = points.filter(p => now - p.time < LIFE);

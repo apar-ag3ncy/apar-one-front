@@ -17,7 +17,7 @@ export function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
 
-  // A wheel notch starts a ~1.7s glide. If a route changes mid-glide, Next
+  // A wheel notch starts a glide. If a route changes mid-glide, Next
   // scrolls the new page to the top natively but Lenis ignores that while it
   // animates and writes the OLD page's offset back on the next tick - the
   // destination opened scrolled down. Reset the glide before Next's own scroll
@@ -34,9 +34,10 @@ export function SmoothScroll() {
   }, [pathname]);
 
   useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
     gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+    let alive = true;
     // Duration/easing (time-based) instead of lerp (frame-based): on a busy
     // machine that drops frames, a fixed lerp steps unevenly and reads as a
     // stuttery "catching-up" scroll. Time-based easing stays a consistent glide
@@ -73,22 +74,34 @@ export function SmoothScroll() {
     ScrollTrigger.addEventListener("refresh", onRefresh);
     const onLoad = () => ScrollTrigger.refresh();
     window.addEventListener("load", onLoad);
-    document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
+    document.fonts?.ready.then(() => { if (alive) ScrollTrigger.refresh(); }).catch(() => {});
 
     // same-page hash links glide via Lenis instead of jumping
     const onClick = (ev: MouseEvent) => {
+      if (ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
       const a = (ev.target as HTMLElement).closest?.("a[href*='#']") as HTMLAnchorElement | null;
-      if (!a) return;
+      if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       const url = new URL(a.href, location.href);
       if (url.pathname !== location.pathname || !url.hash) return;
-      const target = document.querySelector(url.hash);
+      let target: HTMLElement | null = null;
+      try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
       if (!target) return;
+      // The menu owns the lock; let its Next link handle navigation after close.
+      if (lenis.isStopped) return;
       ev.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -70 });
+      // Keyboard focus / browser scrollIntoView can move the real viewport
+      // while a glide still holds its old animatedScroll. Element targets use
+      // that cached value, so reconcile it before calculating the destination.
+      lenis.stop(); lenis.start();
+      // Lenis already honours scroll-margin-top. Adding a nav offset as well
+      // left case-page anchors 150px down the screen instead of at the gutter.
+      const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      lenis.scrollTo(target, { offset: margin ? 0 : -70 });
     };
     document.addEventListener("click", onClick);
 
     return () => {
+      alive = false;
       document.removeEventListener("click", onClick);
       ScrollTrigger.removeEventListener("refresh", onRefresh);
       window.removeEventListener("load", onLoad);
@@ -97,6 +110,8 @@ export function SmoothScroll() {
       lenisRef.current = null;
       lenis.destroy();
     };
+    });
+    return () => media.revert();
   }, []);
 
   return null;

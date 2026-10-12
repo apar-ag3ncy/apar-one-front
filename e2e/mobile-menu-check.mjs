@@ -79,7 +79,10 @@ async function scenario(page, label, { scrollTo = 0 } = {}) {
 }
 
 const run = async () => {
-  const browser = await chromium.launch({ channel: "chrome", headless: false });
+  const browser = await chromium.launch({
+    ...(process.env.PW_EXECUTABLE ? { executablePath: process.env.PW_EXECUTABLE } : { channel: "chrome" }),
+    headless: process.env.HEADLESS === "1",
+  });
   const ctx = await browser.newContext({
     viewport: { width: 390, height: 844 },
     hasTouch: true,

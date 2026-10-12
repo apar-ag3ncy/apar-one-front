@@ -18,6 +18,13 @@ export function CountUp({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    let frame = 0;
+    let alive = true;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+    if (reduced.matches || duration <= 0) {
+      el.textContent = to.toFixed(dec) + suffix;
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -26,6 +33,8 @@ export function CountUp({
           const t0 = performance.now();
           let lastWrite = -Infinity;
           const step = (now: number) => {
+            if (!alive) return;
+            if (reduced.matches) { el.textContent = to.toFixed(dec) + suffix; return; }
             const p = Math.min(1, (now - t0) / duration);
             if (p < 1) {
               if (now - lastWrite >= 80) {
@@ -33,23 +42,23 @@ export function CountUp({
                 const eased = 1 - Math.pow(1 - p, 3);
                 el.textContent = (to * eased).toFixed(dec) + suffix;
               }
-              requestAnimationFrame(step);
+              frame = requestAnimationFrame(step);
             } else {
               el.textContent = to.toFixed(dec) + suffix;
             }
           };
-          requestAnimationFrame(step);
+          frame = requestAnimationFrame(step);
         });
       },
       { threshold: 0.5 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => { alive = false; cancelAnimationFrame(frame); io.disconnect(); };
   }, [to, suffix, duration, dec]);
 
   return (
     <span ref={ref} style={{ fontVariantNumeric: "tabular-nums" }}>
-      0
+      {to.toFixed(dec)}{suffix}
     </span>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
 /**
  * Magnetic wrapper - pulls its child toward the pointer, then springs back.
@@ -17,12 +17,18 @@ export function Magnetic({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.4 });
   const sy = useSpring(y, { stiffness: 200, damping: 18, mass: 0.4 });
   const centerRef = useRef<{ x: number; y: number } | null>(null);
   const dirtyRef = useRef(true);
+
+  useEffect(() => {
+    if (reduced) { x.set(0); y.set(0); }
+    dirtyRef.current = true;
+  }, [reduced, x, y]);
 
   useEffect(() => {
     const markDirty = () => {
@@ -49,6 +55,7 @@ export function Magnetic({
   };
 
   const onMove = (e: React.MouseEvent) => {
+    if (reduced) return;
     if (dirtyRef.current || !centerRef.current) measure();
     const c = centerRef.current;
     if (!c) return;
@@ -65,7 +72,7 @@ export function Magnetic({
     <motion.div
       ref={ref}
       className={className}
-      style={{ x: sx, y: sy, display: "inline-flex" }}
+      style={{ x: reduced ? 0 : sx, y: reduced ? 0 : sy, display: "inline-flex" }}
       onMouseEnter={measure}
       onMouseMove={onMove}
       onMouseLeave={reset}

@@ -8,12 +8,8 @@ import { getLenis } from "@/lib/scroll-state";
 import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
 
-// Routes with a dark hero - the nav flips to cream (matches the design's
-// data-nav="dark"). Home's beam landing is dark. Every case study under
-// /work/<slug> paints the page in the client's own (dark or mid-tone) palette
-// with light ink, so they are matched by pattern rather than listed one by one
-// - the old fixed list only knew two of the twelve and left the ink nav
-// unreadable on the rest.
+// Dark landing routes use light navigation. Internal client stories now share
+// white surfaces and use the normal dark navigation treatment.
 const DARK_ROUTES = new Set(["/", "/team", "/start", "/creative/reel-cover", "/creative/exploded-ring"]);
 const isCasePage = (path: string) => /^\/work\/[^/]+$/.test(path);
 
@@ -31,7 +27,7 @@ export function Nav() {
   const scrolledRef = useRef(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const onDark = DARK_ROUTES.has(pathname) || isCasePage(pathname);
+  const onDark = DARK_ROUTES.has(pathname);
 
   useEffect(() => {
     const onScroll = () => {
@@ -81,7 +77,7 @@ export function Nav() {
 
   return (
     <>
-      <header className={cn("nav", onDark && "on-dark", scrolled && "scrolled", open && "menu-open")}>
+      <header className={cn("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
           <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
             <AparLogo onDark={onDark} />

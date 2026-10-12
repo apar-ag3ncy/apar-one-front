@@ -59,7 +59,7 @@ export function createCharacter(host: HTMLElement, ready: () => void, failed: ()
   const atlasCanvas = document.createElement("canvas"); atlasCanvas.width = 256; atlasCanvas.height = 128;
   const context = atlasCanvas.getContext("2d");
   if (context) {
-    context.fillStyle = "white"; context.font = "19px monospace";
+    context.fillStyle = "white"; context.font = '19px "APAR Argon"';
     context.textAlign = "center"; context.textBaseline = "middle";
     const chars = "APAR0123456789<>+*:;/[]{}|=~!?XYZ";
     for (let i = 0; i < 32; i++) context.fillText(chars[i % chars.length], (i % 8) * 32 + 16, Math.floor(i / 8) * 32 + 16);

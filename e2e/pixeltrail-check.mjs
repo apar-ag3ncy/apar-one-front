@@ -57,7 +57,10 @@ const stroke = async (page) => {
 };
 
 const run = async () => {
-  const browser = await chromium.launch({ channel: "chrome", headless: false });
+  const browser = await chromium.launch({
+    ...(process.env.PW_EXECUTABLE ? { executablePath: process.env.PW_EXECUTABLE } : { channel: "chrome" }),
+    headless: process.env.HEADLESS === "1",
+  });
   const context = await browser.newContext({
     viewport: { width: VW, height: VH },
     reducedMotion: "no-preference",

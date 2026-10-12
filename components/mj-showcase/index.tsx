@@ -14,12 +14,17 @@ export function MJShowcase() {
   const stage = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<Scene | null>(null);
-  const motion = useRef({ burst: 0, baseYaw: -.12, yaw: 0, pitch: 0, hoverYaw: 0, hoverPitch: 0 });
+  const motion = useRef({ burst: 1, progress: 0, baseYaw: -.12, yaw: 0, pitch: 0, hoverYaw: 0, hoverPitch: 0 });
+  const phaseRef = useRef(0);
+  const [phase, setPhase] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [status, setStatus] = useState<"preview" | "loading" | "ready" | "fallback">("preview");
   const [requested, setRequested] = useState(false);
   const paint = () => {
     stage.current?.style.setProperty("--diamond-burst", String(motion.current.burst));
+    if (track.current) track.current.dataset.burst = motion.current.burst.toFixed(3);
+    const next = motion.current.progress < .37 ? 0 : motion.current.progress > .7 ? 2 : 1;
+    if (phaseRef.current !== next) { phaseRef.current = next; setPhase(next); }
     scene.current?.render();
   };
 
@@ -35,10 +40,32 @@ export function MJShowcase() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(motion.current, { burst: 0 }, {
-        burst: 0.86, ease: "none", onUpdate: paint,
-        scrollTrigger: { trigger: el, start: "top 100px", end: "bottom bottom", scrub: 0.65, invalidateOnRefresh: true },
+      let refreshFrame = 0;
+      Object.assign(motion.current, { burst: 1, progress: 0, baseYaw: -.12 });
+      // Keep the client's three chapters, timing and camera choreography.
+      const timeline = gsap.timeline({
+        defaults: { ease: "power2.inOut" }, onUpdate: paint,
+        scrollTrigger: {
+          trigger: el, start: "top 100px", end: "bottom bottom", scrub: 1.1,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            cancelAnimationFrame(refreshFrame);
+            refreshFrame = requestAnimationFrame(paint);
+          },
+        },
       });
+      timeline.addLabel("scatter", 0)
+        .to(motion.current, { progress: 1, duration: 3.1, ease: "none" }, 0)
+        .to(motion.current, { burst: 0, duration: 1.25 }, .08)
+        .to(motion.current, { baseYaw: .08, duration: 1.95, ease: "none" }, 0)
+        .addLabel("gather", 1.6)
+        .addLabel("radiate", 2.1)
+        .to(motion.current, { burst: 1, baseYaw: .2, duration: 1 }, "radiate");
+      return () => cancelAnimationFrame(refreshFrame);
+    });
+    media.add("(prefers-reduced-motion: reduce)", () => {
+      Object.assign(motion.current, { burst: 0, progress: .5, baseYaw: -.12 });
+      paint();
     });
     return () => { io.disconnect(); media.revert(); };
   }, []);
@@ -59,7 +86,8 @@ export function MJShowcase() {
       if (disposed) return;
       runtime = createDiamondScene(el, motion.current,
         () => { window.clearTimeout(timeout); if (!disposed) setStatus("ready"); },
-        () => { window.clearTimeout(timeout); if (!disposed) setStatus("fallback"); });
+        () => { window.clearTimeout(timeout); if (!disposed) setStatus("fallback"); },
+        () => { window.clearTimeout(timeout); });
       scene.current = runtime;
     }).catch(() => { window.clearTimeout(timeout); if (!disposed) setStatus("fallback"); });
     return () => {
@@ -92,7 +120,7 @@ export function MJShowcase() {
     if (!requested) { setStatus("loading"); setRequested(true); }
     const next = !expanded;
     setExpanded(next);
-    gsap.to(motion.current, { burst: next ? .86 : 0,
+    gsap.to(motion.current, { burst: next ? 1 : 0, progress: next ? 1 : .5,
       duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1.8,
       ease: "power3.inOut", overwrite: "auto", onUpdate: paint });
   };
@@ -105,13 +133,13 @@ export function MJShowcase() {
             <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
           <p>A closer look at what we build. Explore the diamond burst created for Manish Jewellers — light, detail and motion, brought together.</p>
         </div>
-        <div ref={track} className="mj-scroll-track" id="diamond-experience"><div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
+        <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
           <div className="mj-showcase-label"><span>Manish Jewellers</span><span>Interactive brand experience / 01</span></div>
           <DiamondFallback />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">
-            <span role="status">{status === "loading" ? "Preparing the interactive scene…" : status === "fallback" ? "Preview mode · the diamond is still yours to explore" : expanded ? "Every facet, a different perspective." : "One diamond. A world of possibilities."}</span>
-            <span className="mj-scroll-cue">Scroll to scatter · reverse to gather</span>
+            <span role="status">{status === "loading" ? "Preparing the interactive scene…" : status === "fallback" ? "Preview mode · the diamond is still yours to explore" : ["01 / Scatter · Every facet, a different perspective.", "02 / Gather · One diamond. A world of possibilities.", "03 / Radiate · A legacy, revealed in light."][phase]}</span>
+            <span className="mj-scroll-cue">Scroll to gather, then radiate · reverse to return</span>
             <a href="#clients" className="mj-skip">Continue to clients ↓</a>
             <button type="button" className="btn cream mj-manual" onClick={toggle} aria-pressed={expanded} aria-label={expanded ? "Gather the diamond" : "Burst the diamond"}>
               <span>{expanded ? "Gather the diamond" : "Burst the diamond"}</span><span aria-hidden="true">{expanded ? "↙" : "↗"}</span>

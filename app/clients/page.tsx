@@ -5,7 +5,7 @@ import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
 
 export const metadata: Metadata = {
-  title: "Clients - APAR Digital Marketing Agency",
+  title: "Clients — APAR AGENTIVE CREACY",
   description: "The brands APAR works with - jewellery houses and lifestyle brands across India.",
 };
 

@@ -1,6 +1,22 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* The two supplied Argon cuts cover every UI weight without synthetic bold. */
+@font-face {
+  font-family: 'APAR Argon';
+  src: url('/fonts/argon/Argon-Regular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'APAR Argon';
+  src: url('/fonts/argon/Argon-Oblique.otf') format('opentype');
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" - the Latin half of
    the matched pair in /public/fit-devnagari/, sharing the SAME single `wdth` axis
    as the Devanagari (weight + height are baked into the cut). WOFF2 first so Safari
@@ -81,8 +97,8 @@
   --line-strong:rgba(26,23,20,.28);
   --gut:56px;
   --maxw:1320px;
-  --serif:'Newsreader',Georgia,serif;
-  --sans:'Archivo',system-ui,sans-serif;
+  --serif:'APAR Argon',sans-serif;
+  --sans:'APAR Argon',sans-serif;
   /* APAR wordmark = Fit (DJR), variable-width, across the 9 scripts it ships in.
      Real Fit (Adobe Fonts kit) wins; the logo's leading-"A" transition only
      renders a script live once its real Fit family is confirmed loaded - see
@@ -134,6 +150,7 @@ html.lenis,html.lenis body{height:auto;}
 body{
   margin:0;background:var(--cream);color:var(--ink);
   font-family:var(--sans);font-size:17px;line-height:1.6;
+  font-synthesis:none;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   overflow-x:clip;max-width:100vw;
 }
@@ -1204,7 +1221,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 }
 .vc-id{display:flex;flex-direction:column;gap:2px;}
 .vc-name{
-  font-family:var(--fit);font-weight:700;font-size:21px;line-height:1;
+  font-family:var(--sans);font-weight:400;font-size:21px;line-height:1;
   letter-spacing:.01em;color:var(--cream);
 }
 .vc-role{
@@ -1930,7 +1947,7 @@ input:checked + .rc-slider::before {
   border: 1px solid rgba(244, 237, 226, 0.06);
   padding: 16px;
   border-radius: 8px;
-  font-family: monospace;
+  font-family: var(--sans);
   font-size: 12px;
   overflow-x: auto;
   color: rgba(246, 197, 122, 0.95);
@@ -2417,18 +2434,18 @@ body:has(.mobile-menu.open) .next-pull{display:none;}
 .apar-people:has(.cosmic-canvas[data-status="ready"]) .people-fallback{opacity:0;}
 .people-top,.people-bottom,.people-edge{position:absolute;left:var(--gut);right:var(--gut);z-index:2;display:flex;justify-content:space-between;gap:32px;pointer-events:none;}
 .people-top{top:80px;align-items:flex-start;}
-.people-index{font:11px monospace;letter-spacing:.15em;color:#73909b;}
+.people-index{font:11px var(--sans);letter-spacing:.15em;color:#73909b;}
 .people-top>div{width:34%;}
 .people-top p{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#7f9ca8;margin:0 0 22px;line-height:1.6;}
 .people-top h1{font-family:var(--sans);font-size:clamp(36px,4.6vw,72px);font-weight:400;letter-spacing:.08em;white-space:nowrap;line-height:1.05;margin:0;color:#e3f0f4;}
-.people-reticle{position:absolute;left:var(--gut);right:var(--gut);top:46%;display:flex;justify-content:space-between;color:#66849166;font:20px monospace;pointer-events:none;}
+.people-reticle{position:absolute;left:var(--gut);right:var(--gut);top:46%;display:flex;justify-content:space-between;color:#66849166;font:20px var(--sans);pointer-events:none;}
 .people-bottom{bottom:110px;align-items:flex-end;}
 .people-identity{display:flex;align-items:flex-start;gap:12px;}
 .people-id-dot{color:#b9deef;font-size:27px;line-height:1;}
 .people-identity h3{font-family:var(--sans);font-size:20px;font-weight:500;line-height:1.3;margin:0 0 12px;}
 .people-identity p{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#88a1ad;margin:0;}
 .people-note{width:28%;font-size:14px;line-height:1.7;color:#94aeb9;margin:0;}
-.people-edge{bottom:30px;align-items:center;font:10px monospace;letter-spacing:.12em;color:#627f8d;}
+.people-edge{bottom:30px;align-items:center;font:10px var(--sans);letter-spacing:.12em;color:#627f8d;}
 .people-edge a{pointer-events:auto;margin-right:76px;min-height:44px;display:flex;align-items:center;color:#b9d3df;}
 @media(max-width:700px){
  .galaxy-art{height:560px;margin-top:28px;}
@@ -2511,7 +2528,7 @@ body:has(.cosmic-footer:hover) .pixel-trail,body:has(.apar-people:hover) .pixel-
 .hyperspace-bottom p{margin:10px 0 0;font-size:12px;color:#cce0ffb3;display:flex;gap:12px;align-items:center;}
 .hyperspace-resume{display:none;padding:7px 11px;font-size:11px;}
 [data-mode="manual"] .hyperspace-resume{display:inline-block;}
-.hyperspace-progress{width:clamp(100px,16vw,220px);font:10px ui-monospace,monospace;letter-spacing:.08em;flex-shrink:0;}
+.hyperspace-progress{width:clamp(100px,16vw,220px);font:10px var(--sans);letter-spacing:.08em;flex-shrink:0;}
 .hyperspace-percent{display:block;text-align:right;margin-bottom:14px;}
 .hyperspace-progress i{height:1px;display:block;background:#cce0ff33;overflow:hidden;}
 .hyperspace-progress-fill{display:block;height:100%;background:#cce0ff;transform:scaleX(0);transform-origin:left;}

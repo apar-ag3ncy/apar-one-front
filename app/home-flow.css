@@ -16,14 +16,24 @@
 .flow-heading h2{font:400 clamp(38px,5vw,72px)/1.06 var(--serif);letter-spacing:-.035em;margin-top:24px;}
 .flow-heading h2 em{color:var(--red);}
 .flow-heading>p{max-width:35ch;font-size:16px;line-height:1.75;color:var(--ink-soft);}
-.flow-project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:38px 24px;max-width:760px;margin-inline:auto;}
+/* Reference proportions: 5vw gutters, 44vw cards, 65% image height. */
+.flow-featured>.wrap{width:90%;max-width:none;padding-inline:0;}
+.flow-featured .flow-heading{grid-template-columns:minmax(0,1fr) minmax(220px,21vw);gap:4vw;margin-bottom:5vw;}
+.flow-featured .flow-heading h2{font-size:clamp(48px,8vw,160px);line-height:1.02;letter-spacing:-.04em;margin:0;}
+.flow-featured .flow-heading p{font-size:clamp(12px,1vw,16px);line-height:1.5;text-transform:uppercase;margin:0;}
+.flow-project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5.5vw 2vw;max-width:none;margin-inline:auto;}
 .flow-project{min-width:0;width:100%;display:block;justify-self:center;align-self:start;}
-.flow-project-image{position:relative;background:transparent;}
-.flow-project-arrow{position:absolute;top:20px;right:0;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:transparent;font-size:22px;font-style:normal;transition:background .25s,color .25s;}
-.flow-project:hover .flow-project-arrow{background:var(--red);color:white;}
-.flow-project-caption{position:relative;padding:20px 42px 0 0;display:flex;flex-direction:column;gap:8px;}
-.flow-project-caption h3{font:400 clamp(28px,3vw,40px)/1.15 var(--serif);}
-.flow-project-caption>span{font-size:12px;color:var(--ink-soft);}
+.flow-project-image{position:relative;aspect-ratio:20/13;background:transparent;border-radius:15px;overflow:hidden;}
+.flow-project .img-slot{border-radius:15px;}
+.flow-project:first-child .photo-slot-img{object-position:100% 50%;}
+.flow-project-caption{padding-top:1.5vw;display:flex;flex-direction:column;gap:8px;}
+.flow-project-caption h3{position:relative;font:400 clamp(20px,3vw,48px)/1.2 var(--sans);letter-spacing:-.025em;margin:0;}
+.flow-project-caption>span{font-size:clamp(10px,.9vw,14px);line-height:1.35;text-transform:uppercase;color:var(--ink);}
+.flow-project-arrow{position:absolute;top:0;left:0;display:block;font:inherit;font-style:normal;opacity:0;visibility:hidden;pointer-events:none;}
+.flow-title-word{display:inline-block;white-space:pre;}
+.flow-letter-window{display:inline-block;vertical-align:bottom;overflow:hidden;height:1.2em;}
+.flow-letter-stack{display:flex;flex-direction:column;line-height:1.2;}
+.flow-letter-stack>span{display:block;}
 .flow-project-end{display:flex;justify-content:center;padding-top:54px;}
 .meeting-home .mj-showcase{padding-top:60px;}
 .mj-scroll-track{height:230svh;position:relative;scroll-margin-top:100px;}
@@ -53,7 +63,8 @@
  .pq-sticky{padding-block:60px;min-height:72svh;}
  .progressive-quote h2{font-size:clamp(50px,10vw,80px);}
  .flow-heading{grid-template-columns:1fr;gap:22px;margin-bottom:30px;}
- .flow-project-grid{gap:34px 18px;}
+ .flow-featured .flow-heading{grid-template-columns:1fr;gap:24px;}
+ .flow-featured .flow-heading h2{font-size:clamp(48px,8vw,80px);}
  .flow-client-heading{flex-direction:column;gap:26px;margin-bottom:35px;}
  .flow-client-heading h2 br{display:none;}
  .flow-logo-group a{width:220px;height:125px;padding:20px 35px;}
@@ -62,10 +73,11 @@
  .mj-scroll-track{height:200svh;}
 }
 @media(max-width:560px){
- .flow-project-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 12px;}
- .flow-project-caption h3{font-size:21px;}
- .flow-project-caption>span{font-size:11px;line-height:1.5;}
- .flow-project-arrow{width:28px;height:28px;font-size:16px;top:18px;right:0;}
+ .flow-project-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 2vw;}
+ .flow-project-caption{padding-top:12px;gap:6px;}
+ .flow-project-caption h3{font-size:19px;}
+ .flow-project-caption>span{font-size:10px;line-height:1.4;}
+ .flow-project-image{border-radius:15px;}
  .progressive-quote p{font-size:15px;line-height:1.7;}
  .pq-sticky{padding-block:40px;}
  .flow-client-heading h2{font-size:39px;}

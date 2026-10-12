@@ -12,7 +12,7 @@ import { createRockMaterial } from "./rock-material";
 import { createRockMotion } from "./rock-motion";
 
 /** Render on demand. GSAP supplies the motion; this module never runs an idle animation loop. */
-export function createDiamondScene(host, state, onReady, onLost) {
+export function createDiamondScene(host, state, onReady, onLost, onPrepared = () => {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
   let crispPixelRatio = Math.min(window.devicePixelRatio, host.clientWidth < 768 ? 1.75 : 2);
   let pixelRatio = crispPixelRatio;
@@ -221,6 +221,11 @@ export function createDiamondScene(host, state, onReady, onLost) {
     .then(() => {
       if (disposed) return;
       mapsReady = true;
+      host.dataset.prepared = "true";
+      // Asset loading is complete even when the section is still offscreen.
+      // First-paint readiness is separate so lazy loading cannot time out
+      // merely because the visitor has paused above the showcase.
+      onPrepared();
       requestRender();
     })
     .catch(() => {

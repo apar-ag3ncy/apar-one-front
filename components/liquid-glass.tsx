@@ -40,7 +40,8 @@ export function LiquidGlass() {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!el) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const blobs = Array.from(el.querySelectorAll<HTMLElement>(".lg-blob"));
 
     let raf = 0;
@@ -64,7 +65,7 @@ export function LiquidGlass() {
       raf = requestAnimationFrame(frame);
     };
     const start = () => {
-      if (raf) return;
+      if (raf || document.hidden || reduced.matches) return;
       prev = 0;
       raf = requestAnimationFrame(frame);
     };
@@ -86,15 +87,18 @@ export function LiquidGlass() {
       }, IDLE_AFTER);
     };
     const onVisibility = () => (document.hidden ? stop() : scrolling ? undefined : start());
+    const onMotionChange = () => reduced.matches ? stop() : start();
 
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
+    reduced.addEventListener("change", onMotionChange);
     start();
     return () => {
       stop();
       window.clearTimeout(scrollTimer);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVisibility);
+      reduced.removeEventListener("change", onMotionChange);
     };
   }, []);
 
