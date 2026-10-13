@@ -48,7 +48,7 @@ export function Footer() {
     <footer className="footer cosmic-footer">
       <div className="wrap footer-inner">
         <div className="footer-row">
-          <Link className="footer-talk" href="/#contact" data-magnetic>
+          <Link className="footer-talk" href="/start" data-magnetic>
             <span className="circ">→</span> Let&apos;s talk
           </Link>
           <div className="footer-cols">
