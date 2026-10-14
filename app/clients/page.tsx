@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/reveal";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
+import { HoverText } from "@/components/hover-text";
 
 export const metadata: Metadata = {
   title: "Clients — APAR AGENTIVE CREACY",
@@ -17,7 +18,7 @@ const ROSTER = [
   { n: "05", name: "Achal", cat: "Real Estate", href: "/work/achal" },
   { n: "06", name: "Maison Mireyaa", cat: "Florist", href: "/work/maison-mireyaa" },
   { n: "07", name: "Kundan Jewellers", cat: "Jewellery", href: "/work/kundan-jewellers" },
-  { n: "08", name: "Harshit Gold", cat: "Jewellery" },
+  { n: "08", name: "Harshit Gold", cat: "Jewellery", href: "/work/harshit-gold" },
   { n: "09", name: "Jatubhai Velji Jewellers", cat: "Jewellery", href: "/work/jatubhai-velji" },
   { n: "10", name: "Tarava", cat: "Fine Silver", href: "/work/tarava" },
   { n: "11", name: "High on Smiles", cat: "Dental", href: "/work/high-on-smiles" },
@@ -27,7 +28,7 @@ const ROSTER = [
 
 export default function ClientsPage() {
   return (
-    <>
+    <main className="clients-page">
       <section className="page-hero" data-screen-label="Clients - Hero">
         <div className="wrap">
           <Reveal className="eyebrow">
@@ -38,7 +39,7 @@ export default function ClientsPage() {
           </Reveal>
           <Reveal as="p" className="lead" i={1}>
             From heritage jewellery houses to fast-moving lifestyle brands - a focused roster we
-            partner with closely. Our twelve featured stories lead the way.
+            partner with closely. Explore their stories below.
           </Reveal>
         </div>
       </section>
@@ -94,13 +95,13 @@ export default function ClientsPage() {
             </Reveal>
             <Reveal i={1}>
               <Link className="btn" href="/start">
-                <span>Start a project</span>
-                <span className="arr">↗</span>
+                <HoverText>Start a project</HoverText>
+                <span className="arr" aria-hidden="true">↗</span>
               </Link>
             </Reveal>
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

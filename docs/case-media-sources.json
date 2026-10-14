@@ -1,7 +1,10 @@
 {
   "sourceFolders": {
     "chheda": "Nav Chheda/akwork_cj-29-07-24_-edited_2024-08-12_1644",
-    "a-paramount": "final paramount assets"
+    "a-paramount": "final paramount assets",
+    "girvaan": "Girvaan products ",
+    "harshit-gold": "HARSHIT GOLD IMAGES",
+    "kundan-jewellers": "Kundan Jewellers - Jewellery "
   },
   "export": {
     "format": "webp",
@@ -154,6 +157,249 @@
       "height": 1800,
       "bytes": 265102,
       "sourceBytes": 5674360
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /06.jpg",
+      "file": "/work/girvaan/curated/pink-bangle-hero.webp",
+      "width": 1350,
+      "height": 1800,
+      "bytes": 131784,
+      "sourceBytes": 4972643
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /01.jpg",
+      "file": "/work/girvaan/curated/orchid-ring.webp",
+      "width": 1351,
+      "height": 1800,
+      "bytes": 277486,
+      "sourceBytes": 7182778
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /03.jpg",
+      "file": "/work/girvaan/curated/lotus-necklace.webp",
+      "width": 1351,
+      "height": 1800,
+      "bytes": 248146,
+      "sourceBytes": 6663589
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /04.jpg",
+      "file": "/work/girvaan/curated/petal-bracelet.webp",
+      "width": 1350,
+      "height": 1800,
+      "bytes": 213388,
+      "sourceBytes": 6312954
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /07.jpg",
+      "file": "/work/girvaan/curated/rose-ring.webp",
+      "width": 1351,
+      "height": 1800,
+      "bytes": 137724,
+      "sourceBytes": 2917547
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /08.jpg",
+      "file": "/work/girvaan/curated/peacock-ring.webp",
+      "width": 1350,
+      "height": 1800,
+      "bytes": 87474,
+      "sourceBytes": 3718976
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /005.jpg",
+      "file": "/work/girvaan/curated/sunburst-ring.webp",
+      "width": 1350,
+      "height": 1800,
+      "bytes": 156082,
+      "sourceBytes": 47744815
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /earring 4.png",
+      "file": "/work/girvaan/curated/emerald-earrings.webp",
+      "width": 2000,
+      "height": 1333,
+      "bytes": 418792,
+      "sourceBytes": 4853386
+    },
+    {
+      "slug": "girvaan",
+      "source": "Girvaan products /silver_6.png",
+      "file": "/work/girvaan/curated/emerald-necklace.webp",
+      "width": 1800,
+      "height": 1800,
+      "bytes": 385174,
+      "sourceBytes": 8116178
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/HARSHIT GOLD NEWSPAPER-01.jpg",
+      "file": "/work/harshit-gold/curated/campaign-portrait-hero.webp",
+      "width": 1333,
+      "height": 1800,
+      "bytes": 119894,
+      "sourceBytes": 1216329
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/3.jpg",
+      "file": "/work/harshit-gold/curated/polki-necklace.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 152740,
+      "sourceBytes": 977555
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/6.jpg",
+      "file": "/work/harshit-gold/curated/gold-necklace.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 214060,
+      "sourceBytes": 1271651
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/5.jpg",
+      "file": "/work/harshit-gold/curated/peacock-ring.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 180966,
+      "sourceBytes": 1010492
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/7.jpg",
+      "file": "/work/harshit-gold/curated/floral-ring.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 136778,
+      "sourceBytes": 817906
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/2.jpg",
+      "file": "/work/harshit-gold/curated/emerald-necklace.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 150006,
+      "sourceBytes": 1004201
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/Untitled-1.jpg",
+      "file": "/work/harshit-gold/curated/ruby-ring.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 248054,
+      "sourceBytes": 1163980
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/8.jpg",
+      "file": "/work/harshit-gold/curated/gold-brooch.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 128050,
+      "sourceBytes": 830475
+    },
+    {
+      "slug": "harshit-gold",
+      "source": "HARSHIT GOLD IMAGES/untitled folder/4.jpg",
+      "file": "/work/harshit-gold/curated/medallion-set.webp",
+      "width": 1296,
+      "height": 1800,
+      "bytes": 148492,
+      "sourceBytes": 1096198
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.36.jpeg",
+      "file": "/work/kundan-jewellers/curated/gold-pendant-hero.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 95204,
+      "sourceBytes": 98943
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.37 (1).jpeg",
+      "file": "/work/kundan-jewellers/curated/filigree-pendant.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 101722,
+      "sourceBytes": 106400
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.37 (2).jpeg",
+      "file": "/work/kundan-jewellers/curated/triangle-pendant.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 92498,
+      "sourceBytes": 99501
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.38 (1).jpeg",
+      "file": "/work/kundan-jewellers/curated/floral-set.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 57388,
+      "sourceBytes": 69364
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.38.jpeg",
+      "file": "/work/kundan-jewellers/curated/petal-set.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 71146,
+      "sourceBytes": 82272
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.39.jpeg",
+      "file": "/work/kundan-jewellers/curated/filigree-set.webp",
+      "width": 960,
+      "height": 1280,
+      "bytes": 160210,
+      "sourceBytes": 147459
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.41 (1).jpeg",
+      "file": "/work/kundan-jewellers/curated/ruby-flower-detail.webp",
+      "width": 1085,
+      "height": 984,
+      "bytes": 74084,
+      "sourceBytes": 83271
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.42 (2).jpeg",
+      "file": "/work/kundan-jewellers/curated/gold-earring-detail.webp",
+      "width": 780,
+      "height": 1280,
+      "bytes": 55510,
+      "sourceBytes": 65550
+    },
+    {
+      "slug": "kundan-jewellers",
+      "source": "Kundan Jewellers - Jewellery /WhatsApp Image 2026-09-26 at 12.59.42.jpeg",
+      "file": "/work/kundan-jewellers/curated/pendant-detail.webp",
+      "width": 968,
+      "height": 1222,
+      "bytes": 38952,
+      "sourceBytes": 48419
     }
   ]
 }

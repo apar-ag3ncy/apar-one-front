@@ -32,7 +32,7 @@ export function Faq() {
       <div className="wrap faq-wrap">
         <div className="faq-head">
           <div className="tag-line">
-            <span>07 / Good to know</span>
+            <span>06 / Good to know</span>
             <i className="ln" />
           </div>
           <Reveal as="h2" className="display d-md" style={{ marginTop: 26 }}>

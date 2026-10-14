@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HoverText } from "@/components/hover-text";
 
 export const metadata: Metadata = {
   title: "Page not found - APAR",
@@ -26,11 +27,11 @@ export default function NotFound() {
         </p>
         <div className="chip-row" style={{ marginTop: 34 }}>
           <Link className="btn" href="/">
-            <span>Back to home</span>
-            <span className="arr">↗</span>
+            <HoverText>Back to home</HoverText>
+            <span className="arr" aria-hidden="true">↗</span>
           </Link>
           <Link className="btn-ghost" href="/work">
-            See the work
+            <HoverText>See the work</HoverText>
           </Link>
         </div>
       </div>

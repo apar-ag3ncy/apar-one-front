@@ -8,6 +8,7 @@ import { PhotoSlot } from "./photo-slot";
 import { useCaseTransition } from "./transition-provider";
 import { featuredCardVars, type FeaturedClient } from "@/lib/cases";
 import { caseMotion } from "@/lib/case-motion";
+import { HoverText } from "./hover-text";
 
 /** A visible editorial caption, with a separate, brand-directed moving artwork layer. */
 export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number }) {
@@ -85,7 +86,7 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={client.logo} alt="" loading="lazy" draggable={false} />
           </span>
-          <span className="client-story-explore" aria-hidden="true">Explore the story <i>↗</i></span>
+          <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText><i>↗</i></span>
         </div>
         <div className="client-story-caption">
           <div className="client-story-meta"><span>{client.cat}</span><span>{client.year}</span></div>

@@ -1,11 +1,13 @@
 # Client story motion
 
-The twelve client stories share a GSAP lifecycle and keep their own colours,
+The thirteen client stories share a GSAP lifecycle and keep their own colours,
 copy, logos and artwork. The desktop gallery adapts the opening / horizontal
 journey / next-project rhythm of https://lusion.co/projects/spaace/. It uses
 APAR's assets rather than Lusion's scenes or shaders.
 
-Typography stays on the supplied Argon Regular / Oblique cuts. The existing
+Typography restores the original Newsreader / Archivo pairing and the earlier
+per-client font stacks. Newsreader and Archivo are hosted locally; optional
+client-specific typefaces retain their original system fallbacks. The existing
 APAR Fit wordmark and client logo artwork are separate brand assets.
 
 ## Ownership
@@ -43,8 +45,10 @@ The case template is `components/case-study.tsx`; regression entrypoints are
 Internal case pages use the shared white/black palette in
 `lib/case-presentation.ts`. Client listing cards retain `data.theme`; original
 images and the animated brand sculptures retain their colour. Case navigation,
-logo-only fallbacks, next-story panels and transition wipes follow the white
-palette. Coloured LiquidGlass backdrops are not mounted on these pages. Scroll,
+next-story panels and transition wipes follow the white palette. Logo-only
+fallbacks use the client's original palette and logo treatment through
+PhotoSlot's `logoSurface`; the background is removed when a real photo loads.
+Coloured LiquidGlass backdrops are not mounted on these pages. Scroll,
 hover and opening choreography continue to use the existing motion profiles.
 
 1. Add or edit its entry in `lib/cases.tsx`. Keep business claims approved.
@@ -79,6 +83,23 @@ whole photograph to its original angle/scale at the viewport centre and eases
 its caption in, then releases both on exit. Scrolling backwards reverses it.
 These profiles also give the hero a soft masked opening. Smaller viewports and
 reduced motion retain the complete, static photographs and native swipe rail.
+
+### Girvaan, Kundan Jewellers and Harshit Gold artwork
+
+Each story uses one supplied hero and eight whole product/campaign images in
+`public/work/<slug>/curated/`. Girvaan also retains its existing campaign film.
+The palettes and the shared white case-page layout remain unchanged. The
+existing photo motion profile applies to the new artwork without adding a
+second animation owner. Kundan's small supplied images are never upscaled.
+
+`scripts/export-brand-case-media.mjs` recreates the WebP exports from the three
+original folders and updates `case-media-sources.json`. The originals remain
+outside the published bundle. Harshit Gold's supplied Illustrator artboard
+provides its original vector logo; `/logos/harshit-gold.svg` contains those
+paths rather than a typeset substitute. Its collection page uses an editorial
+outcome and the supplied campaign line, with no fabricated results or client
+testimonial. The image-only story is excluded from the film rail until its own
+film is available. It is accessible from its Clients card and roster link.
 
 ## Verification
 
@@ -123,7 +144,7 @@ It saves results/screenshots to `/private/tmp/apar-case-motion` (or `OUTPUT`).
   without introducing animated backdrop blur.
 - Native rails reserve height for captions and controls as well as the image,
   keeping tall portrait artwork whole on phones and tablets.
-- The UI's local Argon and the existing local Fit wordmark no longer depend on
-  an unused Google fallback-font stylesheet.
+- The UI's original Newsreader / Archivo faces and the existing Fit wordmark
+  load locally without relying on a Google Fonts stylesheet.
 - A configured brief endpoint gets a 12-second deadline and cancels on unmount;
   the existing email handoff remains the fallback when no endpoint is configured.

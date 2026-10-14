@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { getLenis } from "@/lib/scroll-state";
 import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
+import { HoverText } from "./hover-text";
 
 // Dark landing routes use light navigation. Internal client stories now share
 // white surfaces and use the normal dark navigation treatment.
@@ -17,7 +18,7 @@ const LINKS = [
   { href: "/work", label: "Work" },
   { href: "/what-we-do", label: "What we do" },
   { href: "/clients", label: "Clients" },
-  { href: "/#manifesto", label: "Manifesto" },
+  { href: "/manifesto", label: "Manifesto" },
   { href: "/#studio", label: "Studio" },
   { href: "/#contact", label: "Contact" },
 ];
@@ -89,14 +90,14 @@ export function Nav() {
           </Link>
           <nav className="nav-links">
             {LINKS.map((l) => (
-              <Link key={l.href} href={l.href}>
-                {l.label}
+              <Link key={l.href} href={l.href} aria-current={!l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")) ? "page" : undefined}>
+                <HoverText>{l.label}</HoverText>
               </Link>
             ))}
           </nav>
           <Magnetic strength={0.25}>
             <Link className="nav-cta" href="/start" data-magnetic>
-              Start a project
+              <HoverText>Start a project</HoverText>
             </Link>
           </Magnetic>
           <button
@@ -121,10 +122,10 @@ export function Nav() {
         onClick={() => setOpen(false)}
       >
         <div className="mm-links">
-          <Link href="/">Home</Link>
+          <Link href="/"><HoverText>Home</HoverText></Link>
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href}>
-              {l.label}
+              <HoverText>{l.label}</HoverText>
             </Link>
           ))}
         </div>

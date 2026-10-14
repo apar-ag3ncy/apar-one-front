@@ -9,7 +9,9 @@
     "lint": "next lint",
     "test:pixeltrail": "node e2e/pixeltrail-check.mjs",
     "test:mobile": "node e2e/mobile-menu-check.mjs",
-    "test:cases": "node e2e/case-motion-check.mjs"
+    "test:cases": "node e2e/case-motion-check.mjs",
+    "test:polish": "node e2e/site-polish-check.mjs",
+    "test:manifesto": "node e2e/manifesto-check.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.6.7",

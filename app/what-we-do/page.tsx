@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
+import { HoverText } from "@/components/hover-text";
 
 export const metadata: Metadata = {
   title: "What we do — APAR AGENTIVE CREACY",
@@ -13,22 +14,25 @@ const PILLARS = [
     num: "01",
     name: "We build the brand",
     desc: "Identity, positioning and the whole visual world a brand lives in - crafted to be impossible to ignore, and built to last.",
+    deliverables: ["Brand strategy", "Visual identity", "Art direction"],
   },
   {
     num: "02",
     name: "We run the marketing",
     desc: "Strategy, campaigns and performance - measured, not guessed. We turn attention into growth, season after season.",
+    deliverables: ["Campaign strategy", "Creative production", "Performance marketing"],
   },
   {
     num: "03",
     name: "We manage the socials",
     desc: "We hold the handles. Content, community and calendar for our clients' feeds - showing up daily, on-brand, in culture.",
+    deliverables: ["Content planning", "Community", "Social campaigns"],
   },
 ];
 
 export default function WhatWeDoPage() {
   return (
-    <>
+    <main className="services-page">
       <section className="page-hero" data-screen-label="What we do - Hero">
         <div className="wrap">
           <Reveal className="eyebrow">
@@ -51,45 +55,27 @@ export default function WhatWeDoPage() {
             <span>How we help</span>
             <i className="ln" />
           </div>
-          <div style={{ marginTop: 40 }}>
+          <div className="service-pillars">
             {PILLARS.map((p, i) => (
               <Reveal
                 key={p.num}
                 i={i}
-                className="wwd-pillar"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "clamp(44px,5vw,72px) 1fr",
-                  gap: "clamp(16px,3vw,40px)",
-                  padding: "clamp(26px,3.4vw,40px) 6px",
-                  borderTop: i === 0 ? "none" : "1px solid var(--line)",
-                  alignItems: "baseline",
-                }}
+                className="service-pillar"
               >
-                <span
-                  style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: 20, color: "var(--ink-mid)" }}
-                >
+                <span className="service-number">
                   {p.num}
                 </span>
                 <div>
-                  <h3
-                    className="display"
-                    style={{ fontSize: "clamp(26px,3vw,40px)", lineHeight: 1.05, letterSpacing: "-0.01em", margin: 0 }}
-                  >
+                  <h3 className="display">
                     {p.name}
                   </h3>
-                  <p
-                    style={{
-                      fontSize: "clamp(15px,1.15vw,17px)",
-                      lineHeight: 1.6,
-                      color: "var(--ink-soft)",
-                      maxWidth: "50ch",
-                      margin: "14px 0 0",
-                    }}
-                  >
+                  <p>
                     {p.desc}
                   </p>
                 </div>
+                <ul className="service-deliverables" aria-label={`${p.name} includes`}>
+                  {p.deliverables.map(item => <li key={item}>{item}</li>)}
+                </ul>
               </Reveal>
             ))}
           </div>
@@ -126,6 +112,7 @@ export default function WhatWeDoPage() {
                 and the numbers underneath. Strategy and craft, under one roof, with a human
                 directing every decision.
               </p>
+              <Link className="btn-ghost service-team-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true">↗</span></Link>
             </Reveal>
           </div>
         </div>
@@ -140,13 +127,13 @@ export default function WhatWeDoPage() {
             </Reveal>
             <Reveal i={1}>
               <Link className="btn" href="/start">
-                <span>Start a project</span>
-                <span className="arr">↗</span>
+                <HoverText>Start a project</HoverText>
+                <span className="arr" aria-hidden="true">↗</span>
               </Link>
             </Reveal>
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

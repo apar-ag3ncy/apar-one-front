@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import { chromium } from "playwright";
 
 const base = process.env.URL || "http://127.0.0.1:3021";
+const imageStories = { "/work/chheda": 8, "/work/a-paramount": 8, "/work/girvaan": 9, "/work/kundan-jewellers": 8, "/work/harshit-gold": 8 };
 const output = process.env.OUTPUT || "/private/tmp/apar-case-motion";
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -50,7 +51,7 @@ const whiteStory = () => page.evaluate(() => {
     && colour(".case-next", "backgroundColor") === "rgb(255, 255, 255)"
     && !document.querySelector(".nav.on-dark, .case-page .lg-backdrop")
     && [...document.querySelectorAll(".case-title, .case-title em, .case-eyebrow, .case-sub, .case-meta h4, .case-meta p, .case-tag, .case-lead em, .case-cols h3, .case-cols p, .case-list li, .case-reel-intro h2 em, .case-reel-panel figcaption, .case-stat .n, .case-stat .l, .case-quote blockquote, .case-quote em, .case-quote .by, .case-next .nx-name, .case-next .nx-l, .nav-links a")].every(darkInk)
-    && [...document.querySelectorAll(".case-ph-mask")].every(el => getComputedStyle(el).backgroundColor === "rgb(17, 17, 17)");
+    && [...document.querySelectorAll(".case-page .has-brand")].every(el => el.dataset.logoSurface === "brand" && el.style.background.includes("linear-gradient"));
 });
 const heroKeepsRatio = () => page.locator(".case-hero-fig").evaluate(frame => {
   const image = frame.querySelector(".photo-slot-img");
@@ -76,7 +77,7 @@ const check = async (name, test) => {
 try {
   await page.goto(base + "/clients", { waitUntil: "load" });
   const allRoutes = await page.locator(".client-story-link").evaluateAll(links => links.map(link => new URL(link.href).pathname));
-  assert.equal(allRoutes.length, 12);
+  assert.equal(allRoutes.length, 13);
   const routes = process.env.CASE_FILTER ? allRoutes.filter(route => new RegExp(process.env.CASE_FILTER).test(route)) : allRoutes;
   await check("client card hover and keyboard focus", async () => {
     const card = page.locator(".client-story-link").first();
@@ -107,8 +108,8 @@ try {
     assert(await heroKeepsRatio(), "Hero artwork must retain its original proportions");
     assert.equal(await page.locator(".case-reel-panel").count() > 0, true);
     if (process.env.THEME_ONLY) return;
-    if (["/work/chheda", "/work/a-paramount"].includes(route)) {
-      assert.equal(await page.locator(".case-reel-panel").count(), 8);
+    if (imageStories[route]) {
+      assert.equal(await page.locator(".case-reel-panel").count(), imageStories[route]);
       assert.equal(await page.locator(".case-reel-panel.is-identity").count(), 0, "Supplied image stories must contain no logo-only gallery panels");
       await page.screenshot({ path: output + `/${route.split("/").pop()}-opening.png` });
     }
@@ -124,23 +125,24 @@ try {
     await page.getByRole("button", { name: "Next artwork", exact: true }).click(); await settle();
     assert((await geometry()).progress > 0);
     assert.deepEqual((await geometry()).brokenImages, []);
-    if (["/work/chheda", "/work/a-paramount"].includes(route)) {
+    if (imageStories[route]) {
       await page.waitForFunction(() => [...document.querySelectorAll(".case-reel-panel .photo-slot-img")].every(image => image.complete && image.naturalWidth > 0));
       await page.screenshot({ path: output + `/${route.split("/").pop()}-gallery.png` });
     }
     // Representative full journeys cover mixed artwork widths and the actual
     // film panel, as well as the beginning/end scroll tests on every story.
-    if (["/work/maison-mireyaa", "/work/girvaan", "/work/chheda", "/work/a-paramount"].includes(route)) {
+    if (route === "/work/maison-mireyaa" || imageStories[route]) {
       const total = await page.locator(".case-reel-panel").count();
       for (let i = 0; i <= total; i++) {
         await page.getByRole("button", { name: "Next artwork", exact: true }).click(); await settle();
       }
       assert.equal(Number((await geometry()).count), total, "The last artwork must be selectable and counted");
-      if (["/work/chheda", "/work/a-paramount"].includes(route)) {
+      if (imageStories[route]) {
         assert(await page.locator(".case-reel-panel").evaluateAll(panels => panels.every(panel => {
           const image = panel.querySelector(".photo-slot-img"), visual = panel.querySelector(".case-panel-visual");
+          if (panel.querySelector("video")) return true;
           return image?.naturalWidth > 0 && Math.abs(visual.offsetWidth / visual.offsetHeight - image.naturalWidth / image.naturalHeight) < .01;
-        })), "All eight artwork frames must retain the supplied photograph's proportions");
+        })), "Every artwork frame must retain the supplied photograph's proportions");
       }
       if (route === "/work/girvaan") {
         await page.locator(".case-reel-panel video").waitFor({ state: "visible" });
@@ -189,7 +191,7 @@ try {
       assert(moved.railScroll > 0); assert(moved.progress > 0); assert(moved.overflow <= 1);
       assert.deepEqual(moved.brokenImages, []);
       if (size.width === 390 && route === "/work/maison-mireyaa") await page.screenshot({ path: output + "/case-mobile.png" });
-      if (size.width === 390 && ["/work/chheda", "/work/a-paramount"].includes(route))
+      if (size.width === 390 && imageStories[route])
         await page.screenshot({ path: output + `/${route.split("/").pop()}-mobile.png` });
     });
   }

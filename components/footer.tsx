@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GalaxyFooterArt } from "./cosmic-footer";
+import { HoverText } from "./hover-text";
 
 /* Brand social glyphs in their own colours (Simple Icons paths). */
 const InstagramIcon = (
@@ -49,13 +50,13 @@ export function Footer() {
       <div className="wrap footer-inner">
         <div className="footer-row">
           <Link className="footer-talk" href="/#contact" data-magnetic>
-            <span className="circ">→</span> Let&apos;s talk
+            <span className="circ" aria-hidden="true">→</span> <HoverText>Let&apos;s talk</HoverText>
           </Link>
           <div className="footer-cols">
             <div className="fcol">
               <span className="fcol-h">Contact</span>
-              <a href="mailto:info@apar.agency">info@apar.agency</a>
-              <a href="tel:+919769530750">+91 97695 30750</a>
+              <a href="mailto:info@apar.agency"><HoverText>info@apar.agency</HoverText></a>
+              <a href="tel:+919769530750"><HoverText>+91 97695 30750</HoverText></a>
             </div>
             <div className="fcol">
               <span className="fcol-h">Studio</span>
@@ -67,7 +68,7 @@ export function Footer() {
               {SOCIAL.map((s) => (
                 <a key={s.label} className="fsocial" href={s.href} target="_blank" rel="noopener">
                   <span className="fsocial-ic">{s.icon}</span>
-                  <span>{s.label}</span>
+                  <HoverText>{s.label}</HoverText>
                 </a>
               ))}
             </div>

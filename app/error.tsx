@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { HoverText } from "@/components/hover-text";
 
 /**
  * Route error boundary - catches a runtime error in any page and shows an
@@ -30,11 +31,11 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         </p>
         <div className="chip-row" style={{ marginTop: 34 }}>
           <button className="btn" type="button" onClick={() => reset()}>
-            <span>Try again</span>
-            <span className="arr">↺</span>
+            <HoverText>Try again</HoverText>
+            <span className="arr" aria-hidden="true">↺</span>
           </button>
           <Link className="btn-ghost" href="/">
-            Back to home
+            <HoverText>Back to home</HoverText>
           </Link>
         </div>
       </div>

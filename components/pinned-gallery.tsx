@@ -5,6 +5,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { VideoSlot } from "./video-slot";
 import { FEATURED_CLIENTS } from "@/lib/cases";
+import { HoverText } from "./hover-text";
 
 // Derived from the single source of truth (lib/cases.tsx) - every case auto-appears
 // in the horizontal scroll, in order, with no manual sync as cases are added.
@@ -27,7 +28,9 @@ const VIDEO_FILL: Record<string, string> = {
   tarava: "/videos/chheda.mp4",
 };
 
-const CARDS = FEATURED_CLIENTS.map((c) => ({
+// Harshit Gold is an image-led story in /clients; add it to the film rail only
+// when its own campaign film is supplied, rather than request a missing video.
+const CARDS = FEATURED_CLIENTS.filter(c => c.slug !== "harshit-gold").map((c) => ({
   href: c.href,
   num: c.i,
   tag: c.cat,
@@ -181,8 +184,8 @@ export function PinnedGallery() {
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
             <Link className="btn cream" href="/clients">
-              <span>See all clients</span>
-              <span className="arr">↗</span>
+              <HoverText>See all clients</HoverText>
+              <span className="arr" aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>

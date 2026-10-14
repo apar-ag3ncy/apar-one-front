@@ -5,6 +5,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DiamondFallback } from "./diamond-fallback";
+import { HoverText } from "../hover-text";
 
 type Scene = { render: () => void; dispose: () => void };
 
@@ -129,7 +130,7 @@ export function MJShowcase() {
     <section className="mj-showcase" aria-labelledby="mj-showcase-title" data-screen-label="Home - Manish Jewellers experience">
       <div className="wrap">
         <div className="mj-showcase-heading">
-          <div><div className="eyebrow"><i className="dot" /> 04 / Made interactive by APĀR</div>
+          <div><div className="eyebrow"><i className="dot" /> 03 / Made interactive by APĀR</div>
             <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
           <p>A closer look at what we build. Explore the diamond burst created for Manish Jewellers — light, detail and motion, brought together.</p>
         </div>
@@ -140,9 +141,9 @@ export function MJShowcase() {
           <div className="mj-showcase-controls">
             <span role="status">{status === "loading" ? "Preparing the interactive scene…" : status === "fallback" ? "Preview mode · the diamond is still yours to explore" : ["01 / Scatter · Every facet, a different perspective.", "02 / Gather · One diamond. A world of possibilities.", "03 / Radiate · A legacy, revealed in light."][phase]}</span>
             <span className="mj-scroll-cue">Scroll to gather, then radiate · reverse to return</span>
-            <a href="#clients" className="mj-skip">Continue to clients ↓</a>
+            <a href="#clients" className="mj-skip"><HoverText>Continue to clients</HoverText> <span aria-hidden="true">↓</span></a>
             <button type="button" className="btn cream mj-manual" onClick={toggle} aria-pressed={expanded} aria-label={expanded ? "Gather the diamond" : "Burst the diamond"}>
-              <span>{expanded ? "Gather the diamond" : "Burst the diamond"}</span><span aria-hidden="true">{expanded ? "↙" : "↗"}</span>
+              <HoverText>{expanded ? "Gather the diamond" : "Burst the diamond"}</HoverText><span aria-hidden="true">{expanded ? "↙" : "↗"}</span>
             </button>
           </div>
         </div>

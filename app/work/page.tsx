@@ -6,6 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { VelocityMarquee } from "@/components/velocity-marquee";
 import { PinnedGallery } from "@/components/pinned-gallery";
 import { ImageSlot } from "@/components/image-slot";
+import { HoverText } from "@/components/hover-text";
 
 type Cat = "all" | "jewellery" | "lifestyle";
 
@@ -56,9 +57,11 @@ export default function WorkPage() {
     const GAP = 32;
     let raf = 0;
     const layout = () => {
-      grid.querySelectorAll<HTMLElement>(".work-card").forEach((card) => {
-        const h = card.getBoundingClientRect().height;
-        if (h > 0) card.style.gridRowEnd = `span ${Math.ceil(h) + GAP}`;
+      // Measure every card before writing spans, preserving the existing grid.
+      const sizes = Array.from(grid.querySelectorAll<HTMLElement>(".work-card"), card => ({ card, height: card.offsetHeight }));
+      sizes.forEach(({ card, height }) => {
+        const span = `span ${Math.ceil(height) + GAP}`;
+        if (height > 0 && card.style.gridRowEnd !== span) card.style.gridRowEnd = span;
       });
     };
     const schedule = () => {
@@ -67,19 +70,17 @@ export default function WorkPage() {
     };
     schedule();
     const ro = new ResizeObserver(schedule);
-    ro.observe(grid);
+    grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => ro.observe(card));
     const imgs = Array.from(grid.querySelectorAll("img"));
     imgs.forEach((img) => {
       if (!(img as HTMLImageElement).complete) img.addEventListener("load", schedule);
     });
     window.addEventListener("resize", schedule);
-    const timers = [setTimeout(schedule, 300), setTimeout(schedule, 1000)];
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       imgs.forEach((img) => img.removeEventListener("load", schedule));
       window.removeEventListener("resize", schedule);
-      timers.forEach(clearTimeout);
     };
   }, [filter]);
 
@@ -106,7 +107,7 @@ export default function WorkPage() {
                 aria-pressed={filter === f.key}
                 onClick={() => setFilter(f.key)}
               >
-                {f.label}
+                <HoverText>{f.label}</HoverText>
               </button>
             ))}
           </Reveal>
@@ -164,8 +165,8 @@ export default function WorkPage() {
             </Reveal>
             <Reveal i={1}>
               <Link className="btn" href="/start">
-                <span>Start a project</span>
-                <span className="arr">↗</span>
+                <HoverText>Start a project</HoverText>
+                <span className="arr" aria-hidden="true">↗</span>
               </Link>
             </Reveal>
           </div>

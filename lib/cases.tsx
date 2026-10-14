@@ -1,13 +1,23 @@
 import type { CaseData, CaseFonts } from "@/components/case-study";
 
-// Every case and featured card uses the same supplied Argon pair.
+// Original per-company typography from before the Argon switch.
 const FONTS_DEFAULT: CaseFonts = {
-  serif: "'APAR Argon',sans-serif",
-  sans: "'APAR Argon',sans-serif",
+  serif: "'Newsreader',Georgia,serif",
+  sans: "'Archivo',system-ui,sans-serif",
 };
-const FONTS_GIRVAAN = FONTS_DEFAULT;
-const FONTS_MAISON = FONTS_DEFAULT;
-const FONTS_ACHAL = FONTS_DEFAULT;
+const FONTS_GIRVAAN: CaseFonts = {
+  serif: "'Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
+  sans: "'Optima','Optima Nova','Candara','Segoe UI',system-ui,sans-serif",
+};
+// Preserve the original system fallbacks until these clients supply webfonts.
+const FONTS_MAISON: CaseFonts = {
+  serif: "'Florentia','Bodoni 72','Bodoni Moda','Didot',Georgia,serif",
+  sans: "'Balham','Optima','Candara','Segoe UI',system-ui,sans-serif",
+};
+const FONTS_ACHAL: CaseFonts = {
+  serif: "'Blisstwin','Newsreader',Georgia,serif",
+  sans: "'Archivo',system-ui,sans-serif",
+};
 
 export const CASES: Record<string, CaseData> = {
   chheda: {
@@ -107,7 +117,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(237,206,221,.16)",
       line: "rgba(237,206,221,.20)",
     },
-    heroPlaceholder: "Drop Girvaan hero image (blush/white)",
+    heroPlaceholder: "Girvaan · Gold bangle on a pink sculptural surface",
     meta: [
       { label: "Services", value: "Branding · Content · Performance" },
       { label: "Sector", value: "Jewellery" },
@@ -132,10 +142,14 @@ export const CASES: Record<string, CaseData> = {
         </>
       ),
       gallery: [
-        { cls: "tall", placeholder: "Campaign portrait", ratio: "4/5" },
-        { cls: "wide", placeholder: "Social grid / key visual", ratio: "16/11" },
-        { cls: "half", placeholder: "Product detail", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "tall", placeholder: "Orchid ring · Floral composition", ratio: "3/4" },
+        { cls: "tall", placeholder: "Lotus necklace · Amethyst palette", ratio: "3/4" },
+        { cls: "tall", placeholder: "Petal bracelet · Pink editorial", ratio: "3/4" },
+        { cls: "tall", placeholder: "Rose ring · Collection imagery", ratio: "3/4" },
+        { cls: "tall", placeholder: "Peacock ring · Pink reflection", ratio: "3/4" },
+        { cls: "tall", placeholder: "Sunburst ring · Product detail", ratio: "3/4" },
+        { cls: "wide", placeholder: "Emerald earrings · Collection pair", ratio: "3/2" },
+        { cls: "half", placeholder: "Emerald necklace · Fine silver collection", ratio: "1/1" },
         { cls: "tall", placeholder: "Hanuman Jayanti film", ratio: "4/5", video: "/videos/girvaan-hanuman-jayanti.mp4" },
       ],
     },
@@ -590,7 +604,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(201,160,98,.18)",
       line: "rgba(235,223,205,.18)",
     },
-    heroPlaceholder: "Drop Kundan Jewellers hero image (warm brown / gold)",
+    heroPlaceholder: "Kundan Jewellers · Gold pendant and matching earrings",
     meta: [
       { label: "Services", value: "Branding · Social · Campaigns" },
       { label: "Sector", value: "Jewellery" },
@@ -615,10 +629,14 @@ export const CASES: Record<string, CaseData> = {
         </>
       ),
       gallery: [
-        { cls: "wide", placeholder: "Campaign key visual", ratio: "16/11" },
-        { cls: "tall", placeholder: "Product / hero piece", ratio: "4/5" },
-        { cls: "half", placeholder: "Festive / wedding creative", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / packaging", ratio: "5/4" },
+        { cls: "tall", placeholder: "Filigree pendant · Matching earrings", ratio: "3/4" },
+        { cls: "tall", placeholder: "Triangular pendant · Gold collection", ratio: "3/4" },
+        { cls: "tall", placeholder: "Floral set · Ruby accent", ratio: "3/4" },
+        { cls: "tall", placeholder: "Petal set · Gold craftsmanship", ratio: "3/4" },
+        { cls: "tall", placeholder: "Filigree set · Jewellery portrait", ratio: "3/4" },
+        { cls: "half", placeholder: "Ruby flower · Product detail", ratio: "1/1" },
+        { cls: "tall", placeholder: "Gold earring · Filigree detail", ratio: "3/5" },
+        { cls: "tall", placeholder: "Pendant · Gold detail", ratio: "4/5" },
       ],
     },
     stats: [
@@ -634,7 +652,7 @@ export const CASES: Record<string, CaseData> = {
       ),
       by: "Director - Kundan Jewellers",
     },
-    next: { kicker: "Next case", name: "Jatubhai Velji", href: "/work/jatubhai-velji", color: "#A0544A", ink: "#F5EFE5" },
+    next: { kicker: "Next case", name: "Harshit Gold", href: "/work/harshit-gold", color: "#383C23", ink: "#F4D9BD" },
   },
 
   "jatubhai-velji": {
@@ -841,6 +859,49 @@ export const CASES: Record<string, CaseData> = {
       by: "Founder - Tarava",
     },
     next: { kicker: "Back to", name: "All clients", href: "/clients", color: "#F4EDE2", ink: "#1A1714" },
+  },
+  "harshit-gold": {
+    slug: "harshit-gold",
+    eyebrow: "Featured client · Jewellery",
+    title: <>Harshit <em>Gold</em></>,
+    card: { name: "Harshit Gold", cat: "Jewellery", blurb: "Gold and gemstone collections, brought together through olive-silk compositions and campaign artwork." },
+    logo: "/logos/harshit-gold.svg",
+    fonts: FONTS_DEFAULT,
+    sub: "Gold, gemstones and a world of olive silk — a collection story built around the colour, detail and character of each piece.",
+    theme: {
+      bg: "#383C23", bg2: "#252918", ink: "#F4D9BD", soft: "rgba(244,217,189,.78)",
+      accent: "#DDC299", accentSoft: "rgba(221,194,153,.18)", line: "rgba(244,217,189,.20)",
+    },
+    heroPlaceholder: "Harshit Gold · Olive-silk campaign portrait",
+    meta: [
+      { label: "Work", value: "Collection imagery · Campaign artwork" },
+      { label: "Sector", value: "Jewellery" },
+      { label: "Palette", value: "Olive · Champagne gold" },
+      { label: "Focus", value: "Gold · Gemstones · Detail" },
+    ],
+    brief: {
+      lead: <>Let the jewellery lead, with a visual world that makes every <em>detail belong.</em></>,
+      challenge: "Give varied gold and gemstone pieces a coherent presentation while keeping their individual shapes, settings and colours clearly visible.",
+      did: ["Olive-silk collection compositions", "Product portraits and jewellery details", "Campaign portrait and print artwork", "Consistent colour and visual language"],
+    },
+    approach: {
+      lead: <>A quiet olive backdrop. Warm gold. A closer look at the <em>craft.</em></>,
+      gallery: [
+        { cls: "tall", placeholder: "Polki necklace · Olive-silk collection", ratio: "18/25" },
+        { cls: "tall", placeholder: "Gold necklace · Matching earrings", ratio: "18/25" },
+        { cls: "tall", placeholder: "Peacock ring · Gemstone detail", ratio: "18/25" },
+        { cls: "tall", placeholder: "Floral ring · Collection composition", ratio: "18/25" },
+        { cls: "tall", placeholder: "Emerald necklace · Olive-silk collection", ratio: "18/25" },
+        { cls: "tall", placeholder: "Ruby ring · Sculptural detail", ratio: "18/25" },
+        { cls: "tall", placeholder: "Gold brooch · Collection detail", ratio: "18/25" },
+        { cls: "tall", placeholder: "Medallion set · Matching earrings", ratio: "18/25" },
+      ],
+    },
+    stats: [],
+    resultsLabel: "The visual world",
+    resultsNote: <>One cohesive palette, with room for every piece to have its own <em>character.</em> From full collection compositions to close details, the jewellery stays the focus.</>,
+    quote: { text: <>Effortless <em>elegance.</em><br />Timeless you.</>, by: "Harshit Gold · Campaign line" },
+    next: { kicker: "Next case", name: "Jatubhai Velji", href: "/work/jatubhai-velji", color: "#A0544A", ink: "#F5EFE5" },
   },
 };
 

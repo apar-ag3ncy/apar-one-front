@@ -40,7 +40,10 @@ export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: Rev
 
   return (
     <MotionTag
-      initial={reduce ? false : { opacity: 0, y: 24 }}
+      // Keep the first server/client frame identical. Reduced-motion users get
+      // every section immediately, including content below the fold.
+      initial={{ opacity: 0, y: 24 }}
+      animate={reduce ? { opacity: 1, y: 0 } : undefined}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -7% 0px" }}
       transition={{ duration: reduce ? 0 : 0.8, ease: EASE, delay: reduce ? 0 : delay + i * 0.07 }}

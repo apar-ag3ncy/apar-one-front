@@ -501,8 +501,8 @@ export default function ReelCoverShowcase() {
                         <strong>Visual Hierarchy & Color Scheme:</strong>
                         <ul className="list-disc pl-5 mt-2 space-y-1 text-sm text-neutral-400">
                           <li><strong>Color Palette:</strong> Deep Obsidian Black (#0d0d0d), Polished Antique Gold (#D4AF37), and Champagne (#f4ede2).</li>
-                          <li><strong>Headline Serif:</strong> Set in Argon Oblique, tracking wide with a metallic gold gradient.</li>
-                          <li><strong>Subheadline:</strong> Set in Argon Regular, uppercase, tracking very wide at 0.26em, centered.</li>
+                          <li><strong>Headline Serif:</strong> Set in Newsreader/Bodoni-style serif, tracking wide with a metallic gold gradient.</li>
+                          <li><strong>Subheadline:</strong> Set in Archivo sans-serif, uppercase, tracking very wide at 0.26em, centered.</li>
                           <li><strong>Background Environment:</strong> Luxury jewelry boutique with counter displays, warm overhead lighting, and rich glass reflections.</li>
                         </ul>
                       </div>

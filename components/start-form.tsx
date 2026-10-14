@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AestheticDial, type DialOption } from "./aesthetic-dial";
+import { HoverText } from "./hover-text";
 
 /**
  * Where the brief goes. Set NEXT_PUBLIC_BRIEF_ENDPOINT to any endpoint that
@@ -48,24 +49,35 @@ export function StartForm() {
   const [sent, setSent] = useState<"" | "endpoint" | "mail">("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [copyStatus, setCopyStatus] = useState("");
+  const draft = [
+    `Brand: ${brand.trim()}`,
+    `What they offer: ${offer.trim()}`,
+    `Aesthetic direction: ${AESTHETICS[aesthetic].label}`,
+    `Name: ${name.trim()}`,
+    `Email: ${email.trim()}`,
+  ].join("\n");
+  const mailHref = `mailto:${BRIEF_MAILTO}?subject=${encodeURIComponent(`Project brief - ${brand.trim()}`)}&body=${encodeURIComponent(draft)}`;
+  const copyBrief = async () => {
+    try { await navigator.clipboard.writeText(draft); setCopyStatus("Brief copied. Paste it into an email to info@apar.agency."); }
+    catch { setCopyStatus("Copy isn’t available here. Use Open email draft to send your brief."); }
+  };
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => { request.current?.abort(); request.current = null; }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
-    const brief = { brand, offer, name, email, aesthetic: AESTHETICS[aesthetic].key };
+    if (![brand, offer, name].every(value => value.trim())) {
+      setError("Please add your brand, what you offer and your name before sending.");
+      return;
+    }
+    setError("");
+    const brief = { brand: brand.trim(), offer: offer.trim(), name: name.trim(), email: email.trim(), aesthetic: AESTHETICS[aesthetic].key };
 
     if (!BRIEF_ENDPOINT) {
       // No endpoint configured: hand the brief to the visitor's email app.
-      const body = [
-        `Brand: ${brand}`,
-        `What they offer: ${offer}`,
-        `Aesthetic direction: ${AESTHETICS[aesthetic].label}`,
-        `Name: ${name}`,
-        `Email: ${email}`,
-      ].join("\n");
-      window.location.href = `mailto:${BRIEF_MAILTO}?subject=${encodeURIComponent(`Project brief - ${brand}`)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailHref;
       setSent("mail");
       return;
     }
@@ -110,18 +122,18 @@ export function StartForm() {
       {sent ? (
         <div className="start-done">
           <span className="start-eyebrow">
-            <i className="dot" /> Brief received
+            <i className="dot" /> {sent === "mail" ? "Email draft ready" : "Brief received"}
           </span>
           <h1 className="start-h1">
-            Thanks{name ? `, ${name.split(" ")[0]}` : ""}. We&apos;ve got it.
+            {sent === "mail" ? <>Your brief is <em>ready to send.</em></>
+              : <>Thanks{name.trim() ? `, ${name.trim().split(" ")[0]}` : ""}. We&apos;ve got it.</>}
           </h1>
           <p className="start-lead">
             {sent === "mail" ? (
               <>
-                Your email app has opened with the brief addressed to {BRIEF_MAILTO} - hit send and
-                we&apos;ll study <em>{brand || "your brand"}</em> and come back within two working
-                days with a first point of view, shaped for a{" "}
-                <strong>{AESTHETICS[aesthetic].label.toLowerCase()}</strong> direction.
+                Send the prepared draft to {BRIEF_MAILTO} from your email app.
+                We haven&apos;t received it yet. If your app didn&apos;t open, use the options below
+                to open the draft again or copy your brief.
               </>
             ) : (
               <>
@@ -132,14 +144,19 @@ export function StartForm() {
             )}
           </p>
           <div className="start-done-actions">
+            {sent === "mail" && <>
+              <a className="btn cream" href={mailHref}><HoverText>Open email draft</HoverText><span className="arr" aria-hidden="true">↗</span></a>
+              <button className="start-copy" type="button" onClick={copyBrief}><HoverText>Copy brief</HoverText></button>
+            </>}
             <Link className="btn cream" href="/work">
-              <span>See our work</span>
-              <span className="arr">↗</span>
+              <HoverText>See our work</HoverText>
+              <span className="arr" aria-hidden="true">↗</span>
             </Link>
             <Link className="btn-ghost light" href="/">
-              Back to home
+              <HoverText>Back to home</HoverText>
             </Link>
           </div>
+          {copyStatus && <p className="start-copy-status" role="status">{copyStatus}</p>}
         </div>
       ) : (
         <form className="start-form" onSubmit={onSubmit}>
@@ -234,9 +251,10 @@ export function StartForm() {
                   </p>
                 )}
                 <button className="start-submit" type="submit" disabled={busy} aria-busy={busy}>
-                  <span>{busy ? "Sending…" : "Send the brief"}</span>
-                  <span className="arr">↗</span>
+                  <HoverText>{busy ? "Sending…" : BRIEF_ENDPOINT ? "Send the brief" : "Prepare email brief"}</HoverText>
+                  <span className="arr" aria-hidden="true">↗</span>
                 </button>
+                <p className="start-delivery-note">{BRIEF_ENDPOINT ? "Your brief goes directly to our studio." : "We’ll prepare an email draft. You review it and send it from your own email app."}</p>
               </div>
             </div>
           </div>

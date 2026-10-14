@@ -9,14 +9,13 @@ export default function Home() {
     <HomeArrival />
     <ProgressiveQuote id="studio" label="01 / Our belief" text="Limitless. Beyond Culture." explanation="Rooted in who you are. Open to what you can become. We bring strategy, design and technology together to move brands beyond the expected." />
     <FeaturedProjects />
-    <ProgressiveQuote id="manifesto" label="03 / From identity to interaction" text="We don’t just build brands. We build the way they’re experienced." explanation="A story becomes stronger when people can step inside it. Every image, every movement, every interaction is a chance to make your brand felt." dark />
     <MJShowcase />
     <MovingClients />
       {/* ===== TESTIMONIALS ===== */}
       <section className="section testi" data-screen-label="Home - Testimonials">
         <div className="wrap">
           <div className="tag-line">
-            <span>06 / In their words</span>
+            <span>05 / In their words</span>
             <i className="ln" />
           </div>
           <Reveal as="p" className="feat">

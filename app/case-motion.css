@@ -17,9 +17,10 @@
 .has-photo .client-story-mark{inset:auto auto 24px 24px;width:130px;height:50px;justify-content:flex-start;}
 .has-photo .client-story-mark img{max-height:100%;filter:brightness(0) invert(1);}
 .client-story-explore{position:absolute;right:24px;bottom:24px;display:flex;align-items:center;gap:16px;z-index:3;
-  background:var(--fc-ink);color:var(--fc-bg);padding:12px 18px;border-radius:100px;font-size:12px;
+  background:transparent;color:var(--fc-ink);padding:12px 18px;font-size:12px;
   transform:translateY(16px);opacity:0;transition:opacity .45s,transform .65s cubic-bezier(.22,1,.36,1);}
 .client-story-explore i{font-size:20px;font-style:normal;}
+.has-photo .client-story-explore{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
 .client-story-link:hover .client-story-explore,.client-story-link:focus-visible .client-story-explore{opacity:1;transform:none;}
 .client-story-caption{padding:20px 0 0;color:var(--ink);}
 .client-story-meta{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.12em;text-transform:uppercase;}

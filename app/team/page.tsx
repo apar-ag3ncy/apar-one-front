@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PeopleOfApar } from "@/components/cosmic-footer";
 
 export const metadata: Metadata = {
-  title: "Our Team — APĀR",
+  title: "Our Team — APAR AGENTIVE CREACY",
   description: "Meet the people behind APĀR.",
 };
 

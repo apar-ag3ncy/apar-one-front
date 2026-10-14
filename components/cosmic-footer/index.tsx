@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HoverText } from "../hover-text";
 
 type Scene = { progress: (value:number)=>void; pointer:(x:number,y:number,active?:boolean)=>void; dispose:()=>void };
 
@@ -27,7 +28,6 @@ function CosmicCanvas({ kind }: { kind:"galaxy"|"portrait"|"character" }) {
       timeout=window.setTimeout(()=>{runtime?.dispose();runtime=null;disposed=true;setStatus('fallback');},12000);
       try{
         const create=kind==='galaxy'?(await import('./galaxy-scene')).createGalaxy:kind==='character'?(await import('./character-scene')).createCharacter:(await import('./portrait-scene')).createPortrait;
-        if(kind==='character')await document.fonts.load('19px "APAR Argon"');
         if(disposed)return;
         runtime=create(host,()=>{if(!disposed){clearTimeout(timeout);setStatus('ready');}},fallback);
         runtime.progress(state.progress);
@@ -48,7 +48,7 @@ export function GalaxyFooterArt(){
     <div className="galaxy-eyebrow"><span>A universe of possibilities.</span><span>Made of ideas. Built by people.</span></div>
     <div className="galaxy-fallback" aria-hidden="true"><Image unoptimized src="/assets/apar-logo-cream.svg" alt="" width={519} height={288} loading="lazy"/></div>
     <CosmicCanvas kind="galaxy" />
-    <Link className="galaxy-people-link" href="/team"><span>Meet the people behind APĀR</span><span aria-hidden="true">↗</span></Link>
+    <Link className="galaxy-people-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true">↗</span></Link>
   </div>;
 }
 
@@ -60,7 +60,7 @@ export function PeopleOfApar(){
     <CosmicCanvas key={showPerson?'person':'character'} kind={showPerson?'portrait':'character'} />
     <div className="people-top"><span className="people-index">[[ &nbsp; {showPerson?'002':'001'} &nbsp; ]]</span><span className="people-calibration" aria-hidden="true"/><div><h1 id="apar-people-title">TEAM</h1><p>The people of APĀR</p></div></div>
     <div className="people-reticle" aria-hidden="true"><span>+</span><span>+</span><span>+</span><span>+</span><span>+</span></div>
-    <div className="people-bottom"><div className="people-identity" aria-live="polite"><span className="people-id-dot" aria-hidden="true">∷</span><div><h3>{showPerson?'Suraj Yadav':'APĀR'}</h3><p>{showPerson?'Office Admin':'Creative character'}</p></div></div><button className="people-next" onClick={()=>setShowPerson(value=>!value)} aria-label={showPerson?'Show the APĀR character':'Meet Suraj Yadav'}><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M8 24h32M27 11l13 13-13 13" stroke="currentColor" strokeWidth="1.5"/></svg></button><p className="people-note">Behind every idea is a person.<br/>Meet the people who make APĀR.</p></div>
+    <div className="people-bottom"><div className="people-identity" aria-live="polite"><span className="people-id-dot" aria-hidden="true">∷</span><div><h3>{showPerson?'Suraj Yadav':'APĀR'}</h3><p>{showPerson?'Office Admin':'Creative character'}</p></div></div><button className="people-next" onClick={()=>setShowPerson(value=>!value)} aria-label={showPerson?'Show the APĀR character':'Meet Suraj Yadav'} aria-pressed={showPerson}><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M8 24h32M27 11l13 13-13 13" stroke="currentColor" strokeWidth="1.5"/></svg></button><p className="people-note">Behind every idea is a person.<br/>Meet the people who make APĀR.</p></div>
     <div className="people-edge"><span>APĀR / PEOPLE</span><a href="#top">Back to top ↑</a></div>
   </section>;
 }

@@ -6,6 +6,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { BandBackdrop } from "./band-backdrop";
 import { AparLogo } from "./apar-logo";
 import { Magnetic } from "./magnetic";
+import { HoverText } from "./hover-text";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -164,12 +165,12 @@ export function Hero({ start }: { start: boolean }) {
           >
             <Magnetic strength={0.3}>
               <Link className="btn cream" href="/work">
-                <span>See the work</span>
-                <span className="arr">↗</span>
+                <HoverText>See the work</HoverText>
+                <span className="arr" aria-hidden="true">↗</span>
               </Link>
             </Magnetic>
             <Link className="btn-ghost light" href="/what-we-do">
-              What we do
+              <HoverText>What we do</HoverText>
             </Link>
           </motion.div>
         </motion.div>

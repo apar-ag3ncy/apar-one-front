@@ -12,6 +12,7 @@ import { useCaseMotion } from "./case-motion/use-case-motion";
 import { caseMotion } from "@/lib/case-motion";
 import { CASE_PAGE_THEME } from "@/lib/case-presentation";
 import type { CaseAssets } from "@/lib/case-assets";
+import { HoverText } from "./hover-text";
 
 export interface CaseTheme {
   bg: string;
@@ -61,6 +62,9 @@ export interface CaseData {
     gallery: { cls: string; placeholder: string; ratio: string; video?: string }[];
   };
   stats: { n: number; suffix?: string; label: string }[];
+  /** Image-led stories can describe their visual outcome without unverified KPIs. */
+  resultsLabel?: string;
+  resultsNote?: React.ReactNode;
   quote: { text: React.ReactNode; by: string };
   next: { kicker: string; name: string; href: string; color: string; ink: string };
 }
@@ -99,11 +103,12 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
     "--sans": data.fonts.sans,
   } as React.CSSProperties;
 
-  // Missing artwork uses a dark client identity on white; white/gold logo
-  // variants intended for the coloured cards would disappear here.
+  // The editorial page stays white; identity cards retain the client's palette.
   const brand = {
     logo: data.logo ?? `/logos/${data.slug}.png`,
-    logoTint: t.ink,
+    logoTint: data.logoTint,
+    logoInvert: data.logoInvert,
+    logoSurface: `linear-gradient(145deg, ${data.theme.bg2}, ${data.theme.bg})`,
   };
 
   // Preserve the existing brief/section spacing variants. Motion is configured
@@ -137,7 +142,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
                 </div>
               ))}
             </div>
-            <a className="case-explore" href="#case-work">Explore the work <span aria-hidden="true">↓</span></a>
+            <a className="case-explore" href="#case-work"><HoverText>Explore the work</HoverText><span aria-hidden="true">↓</span></a>
           </div>
           {/* Actual artwork keeps its measured aspect ratio. Missing campaign
               assets use the existing client identity rather than a blank frame. */}
@@ -188,10 +193,11 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
       <section className="case-sec" id="case-results">
         <div className="case-wrap">
           <Reveal className="case-tag">
-            <span>03 - The results</span>
+            <span>03 - {data.resultsLabel ?? "The results"}</span>
             <i className="ln" />
           </Reveal>
-          <div className="case-stats">
+          {data.resultsNote && <Reveal as="p" className="case-lead">{data.resultsNote}</Reveal>}
+          {data.stats.length > 0 && <div className="case-stats">
             {data.stats.map((s, i) => (
               <Reveal key={i} i={i} className="case-stat glass">
                 <div className="n">
@@ -200,7 +206,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
                 <div className="l">{s.label}</div>
               </Reveal>
             ))}
-          </div>
+          </div>}
         </div>
       </section>
 
@@ -243,7 +249,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
             </a>
             {nextProfile.cover && <div className="case-next-art" aria-hidden="true"><PhotoSlot src={nextProfile.cover} fixedRatio="20/13" radius={15} /></div>}
             <Link className="case-btn" href="/start">
-              Start your project ↗
+              <HoverText>Start your project</HoverText><span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>

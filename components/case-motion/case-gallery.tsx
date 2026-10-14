@@ -9,7 +9,6 @@ import { BrandSignature, type BrandSignatureHandle } from "./brand-signature";
 import type { CaseData } from "../case-study";
 import type { CaseAssets } from "@/lib/case-assets";
 import { caseMotion } from "@/lib/case-motion";
-import { CASE_PAGE_THEME } from "@/lib/case-presentation";
 import { getLenis } from "@/lib/scroll-state";
 
 export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: CaseAssets }) {
@@ -23,7 +22,8 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
   const scrollTween = useRef<gsap.core.Tween | null>(null);
   const [preload, setPreload] = useState(false);
   const profile = caseMotion(data.slug);
-  const brand = { logo: data.logo ?? `/logos/${data.slug}.png`, logoTint: CASE_PAGE_THEME.ink };
+  const brand = { logo: data.logo ?? `/logos/${data.slug}.png`, logoTint: data.logoTint,
+    logoInvert: data.logoInvert, logoSurface: `linear-gradient(145deg, ${data.theme.bg2}, ${data.theme.bg})` };
   useEffect(() => {
     const section = root.current, viewport = stage.current, nativeViewport = viewportRef.current, track = rail.current;
     if (!section || !viewport || !nativeViewport || !track) return;
@@ -167,7 +167,7 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
         {data.approach.gallery.map((item, i) => {
           const hint = item.ratio.split("/").map(Number);
           const ratio = assets.photoRatios[i] ?? hint[0] / hint[1];
-          return <figure key={i} className={`case-reel-panel${!assets.photoSrcs[i] && !item.video ? " is-identity" : ""}`} style={{ "--panel-ratio": ratio } as CSSProperties}>
+          return <figure key={i} className={`case-reel-panel${!assets.photoSrcs[i] && !item.video ? " is-identity" : ""}`} style={{ "--panel-ratio": ratio, "--identity-accent": data.theme.accent } as CSSProperties}>
             <div className="case-panel-visual">
               {item.video ? <VideoSlot src={item.video} placeholder={item.placeholder} radius={15} style={{ height: "100%", aspectRatio: item.ratio }} />
                 : <PhotoSlot src={assets.photoSrcs[i]} placeholder={item.placeholder} radius={15} fixedRatio={String(ratio)} priority={preload} {...brand} />}

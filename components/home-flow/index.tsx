@@ -8,6 +8,7 @@ import { Reveal } from "../reveal";
 import { PhotoSlot } from "../photo-slot";
 import { useFeaturedHover } from "./use-featured-hover";
 import { FEATURED_CLIENTS } from "@/lib/cases";
+import { HoverText } from "../hover-text";
 
 export function ProgressiveQuote({ id, label, text, explanation, dark = false }: {
   id: string; label: string; text: string; explanation: string; dark?: boolean;
@@ -166,7 +167,7 @@ export function FeaturedProjects() {
         </h3>
       </div>
     </Reveal>)}</div>
-    <div className="flow-project-end"><Link className="btn ink" href="/clients"><span>See all projects</span><span className="arr" aria-hidden="true">↗</span></Link></div>
+    <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText><span className="arr" aria-hidden="true">↗</span></Link></div>
   </div></section>;
 }
 
@@ -174,7 +175,7 @@ export function MovingClients() {
   const [paused, setPaused] = useState(false);
   const rows = [FEATURED_CLIENTS.slice(0, 4), FEATURED_CLIENTS.slice(4, 8), FEATURED_CLIENTS.slice(8, 12)];
   return <section id="clients" className="flow-clients flow-section" data-paused={paused} aria-labelledby="flow-clients-title">
-    <div className="wrap flow-client-heading"><div><span className="flow-kicker">05 / In good company</span><h2 id="flow-clients-title">Brands we<br /> work with.</h2></div><div><p>Jewellery houses, lifestyle brands and ambitious businesses. Each with a world of its own.</p><button className="flow-motion-toggle" onClick={() => setPaused(p => !p)} aria-pressed={paused}>{paused ? "Resume logo motion" : "Pause logo motion"}</button></div></div>
+    <div className="wrap flow-client-heading"><div><span className="flow-kicker">04 / In good company</span><h2 id="flow-clients-title">Brands we<br /> work with.</h2></div><div><p>Jewellery houses, lifestyle brands and ambitious businesses. Each with a world of its own.</p><button className="flow-motion-toggle" onClick={() => setPaused(p => !p)} aria-pressed={paused}><HoverText>{paused ? "Resume logo motion" : "Pause logo motion"}</HoverText></button></div></div>
     <div className="flow-logo-rows">{rows.map((row, i) => <div className="flow-logo-window" key={i}><div className={`flow-logo-track row-${i}`}>
       {[0, 1, 2].map(copy => <div className="flow-logo-group" key={copy} aria-hidden={copy ? true : undefined}>{row.map(client => <Link href={client.href} tabIndex={copy ? -1 : undefined} aria-label={client.name} key={client.slug}>
         {/* Client-owned logo assets; duplicate groups are decorative. */}

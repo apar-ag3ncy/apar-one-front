@@ -27,6 +27,8 @@ interface PhotoSlotProps {
   logo?: string;
   logoTint?: string;
   logoInvert?: boolean;
+  /** Only paints the identity fallback; the loaded photograph is untouched. */
+  logoSurface?: string;
   /** Small label on the branded card (e.g. the gallery facet "Editorial
    *  campaign"). Only given where the copy is meant for visitors. */
   caption?: string;
@@ -63,6 +65,7 @@ function PhotoFrame({
   logo,
   logoTint,
   logoInvert,
+  logoSurface,
   caption,
   priority = false,
   className,
@@ -98,9 +101,11 @@ function PhotoFrame({
   return (
     <div
       className={cn("img-slot", (!loaded || failed) && "ph-img", showLogoCard && "has-brand", className)}
-      style={{ borderRadius: `${radius}px`, ...style, ...(aspectRatio ? { aspectRatio } : null) }}
+      style={{ borderRadius: `${radius}px`, ...style, ...(aspectRatio ? { aspectRatio } : null),
+        ...(showLogoCard && logoSurface ? { background: logoSurface } : null) }}
       aria-label={showLogoCard ? placeholder : undefined}
       role={showLogoCard ? "img" : undefined}
+      data-logo-surface={showLogoCard && logoSurface ? "brand" : undefined}
     >
       {src && !failed && (
         // eslint-disable-next-line @next/next/no-img-element
