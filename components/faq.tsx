@@ -1,5 +1,8 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./ui/accordion";
 import { Reveal } from "./reveal";
 
@@ -27,27 +30,53 @@ const ITEMS = [
 ];
 
 export function Faq() {
+  const root = useRef<HTMLElement>(null);
+  const [pinned, setPinned] = useState("");
+  const [hovered, setHovered] = useState<string | null>(null);
+  const active = hovered ?? pinned;
+
+  useLayoutEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      root.current?.querySelectorAll<HTMLElement>(".faq-label").forEach(label => {
+        gsap.fromTo(label, { backgroundSize: "0% 100%" }, {
+          backgroundSize: "100% 100%", ease: "none",
+          scrollTrigger: { trigger: label.closest(".faq-item"), start: "top 90%", end: "top 55%", scrub: .35 },
+        });
+      });
+    });
+    return () => media.revert();
+  }, []);
+
   return (
-    <section className="section faq" id="contact" data-screen-label="Home - FAQ">
+    <section ref={root} className="section faq faq-motion" id="contact" data-screen-label="Home - FAQ">
       <div className="wrap faq-wrap">
         <div className="faq-head">
-          <div className="tag-line">
-            <span>06 / Good to know</span>
-            <i className="ln" />
-          </div>
-          <Reveal as="h2" className="display d-md" style={{ marginTop: 26 }}>
+          <Reveal as="h2" className="display d-md">
             Questions, <em>answered.</em>
           </Reveal>
         </div>
-        <Accordion type="single" collapsible className="faq-list">
-          {ITEMS.map((item, i) => (
-            <AccordionItem key={i} value={`item-${i}`}>
-              <AccordionTrigger>{item.q}</AccordionTrigger>
-              <AccordionContent>
+        <Accordion type="single" collapsible className="faq-list" value={active}
+          onValueChange={value => { setPinned(hovered ?? value); setHovered(null); }}
+          onKeyDown={event => {
+            if (event.key === "Escape") { setPinned(""); setHovered(null); event.preventDefault(); }
+          }}>
+          {ITEMS.map((item, i) => {
+            const value = `item-${i}`;
+            return <AccordionItem key={value} value={value}
+              onPointerEnter={event => { if (event.pointerType === "mouse") setHovered(value); }}
+              onPointerLeave={() => setHovered(null)}>
+              <AccordionTrigger>
+                <span className="faq-label">{item.q}</span>
+              </AccordionTrigger>
+              {/* Both faces share one grid cell, reserving enough room for the answer.
+                  Hover never changes the row height or moves the pointer's target. */}
+              <AccordionContent forceMount aria-hidden={active !== value}>
                 <p>{item.a}</p>
               </AccordionContent>
-            </AccordionItem>
-          ))}
+            </AccordionItem>;
+          })}
         </Accordion>
       </div>
     </section>

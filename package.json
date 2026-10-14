@@ -11,7 +11,8 @@
     "test:mobile": "node e2e/mobile-menu-check.mjs",
     "test:cases": "node e2e/case-motion-check.mjs",
     "test:polish": "node e2e/site-polish-check.mjs",
-    "test:manifesto": "node e2e/manifesto-check.mjs"
+    "test:manifesto": "node e2e/manifesto-check.mjs",
+    "test:testimonials": "node e2e/testimonial-carousel-check.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.6.7",

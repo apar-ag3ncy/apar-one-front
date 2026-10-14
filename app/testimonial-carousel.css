@@ -1,0 +1,49 @@
+/* Drum geometry lives inside the carousel; the rest of the site's grid is untouched. */
+.testimonial-carousel{background:var(--ink);color:var(--cream);overflow:hidden;}
+.tc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.tc-heading{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:34px;}
+.tc-heading h2{font:400 clamp(38px,5.2vw,74px)/1.06 var(--serif);letter-spacing:-.035em;margin:24px 0 0;}
+.tc-heading h2 em{color:var(--red);font-weight:400;}
+.tc-heading>p{font:400 14px/1.7 var(--sans);color:#c4bcb1;margin:0 0 5px;}
+.tc-stage{--card-width:clamp(320px,32vw,460px);--card-height:640px;position:relative;height:calc(var(--card-height) + 64px);perspective:1800px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;outline-offset:-4px;}
+.tc-stage[data-moving="true"]{cursor:grabbing;}
+.tc-stage:focus-visible{outline:2px solid var(--red);}
+.tc-sources{position:absolute;top:32px;left:50%;width:var(--card-width);height:var(--card-height);transform:translateX(-50%);}
+.tc-sources>.tc-page{position:absolute;inset:0;width:var(--card-width);height:var(--card-height);}
+.tc-sources>.tc-page:not([data-active="true"]){opacity:0;pointer-events:none;}
+.tc-stage[data-ready="true"][data-motion="full"] .tc-sources{opacity:0;pointer-events:none;}
+.tc-stage[data-motion="reduced"] .tc-visual{display:none;}
+.tc-visual{position:absolute;inset:32px 0;transform-style:preserve-3d;pointer-events:none;}
+.tc-card-layer{position:absolute;left:50%;top:0;transform-style:preserve-3d;}
+.tc-strip{position:absolute;top:0;left:0;overflow:hidden;transform-origin:50% 50%;backface-visibility:hidden;will-change:transform;}
+.tc-strip .tc-page{min-height:0;}
+.tc-strip:first-child{border-radius:14px 0 0 14px;}
+.tc-strip:last-child{border-radius:0 14px 14px 0;}
+.tc-strip .photo-slot-img{opacity:1;}
+.tc-edge-shade{position:absolute;inset:0;pointer-events:none;}
+.tc-page{display:flex;flex-direction:column;background:var(--cream);color:var(--ink);overflow:hidden;}
+.tc-sources .tc-page{border-radius:14px;}
+.tc-hero{position:relative;flex:0 0 245px;overflow:hidden;background:var(--tc-brand);}
+.tc-hero .img-slot{height:100%;width:100%;position:absolute;inset:0;}
+.tc-hero .photo-slot-img{object-position:50% 30%;transition:none;}
+.tc-image-caption{position:absolute;bottom:0;left:0;right:0;padding:45px 26px 22px;background:linear-gradient(transparent,#000b);color:#fff;font:500 23px/1.2 var(--sans);}
+.tc-image-caption>span{display:block;font:400 9px/1.5 var(--sans);letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+.tc-copy{display:flex;flex:1;flex-direction:column;min-height:0;padding:27px 30px;}
+.tc-page-top{display:flex;justify-content:space-between;gap:12px;font:500 9px/1.5 var(--sans);text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);}
+.tc-quote-mark{font:400 66px/.65 var(--serif);color:var(--red);margin-top:24px;height:28px;}
+.tc-copy blockquote{font:400 clamp(23px,2vw,29px)/1.18 var(--serif);letter-spacing:-.015em;margin:12px 0 20px;text-wrap:pretty;}
+.tc-copy blockquote em{color:var(--red);}
+.tc-by{font:500 9px/1.6 var(--sans);text-transform:uppercase;letter-spacing:.07em;margin:0 0 18px;color:var(--ink-soft);}
+.tc-page-brand{margin-top:auto;padding-top:14px;border-top:1px solid #19171326;font:400 14px/1.4 var(--sans);}
+.tc-footer{max-width:760px;margin:10px auto 0;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;color:#c4bcb1;font:400 11px/1.5 var(--sans);}
+.tc-count{font-variant-numeric:tabular-nums;color:var(--cream);white-space:nowrap;}.tc-count>span{opacity:.5;}
+.tc-cue{margin:0;font-size:9px;letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.tc-current{max-width:160px;text-align:right;}
+@media(max-width:600px){
+ .tc-heading{display:block;margin-bottom:18px;}.tc-heading>p{margin-top:20px;}
+ .tc-stage{--card-width:80vw;--card-height:600px;perspective:1100px;}
+ .tc-hero{flex-basis:205px;}.tc-image-caption{padding:40px 20px 18px;font-size:21px;}
+ .tc-copy{padding:24px 21px;}.tc-copy blockquote{font-size:24px;}.tc-quote-mark{margin-top:22px;}
+ .tc-footer{flex-wrap:wrap;gap:12px;}.tc-current{max-width:45%;}.tc-cue{order:3;width:100%;}
+}
+@media(max-width:350px){.tc-copy{padding:22px 18px;}.tc-copy blockquote{font-size:22px;}.tc-image-caption{font-size:19px;}}

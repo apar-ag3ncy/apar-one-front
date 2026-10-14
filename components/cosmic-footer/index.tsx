@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HoverText } from "../hover-text";
@@ -44,8 +45,9 @@ function CosmicCanvas({ kind }: { kind:"galaxy"|"portrait"|"character" }) {
 }
 
 export function GalaxyFooterArt(){
+  const isHome = usePathname() === "/";
   return <div className="galaxy-art" aria-label="APĀR in a galaxy of orange-red stars">
-    <div className="galaxy-eyebrow"><span>A universe of possibilities.</span><span>Made of ideas. Built by people.</span></div>
+    {!isHome && <div className="galaxy-eyebrow"><span>Made of ideas. Built by people.</span></div>}
     <div className="galaxy-fallback" aria-hidden="true"><Image unoptimized src="/assets/apar-logo-cream.svg" alt="" width={519} height={288} loading="lazy"/></div>
     <CosmicCanvas kind="galaxy" />
     <Link className="galaxy-people-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true">↗</span></Link>

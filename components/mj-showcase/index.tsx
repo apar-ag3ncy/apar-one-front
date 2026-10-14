@@ -130,17 +130,15 @@ export function MJShowcase() {
     <section className="mj-showcase" aria-labelledby="mj-showcase-title" data-screen-label="Home - Manish Jewellers experience">
       <div className="wrap">
         <div className="mj-showcase-heading">
-          <div><div className="eyebrow"><i className="dot" /> 03 / Made interactive by APĀR</div>
+          <div>
             <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
-          <p>A closer look at what we build. Explore the diamond burst created for Manish Jewellers — light, detail and motion, brought together.</p>
         </div>
         <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
-          <div className="mj-showcase-label"><span>Manish Jewellers</span><span>Interactive brand experience / 01</span></div>
+          <div className="mj-showcase-label"><span>Manish Jewellers</span></div>
           <DiamondFallback />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">
-            <span role="status">{status === "loading" ? "Preparing the interactive scene…" : status === "fallback" ? "Preview mode · the diamond is still yours to explore" : ["01 / Scatter · Every facet, a different perspective.", "02 / Gather · One diamond. A world of possibilities.", "03 / Radiate · A legacy, revealed in light."][phase]}</span>
-            <span className="mj-scroll-cue">Scroll to gather, then radiate · reverse to return</span>
+            <span className="tc-sr-only" role="status">{status === "loading" ? "Loading interactive scene" : status === "fallback" ? "Interactive preview available" : ""}</span>
             <a href="#clients" className="mj-skip"><HoverText>Continue to clients</HoverText> <span aria-hidden="true">↓</span></a>
             <button type="button" className="btn cream mj-manual" onClick={toggle} aria-pressed={expanded} aria-label={expanded ? "Gather the diamond" : "Burst the diamond"}>
               <HoverText>{expanded ? "Gather the diamond" : "Burst the diamond"}</HoverText><span aria-hidden="true">{expanded ? "↙" : "↗"}</span>
@@ -148,7 +146,7 @@ export function MJShowcase() {
           </div>
         </div>
         </div>
-        <div className="mj-showcase-caption"><span>Creative direction · Web design · Interactive 3D</span><Link href="/start">Build something with us ↗</Link></div>
+        <div className="mj-showcase-caption"><Link href="/start">Build something with us ↗</Link></div>
       </div>
     </section>
   );

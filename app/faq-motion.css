@@ -1,0 +1,28 @@
+/* Centre-out colour reveal, adapted to an accessible FAQ accordion. */
+.faq-motion .faq-wrap{display:grid;grid-template-columns:1.15fr 1fr;gap:40px 64px;}
+.faq-motion .faq-head .display{max-width:none;}
+.faq-motion .faq-list{grid-column:1/-1;}
+.faq-motion .faq-item{display:grid;isolation:isolate;position:relative;}
+.faq-motion .faq-item>h3,.faq-motion .faq-a{grid-area:1/1;min-width:0;}
+.faq-motion .faq-item>h3{z-index:2;display:flex;}
+.meeting-home .faq-motion .faq-q{display:grid;grid-template-columns:minmax(0,1fr) 32px;gap:28px;padding:32px 24px;min-height:132px;font-size:clamp(24px,3vw,42px);line-height:1.16;}
+.faq-motion .faq-label{color:rgba(25,23,19,.55);background:linear-gradient(var(--ink),var(--ink)) left center/100% 100% no-repeat;background-clip:text;-webkit-background-clip:text;transition:opacity .12s,transform .45s var(--ease);}
+.faq-motion .faq-q .ic{width:32px;height:32px;border:0;border-radius:0;background:none;color:var(--ink);font:400 30px/1 var(--sans);}
+.faq-motion .faq-item[data-state="open"] .faq-q .ic{background:none;color:var(--ink);transform:rotate(45deg);}
+.faq-motion .faq-item[data-state="open"] .faq-label{opacity:0;transform:translateY(-12px);}
+.faq-motion .faq-q:focus-visible{outline:2px solid var(--ink);outline-offset:-5px;}
+.faq-motion .faq-a{display:flex;align-items:center;z-index:1;background:var(--red);padding:32px 84px 32px 24px;pointer-events:none;clip-path:inset(50% 0);transition:clip-path .48s cubic-bezier(.16,1,.3,1);}
+.faq-motion .faq-a[data-state]{animation:none;}
+.faq-motion .faq-a[data-state="open"]{clip-path:inset(0);}
+.meeting-home .faq-motion .faq-a p{max-width:72ch;margin:0;font:400 clamp(16px,1.6vw,21px)/1.5 var(--sans);color:var(--ink);text-wrap:pretty;transform:translateY(10px);transition:transform .5s var(--ease);}
+.faq-motion .faq-a[data-state="open"] p{transform:translateY(0);}
+@media(max-width:760px){
+ .faq-motion .faq-wrap{grid-template-columns:1fr;gap:24px;}
+ .meeting-home .faq-motion .faq-q{grid-template-columns:minmax(0,1fr) 24px;gap:14px;padding:26px 12px;min-height:132px;font-size:26px;}
+ .faq-motion .faq-a{padding:26px 50px 26px 12px;}
+ .meeting-home .faq-motion .faq-a p{font-size:16px;line-height:1.5;}
+ .faq-motion .faq-q .ic{width:24px;height:24px;font-size:26px;}
+}
+@media(prefers-reduced-motion:reduce){
+ .faq-motion .faq-label,.faq-motion .faq-a,.faq-motion .faq-a p,.faq-motion .faq-q .ic{transition:none;transform:none;}
+}

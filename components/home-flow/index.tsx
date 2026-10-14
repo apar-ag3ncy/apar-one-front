@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,8 +10,8 @@ import { useFeaturedHover } from "./use-featured-hover";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { HoverText } from "../hover-text";
 
-export function ProgressiveQuote({ id, label, text, explanation, dark = false }: {
-  id: string; label: string; text: string; explanation: string; dark?: boolean;
+export function ProgressiveQuote({ id, text, dark = false }: {
+  id: string; text: string; dark?: boolean;
 }) {
   const root = useRef<HTMLElement>(null);
   const cinematic = id === "studio";
@@ -37,9 +37,7 @@ export function ProgressiveQuote({ id, label, text, explanation, dark = false }:
           .fromTo(el.querySelectorAll(".pq-beyond-word"), { yPercent: 110, rotate: 5, opacity: 0 },
             { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.15, duration: 1, ease: "power3.out" }, 0.65)
           .fromTo(el.querySelector(".pq-stroke"), { scaleX: 0 },
-            { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 1.35)
-          .fromTo(el.querySelector(".pq-explanation"), { y: 22, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.6 }, 1.55);
+            { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 1.35);
         return;
       }
       const words = root.current?.querySelectorAll(".pq-word");
@@ -53,7 +51,6 @@ export function ProgressiveQuote({ id, label, text, explanation, dark = false }:
   }, [cinematic]);
   return <section ref={root} id={id} className={`progressive-quote${cinematic ? " is-cinematic" : ""}${dark ? " is-dark" : ""}`} aria-labelledby={`${id}-quote`}>
     <div className="pq-sticky wrap">
-      <span className="flow-kicker">{label}</span>
       {cinematic ? <h2 id={`${id}-quote`} aria-label={text}>
         <span className="pq-limitless" aria-hidden="true">
           <i className="pq-boundary pq-boundary-left" />
@@ -62,19 +59,17 @@ export function ProgressiveQuote({ id, label, text, explanation, dark = false }:
         </span>
         <span className="pq-beyond" aria-hidden="true"><span className="pq-word-mask"><span className="pq-beyond-word">Beyond</span></span>{" "}<span className="pq-word-mask"><span className="pq-beyond-word">Culture.</span></span><i className="pq-stroke" /></span>
       </h2> : <h2 id={`${id}-quote`} aria-label={text}>{text.split(" ").map((word, i) => <span className="pq-word" aria-hidden="true" key={i}>{word}{" "}</span>)}</h2>}
-      <p className="pq-explanation">{explanation}</p>
-      <span className="pq-cue" aria-hidden="true">Scroll to discover <span>↓</span></span>
     </div>
   </section>;
 }
 
 const SELECTED = [
   {
-    "slug": "chheda",
-    "src": "/work/featured/chheda-banner.webp",
-    "title": "Chheda Jewellers",
-    "type": "Campaign direction",
-    "ratio": "1920/1080"
+    "slug": "signi",
+    "src": "/work/signi/hero.jpg",
+    "title": "Signi",
+    "type": "Lab-grown jewellery campaign",
+    "ratio": "1400/1750"
   },
   {
     "slug": "chheda",
@@ -158,7 +153,7 @@ export function FeaturedProjects() {
   const grid = useRef<HTMLDivElement>(null);
   useFeaturedHover(grid);
   return <section id="featured-work" className="flow-featured flow-section"><div className="wrap">
-    <div className="flow-heading"><Reveal as="h2">Featured Work</Reveal><p>A selection of brand identities, campaigns and digital experiences created for ambitious brands.</p></div>
+    <div className="flow-heading"><Reveal as="h2">Featured Work</Reveal></div>
     <div ref={grid} className="flow-project-grid">{SELECTED.map((project, i) => <Reveal as={Link} href={`/work/${project.slug}`} className="flow-project" key={project.src} i={i % 2}>
       <div className="flow-project-image"><PhotoSlot src={project.src} placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} /></div>
       <div className="flow-project-caption"><span>{project.type}</span>
@@ -172,10 +167,9 @@ export function FeaturedProjects() {
 }
 
 export function MovingClients() {
-  const [paused, setPaused] = useState(false);
   const rows = [FEATURED_CLIENTS.slice(0, 4), FEATURED_CLIENTS.slice(4, 8), FEATURED_CLIENTS.slice(8, 12)];
-  return <section id="clients" className="flow-clients flow-section" data-paused={paused} aria-labelledby="flow-clients-title">
-    <div className="wrap flow-client-heading"><div><span className="flow-kicker">04 / In good company</span><h2 id="flow-clients-title">Brands we<br /> work with.</h2></div><div><p>Jewellery houses, lifestyle brands and ambitious businesses. Each with a world of its own.</p><button className="flow-motion-toggle" onClick={() => setPaused(p => !p)} aria-pressed={paused}><HoverText>{paused ? "Resume logo motion" : "Pause logo motion"}</HoverText></button></div></div>
+  return <section id="clients" className="flow-clients flow-section" aria-labelledby="flow-clients-title">
+    <div className="wrap flow-client-heading"><div><h2 id="flow-clients-title">Recommended<br /> by the best.</h2></div></div>
     <div className="flow-logo-rows">{rows.map((row, i) => <div className="flow-logo-window" key={i}><div className={`flow-logo-track row-${i}`}>
       {[0, 1, 2].map(copy => <div className="flow-logo-group" key={copy} aria-hidden={copy ? true : undefined}>{row.map(client => <Link href={client.href} tabIndex={copy ? -1 : undefined} aria-label={client.name} key={client.slug}>
         {/* Client-owned logo assets; duplicate groups are decorative. */}
