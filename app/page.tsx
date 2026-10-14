@@ -1,4 +1,4 @@
-import { HomeArrival } from "@/components/hyperspace-intro";
+import { Hero } from "@/components/hero";
 import { MJShowcase } from "@/components/mj-showcase";
 import { Faq } from "@/components/faq";
 import { TestimonialCarousel } from "@/components/testimonial-carousel";
@@ -8,7 +8,7 @@ import { ProgressiveQuote, FeaturedProjects, MovingClients } from "@/components/
 
 export default function Home() {
   return <main className="meeting-home">
-    <HomeArrival />
+    <Hero start />
     <ProgressiveQuote id="studio" text="Limitless. Beyond Culture." />
     <FeaturedProjects />
     <MJShowcase />
