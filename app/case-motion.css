@@ -76,7 +76,7 @@
 .case-reel-heading{display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;gap:24px;}
 .case-reel-heading span:last-child{color:var(--c-soft);}
 .case-reel-stage{position:relative;height:calc(100svh - 105px);min-height:510px;max-height:900px;padding-top:25px;display:flex;flex-direction:column;}
-.case-reel-viewport{position:relative;overflow-x:auto;overflow-y:hidden;flex:1;scroll-snap-type:x mandatory;scrollbar-width:none;}
+.case-reel-viewport{position:relative;overflow-x:auto;overflow-y:hidden;flex:1;scroll-snap-type:x mandatory;scroll-padding-inline:var(--gut);scrollbar-width:none;}
 .case-reel-viewport::-webkit-scrollbar{display:none;}
 .case-work-journey[data-pinned="true"] .case-reel-viewport{overflow:hidden;scroll-snap-type:none;}
 .case-reel-track{--reel-height:min(56svh,620px);display:flex;align-items:center;gap:6vw;height:100%;width:max-content;padding:20px 5vw;}

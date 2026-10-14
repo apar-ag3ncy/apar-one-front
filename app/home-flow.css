@@ -1,5 +1,6 @@
 /* Meeting-approved homepage sequence. Scoped to preserve the landing and footer. */
 .meeting-home{--flow-gap:clamp(70px,8vw,120px);}
+.meeting-home :is(#featured-work,#clients,#testimonials,#contact){scroll-margin-top:90px;}
 .flow-section{padding-block:var(--flow-gap);}
 .flow-kicker{display:block;font:500 11px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;}
 .progressive-quote{position:relative;min-height:145svh;background:var(--cream);scroll-margin-top:80px;}
