@@ -86,11 +86,11 @@ const SELECTED = [
     "ratio": "2000/1200"
   },
   {
-    "slug": "chheda",
-    "src": "/work/featured/chheda-classic.webp",
-    "title": "Chheda Jewellers",
-    "type": "Collection campaign",
-    "ratio": "1996/1400"
+    "slug": "high-on-smiles",
+    "src": "/work/featured/high-on-smiles.webp",
+    "title": "High on Smiles",
+    "type": "Clinic identity",
+    "ratio": "20/13"
   },
   {
     "slug": "a-paramount",
@@ -107,46 +107,18 @@ const SELECTED = [
     "ratio": "1980/1400"
   },
   {
-    "slug": "chheda",
-    "src": "/work/featured/chheda-diamond.webp",
-    "title": "Chheda Jewellers",
-    "type": "Diamond collection",
-    "ratio": "2000/1334"
+    "slug": "kundan-jewellers",
+    "src": "/work/featured/kundan-jewellers.webp",
+    "title": "Kundan Jewellers",
+    "type": "Gold collection",
+    "ratio": "20/13"
   },
   {
-    "slug": "achal",
-    "src": "/work/featured/achal-one-interior.webp",
-    "title": "Achal One",
-    "type": "Identity in context",
-    "ratio": "2000/1125"
-  },
-  {
-    "slug": "chheda",
-    "src": "/work/featured/chheda-bridal.webp",
-    "title": "Chheda Jewellers",
-    "type": "Bridal collection",
-    "ratio": "2000/1334"
-  },
-  {
-    "slug": "achal",
-    "src": "/work/featured/achal-one-emblem.webp",
-    "title": "Achal One",
-    "type": "Brand system",
-    "ratio": "2000/1200"
-  },
-  {
-    "slug": "chheda",
-    "src": "/work/featured/chheda-red.webp",
-    "title": "Chheda Jewellers",
-    "type": "Editorial campaign",
-    "ratio": "2000/1334"
-  },
-  {
-    "slug": "achal",
-    "src": "/work/featured/achal-one-space.webp",
-    "title": "Achal One",
-    "type": "Environmental branding",
-    "ratio": "2000/1125"
+    "slug": "harshit-gold",
+    "src": "/work/featured/harshit-gold.webp",
+    "title": "Harshit Gold",
+    "type": "Jewellery campaign",
+    "ratio": "20/13"
   }
 ];
 export function FeaturedProjects() {

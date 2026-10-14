@@ -18,7 +18,8 @@ const PROFILES: Record<string, CaseMotionProfile> = {
   diarah: { form: "facet", direction: 1, bend: 1.4, opening: "power3.out" },
   "maison-mireyaa": { form: "petal", direction: -1, bend: 1.1, opening: "power2.out", cover: "/work/featured/mireyaa-botanical.webp" },
   achal: { form: "architecture", direction: 1, bend: .6, opening: "power3.out", cover: "/work/featured/achal-one-signage.webp" },
-  "high-on-smiles": { form: "orbit", direction: -1, bend: .7, opening: "power2.out" },
+  "high-on-smiles": { form: "orbit", direction: -1, bend: .7, opening: "power2.out", cover: "/work/high-on-smiles/curated/smiling-patient-hero.webp",
+    gallery: { lift: 22, tilt: .4, restingScale: .98, scrub: .8 } },
   "silver-emporium": { form: "orbit", direction: 1, bend: 1, opening: "power3.out" },
   "a-paramount": { form: "architecture", direction: -1, bend: .35, opening: "power3.out", cover: "/work/featured/paramount-ceiling.webp",
     gallery: { lift: 20, tilt: 0, restingScale: .98, scrub: .75 } },
@@ -37,6 +38,11 @@ export function caseMotion(slug: string): CaseMotionProfile {
 
 /** Supplied APAR artwork, never generated stand-ins for a client's project. */
 export const CURATED_CASE_MEDIA: Record<string, { hero: string; photos: string[] }> = {
+  "high-on-smiles": {
+    hero: "/work/high-on-smiles/curated/smiling-patient-hero.webp",
+    photos: ["patient-education", "brand-stationery", "child-portrait", "care-products", "treatment-suite", "clinic-exterior", "reception-signage", "clinic-interior"]
+      .map(name => `/work/high-on-smiles/curated/${name}.webp`),
+  },
   girvaan: {
     hero: "/work/girvaan/curated/pink-bangle-hero.webp",
     photos: ["orchid-ring", "lotus-necklace", "petal-bracelet", "rose-ring", "peacock-ring", "sunburst-ring", "emerald-earrings", "emerald-necklace"]

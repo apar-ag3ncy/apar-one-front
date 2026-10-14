@@ -398,7 +398,7 @@ export const CASES: Record<string, CaseData> = {
       accentSoft: "rgba(255,255,255,.18)",
       line: "rgba(255,255,255,.26)",
     },
-    heroPlaceholder: "Drop High on Smiles hero image (bright / clinical)",
+    heroPlaceholder: "High on Smiles · A bright, welcoming dental identity",
     meta: [
       { label: "Services", value: "Branding · Social · Performance" },
       { label: "Sector", value: "Dental · Healthcare" },
@@ -423,10 +423,14 @@ export const CASES: Record<string, CaseData> = {
         </>
       ),
       gallery: [
-        { cls: "tall", placeholder: "Smiling patient portrait", ratio: "4/5" },
-        { cls: "wide", placeholder: "Clinic / brand key visual", ratio: "16/11" },
-        { cls: "half", placeholder: "Social / education post", ratio: "5/4" },
-        { cls: "half", placeholder: "Identity / signage", ratio: "5/4" },
+        { cls: "wide", placeholder: "Patient education · A reassuring first impression", ratio: "3/2" },
+        { cls: "wide", placeholder: "Brand stationery · The clinic identity", ratio: "10/7" },
+        { cls: "tall", placeholder: "Smiling young patient · Human-centred care", ratio: "1/1" },
+        { cls: "wide", placeholder: "Care products · Branded essentials", ratio: "16/9" },
+        { cls: "wide", placeholder: "Treatment suite · Calm clinical space", ratio: "10/7" },
+        { cls: "wide", placeholder: "Clinic exterior · The identity at scale", ratio: "16/9" },
+        { cls: "wide", placeholder: "Reception signage · A welcoming arrival", ratio: "16/9" },
+        { cls: "wide", placeholder: "Clinic interior · A brighter experience", ratio: "10/7" },
       ],
     },
     stats: [
