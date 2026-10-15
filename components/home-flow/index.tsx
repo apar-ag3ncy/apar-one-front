@@ -67,6 +67,7 @@ const SELECTED = [
   {
     "slug": "signi",
     "src": "/work/signi/hero.webp",
+    "width": 1400,
     "title": "Signi",
     "type": "Lab-grown jewellery campaign",
     "ratio": "1400/1750"
@@ -127,7 +128,10 @@ export function FeaturedProjects() {
   return <section id="featured-work" className="flow-featured flow-section"><div className="wrap">
     <div className="flow-heading"><Reveal as="h2">Featured Work</Reveal></div>
     <div ref={grid} className="flow-project-grid">{SELECTED.map((project, i) => <Reveal as={Link} href={`/work/${project.slug}`} className="flow-project" key={project.src} i={i % 2}>
-      <div className="flow-project-image"><PhotoSlot src={project.src} placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} /></div>
+      <div className="flow-project-image"><PhotoSlot src={project.src}
+        srcSet={`${project.src.replace(/\.webp$/, "-480.webp")} 480w, ${project.src.replace(/\.webp$/, "-960.webp")} 960w, ${project.src} ${"width" in project ? project.width : 1600}w`}
+        sizes="(max-width: 800px) 48vw, 44vw"
+        placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} /></div>
       <div className="flow-project-caption"><span>{project.type}</span>
         <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true">→</i>
           <span aria-hidden="true">{project.title.split(" ").map((word, wi) => <span key={wi} className="flow-title-word">{[...word].map((letter, li) => <span className="flow-letter-window" key={li}><span className="flow-letter-stack"><span>{letter}</span><span>{letter}</span></span></span>)}{wi < project.title.split(" ").length - 1 ? " " : ""}</span>)}</span>

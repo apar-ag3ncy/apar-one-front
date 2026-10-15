@@ -9,6 +9,9 @@ interface PhotoSlotProps {
   /** Image file, e.g. /work/<slug>/1.jpg. Omit when the file doesn't exist yet
    *  to show the fallback without firing a 404. */
   src?: string;
+  /** Responsive variants for cards that render much smaller than the source. */
+  srcSet?: string;
+  sizes?: string;
   /** Accessible name for the frame (also the alt of the photo). Never rendered
    *  as visible copy when a `logo` fallback is given. */
   placeholder?: string;
@@ -67,6 +70,8 @@ export function PhotoSlot(props: PhotoSlotProps) {
 
 function PhotoFrame({
   src,
+  srcSet,
+  sizes,
   placeholder = "Drop an image",
   radius = 12,
   ratio,
@@ -123,6 +128,8 @@ function PhotoFrame({
           ref={ref}
           className="photo-slot-img"
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={placeholder}
           width={dimensions.width}
           height={dimensions.height}

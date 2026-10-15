@@ -31,7 +31,10 @@ export function SlowMo() {
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
     const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    // Touch scrolling is native. Keep the cinematic per-frame layer on wider
+    // screens, where its image parallax, velocity skew and SplitText have room
+    // to breathe; on phones they compete with touch scrolling and hydration.
+    media.add("(min-width: 741px) and (prefers-reduced-motion: no-preference)", () => {
     const splits: SplitText[] = [];
     let alive = true;
     const ctx = gsap.context((self) => {

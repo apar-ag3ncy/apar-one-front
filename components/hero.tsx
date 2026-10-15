@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { BandBackdrop } from "./band-backdrop";
@@ -12,6 +12,14 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 const LINE_1 = "Brands worth".split(" ");
 const LINE_2 = "remembering.".split(" ");
+const mobileQuery = "(max-width: 740px)";
+const subscribeMobile = (notify: () => void) => {
+  const query = window.matchMedia(mobileQuery);
+  query.addEventListener("change", notify);
+  return () => query.removeEventListener("change", notify);
+};
+const getMobile = () => window.matchMedia(mobileQuery).matches;
+const getServerMobile = () => false;
 
 /**
  * Home hero - the brand's Algolia-style beam promoted to the landing screen:
@@ -22,6 +30,10 @@ const LINE_2 = "remembering.".split(" ");
  */
 export function Hero({ start }: { start: boolean }) {
   const reduce = useReducedMotion();
+  // Mobile has an early CSS entrance so its copy can paint before hydration.
+  // Settle Motion immediately there; two concurrent transform animations on
+  // the same elements were non-composited and slowed the first scroll.
+  const mobile = useSyncExternalStore(subscribeMobile, getMobile, getServerMobile);
   const ref = useRef<HTMLElement>(null);
 
   // Butter: begin the choreography only once the main thread is calm. On load
@@ -76,7 +88,7 @@ export function Hero({ start }: { start: boolean }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const animate = reduce ? "show" : start && calm ? "show" : "hidden";
+  const animate = reduce || mobile ? "show" : start && calm ? "show" : "hidden";
   const base = 0.08;
   // The wordmark's drop-shadow (a 64px blur filter on a ~400x275px layer) is
   // re-rendered by the compositor on every frame its transform animates - it
@@ -115,7 +127,7 @@ export function Hero({ start }: { start: boolean }) {
               hidden: { y: "120%", opacity: 0 },
               show: { y: "0%", opacity: 1 },
             }}
-            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.6 + idx * 0.055 }}
+            transition={mobile ? { duration: 0 } : { duration: 1.05, ease: [0.22, 1, 0.36, 1], delay: base + 0.6 + idx * 0.055 }}
           >
             {txt}
           </motion.span>
@@ -135,6 +147,7 @@ export function Hero({ start }: { start: boolean }) {
         >
           <motion.div
             className="hb-wordmark"
+            onAnimationEnd={() => { if (mobile) setSettled(true); }}
             // opacity + scale only: these are composited. The old blur(14px) ->
             // 0 animation re-rasterised the ~400x275px mark (with its drop
             // shadow) on every frame of a 1.3s tween.
@@ -145,7 +158,7 @@ export function Hero({ start }: { start: boolean }) {
                 ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
                 : { hidden: { opacity: 0, scale: 1.04 }, show: { opacity: 1, scale: 1 } }
             }
-            transition={{ duration: 1.2, ease: EASE, delay: base + 0.05 }}
+            transition={mobile ? { duration: 0 } : { duration: 1.2, ease: EASE, delay: base + 0.05 }}
           >
             <AparLogo />
           </motion.div>
@@ -161,7 +174,7 @@ export function Hero({ start }: { start: boolean }) {
             initial={{ y: 22, opacity: 0 }}
             animate={animate}
             variants={{ hidden: { y: 22, opacity: 0 }, show: { y: 0, opacity: 1 } }}
-            transition={{ duration: 0.7, ease: EASE, delay: base + 1.3 }}
+            transition={mobile ? { duration: 0 } : { duration: 0.7, ease: EASE, delay: base + 1.3 }}
           >
             <Magnetic strength={0.3}>
               <Link className="btn cream" href="/work" prefetch={false}>
@@ -182,8 +195,8 @@ export function Hero({ start }: { start: boolean }) {
           initial={{ opacity: 0, y: 10 }}
           animate={animate}
           variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-          transition={{ duration: 0.6, ease: EASE, delay: base + 1.65 }}
-          onAnimationComplete={() => setSettled(true)}
+          transition={mobile ? { duration: 0 } : { duration: 0.6, ease: EASE, delay: base + 1.65 }}
+          onAnimationComplete={() => { if (!mobile) setSettled(true); }}
         >
           <span className="cue-mouse" aria-hidden />
           <span>Scroll to explore</span>

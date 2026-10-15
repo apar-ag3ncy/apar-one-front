@@ -34,8 +34,10 @@ function TalkToUsFallback() {
   const [orbReady, setOrbReady] = useState(false);
   useEffect(() => {
     // The decorative WebGL orb does not need to compete with the hero for
-    // first paint, hydration, or its largest-contentful-paint window.
-    const timer = window.setTimeout(() => setOrbReady(true), 1800);
+    // first paint, hydration, or its largest-contentful-paint window. The CSS
+    // fallback has the same shape and keeps the contact link usable meanwhile.
+    const mobile = window.matchMedia("(max-width: 740px)").matches;
+    const timer = window.setTimeout(() => setOrbReady(true), mobile ? 8000 : 1800);
     return () => window.clearTimeout(timer);
   }, []);
   return (
