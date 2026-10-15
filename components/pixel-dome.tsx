@@ -252,10 +252,11 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
         | WebGLRenderingContext
         | null) ?? null;
     if (!gl) return;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Touch scrolling dispatches pointermove too. The comet has no hover target
-    // on coarse pointers, so keep the painted beam but skip its animation work.
-    const interactive = !reduce && !matchMedia("(pointer: coarse)").matches;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const hoverAvailable = matchMedia("(any-hover: hover)");
+    // A touchscreen can also have a mouse or trackpad. Follow hover capability
+    // rather than the primary pointer, and update when devices change.
+    let interactive = !reducedMotion.matches && hoverAvailable.matches;
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
     const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
@@ -352,7 +353,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     };
 
     // ---- state: the cursor comet on the beam's grid ----
-    const comet = new Comet();
+    let comet = new Comet();
     const boxes = new BoxTracker();
     let active = false; // the head has been placed (it snaps to the first sighting)
     let inside = false; // pointer over the band
@@ -440,6 +441,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
 
     let pointerX = -1, pointerY = -1;
     const onMove = (e: PointerEvent) => {
+      if (!interactive || e.pointerType === "touch") return;
       pointerX = e.clientX; pointerY = e.clientY;
       const top = rt - (window.scrollY - rsy);
       const isIn =
@@ -482,6 +484,30 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       const top = rt - (window.scrollY - rsy);
       if (inside && (pointerX < rl || pointerX > rl + rw || pointerY < top || pointerY > top + rh)) leave();
     };
+    const listen = () => {
+      window.addEventListener("pointermove", onMove, { passive: true });
+      window.addEventListener("blur", leave);
+      window.addEventListener("scroll", onScroll, { passive: true });
+    };
+    const unlisten = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("blur", leave);
+      window.removeEventListener("scroll", onScroll);
+    };
+    const syncInteraction = () => {
+      const next = !reducedMotion.matches && hoverAvailable.matches;
+      if (next === interactive) return;
+      interactive = next;
+      if (next) { listen(); wake(); return; }
+      unlisten();
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (inside) setDomeHover(-1);
+      inside = false; active = false; leftAt = -1; ride = 0;
+      comet = new Comet();
+      boxes.reset();
+      pop.resize(gl, w, h, cellX, cellY);
+      draw();
+    };
 
     const io = new IntersectionObserver(([en]) => {
       onScreen = en?.isIntersecting ?? true;
@@ -502,20 +528,18 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     resize();
     draw(); // initial static dome
 
-    if (interactive) {
-      window.addEventListener("pointermove", onMove, { passive: true });
-      window.addEventListener("blur", leave);
-      window.addEventListener("scroll", onScroll, { passive: true });
-    }
+    if (interactive) listen();
+    reducedMotion.addEventListener("change", syncInteraction);
+    hoverAvailable.addEventListener("change", syncInteraction);
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
       if (inside) setDomeHover(-1);
       io.disconnect();
       ro.disconnect();
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("blur", leave);
-      window.removeEventListener("scroll", onScroll);
+      reducedMotion.removeEventListener("change", syncInteraction);
+      hoverAvailable.removeEventListener("change", syncInteraction);
+      unlisten();
       pop.dispose(gl);
       gl.deleteProgram(prog);
       gl.deleteShader(vs);

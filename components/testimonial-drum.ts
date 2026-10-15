@@ -1,9 +1,10 @@
 /** Original cylindrical projection inspired by the reference's visible motion.
  * Only front-facing cards own strips; offscreen cards release their snapshots. */
 export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement, width: number, height: number) {
-  const steps = 24, slice = width / steps, radius = width * 1.35;
-  // Rotated strips are rasterized separately. Bleed a few pixels of the same
-  // card image into the next strip so subpixel rounding cannot expose seams.
+  const compact = matchMedia("(max-width: 767px)").matches;
+  const steps = compact ? 20 : 24, slice = width / steps, radius = width * 1.35;
+  // Rotated strips are rasterized separately. Bleed only into the next strip;
+  // the outer edge must end exactly where the original card image ends.
   const bleed = 3;
   const pitch = 1 / 1.35 + .09;
   const layers = sources.map((source, index) => {
@@ -21,15 +22,14 @@ export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement,
     for (let j = 0; j < steps; j++) {
       const strip = document.createElement("div");
       strip.className = "tc-strip";
-      strip.style.cssText = `width:${slice + bleed}px;height:${height}px;`;
+      const stripWidth = slice + (j < steps - 1 ? bleed : 0);
+      strip.style.cssText = `width:${stripWidth}px;height:${height}px;transform-origin:${slice / 2}px 50%;`;
       const print = sources[index].cloneNode(true) as HTMLElement;
       print.removeAttribute("data-brand");
       print.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
       print.querySelectorAll("canvas").forEach(el => el.remove());
       print.style.cssText = `width:${width}px;height:${height}px;transform:translateX(${-j * slice}px);`;
       print.querySelectorAll<HTMLImageElement>("img").forEach(img => {
-        img.loading = "eager";
-        img.decoding = "sync";
         const ready = () => {
           if (img.classList.contains("photo-slot-img") && img.naturalWidth) img.parentElement?.querySelectorAll(".case-ph,.img-slot-cap").forEach(el => el.remove());
         };
@@ -50,7 +50,7 @@ export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement,
         const distance = wrap(i - position + sources.length / 2) - sources.length / 2;
         const angle = distance * pitch;
         const layer = layers[i];
-        const visible = Math.abs(angle) < 1.95;
+        const visible = Math.abs(angle) < (compact ? 1.5 : 1.95);
         layer.el.style.display = visible ? "block" : "none";
         if (!visible) {
           if (layer.strips.length) { layer.el.replaceChildren(); layer.strips = []; }

@@ -27,7 +27,7 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
   const visual = useRef<HTMLDivElement>(null);
   const [nearViewport, setNearViewport] = useState(false);
 
-  // The drum duplicates the visible cards into 24 strips apiece. Building it
+  // The drum duplicates the visible cards into strips. Building it
   // during hydration costs a long main-thread task even though this section is
   // many screens below the hero. Keep the ordinary first card as a usable
   // fallback, then prepare the drum before the visitor reaches it.
