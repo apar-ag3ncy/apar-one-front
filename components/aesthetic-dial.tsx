@@ -30,7 +30,7 @@ export function AestheticDial({
   const n = options.length;
   const step = 360 / n;
   const faceRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ a0: number; r0: number } | null>(null);
+  const dragRef = useRef<{ id: number; lastAngle: number; rotation: number } | null>(null);
   const [dragRot, setDragRot] = useState<number | null>(null);
 
   const baseRot = -value * step;
@@ -45,19 +45,31 @@ export function AestheticDial({
   };
 
   const onDown = (e: React.PointerEvent) => {
+    if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0) ||
+        (e.target as HTMLElement).closest(".dial-mark")) return;
     faceRef.current?.setPointerCapture(e.pointerId);
-    dragRef.current = { a0: angleOf(e), r0: baseRot };
+    dragRef.current = { id: e.pointerId, lastAngle: angleOf(e), rotation: baseRot };
     setDragRot(baseRot);
   };
   const onMove = (e: React.PointerEvent) => {
-    if (!dragRef.current) return;
-    setDragRot(dragRef.current.r0 + (angleOf(e) - dragRef.current.a0));
+    const drag = dragRef.current;
+    if (!drag || drag.id !== e.pointerId) return;
+    const angle = angleOf(e);
+    // Keep rotation continuous while the pointer crosses atan2's -180/180 seam.
+    drag.rotation += ((angle - drag.lastAngle + 540) % 360) - 180;
+    drag.lastAngle = angle;
+    setDragRot(drag.rotation);
   };
-  const onUp = () => {
-    if (dragRef.current && dragRot != null) {
-      const idx = ((Math.round(-dragRot / step) % n) + n) % n;
-      onChange(idx);
-    }
+  const onUp = (e: React.PointerEvent) => {
+    const drag = dragRef.current;
+    if (!drag || drag.id !== e.pointerId) return;
+    const idx = ((Math.round(-drag.rotation / step) % n) + n) % n;
+    onChange(idx);
+    dragRef.current = null;
+    setDragRot(null);
+  };
+  const onCancel = (e: React.PointerEvent) => {
+    if (dragRef.current?.id !== e.pointerId) return;
     dragRef.current = null;
     setDragRot(null);
   };
@@ -71,7 +83,7 @@ export function AestheticDial({
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
-        onPointerCancel={onUp}
+        onPointerCancel={onCancel}
       >
         <div className="dial-tread" style={{ transform: `rotate(${rot}deg)` }}>
           {options.map((o, i) => (

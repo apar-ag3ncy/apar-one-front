@@ -58,7 +58,7 @@ export function Faq() {
           </Reveal>
         </div>
         <Accordion type="single" collapsible className="faq-list" value={active}
-          onValueChange={value => { setPinned(hovered ?? value); setHovered(null); }}
+          onValueChange={value => { setPinned(value); setHovered(null); }}
           onKeyDown={event => {
             if (event.key === "Escape") { setPinned(""); setHovered(null); event.preventDefault(); }
           }}>

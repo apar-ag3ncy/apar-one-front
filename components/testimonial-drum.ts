@@ -2,6 +2,9 @@
  * Only front-facing cards own strips; offscreen cards release their snapshots. */
 export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement, width: number, height: number) {
   const steps = 24, slice = width / steps, radius = width * 1.35;
+  // Rotated strips are rasterized separately. Bleed a few pixels of the same
+  // card image into the next strip so subpixel rounding cannot expose seams.
+  const bleed = 3;
   const pitch = 1 / 1.35 + .09;
   const layers = sources.map((source, index) => {
     const el = document.createElement("div");
@@ -18,7 +21,7 @@ export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement,
     for (let j = 0; j < steps; j++) {
       const strip = document.createElement("div");
       strip.className = "tc-strip";
-      strip.style.cssText = `width:${slice + .7}px;height:${height}px;`;
+      strip.style.cssText = `width:${slice + bleed}px;height:${height}px;`;
       const print = sources[index].cloneNode(true) as HTMLElement;
       print.removeAttribute("data-brand");
       print.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));

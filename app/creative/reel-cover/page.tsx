@@ -61,7 +61,7 @@ export default function ReelCoverShowcase() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationId: number;
+    let animationId = 0;
     let sparks: Spark[] = [];
     
     const resizeCanvas = () => {
@@ -72,6 +72,7 @@ export default function ReelCoverShowcase() {
     };
     
     resizeCanvas();
+    if (!particles) return;
     window.addEventListener("resize", resizeCanvas);
 
     // Speed multiplier based on control panel selection
@@ -95,40 +96,60 @@ export default function ReelCoverShowcase() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (particles) {
-        // Spawn rate based on speed
-        const spawnChance = speed === "elegant" ? 0.04 : speed === "balanced" ? 0.08 : 0.15;
-        if (Math.random() < spawnChance && sparks.length < 50) {
-          sparks.push(createSpark());
-        }
-
-        sparks = sparks.filter((s) => {
-          s.x += s.speedX;
-          s.y += s.speedY;
-          s.life++;
-          
-          // Fade sparks as they reach maxLife or float higher
-          const lifeRatio = s.life / s.maxLife;
-          const currentOpacity = s.opacity * (1 - lifeRatio) * Math.min(1, s.y / (canvas.height * 0.4));
-          
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(212, 175, 55, ${currentOpacity})`;
-          ctx.shadowBlur = s.size * 2;
-          ctx.shadowColor = "rgba(212, 175, 55, 0.4)";
-          ctx.fill();
-
-          return s.life < s.maxLife && s.y > -10 && s.x > -10 && s.x < canvas.width + 10;
-        });
+      // Spawn rate based on speed
+      const spawnChance = speed === "elegant" ? 0.04 : speed === "balanced" ? 0.08 : 0.15;
+      if (Math.random() < spawnChance && sparks.length < 50) {
+        sparks.push(createSpark());
       }
+
+      sparks = sparks.filter((s) => {
+        s.x += s.speedX;
+        s.y += s.speedY;
+        s.life++;
+
+        // Fade sparks as they reach maxLife or float higher
+        const lifeRatio = s.life / s.maxLife;
+        const currentOpacity = s.opacity * (1 - lifeRatio) * Math.min(1, s.y / (canvas.height * 0.4));
+
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 175, 55, ${currentOpacity})`;
+        ctx.shadowBlur = s.size * 2;
+        ctx.shadowColor = "rgba(212, 175, 55, 0.4)";
+        ctx.fill();
+
+        return s.life < s.maxLife && s.y > -10 && s.x > -10 && s.x < canvas.width + 10;
+      });
 
       animationId = requestAnimationFrame(animate);
     };
 
-    animate();
+    let inView = false;
+    const pause = () => {
+      cancelAnimationFrame(animationId);
+      animationId = 0;
+    };
+    const resume = () => {
+      if (inView && !document.hidden && !animationId) {
+        animationId = requestAnimationFrame(animate);
+      }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) resume();
+      else pause();
+    });
+    observer.observe(canvas);
+    const onVisibilityChange = () => {
+      if (document.hidden) pause();
+      else resume();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      cancelAnimationFrame(animationId);
+      pause();
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [particles, speed]);

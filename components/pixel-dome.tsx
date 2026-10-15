@@ -253,6 +253,9 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
         | null) ?? null;
     if (!gl) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Touch scrolling dispatches pointermove too. The comet has no hover target
+    // on coarse pointers, so keep the painted beam but skip its animation work.
+    const interactive = !reduce && !matchMedia("(pointer: coarse)").matches;
 
     const vs = compile(gl, gl.VERTEX_SHADER, VERT);
     const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
@@ -482,7 +485,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
 
     const io = new IntersectionObserver(([en]) => {
       onScreen = en?.isIntersecting ?? true;
-      if (onScreen) wake();
+      if (onScreen && interactive) wake();
       else if (raf) {
         cancelAnimationFrame(raf);
         raf = 0;
@@ -499,7 +502,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     resize();
     draw(); // initial static dome
 
-    if (!reduce) {
+    if (interactive) {
       window.addEventListener("pointermove", onMove, { passive: true });
       window.addEventListener("blur", leave);
       window.addEventListener("scroll", onScroll, { passive: true });
