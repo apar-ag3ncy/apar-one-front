@@ -25,6 +25,8 @@ export function VoiceFeedback() {
   const previewUrl = useRef("");
   const requestId = useRef(0);
   const discardOnStop = useRef(false);
+  const nameInput = useRef<HTMLInputElement>(null);
+  const consentInput = useRef<HTMLInputElement>(null);
 
   const releaseMic = () => { stream.current?.getTracks().forEach(track => track.stop()); stream.current = null; };
   const clearPreview = () => {
@@ -83,7 +85,9 @@ export function VoiceFeedback() {
   };
 
   const submit = async () => {
-    if (!blob.current || !consent || name.trim().length < 2) { setError("Add your name and confirm you want to send this note."); return; }
+    if (!blob.current) { setError("Record a voice note before sending it."); return; }
+    if (name.trim().length < 2) { setError("Enter your name (at least two characters) to send your note."); nameInput.current?.focus(); return; }
+    if (!consent) { setError("Tick the privacy box to send your note to APĀR."); consentInput.current?.focus(); return; }
     setError(""); setPhase("sending");
     const form = new FormData();
     const mime = blob.current.type.split(";")[0];
@@ -106,18 +110,18 @@ export function VoiceFeedback() {
     {phase !== "closed" && <div className="vf-panel" role="group" aria-label="Private voice feedback">
       <div className="vf-panel-head"><div><span className="vf-eyebrow">A NOTE FOR APĀR</span><h3>Tell us in your own voice.</h3></div><button type="button" className="vf-close" onClick={close} aria-label="Close voice feedback">×</button></div>
       {phase === "sent" ? <p className="vf-message" role="status">Thank you. Your note has been sent privately to our team.</p> : <>
-        <p className="vf-help">Up to one minute. You can listen back before sending. This recording is private and will not appear on the website.</p>
-        <label className="vf-field">Your name <input autoComplete="name" maxLength={80} value={name} onChange={e => setName(e.target.value)} placeholder="Your name" disabled={phase === "sending" || phase === "recording"} /></label>
+        <p className="vf-help">{phase === "review" ? "Listen back, enter your name, tick the privacy box, then send. Your note stays private." : "Up to one minute. You can listen back before sending. This recording is private and will not appear on the website."}</p>
+        <label className="vf-field">Your name <input ref={nameInput} autoComplete="name" maxLength={80} value={name} onChange={e => { setName(e.target.value); setError(""); }} placeholder="Your name" disabled={phase === "sending" || phase === "recording"} /></label>
         <label className="vf-field">Brand / project <span>(optional)</span><input maxLength={80} value={brand} onChange={e => setBrand(e.target.value)} placeholder="Your brand" disabled={phase === "sending" || phase === "recording"} /></label>
         <label className="vf-honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
         {phase === "review" && preview && <audio className="vf-audio" controls preload="metadata" src={preview} aria-label="Review your voice note" />}
         {phase === "recording" && <p className="vf-recording" role="status"><span className="vf-rec-dot" /> Recording · {seconds}s / {LIMIT_SECONDS}s</p>}
         {error && <p className="vf-error" role="alert">{error}</p>}
-        {phase === "review" && <label className="vf-consent"><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} /> I agree to send this recording privately to APĀR for feedback.</label>}
+        {phase === "review" && <label className="vf-consent"><input ref={consentInput} type="checkbox" checked={consent} onChange={e => { setConsent(e.target.checked); setError(""); }} /> I agree to send this recording privately to APĀR for feedback.</label>}
         <div className="vf-actions">
           {(phase === "ready" || phase === "review") && <button type="button" className="vf-action" onClick={begin}>{phase === "review" ? "Record again" : "Start recording"}</button>}
           {phase === "recording" && <button type="button" className="vf-action" onClick={stop}>Stop recording</button>}
-          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit} disabled={!consent || name.trim().length < 2}>Send privately ↗</button>}
+          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit}>Send privately ↗</button>}
           {phase === "sending" && <span className="vf-sending" role="status">Sending securely…</span>}
         </div>
       </>}
