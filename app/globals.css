@@ -468,14 +468,8 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 /* ============================================================
    motion layer styles
    ============================================================ */
-@media (prefers-reduced-motion: no-preference){
-  body{ animation: pageReveal .55s var(--ease) both; }
-}
-/* opacity-only: animating `transform` on <body> turns it into a containing
-   block for position:fixed descendants, which detaches the custom cursor /
-   nav / scroll-progress from the viewport (they scroll away after the first
-   section). Never animate transform/filter/perspective on <body>. */
-@keyframes pageReveal{ from{ opacity:0; } to{ opacity:1; } }
+/* The hero and route wipe own the entrance. Fading the entire body from zero
+   hid the first paint (including the WebGL beam) and delayed Speed Index. */
 
 /* ---------- site cursor: a single black navigation arrow ---------- */
 /* The whole site uses one cursor - a charcoal navigation arrow (thin white
@@ -657,6 +651,25 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .hero-beam .cue-mouse{border-color:rgba(244,237,226,.4);}
 @media (max-width:740px){
   .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);font-size:round(clamp(30px,8.6vw,44px),2px);}
+}
+/* Mobile hero copy must paint from CSS, before hydration/WebGL work starts.
+   Framer keeps the desktop choreography; these matching CSS reveals hold their
+   final frame even if React arrives later on a throttled phone. */
+@keyframes hero-mobile-mark-in{
+  from{opacity:0;transform:scale(1.04);}
+  to{opacity:1;transform:scale(1);}
+}
+@keyframes hero-mobile-copy-in{
+  from{opacity:0;transform:translateY(38px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@media (max-width:740px) and (prefers-reduced-motion:no-preference){
+  .hero-beam .hb-wordmark{animation:hero-mobile-mark-in .95s cubic-bezier(.16,1,.3,1) .12s both;}
+  .hero-beam .hero-h1 .gwi{animation:hero-mobile-copy-in .9s cubic-bezier(.22,1,.36,1) .55s both;}
+  .hero-beam .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.61s;}
+  .hero-beam .hero-h1 .hl .gwi{animation-delay:.69s;}
+  .hero-beam .hero-actions{animation:hero-mobile-copy-in .7s cubic-bezier(.16,1,.3,1) .85s both;}
+  .hero-beam .scroll-cue{animation:hero-mobile-copy-in .6s cubic-bezier(.16,1,.3,1) 1.12s both;}
 }
 
 .hero-home{padding:152px 0 60px;position:relative;}
@@ -1181,6 +1194,12 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
   border-radius:50%;overflow:hidden;
   background:#0c0a08;
   transform:translateZ(0);
+}
+.ttu-orb-placeholder{
+  display:block;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(ellipse 72% 24% at 50% 50%,#ffe9bc 0%,#ffb443 28%,#dd4b19 55%,transparent 85%),
+    radial-gradient(circle at 50% 50%,#352016 8%,#0c0a08 72%);
+  box-shadow:inset 0 0 9px 1px rgba(250,194,115,.3);
 }
 /* hover-only message: small, soft, warm - sits to the LEFT so it never clips
    the right edge; tinted with the orb's gold strand shade. */

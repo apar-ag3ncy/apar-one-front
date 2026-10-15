@@ -84,7 +84,7 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
           <span className={`client-story-mark${client.logoTint || client.logoInvert ? " mono" : ""}`}
             style={client.logoTint ? { color: client.logoTint } : undefined} aria-hidden="true">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={client.logo} alt="" loading="lazy" draggable={false} />
+            <img src={client.logo} alt="" width={400} height={400} loading="lazy" draggable={false} />
           </span>
           <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText><i>↗</i></span>
         </div>

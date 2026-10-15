@@ -18,7 +18,7 @@ const pieces = [
 ];
 
 /** A complete lightweight scene is available before WebGL loads or when it is unavailable. */
-export function DiamondFallback() {
+export function DiamondFallback({ loadTexture = false }) {
   return (
     <svg className="diamond-experience-fallback" viewBox="-600 -360 1200 720" aria-hidden="true">
       <defs>
@@ -34,8 +34,8 @@ export function DiamondFallback() {
           <stop offset="1" stopColor="#060606" />
         </linearGradient>
         <pattern id="experience-rock-surface" width="480" height="480" patternUnits="userSpaceOnUse">
-          <image href="/showcase/mj/anthracite-preview.webp" width="480" height="480" />
-          <rect width="480" height="480" fill="url(#experience-rock)" opacity=".28" />
+          {loadTexture && <image href="/showcase/mj/anthracite-preview.webp" width="480" height="480" />}
+          <rect width="480" height="480" fill="url(#experience-rock)" opacity={loadTexture ? ".28" : "1"} />
         </pattern>
       </defs>
       <g className="diamond-fallback-rocks" fill="url(#experience-rock-surface)">

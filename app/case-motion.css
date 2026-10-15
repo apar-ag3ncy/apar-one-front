@@ -12,7 +12,7 @@
 .client-story-index{position:absolute;top:22px;left:24px;z-index:2;color:var(--fc-ink);font-size:11px;letter-spacing:.12em;text-transform:uppercase;}
 .has-photo .client-story-index{color:white;text-shadow:0 1px 8px rgba(0,0,0,.7);}
 .client-story-mark{position:absolute;inset:20% 20%;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;}
-.client-story-mark img{max-width:100%;max-height:85%;object-fit:contain;}
+.client-story-mark img{width:auto;height:auto;max-width:100%;max-height:85%;object-fit:contain;}
 .client-story-mark.mono img{filter:brightness(0) invert(1);}
 .has-photo .client-story-mark{inset:auto auto 24px 24px;width:130px;height:50px;justify-content:flex-start;}
 .has-photo .client-story-mark img{max-height:100%;filter:brightness(0) invert(1);}

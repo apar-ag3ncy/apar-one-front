@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ConversationProvider } from "@elevenlabs/react";
-import Strands from "@/components/react-bits/Strands";
-import { VoiceConcierge } from "@/components/voice-concierge";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
+
+const TalkToUsVoice = lazy(() => import("./talk-to-us-voice"));
+const Strands = lazy(() => import("@/components/react-bits/Strands"));
 
 /**
  * Floating contact orb - a refractive glass "siri" (react-bits Strands) docked
@@ -21,19 +22,26 @@ import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
 export function TalkToUs() {
   if (VOICE_CONCIERGE_ENABLED) {
     return (
-      <ConversationProvider>
-        <VoiceConcierge />
-      </ConversationProvider>
+      <Suspense fallback={<TalkToUsFallback />}>
+        <TalkToUsVoice />
+      </Suspense>
     );
   }
   return <TalkToUsFallback />;
 }
 
 function TalkToUsFallback() {
+  const [orbReady, setOrbReady] = useState(false);
+  useEffect(() => {
+    // The decorative WebGL orb does not need to compete with the hero for
+    // first paint, hydration, or its largest-contentful-paint window.
+    const timer = window.setTimeout(() => setOrbReady(true), 1800);
+    return () => window.clearTimeout(timer);
+  }, []);
   return (
     <Link href="/#contact" className="ttu" aria-label="Talk to us">
       <span className="ttu-orb" aria-hidden="true">
-        <Strands
+        {orbReady ? <Suspense fallback={<span className="ttu-orb-placeholder" />}><Strands
           colors={["#EB3B25", "#F0883B", "#F6C57A"]}
           count={5}
           speed={0.85}
@@ -51,7 +59,7 @@ function TalkToUsFallback() {
           refraction={1.1}
           dispersion={1}
           glassSize={1.05}
-        />
+        /></Suspense> : <span className="ttu-orb-placeholder" />}
       </span>
       <span className="ttu-tip" aria-hidden="true">
         Talk to us

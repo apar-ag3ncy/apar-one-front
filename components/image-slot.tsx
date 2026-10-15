@@ -91,6 +91,8 @@ export function ImageSlot({
           className="photo-slot-img"
           src={src}
           alt={alt || placeholder}
+          width={1000}
+          height={1000}
           loading="lazy"
           decoding="async"
           draggable={false}
@@ -118,6 +120,8 @@ export function ImageSlot({
           <img
             src={logo}
             alt={alt ? `${alt} logo` : placeholder}
+            width={400}
+            height={400}
             loading="lazy"
             decoding="async"
             style={{

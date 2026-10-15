@@ -27,7 +27,7 @@
 .flow-project-image{position:relative;aspect-ratio:20/13;background:transparent;border-radius:15px;overflow:hidden;}
 .flow-project .img-slot{border-radius:15px;}
 /* The Signi source has a 7px dark strip on its left edge; trim it inside the existing frame. */
-.flow-project .photo-slot-img[src="/work/signi/hero.jpg"]{object-position:50% 20%;left:-.6%;width:100.6%;}
+.flow-project .photo-slot-img[src="/work/signi/hero.webp"]{object-position:50% 20%;left:-.6%;width:100.6%;}
 .flow-project-caption{padding-top:1.5vw;display:flex;flex-direction:column;gap:8px;}
 .flow-project-caption h3{position:relative;font:400 clamp(20px,3vw,48px)/1.2 var(--sans);letter-spacing:-.025em;margin:0;}
 .flow-project-caption>span{font-size:clamp(10px,.9vw,14px);line-height:1.35;text-transform:uppercase;color:var(--ink);}

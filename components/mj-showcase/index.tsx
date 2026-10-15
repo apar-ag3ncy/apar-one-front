@@ -135,7 +135,7 @@ export function MJShowcase() {
         </div>
         <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
           <div className="mj-showcase-label"><span>Manish Jewellers</span></div>
-          <DiamondFallback />
+          <DiamondFallback loadTexture={requested} />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">
             <span className="tc-sr-only" role="status">{status === "loading" ? "Loading interactive scene" : status === "fallback" ? "Interactive preview available" : ""}</span>

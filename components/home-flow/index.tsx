@@ -66,7 +66,7 @@ export function ProgressiveQuote({ id, text, dark = false }: {
 const SELECTED = [
   {
     "slug": "signi",
-    "src": "/work/signi/hero.jpg",
+    "src": "/work/signi/hero.webp",
     "title": "Signi",
     "type": "Lab-grown jewellery campaign",
     "ratio": "1400/1750"

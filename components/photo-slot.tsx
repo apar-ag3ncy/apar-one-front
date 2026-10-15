@@ -39,6 +39,15 @@ interface PhotoSlotProps {
   style?: CSSProperties;
 }
 
+function dimensionsFromRatio(value?: string) {
+  if (!value) return { width: 1000, height: 1000 };
+  const [numerator, denominator = 1] = value.split("/").map(Number);
+  const ratio = numerator / denominator;
+  return Number.isFinite(ratio) && ratio > 0
+    ? { width: Math.round(1000 * ratio), height: 1000 }
+    : { width: 1000, height: 1000 };
+}
+
 /**
  * Project image frame. Shows the photo at `src`; until a file exists there it
  * shows the branded logo card (when a `logo` is given) or the editorial
@@ -96,6 +105,7 @@ function PhotoFrame({
   // Natural ratio wins once known; fall back to the hint; otherwise leave the
   // cell's CSS default (keeps the placeholder shape when there's no image).
   const aspectRatio = fixedRatio ?? natRatio ?? ratio;
+  const dimensions = dimensionsFromRatio(fixedRatio ?? ratio);
   const showLogoCard = (!loaded || failed) && !!logo;
 
   return (
@@ -114,6 +124,8 @@ function PhotoFrame({
           className="photo-slot-img"
           src={src}
           alt={placeholder}
+          width={dimensions.width}
+          height={dimensions.height}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
@@ -136,7 +148,7 @@ function PhotoFrame({
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className={cn("case-ph-logo", logoInvert && "case-ph-logo--invert")} src={logo} alt="" loading="lazy" decoding="async" />
+            <img className={cn("case-ph-logo", logoInvert && "case-ph-logo--invert")} src={logo} alt="" width={400} height={400} loading="lazy" decoding="async" />
           )}
           {caption && <span className="case-ph-cap">{caption}</span>}
         </span>

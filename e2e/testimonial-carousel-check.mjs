@@ -9,7 +9,7 @@ const settled=()=>page.locator('.tc-stage[data-moving="false"]').waitFor();
 const active=()=>page.locator('.tc-sources [data-active="true"]').getAttribute('data-brand');
 try {
  await page.goto(`${base}/#testimonials`,{waitUntil:'load'});await page.evaluate(()=>document.fonts.ready);
- await page.locator('.tc-stage[data-ready="true"]').waitFor();await stage.scrollIntoViewIfNeeded();
+ await stage.scrollIntoViewIfNeeded();await page.locator('.tc-stage[data-ready="true"]').waitFor();
  assert.equal(await page.locator('.testimonial-carousel button,.testimonial-carousel select').count(),0);
  assert.equal(await page.locator('.tc-sources>.tc-page').count(),13);
  const normals=await page.locator('.tc-card-layer[data-offset="0.000"] .tc-strip').evaluateAll(els=>new Set(els.map(el=>el.style.transform.match(/rotateY\(([^)]+)/)?.[1])).size);

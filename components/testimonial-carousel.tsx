@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { PhotoSlot } from "./photo-slot";
 import { createTestimonialDrum } from "./testimonial-drum";
@@ -25,8 +25,27 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const sources = useRef<HTMLDivElement>(null);
   const visual = useRef<HTMLDivElement>(null);
+  const [nearViewport, setNearViewport] = useState(false);
+
+  // The drum duplicates the visible cards into 24 strips apiece. Building it
+  // during hydration costs a long main-thread task even though this section is
+  // many screens below the hero. Keep the ordinary first card as a usable
+  // fallback, then prepare the drum before the visitor reaches it.
+  useEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setNearViewport(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "1400px" });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
+    if (!nearViewport) return;
     const root = stage.current, source = sources.current, host = visual.current;
     if (!root || !source || !host || !pages.length) return;
     const cards = Array.from(source.children) as HTMLElement[];
@@ -121,7 +140,7 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
       root.removeEventListener("wheel", wheel); reduced.removeEventListener("change", motionChange);
       delete root.dataset.ready; delete root.dataset.motion;
     };
-  }, [pages.length]);
+  }, [pages.length, nearViewport]);
 
   if (!pages.length) return null;
   const renderPage = (index: number) => {
@@ -146,7 +165,7 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
       <div className="tc-heading"><div><h2 id="tc-title">Every brand.<br /><em>A different story.</em></h2></div></div>
     </div>
     <div ref={stage} className="tc-stage" role="region" aria-roledescription="carousel" aria-label="Brand stories. Swipe or drag left and right. Use arrow keys, Home or End." tabIndex={0} data-moving="false" onDragStart={event => event.preventDefault()}>
-      <div ref={sources} className="tc-sources">{pages.map((_, index) => renderPage(index))}</div>
+      <div ref={sources} className="tc-sources">{(nearViewport ? pages : pages.slice(0, 1)).map((_, index) => renderPage(index))}</div>
       <div ref={visual} className="tc-visual" aria-hidden="true" />
     </div>
     <span className="tc-sr-only" aria-live="polite" aria-atomic="true">{pages[active].name} — story {active + 1} of {pages.length}</span>
