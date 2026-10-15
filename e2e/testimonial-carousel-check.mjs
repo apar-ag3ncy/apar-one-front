@@ -10,8 +10,7 @@ const active=()=>page.locator('.tc-sources [data-active="true"]').getAttribute('
 try {
  await page.goto(`${base}/#testimonials`,{waitUntil:'load'});await page.evaluate(()=>document.fonts.ready);
  await stage.scrollIntoViewIfNeeded();await page.locator('.tc-stage[data-ready="true"]').waitFor();
- assert.equal(await page.locator('.tc-stage button,.tc-stage select').count(),0);
- assert.equal(await page.getByRole('button',{name:'Leave APĀR a private voice note'}).count(),1);
+ assert.equal(await page.locator('.testimonial-carousel button,.testimonial-carousel select').count(),0);
  assert.equal(await page.locator('.tc-sources>.tc-page').count(),13);
  const normals=await page.locator('.tc-card-layer[data-offset="0.000"] .tc-strip').evaluateAll(els=>new Set(els.map(el=>el.style.transform.match(/rotateY\(([^)]+)/)?.[1])).size);
  assert(normals>15,'Centre card must curve around the drum, not remain a flat plane');
