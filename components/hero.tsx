@@ -164,12 +164,12 @@ export function Hero({ start }: { start: boolean }) {
             transition={{ duration: 0.7, ease: EASE, delay: base + 1.3 }}
           >
             <Magnetic strength={0.3}>
-              <Link className="btn cream" href="/work">
+              <Link className="btn cream" href="/work" prefetch={false}>
                 <HoverText>See the work</HoverText>
                 <span className="arr" aria-hidden="true">↗</span>
               </Link>
             </Magnetic>
-            <Link className="btn-ghost light" href="/what-we-do">
+            <Link className="btn-ghost light" href="/what-we-do" prefetch={false}>
               <HoverText>What we do</HoverText>
             </Link>
           </motion.div>
