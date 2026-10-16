@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { gsap } from "gsap";
 import { PhotoSlot } from "./photo-slot";
 import { createTestimonialDrum } from "./testimonial-drum";
+import { VoiceFeedback } from "./voice-feedback";
 
 export interface TestimonialStory {
   slug: string;
@@ -168,6 +169,7 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
       <div ref={sources} className="tc-sources">{(nearViewport ? pages : pages.slice(0, 1)).map((_, index) => renderPage(index))}</div>
       <div ref={visual} className="tc-visual" aria-hidden="true" />
     </div>
+    <div className="wrap tc-voice-wrap"><VoiceFeedback /></div>
     <span className="tc-sr-only" aria-live="polite" aria-atomic="true">{pages[active].name} — story {active + 1} of {pages.length}</span>
   </section>;
 }

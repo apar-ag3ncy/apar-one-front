@@ -5,6 +5,7 @@ import "./case-motion.css";
 import "./site-polish.css";
 import "./text-actions.css";
 import "./testimonial-carousel.css";
+import "./voice-feedback.css";
 import "./faq-motion.css";
 import { Nav } from "@/components/nav";
 import { ConditionalFooter } from "@/components/conditional-footer";
