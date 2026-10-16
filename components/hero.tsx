@@ -139,7 +139,7 @@ export function Hero({ start }: { start: boolean }) {
   return (
     <section ref={ref} className="hero-beam" data-screen-label="Home - Hero" data-settled={isSettled ? "1" : undefined}>
       {/* domeY is scaled by 0.2 in the shader: -0.5 moves the beam down 10% of the hero. */}
-      <BandBackdrop domeY={-0.74} intensity={0.98} />
+      <BandBackdrop domeY={-0.74} intensity={0.98} mobileFullBleed />
       <div className="wrap">
         <motion.div
           className="hero-beam-in"

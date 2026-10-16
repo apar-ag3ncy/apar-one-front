@@ -31,6 +31,8 @@ type PixelDomeProps = {
   domeY?: number;
   /** overall glow strength. Default 1. */
   intensity?: number;
+  /** Give the home hero a longer, softly fading arc on narrow screens. */
+  mobileFullBleed?: boolean;
   className?: string;
 };
 
@@ -62,6 +64,7 @@ uniform float uSeam;       // groove width (device px, a whole number)
 uniform float uRadius;     // corner radius of the tile body (device px, a whole number)
 uniform float uDomeY;      // dome centre y (0..1, bottom-up)
 uniform float uIntensity;
+uniform float uMobileFullBleed;
 uniform sampler2D uPop;  // cursor comet, ONE texel per tile: how lit that tile is (0..1)
 uniform vec2  uGrid;       // tiles across / down (the texture's size)
 uniform float uTime;       // seconds, for the twinkle
@@ -85,6 +88,16 @@ ${TILE_GLSL}
 vec2 beamAt(vec2 uv, float aspect){
   float halfWidth = aspect * 0.5;
   float mobile = 1.0 - smoothstep(0.8, 1.3, aspect);
+  if (uMobileFullBleed > 0.5 && mobile > 0.5) {
+    // A shallow arch keeps the crest behind the mark while its lower glow
+    // dissolves toward the bottom of the phone. Unlike the circle, it cannot
+    // loop back into a second bright band or end at a horizontal cutoff.
+    float x = abs(uv.x - 0.5) * 2.0;
+    float crest = 0.53 + (uDomeY + 0.74) * 0.2 - 0.24 * x * x;
+    float t = uv.y - crest;
+    float width = t < 0.0 ? 0.26 : 0.115;
+    return vec2(exp(-(t * t) / (width * width)) * uIntensity, t);
+  }
   float edgeY = mobile * 0.43;
   float rise = min(0.78, halfWidth * 0.98);
   float radius = (halfWidth * halfWidth + rise * rise) / (2.0 * rise);
@@ -232,7 +245,7 @@ function compile(gl: WebGLRenderingContext, type: number, src: string) {
   return s;
 }
 
-export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, className }: PixelDomeProps) {
+export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobileFullBleed = false, className }: PixelDomeProps) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -298,6 +311,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
     const uHead = u("uHead");
     const uRide = u("uRide");
     gl.uniform1f(u("uIntensity"), intensity);
+    gl.uniform1f(u("uMobileFullBleed"), mobileFullBleed ? 1 : 0);
     gl.uniform1f(uDomeY, domeY);
     // the per-tile comet texture (one byte per tile), unit 0
     const pop = new PopTexture(gl);
@@ -546,7 +560,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, clas
       gl.deleteShader(fs);
       gl.deleteBuffer(buf);
     };
-  }, [cell, domeY, intensity]);
+  }, [cell, domeY, intensity, mobileFullBleed]);
 
   return <canvas ref={ref} className={className ? `pixel-dome ${className}` : "pixel-dome"} aria-hidden />;
 }

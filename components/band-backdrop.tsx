@@ -12,10 +12,10 @@ import { PixelDome } from "./pixel-dome";
  * IntersectionObserver parks the loop off-screen and it skips render while
  * scrolling, so it stays light without being gated off any device.
  */
-export function BandBackdrop({ domeY = -0.15, intensity = 1 }: { domeY?: number; intensity?: number }) {
+export function BandBackdrop({ domeY = -0.15, intensity = 1, mobileFullBleed = false }: { domeY?: number; intensity?: number; mobileFullBleed?: boolean }) {
   return (
     <div className="band-bg" aria-hidden>
-      <PixelDome cell={10} domeY={domeY} intensity={intensity} />
+      <PixelDome cell={10} domeY={domeY} intensity={intensity} mobileFullBleed={mobileFullBleed} />
     </div>
   );
 }
