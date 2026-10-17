@@ -31,10 +31,18 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
     let sampledPosition = "";
     let pointerX = 0, pointerY = 0;
     let points: { x: number; y: number; time: number }[] = [];
+    let listening = false;
 
     const leave = () => {
       inside = false;
       hoverImage(img, false);
+      if (listening) {
+        listening = false;
+        window.removeEventListener("scroll", scroll, true);
+        window.removeEventListener("blur", clear);
+        window.removeEventListener("resize", clear);
+        document.removeEventListener("visibilitychange", clear);
+      }
     };
     const clear = () => {
       leave();
@@ -159,31 +167,37 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
     const move = (event: PointerEvent) => {
       if (disabled.matches || event.pointerType === "touch" || !prepare()) return;
       pointerX = event.clientX; pointerY = event.clientY;
+      if (!listening) {
+        listening = true;
+        window.addEventListener("scroll", scroll, { passive: true, capture: true });
+        window.addEventListener("blur", clear);
+        window.addEventListener("resize", clear);
+        document.addEventListener("visibilitychange", clear);
+      }
       inside = true;
       pending = true;
       hoverImage(img, true);
       wake();
     };
     const scroll = () => { if (inside) wake(); };
-    host.addEventListener("pointermove", move, { passive: true });
-    host.addEventListener("pointerleave", leave);
-    host.addEventListener("pointercancel", leave);
-    window.addEventListener("scroll", scroll, { passive: true, capture: true });
-    window.addEventListener("blur", clear);
-    window.addEventListener("resize", clear);
-    document.addEventListener("visibilitychange", clear);
-    disabled.addEventListener("change", clear);
+    const sync = () => {
+      host.removeEventListener("pointermove", move);
+      host.removeEventListener("pointerleave", leave);
+      host.removeEventListener("pointercancel", leave);
+      if (disabled.matches) { clear(); return; }
+      host.addEventListener("pointermove", move, { passive: true });
+      host.addEventListener("pointerleave", leave);
+      host.addEventListener("pointercancel", leave);
+    };
+    disabled.addEventListener("change", sync);
+    sync();
     return () => {
       clear();
       canvas?.remove();
       host.removeEventListener("pointermove", move);
       host.removeEventListener("pointerleave", leave);
       host.removeEventListener("pointercancel", leave);
-      window.removeEventListener("scroll", scroll, true);
-      window.removeEventListener("blur", clear);
-      window.removeEventListener("resize", clear);
-      document.removeEventListener("visibilitychange", clear);
-      disabled.removeEventListener("change", clear);
+      disabled.removeEventListener("change", sync);
     };
   }, [ref, ready]);
 }
