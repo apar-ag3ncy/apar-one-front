@@ -653,24 +653,44 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 @media (max-width:740px){
   .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);font-size:round(clamp(30px,8.6vw,44px),2px);}
 }
-/* Mobile hero copy must paint from CSS, before hydration/WebGL work starts.
-   Framer keeps the desktop choreography; these matching CSS reveals hold their
-   final frame even if React arrives later on a throttled phone. */
+/* The entrance starts from SSR/CSS on every screen, before hydration or WebGL.
+   JS still owns scroll parallax, but never holds the hero invisible while fonts
+   load or the main thread is busy. Keep only compositor transforms/opacity. */
 @keyframes hero-mobile-mark-in{
   from{opacity:0;transform:scale(1.04);}
   to{opacity:1;transform:scale(1);}
+}
+@keyframes hero-word-in{
+  from{opacity:0;transform:translateY(120%);}
+  to{opacity:1;transform:translateY(0);}
 }
 @keyframes hero-mobile-copy-in{
   from{opacity:0;transform:translateY(38px);}
   to{opacity:1;transform:translateY(0);}
 }
+@keyframes hero-action-in{
+  from{opacity:0;transform:translateY(22px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes hero-cue-in{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero-beam[data-enter="1"] .hb-wordmark{animation:hero-mobile-mark-in 1.2s cubic-bezier(.16,1,.3,1) .13s both;}
+  .hero-beam[data-enter="1"] .hero-h1 .gwi{animation:hero-word-in 1.05s cubic-bezier(.22,1,.36,1) .68s both;}
+  .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.735s;}
+  .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.79s;}
+  .hero-beam[data-enter="1"] .hero-actions{animation:hero-action-in .7s cubic-bezier(.16,1,.3,1) 1.38s both;}
+  .hero-beam[data-enter="1"] .scroll-cue{animation:hero-cue-in .6s cubic-bezier(.16,1,.3,1) 1.73s both;}
+}
 @media (max-width:740px) and (prefers-reduced-motion:no-preference){
-  .hero-beam .hb-wordmark{animation:hero-mobile-mark-in .7s cubic-bezier(.16,1,.3,1) .08s both;}
-  .hero-beam .hero-h1 .gwi{animation:hero-mobile-copy-in .9s cubic-bezier(.22,1,.36,1) .55s both;}
-  .hero-beam .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.61s;}
-  .hero-beam .hero-h1 .hl .gwi{animation-delay:.69s;}
-  .hero-beam .hero-actions{animation:hero-mobile-copy-in .7s cubic-bezier(.16,1,.3,1) .85s both;}
-  .hero-beam .scroll-cue{animation:hero-mobile-copy-in .6s cubic-bezier(.16,1,.3,1) 1.12s both;}
+  .hero-beam[data-enter="1"] .hb-wordmark{animation-duration:.7s;animation-delay:.08s;}
+  .hero-beam[data-enter="1"] .hero-h1 .gwi{animation-name:hero-mobile-copy-in;animation-duration:.9s;animation-delay:.55s;}
+  .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.61s;}
+  .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.69s;}
+  .hero-beam[data-enter="1"] .hero-actions{animation-name:hero-mobile-copy-in;animation-delay:.85s;}
+  .hero-beam[data-enter="1"] .scroll-cue{animation-name:hero-mobile-copy-in;animation-delay:1.12s;}
 }
 
 .hero-home{padding:152px 0 60px;position:relative;}
