@@ -12,7 +12,7 @@ import { ConditionalFooter } from "@/components/conditional-footer";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";
 import { TransitionProvider } from "@/components/transition-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { SlowMo } from "@/components/slow-mo";
+import { DesktopSlowMo } from "@/components/desktop-slow-mo";
 import { PixelTrail } from "@/components/pixel-trail";
 import { TalkToUs } from "@/components/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScroll />
         {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
             skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
-        <SlowMo />
+        <DesktopSlowMo />
         {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere).
             Swap back to <SplashCursor /> for the fluid lava trail. */}
         <PixelTrail />
