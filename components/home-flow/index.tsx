@@ -115,10 +115,10 @@ const SELECTED = [
     "ratio": "20/13"
   },
   {
-    "slug": "harshit-gold",
-    "src": "/work/featured/harshit-gold.webp",
-    "title": "Harshit Gold",
-    "type": "Jewellery campaign",
+    "slug": "girvaan",
+    "src": "/work/featured/girvaan-storefront.webp",
+    "title": "Girvaan",
+    "type": "Jewellery brand world",
     "ratio": "20/13"
   }
 ];
@@ -131,7 +131,12 @@ export function FeaturedProjects() {
       <div className="flow-project-image"><PhotoSlot src={project.src}
         srcSet={`${project.src.replace(/\.webp$/, "-480.webp")} 480w, ${project.src.replace(/\.webp$/, "-960.webp")} 960w, ${project.src} ${"width" in project ? project.width : 1600}w`}
         sizes="(max-width: 800px) 48vw, 44vw"
-        placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} /></div>
+        placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} />
+        {project.slug === "girvaan" && <span className="girvaan-store-sign" aria-hidden="true">
+          {/* The original client wordmark sits on the blank photographed fascia. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/girvaan.png" alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+        </span>}</div>
       <div className="flow-project-caption"><span>{project.type}</span>
         <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true">→</i>
           <span aria-hidden="true">{project.title.split(" ").map((word, wi) => <span key={wi} className="flow-title-word">{[...word].map((letter, li) => <span className="flow-letter-window" key={li}><span className="flow-letter-stack"><span>{letter}</span><span>{letter}</span></span></span>)}{wi < project.title.split(" ").length - 1 ? " " : ""}</span>)}</span>

@@ -1,5 +1,6 @@
 import { Hero } from "@/components/hero";
 import { MJShowcase } from "@/components/mj-showcase";
+import { HomeImageBento } from "@/components/home-image-bento";
 import { Faq } from "@/components/faq";
 import { TestimonialCarousel } from "@/components/testimonial-carousel";
 import { CASES } from "@/lib/cases";
@@ -12,6 +13,7 @@ export default function Home() {
     <ProgressiveQuote id="studio" text="Limitless. Beyond Culture." />
     <FeaturedProjects />
     <MJShowcase />
+    <HomeImageBento />
     <MovingClients />
     <TestimonialCarousel pages={Object.values(CASES).map(data => ({
       slug: data.slug,

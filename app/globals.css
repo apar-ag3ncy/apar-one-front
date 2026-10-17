@@ -564,9 +564,10 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .video-slot-el{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
   opacity:0;transition:opacity .6s var(--ease);}
 .video-slot-el[data-ready="true"]{opacity:1;}
-/* photo frame - fills the slot, fades in once loaded */
+/* A decoded image paints in one frame. Fading every lazy image in while the
+   reader scrolls looked like a flash and kept those large layers animating. */
 .photo-slot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
-  opacity:0;transition:opacity .6s var(--ease);}
+  opacity:1;}
 .photo-slot-img[data-loaded="true"]{opacity:1;}
 
 /* ============================================================
@@ -2124,9 +2125,14 @@ input:checked + .rc-slider::before {
   background:rgba(244,237,226,.06);border:1px solid rgba(255,150,110,.22);}
 
 /* ---------- slow-mo layer (components/slow-mo.tsx) ---------- */
-/* the inner image is what parallaxes/zooms (scrubbed by GSAP), so it needs a stable
-   origin and a compositor layer; its .img-slot wrapper already clips (overflow:hidden) */
-.img-slot > img{transform-origin:50% 50%;will-change:transform;}
+/* Only the frames that actually run desktop parallax need an advance layer.
+   Promoting every gallery image (including offscreen mobile imagery) retained
+   dozens of full-resolution textures during scroll. */
+.img-slot > img{transform-origin:50% 50%;}
+.work-card .img-slot > img,.split-stack .img-slot > img,.hero-feature .img-slot > img{will-change:auto;}
+@media (min-width:741px) and (prefers-reduced-motion:no-preference){
+  .work-card .img-slot > img,.split-stack .img-slot > img,.hero-feature .img-slot > img{will-change:transform;}
+}
 /* frames take the velocity skew - a compositor layer keeps the stretch smooth */
 .work-card .frame,.split-stack .si .si-fig,.hero-feature .frame{will-change:transform;transform-origin:50% 50%;}
 /* SplitText line masks: each line rises out of its own overflow-hidden wrapper */
