@@ -37,6 +37,22 @@ export function SmoothScroll() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
+    // Lenis smooths wheel input, while finger scrolling remains native. On
+    // touch-first devices its always-running GSAP ticker does no smoothing and
+    // competes with the page's canvas effects for each frame.
+    if (matchMedia("(hover: none) and (pointer: coarse)").matches) {
+      let alive = true;
+      const onNativeScroll = () => markScrolling();
+      const refresh = () => ScrollTrigger.refresh();
+      window.addEventListener("scroll", onNativeScroll, { passive: true });
+      window.addEventListener("load", refresh);
+      document.fonts?.ready.then(() => { if (alive) refresh(); }).catch(() => {});
+      return () => {
+        alive = false;
+        window.removeEventListener("scroll", onNativeScroll);
+        window.removeEventListener("load", refresh);
+      };
+    }
     let alive = true;
     // Duration/easing (time-based) instead of lerp (frame-based): on a busy
     // machine that drops frames, a fixed lerp steps unevenly and reads as a
