@@ -330,6 +330,10 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobi
     let cellY = 20;
     let seamPx = 1;
     let radiusPx = 4;
+    let textureW = 0;
+    let textureH = 0;
+    let textureCellX = 0;
+    let textureCellY = 0;
     // canvas rect cached at resize time (the canvas fills its inset:0 host, so
     // it only moves via scroll - onMove offsets by the scroll delta instead of
     // re-measuring per pointer event)
@@ -353,16 +357,25 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobi
       cellY = p.cellY;
       seamPx = p.seam;
       radiusPx = p.radius;
-      if (canvas.width !== w || canvas.height !== h) {
+      const sizeChanged = canvas.width !== w || canvas.height !== h;
+      const gridChanged = sizeChanged || textureW !== w || textureH !== h || textureCellX !== cellX || textureCellY !== cellY;
+      if (sizeChanged) {
         canvas.width = w;
         canvas.height = h;
         gl.viewport(0, 0, w, h);
       }
-      pop.resize(gl, w, h, cellX, cellY);
+      if (gridChanged) {
+        pop.resize(gl, w, h, cellX, cellY);
+        textureW = w;
+        textureH = h;
+        textureCellX = cellX;
+        textureCellY = cellY;
+      }
       // lock the CSS box to the backing store (rect.width can be fractional;
       // the difference is under a pixel and the host's dark base shows through)
       canvas.style.width = `${w / dpr}px`;
       canvas.style.height = `${h / dpr}px`;
+      return gridChanged;
     };
 
     // ---- state: the cursor comet on the beam's grid ----
@@ -532,9 +545,13 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobi
     });
     io.observe(canvas);
     const ro = new ResizeObserver(() => {
-      resize();
-      boxes.reset();
-      draw();
+      // ResizeObserver also fires after style/layout updates that leave the
+      // actual backing store unchanged. Repainting the full beam there causes
+      // needless GPU work and can flash during mobile viewport changes.
+      if (resize()) {
+        boxes.reset();
+        draw();
+      }
     });
     ro.observe(canvas.parentElement ?? canvas);
 
