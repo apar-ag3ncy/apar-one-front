@@ -2,6 +2,7 @@
 
 import { Renderer, Program, Mesh, Color, Triangle, RenderTarget } from "ogl";
 import { isLowPowerDevice } from "@/lib/device";
+import { isScrolling } from "@/lib/scroll-state";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
@@ -424,7 +425,9 @@ export default function Strands({
     let tick = 0;
     let startedOnce = false;
     const loop = (t: number) => {
-      if (!(halfRate && tick++ & 1)) draw(t);
+      // This fixed decorative orb need not compete with scroll compositing.
+      // Keep its last frame visible and resume the live shader as scrolling settles.
+      if (!(halfRate && tick++ & 1) && !isScrolling()) draw(t);
       if (running) rafId = requestAnimationFrame(loop);
     };
     let startTimer = 0;
