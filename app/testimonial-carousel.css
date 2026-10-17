@@ -20,7 +20,7 @@
 .tc-strip:first-child{border-radius:14px 0 0 14px;}
 .tc-strip:last-child{border-radius:0 14px 14px 0;}
 .tc-strip .photo-slot-img{opacity:1;}
-.tc-edge-shade{position:absolute;inset:0;pointer-events:none;}
+.tc-edge-shade{position:absolute;inset:0;pointer-events:none;background:#110d0a;opacity:0;}
 .tc-page{display:flex;flex-direction:column;background:var(--cream);color:var(--ink);overflow:hidden;}
 .tc-sources .tc-page{border-radius:14px;}
 .tc-hero{position:relative;flex:0 0 245px;overflow:hidden;background:var(--tc-brand);}

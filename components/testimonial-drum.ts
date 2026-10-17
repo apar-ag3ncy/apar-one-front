@@ -64,9 +64,10 @@ export function createTestimonialDrum(sources: HTMLElement[], host: HTMLElement,
           const z = radius * (Math.cos(theta) - 1);
           const { el, shade } = layer.strips[j];
           el.style.transform = `translate3d(${x - slice / 2}px,0,${z}px) rotateY(${theta}rad)`;
-          // Shading follows the drum surface, so neighbours recede naturally.
-          const shadeAt = (a: number) => `rgba(17,13,10,${Math.min(.68, .85 * (1 - Math.cos(a)))})`;
-          shade.style.background = `linear-gradient(90deg,${shadeAt(theta - slice / radius / 2)},${shadeAt(theta + slice / radius / 2)})`;
+          // The old gradient differed by at most ~.016 alpha across a strip.
+          // Keep the same angle-based shading without repainting dozens of
+          // CSS gradients on every drag/animation frame.
+          shade.style.opacity = String(Math.min(.68, .85 * (1 - Math.cos(theta))));
         }
       }
     },
