@@ -36,7 +36,10 @@ export function MJShowcase() {
     if (!el) return;
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setStatus("loading"); setRequested(true); io.disconnect(); }
-    }, { rootMargin: "600px" });
+    // The SVG preview is already complete. On phones, start the optional 3D
+    // renderer only near this section so its download and shader compilation
+    // do not compete with the preceding imagery during ordinary scrolling.
+    }, { rootMargin: window.matchMedia("(max-width: 740px)").matches ? "100px" : "400px" });
     io.observe(el);
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();

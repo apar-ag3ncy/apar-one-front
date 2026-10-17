@@ -385,11 +385,18 @@ export default function Strands({
     window.addEventListener("resize", resize);
     resize();
 
+    let paletteSource = propsRef.current.colors;
     const draw = (t: number) => {
       const current = propsRef.current;
       program.uniforms.uTime.value = t * 0.001;
-      program.uniforms.uColors.value = buildPalette(current.colors);
-      program.uniforms.uColorCount.value = Math.min(current.colors.length, MAX_COLORS);
+      // The palette changes only when props change. Parsing eight CSS colours
+      // and allocating a new uniform array on every frame creates needless GC
+      // pressure while the fixed orb is visible during a long scroll.
+      if (current.colors !== paletteSource) {
+        paletteSource = current.colors;
+        program.uniforms.uColors.value = buildPalette(current.colors);
+        program.uniforms.uColorCount.value = Math.min(current.colors.length, MAX_COLORS);
+      }
       program.uniforms.uStrandCount.value = Math.min(Math.max(Math.round(current.count), 1), MAX_STRANDS);
       program.uniforms.uSpeed.value = current.speed;
       program.uniforms.uAmplitude.value = current.amplitude;
