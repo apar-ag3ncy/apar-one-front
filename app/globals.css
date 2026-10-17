@@ -174,7 +174,7 @@ html:not(.lenis){scroll-behavior:smooth;}
    separate trail hides so two pixel grids never overlap (set by pixel-dome.tsx) */
 html[data-on-dome="1"] .pixel-trail{opacity:0;}
 html[data-on-image="1"] .pixel-trail{opacity:0;}
-.image-pixel-trail{position:absolute;left:0;top:0;pointer-events:none;visibility:hidden;transform-origin:50% 50%;}
+.image-pixel-trail{position:absolute;left:0;top:0;z-index:2;pointer-events:none;visibility:hidden;transform-origin:50% 50%;}
 .pixel-trail canvas{width:100vw;height:100vh;display:block;}
 
 /* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
@@ -556,7 +556,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .clip-reveal.scale-in.in{clip-path:inset(0 0 0 0);opacity:1;}
 
 /* ---------- image slot placeholder (replaces <image-slot>) ---------- */
-.img-slot{position:relative;display:block;overflow:hidden;}
+.img-slot{position:relative;display:block;overflow:hidden;isolation:isolate;}
 .img-slot .img-slot-cap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   text-align:center;padding:18px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
   color:rgba(244,237,226,.5);font-weight:600;}
@@ -566,7 +566,7 @@ h1,h2,h3,h4{margin:0;font-weight:500;}
 .video-slot-el[data-ready="true"]{opacity:1;}
 /* A decoded image paints in one frame. Fading every lazy image in while the
    reader scrolls looked like a flash and kept those large layers animating. */
-.photo-slot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+.photo-slot-img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;display:block;
   opacity:1;}
 .photo-slot-img[data-loaded="true"]{opacity:1;}
 
