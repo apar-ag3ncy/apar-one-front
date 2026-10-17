@@ -89,11 +89,10 @@ vec2 beamAt(vec2 uv, float aspect){
   float halfWidth = aspect * 0.5;
   float mobile = 1.0 - smoothstep(0.8, 1.3, aspect);
   if (uMobileFullBleed > 0.5 && mobile > 0.5) {
-    // The mobile hero uses a shallow, edge-to-edge arc above the wordmark.
-    // Its centreline bends down slightly at the sides; the glow fades before
-    // the logo rather than running down the length of the phone.
+    // Keep the shallow, edge-to-edge mobile arc centred behind the large APAR
+    // wordmark. The brighter crest crosses the mark while the glow fades below.
     float x = abs(uv.x - 0.5) * 2.0;
-    float crest = 0.81 - 0.07 * x * x + (uDomeY + 0.74) * 0.2;
+    float crest = 0.665 - 0.07 * x * x + (uDomeY + 0.74) * 0.2;
     float t = uv.y - crest;
     float width = t < 0.0 ? mix(0.078, 0.112, x * x) : 0.085;
     return vec2(exp(-(t * t) / (width * width)) * uIntensity, t);
