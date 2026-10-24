@@ -1,0 +1,121 @@
+/* ============================================================
+   START A PROJECT - full-page brief form (/start)
+   Dark ink base + APAR warm red->orange gradient. Self-contained.
+   ============================================================ */
+.start{position:relative;min-height:100svh;background:var(--ink);color:var(--cream);overflow-x:clip;
+  display:flex;flex-direction:column;
+  padding:clamp(94px,12vh,120px) var(--gut) clamp(40px,5vh,64px);}
+.start-glow{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 52% at 80% 26%, rgba(235,59,37,.42), transparent 62%),
+    radial-gradient(46% 42% at 66% 96%, rgba(255,122,69,.26), transparent 62%),
+    radial-gradient(80% 66% at 12% 6%, rgba(196,42,23,.30), transparent 56%);}
+.start > *:not(.start-glow){position:relative;z-index:1;}
+
+.start-top{display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.start-eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(244,237,226,.72);font-weight:600;}
+.start-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red);}
+.start-close{font-size:13px;letter-spacing:.03em;color:rgba(244,237,226,.72);padding:9px 17px;
+  border:1px solid rgba(244,237,226,.2);border-radius:100px;transition:.3s var(--ease);}
+.start-close:hover{color:var(--cream);border-color:rgba(244,237,226,.5);background:rgba(244,237,226,.06);}
+
+.start-h1{font-family:var(--serif);font-weight:500;font-size:clamp(33px,3.8vw,52px);line-height:1.04;
+  letter-spacing:-.01em;margin:0;}
+.start-h1 em{font-style:italic;color:#FF8352;}
+.start-lead{color:rgba(244,237,226,.66);font-size:clamp(14.5px,1.2vw,16.5px);line-height:1.6;max-width:44ch;margin:14px 0 0;}
+.start-lead em{font-style:italic;color:var(--cream);}
+.start-lead strong{color:#FF8352;font-weight:600;}
+
+.start-form{margin-top:clamp(18px,3.5vh,40px);}
+.start-done{margin:auto 0;}
+/* DOM order: .start-aesthetic (dial) is the FIRST child = LEFT column,
+   .start-left (form) is the SECOND child = RIGHT column, so the form column
+   gets the wider track and the input fields stay comfortable. */
+.start-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(30px,5vw,80px);align-items:center;}
+@media (max-width:900px){.start-grid{grid-template-columns:1fr;gap:46px;justify-items:center;}
+  .start-left{align-items:flex-start;}}
+.start-left{display:flex;flex-direction:column;gap:clamp(22px,3.2vh,36px);max-width:560px;width:100%;}
+
+.start-fields{display:flex;flex-direction:column;gap:18px;}
+.fld{display:flex;flex-direction:column;gap:9px;}
+.fld-l{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:rgba(244,237,226,.55);}
+.fld-in{width:100%;background:rgba(244,237,226,.05);border:1px solid rgba(244,237,226,.16);border-radius:14px;
+  padding:15px 18px;color:var(--cream);font-family:var(--sans);font-size:16px;line-height:1.4;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.25s var(--ease);}
+.fld-in::placeholder{color:rgba(244,237,226,.34);}
+.fld-in:focus{outline:none;border-color:rgba(235,59,37,.7);background:rgba(244,237,226,.08);
+  box-shadow:0 0 0 4px rgba(235,59,37,.14);}
+.fld-area{resize:vertical;min-height:92px;}
+.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:520px){.fld-row{grid-template-columns:1fr;}}
+
+.start-error{margin:0 0 4px;font-size:14px;line-height:1.5;color:#FFB4A6;max-width:52ch;}
+.start-submit[disabled]{opacity:.65;cursor:progress;}
+.start-submit{margin-top:6px;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;
+  padding:16px 30px;border:none;border-radius:0;cursor:pointer;color:var(--cream);
+  font-family:var(--sans);font-weight:700;font-size:15px;letter-spacing:.02em;
+  background:transparent;}
+.start-submit .arr{font-size:17px;}
+
+.start-aesthetic{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.start-aesthetic .fld-l{align-self:center;}
+.start-aesthetic-hint{font-size:13px;color:rgba(244,237,226,.5);margin:0 0 14px;text-align:center;}
+
+/* success state */
+.start-done{max-width:34ch;}
+.start-done .start-h1{margin-top:14px;}
+.start-done-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;}
+
+/* ---- the rotary "tyre" dial ---- */
+.dial{--dial-size:clamp(258px,29vw,372px);--dr:calc(var(--dial-size)/2 - 25px);
+  display:flex;flex-direction:column;align-items:center;gap:24px;user-select:none;}
+.dial-face{position:relative;width:var(--dial-size);height:var(--dial-size);border-radius:50%;
+  display:grid;place-items:center;cursor:grab;touch-action:none;}
+.dial-face.dragging{cursor:grabbing;}
+.dial-tread{position:absolute;inset:0;border-radius:50%;transition:transform .6s var(--spring);
+  background:conic-gradient(from 0deg,#3a1109,#7c2414,#EB3B25,#FF7A45,#EB3B25,#7c2414,#3a1109);
+  box-shadow:inset 0 0 0 1px rgba(255,150,110,.25),inset 0 14px 44px rgba(0,0,0,.5),0 26px 64px rgba(120,20,10,.42);}
+.dial-face.dragging .dial-tread{transition:none;}
+.dial-tread::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,224,210,.55) 0 .55deg,transparent .55deg 6deg);
+  -webkit-mask:radial-gradient(circle,transparent 68%,#000 69% 82%,transparent 83%);
+          mask:radial-gradient(circle,transparent 68%,#000 69% 82%,transparent 83%);}
+.dial-mark{position:absolute;top:50%;left:50%;width:10px;height:10px;margin:-5px;padding:0;border:none;
+  border-radius:50%;background:rgba(255,224,210,.4);cursor:pointer;
+  transition:background .3s,box-shadow .3s,width .3s,height .3s,margin .3s;}
+.dial-mark.on{background:var(--cream);width:15px;height:15px;margin:-7.5px;
+  box-shadow:0 0 0 4px rgba(244,237,226,.22),0 0 18px rgba(255,180,140,.95);}
+.dial-pointer{position:absolute;top:-3px;left:50%;transform:translateX(-50%);z-index:3;width:0;height:0;
+  border-left:11px solid transparent;border-right:11px solid transparent;border-top:16px solid #FF8A5C;
+  filter:drop-shadow(0 2px 7px rgba(255,90,40,.7));}
+.dial-hub{position:relative;z-index:2;width:63%;aspect-ratio:1;border-radius:50%;padding:8%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 34%,rgba(42,16,10,.97),rgba(13,5,3,.98));
+  border:1px solid rgba(255,150,110,.16);box-shadow:inset 0 1px 0 rgba(255,180,140,.2),0 12px 32px rgba(0,0,0,.5);}
+.dial-count{font-size:11px;letter-spacing:.2em;color:rgba(255,180,140,.82);font-weight:600;}
+.dial-count i{font-style:normal;opacity:.5;margin:0 3px;}
+.dial-name{font-family:var(--serif);font-weight:500;font-size:clamp(21px,2.5vw,31px);line-height:1;color:var(--cream);}
+.dial-desc{font-size:12px;line-height:1.4;color:rgba(244,237,226,.6);max-width:15ch;}
+.dial-controls{display:flex;align-items:center;gap:16px;}
+.dial-arrow{width:40px;height:40px;border-radius:50%;border:1px solid rgba(244,237,226,.2);
+  background:rgba(244,237,226,.05);color:var(--cream);font-size:20px;line-height:1;cursor:pointer;
+  display:grid;place-items:center;transition:.25s var(--ease);}
+.dial-arrow:hover{background:var(--red);border-color:transparent;transform:translateY(-1px);}
+.dial-dots{display:flex;gap:9px;align-items:center;}
+.dial-dot{width:8px;height:8px;border-radius:50%;border:none;padding:0;cursor:pointer;
+  background:rgba(244,237,226,.28);transition:.25s var(--ease);}
+.dial-dot.on{background:linear-gradient(120deg,#EB3B25,#FF7A45);width:22px;border-radius:100px;}
+/* Decision-aid panel under the dial: "Best for" + signal chips update per spin so
+   the client can weigh whether a direction fits their brand. Fades in on change. */
+.aesthetic-guide{width:100%;max-width:340px;margin-top:6px;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:13px;padding-top:18px;
+  border-top:1px solid rgba(244,237,226,.12);animation:agFade .45s var(--ease);}
+@keyframes agFade{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+.ag-row{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 9px;align-items:baseline;}
+.ag-k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:rgba(255,180,140,.9);}
+.ag-v{font-size:14.5px;line-height:1.45;color:rgba(244,237,226,.84);}
+.ag-traits{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.ag-tag{font-size:12px;letter-spacing:.02em;color:var(--cream);padding:6px 14px;border-radius:100px;
+  background:rgba(244,237,226,.06);border:1px solid rgba(255,150,110,.22);}

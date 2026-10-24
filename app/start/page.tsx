@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { StartForm } from "@/components/start-form";
+import { StartForm } from "@/components/forms/start-form";
 
 export const metadata: Metadata = {
   title: "Start a project — APAR AGENTIVE CREACY",

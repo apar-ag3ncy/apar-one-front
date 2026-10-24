@@ -3,11 +3,11 @@
  *
  * The floating "Talk to us" orb becomes a real, Siri-like voice call with the
  * APAR brand concierge. It connects to an ElevenLabs Agent you create once in
- * the ElevenLabs dashboard. See VOICE-CONCIERGE.md for the full setup, the
+ * the ElevenLabs dashboard. See docs/voice-concierge.md for the full setup, the
  * concierge persona / system prompt, and the knowledge base to paste in.
  *
  * One-time setup:
- *   1. elevenlabs.io → Agents → create an agent (use the prompt in VOICE-CONCIERGE.md).
+ *   1. elevenlabs.io → Agents → create an agent (use the prompt in docs/voice-concierge.md).
  *   2. Copy its Agent ID.
  *   3. Set  NEXT_PUBLIC_ELEVENLABS_AGENT_ID=agent_xxx  in .env.local
  *      (or paste it into ELEVENLABS_AGENT_ID below).

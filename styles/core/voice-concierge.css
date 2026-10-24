@@ -1,0 +1,555 @@
+/* ============================================================
+   INSTAGRAM REEL COVER SHOWCASE STYLES
+   ============================================================ */
+.rc-showcase-container {
+  display: grid;
+  grid-template-columns: minmax(320px, 480px) 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 56px;
+}
+
+@media (max-width: 1024px) {
+  .rc-showcase-container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+/* Grid/flex items default to min-width:auto and refuse to shrink below their
+   content's min-content size, forcing horizontal overflow on small phones.
+   min-width:0 lets the columns and cards shrink to the viewport. */
+.rc-showcase-container,
+.rc-showcase-container > * { min-width: 0; }
+
+@media (max-width: 560px) {
+  .rc-showcase-container { gap: 32px; }
+  .rc-glass-card { padding: 20px; }
+  /* stack each control's label above its control when they can't fit side-by-side */
+  .rc-control-row { gap: 12px; flex-wrap: wrap; }
+  .rc-segments { flex-wrap: wrap; }
+  .rc-segment-btn { padding: 6px 10px; }
+}
+
+/* Phone Mockup Frame */
+.rc-phone-mockup {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #0d0d0d;
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 4px #262626,
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    inset 0 0 15px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rc-phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  background: #111;
+  user-select: none;
+}
+
+/* 4:5 Instagram Reel Cover Container */
+.rc-cover-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: filter 0.5s ease;
+  overflow: hidden;
+}
+
+/* Spotlight Hover Mask overlay */
+.rc-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: var(--spotlight-opacity, 0.6);
+  background: radial-gradient(
+    circle 240px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 220, 150, 0.12) 0%,
+    rgba(0, 0, 0, 0.35) 60%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 0.3s ease;
+}
+
+/* Speed Lines Layer */
+.rc-speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.rc-speed-line {
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 200%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.18) 50%, transparent);
+  transform: rotate(45deg);
+  animation: speedSwipe var(--speed-duration, 4s) linear infinite;
+  opacity: 0;
+}
+
+.rc-speed-line:nth-child(1) { animation-delay: 0s; top: -30%; }
+.rc-speed-line:nth-child(2) { animation-delay: 1.2s; top: -10%; }
+.rc-speed-line:nth-child(3) { animation-delay: 2.5s; top: 10%; }
+
+@keyframes speedSwipe {
+  0% {
+    transform: translate(-100%, -100%) rotate(-35deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate(100%, 100%) rotate(-35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+/* Moving SVG Courier Ribbon */
+.rc-ribbon-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.rc-ribbon-path {
+  fill: none;
+  stroke: url(#gold-ribbon-gradient);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+  animation: ribbonFlow var(--ribbon-duration, 8s) linear infinite;
+}
+
+@keyframes ribbonFlow {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+/* Ambient Embers sparks */
+.rc-embers-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Instagram Crop Safe Guides */
+.rc-safe-zones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  box-sizing: border-box;
+}
+
+.rc-safe-zone-label {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* 1:1 Square Feed Crop Bounding Box */
+.rc-crop-square {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12.5%;
+  height: 75%; /* 4:5 center square crop */
+  border-top: 1.5px dashed rgba(235, 59, 37, 0.5);
+  border-bottom: 1.5px dashed rgba(235, 59, 37, 0.5);
+}
+
+.rc-crop-square::before {
+  content: "1:1 Feed Crop Area";
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(235, 59, 37, 0.8);
+  font-weight: 700;
+}
+
+/* Instagram Interactive Overlay Mock (avatar, handle, icons) */
+.rc-instagram-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 20%, transparent 75%, rgba(0,0,0,0.65) 100%);
+  color: #fff;
+  font-family: var(--sans);
+}
+
+.rc-ig-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.rc-ig-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 1.5px;
+}
+
+.rc-ig-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #111;
+  border: 1px solid #000;
+}
+
+.rc-ig-username {
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.rc-ig-description {
+  font-size: 11.5px;
+  line-height: 1.4;
+  opacity: 0.9;
+  max-width: 78%;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: 12px;
+}
+
+.rc-ig-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.rc-ig-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rc-ig-icon svg {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.rc-ig-icon span {
+  font-size: 9px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Typography Text Overlays */
+.rc-text-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 14%;
+  pointer-events: none;
+  text-align: center;
+}
+
+.rc-headline {
+  font-family: var(--serif);
+  font-size: clamp(26px, 6.2vw, 36px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #FFEAB5 0%, #E2BE5E 35%, #D4AF37 60%, #AA7D20 85%, #FFF0D0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #D4AF37;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+  margin-bottom: 8px;
+}
+
+.rc-subheadline {
+  font-family: var(--sans);
+  font-size: clamp(8px, 1.8vw, 10.5px);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: #f4ede2;
+  opacity: 0.95;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 0 10px;
+}
+
+/* Control Panel */
+.rc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rc-glass-card {
+  background: rgba(26, 23, 20, 0.45);
+  border: 1px solid rgba(244, 237, 226, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rc-glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.rc-controls-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--cream);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rc-control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(244, 237, 226, 0.06);
+}
+
+.rc-control-row:last-child {
+  border-bottom: none;
+}
+
+.rc-control-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rc-control-name {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(244, 237, 226, 0.9);
+}
+
+.rc-control-desc {
+  font-size: 11px;
+  color: var(--ink-mid);
+}
+
+/* Toggle Switch Styling */
+.rc-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.rc-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rc-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(244, 237, 226, 0.12);
+  transition: .4s var(--ease);
+  border-radius: 24px;
+  border: 1px solid rgba(244, 237, 226, 0.1);
+}
+
+.rc-slider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--cream-2);
+  transition: .4s var(--ease);
+  border-radius: 50%;
+}
+
+input:checked + .rc-slider {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+input:checked + .rc-slider::before {
+  transform: translateX(20px);
+  background-color: #fff;
+}
+
+/* Range input */
+.rc-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(244, 237, 226, 0.12);
+  outline: none;
+}
+
+.rc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--red);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.rc-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Selection Segment Controls */
+.rc-segments {
+  display: flex;
+  background: rgba(244, 237, 226, 0.06);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 237, 226, 0.06);
+}
+
+.rc-segment-btn {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.rc-segment-btn.active {
+  background-color: var(--red);
+  color: #fff;
+}
+
+/* AI Prompt Spec Drawer */
+.rc-prompt-drawer {
+  background: rgba(26, 23, 20, 0.45);
+  border: 1px solid rgba(244, 237, 226, 0.08);
+  border-radius: 16px;
+  padding: 28px;
+  margin-top: 24px;
+}
+
+.rc-prompt-header {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  /* it is a real <button> now (keyboard-operable) - strip the UA button chrome */
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+.rc-prompt-header:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; border-radius: 6px; }
+
+.rc-prompt-content {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cream-2);
+  border-top: 1px solid rgba(244, 237, 226, 0.06);
+  padding-top: 18px;
+}
+
+.rc-prompt-code {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(244, 237, 226, 0.06);
+  padding: 16px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 12px;
+  overflow-x: auto;
+  color: rgba(246, 197, 122, 0.95);
+  margin-top: 12px;
+}

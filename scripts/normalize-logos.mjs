@@ -15,8 +15,8 @@
  * globals.css (.fc-logo-img / .fc-logo-mask) renders them all at the same
  * on-screen size — the optical balancing is baked into the file.
  *
- * Re-runnable: reads originals from logo-src, writes public/logos.
- * Drop a new logo into logo-src (named <slug>.png) and re-run.
+ * Re-runnable: reads originals from design-source/logos, writes public/logos.
+ * Drop a new logo into design-source/logos (named <slug>.png) and re-run.
  *
  *   node scripts/normalize-logos.mjs
  */
@@ -24,7 +24,7 @@ import sharp from "sharp";
 import { readdirSync } from "fs";
 import path from "path";
 
-const SRC = "logo-src";
+const SRC = "design-source/logos";
 const OUT = "public/logos";
 
 // Output canvas. Aspect (CW/CH) is the only thing that must be identical across

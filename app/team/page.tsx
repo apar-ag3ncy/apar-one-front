@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PeopleOfApar } from "@/components/cosmic-footer";
+import { PeopleOfApar } from "@/components/layout/cosmic-footer";
 
 export const metadata: Metadata = {
   title: "Our Team — APAR AGENTIVE CREACY",

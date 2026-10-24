@@ -1,21 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import "./home-flow.css";
-import "./case-motion.css";
-import "./site-polish.css";
-import "./text-actions.css";
-import "./testimonial-carousel.css";
-import "./voice-feedback.css";
-import "./faq-motion.css";
-import "./mobile.css";
-import { Nav } from "@/components/nav";
-import { ConditionalFooter } from "@/components/conditional-footer";
-import { ScrollProgressBar } from "@/components/scroll-progress-bar";
-import { TransitionProvider } from "@/components/transition-provider";
-import { SmoothScroll } from "@/components/smooth-scroll";
-import { DesktopSlowMo } from "@/components/desktop-slow-mo";
-import { PixelTrail } from "@/components/pixel-trail";
-import { TalkToUs } from "@/components/talk-to-us";
+import "@/styles/globals.css";
+import "@/styles/home-flow.css";
+import "@/styles/case-motion.css";
+import "@/styles/site-polish.css";
+import "@/styles/text-actions.css";
+import "@/styles/testimonial-carousel.css";
+import "@/styles/voice-feedback.css";
+import "@/styles/faq-motion.css";
+import "@/styles/mobile.css";
+import { Nav } from "@/components/layout/nav";
+import { ConditionalFooter } from "@/components/layout/conditional-footer";
+import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";
+import { TransitionProvider } from "@/components/layout/transition-provider";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { DesktopSlowMo } from "@/components/motion/desktop-slow-mo";
+import { PixelTrail } from "@/components/motion/pixel-trail";
+import { TalkToUs } from "@/components/voice/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
 
 export const metadata: Metadata = {

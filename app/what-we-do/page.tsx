@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Reveal } from "@/components/reveal";
-import { HoverText } from "@/components/hover-text";
+import { Reveal } from "@/components/motion/reveal";
+import { HoverText } from "@/components/motion/hover-text";
 
 export const metadata: Metadata = {
   title: "What we do — APAR AGENTIVE CREACY",

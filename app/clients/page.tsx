@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Reveal } from "@/components/reveal";
+import { Reveal } from "@/components/motion/reveal";
 import { FEATURED_CLIENTS } from "@/lib/cases";
-import { FeaturedCard } from "@/components/featured-card";
-import { HoverText } from "@/components/hover-text";
+import { FeaturedCard } from "@/components/work/featured-card";
+import { HoverText } from "@/components/motion/hover-text";
 import styles from "./manish-card.module.css";
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HoverText } from "@/components/hover-text";
+import { HoverText } from "@/components/motion/hover-text";
 
 export const metadata: Metadata = {
   title: "Page not found - APAR",

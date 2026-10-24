@@ -49,5 +49,10 @@ next-env.d.ts
 
 # unused original uploads; the site serves the prepared assets under public/
 /team/
-/logo-src/APAR logo.png
-/logo-src/APAR with brand color .png
+/design-source/logos/APAR logo.png
+/design-source/logos/APAR with brand color .png
+
+# Local raw campaign folders; only curated public assets are shipped.
+/high on smiles/
+/silver-emporium products/
+/reports/

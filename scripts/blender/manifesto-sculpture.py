@@ -10,7 +10,7 @@ from mathutils import Vector
 ROOT = Path(__file__).resolve().parents[2]
 MODEL = ROOT / "public/models/apar-manifesto-sculpture.glb"
 STILL = ROOT / "public/models/apar-manifesto-sculpture.png"
-SOURCE = ROOT / "assets/blender/apar-manifesto-sculpture.blend"
+SOURCE = ROOT / "design-source/blender/apar-manifesto-sculpture.blend"
 for path in (MODEL, SOURCE):
     path.parent.mkdir(parents=True, exist_ok=True)
 

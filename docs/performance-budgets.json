@@ -1,0 +1,7 @@
+{
+  "/page": { "js": 275000, "css": 36500 },
+  "/clients/page": { "js": 252000, "css": 37500 },
+  "/work/page": { "js": 255000, "css": 36500 },
+  "/work/[slug]/page": { "js": 252000, "css": 36500 },
+  "/manifesto/page": { "js": 240000, "css": 38500 }
+}

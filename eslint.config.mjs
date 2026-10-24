@@ -2,7 +2,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 
-// Flat config for `next lint` / `eslint .` (Next 15 + ESLint 9). Same rule set
+// Flat config for `npm run lint` (Next 15 + ESLint 9). Same rule set
 // create-next-app ships: Core Web Vitals + TypeScript.
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 

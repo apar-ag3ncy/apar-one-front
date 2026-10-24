@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { HoverText } from "@/components/hover-text";
+import { HoverText } from "@/components/motion/hover-text";
 
 /**
  * Route error boundary - catches a runtime error in any page and shows an

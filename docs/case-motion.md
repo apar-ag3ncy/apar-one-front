@@ -14,15 +14,15 @@ APAR Fit wordmark and client logo artwork are separate brand assets.
 
 | File | Responsibility |
 | --- | --- |
-| `lib/cases.tsx` | Client copy, palette, gallery entries, results and next-client link |
-| `lib/case-motion.ts` | Brand form, direction, restrained velocity bend, opening ease and curated media |
-| `lib/case-assets.ts` | Build-time file checks and image dimensions; no browser metadata requests |
-| `components/featured-card.tsx` | Pointer / keyboard card interactions and branded route transition |
-| `components/case-motion/use-case-motion.ts` | Opening, progressive brief, results, quote and next-preview motion |
-| `components/case-motion/case-gallery.tsx` | Pinned desktop rail, native touch rail, artwork controls and progress |
-| `components/case-motion/brand-signature.tsx` | Lazy scene loading and pointer easing |
-| `components/case-motion/create-brand-scene.ts` | Small Three.js identity study; paints on input, stops offscreen, disposes GPU resources |
-| `app/case-motion.css` | Responsive sizing and presentation of these components |
+| `lib/cases/index.ts` | Client copy, palette, gallery entries, results and next-client link |
+| `lib/cases/motion.ts` | Brand form, direction, restrained velocity bend, opening ease and curated media |
+| `lib/cases/assets.server.ts` | Build-time file checks and image dimensions; no browser metadata requests |
+| `components/work/featured-card.tsx` | Pointer / keyboard card interactions and branded route transition |
+| `components/work/motion/use-case-motion.ts` | Opening, progressive brief, results, quote and next-preview motion |
+| `components/work/motion/case-gallery.tsx` | Pinned desktop rail, native touch rail, artwork controls and progress |
+| `components/work/motion/brand-signature.tsx` | Lazy scene loading and pointer easing |
+| `components/work/motion/create-brand-scene.ts` | Small Three.js identity study; paints on input, stops offscreen, disposes GPU resources |
+| `styles/case-motion.css` | Responsive sizing and presentation of these components |
 
 `SlowMo` must continue excluding `.case-page` and `.client-story`: two animation
 owners must not write to the same media transform. Opening motion targets the
@@ -30,20 +30,20 @@ inner art while scroll motion targets its outer figure. GSAP contexts and
 matchMedia own cleanup when a route, breakpoint or motion preference changes.
 
 Shared files also adjusted in this debugging pass:
-`components/smooth-scroll.tsx`, `components/slow-mo.tsx`, `components/hero.tsx`,
-`components/count-up.tsx`, `components/next-case-scroll.tsx`,
-`components/scroll-fill.tsx`, `components/magnetic.tsx`,
-`components/liquid-glass.tsx`, `components/photo-slot.tsx`,
-`components/start-form.tsx`, `components/transition-provider.tsx`,
+`components/motion/smooth-scroll.tsx`, `components/motion/slow-mo.tsx`, `components/home/hero.tsx`,
+`components/motion/count-up.tsx`, `components/work/next-case-scroll.tsx`,
+`components/motion/magnetic.tsx`,
+`components/media/photo-slot.tsx`,
+`components/forms/start-form.tsx`, `components/layout/transition-provider.tsx`,
 `app/layout.tsx` and `lib/scroll-state.ts`.
-The case template is `components/case-study.tsx`; regression entrypoints are
+The case template is `components/work/case-study.tsx`; regression entrypoints are
 `e2e/case-motion-check.mjs`, `e2e/mobile-menu-check.mjs` and
 `e2e/pixeltrail-check.mjs` (`package.json` adds `test:cases`).
 
 ## Updating a story
 
 Internal case pages use the shared white/black palette in
-`lib/case-presentation.ts`. Client listing cards retain `data.theme`; original
+`lib/cases/presentation.ts`. Client listing cards retain `data.theme`; original
 images and the animated brand sculptures retain their colour. Case navigation,
 next-story panels and transition wipes follow the white palette. Logo-only
 fallbacks use the client's original palette and logo treatment through
@@ -51,10 +51,10 @@ PhotoSlot's `logoSurface`; the background is removed when a real photo loads.
 Coloured LiquidGlass backdrops are not mounted on these pages. Scroll,
 hover and opening choreography continue to use the existing motion profiles.
 
-1. Add or edit its entry in `lib/cases.tsx`. Keep business claims approved.
+1. Edit its module in `lib/cases/brands/`; register new modules in `lib/cases/index.ts`. Keep business claims approved.
 2. Add real JPEG artwork to `public/work/<slug>/hero.jpg` and numbered gallery
    files, or point `CURATED_CASE_MEDIA` at existing supplied WebP assets.
-3. Set the motion profile in `lib/case-motion.ts`. Choose `petal`, `facet`,
+3. Set the motion profile in `lib/cases/motion.ts`. Choose `petal`, `facet`,
    `architecture` or `orbit`; tune the existing profile before adding new scenes.
 4. Images reserve their measured proportions and remain whole in the case rail.
    Missing photographs use the client's existing identity; they do not request

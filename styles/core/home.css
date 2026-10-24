@@ -1,0 +1,445 @@
+/* ============================================================
+   HOME PAGE styles (ported from index.html #page-styles)
+   ============================================================ */
+/* ---- beam landing hero: the Algolia arc as the first screen. Dark base,
+   red pixel-dome behind a centred stack - kicker, giant APAR wordmark tinted
+   to the beam's pale-rose crest (so the type sits IN the light), the brand
+   statement, lead and CTAs. Lusion-style restraint: one light source, lots of
+   black, serif statement, slow choreography. ---- */
+.hero-beam{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);
+  min-height:100svh;display:flex;align-items:center;
+  /* The copy block is centred in the band BETWEEN the fixed nav and the scroll
+     cue's zone, with a small optical lift so the wordmark sits on the beam's
+     crest. Done with whole-pixel padding, not a transform: the old fractional
+     translateY(-3.4vh) left every element resting on sub-pixel positions. */
+  --hero-nav:84px;
+  --hero-cue:clamp(80px,12svh,112px);--hero-cue:round(clamp(80px,12svh,112px),2px);
+  --hero-lift:clamp(4px,1.4vh,12px);--hero-lift:round(clamp(4px,1.4vh,12px),1px);}
+.hero-beam .wrap{position:relative;z-index:2;width:100%;
+  padding-top:var(--hero-nav);
+  padding-bottom:calc(var(--hero-cue) + var(--hero-lift) * 2);
+  /* every vertical term is rounded to 2px and the viewport's parity is absorbed
+     here, so the flex centring (which halves the leftover) lands the block on a
+     whole pixel at any viewport height - no 50%-blended button edges */
+  padding-bottom:calc(var(--hero-cue) + var(--hero-lift) * 2 + mod(100svh,2px));}
+/* symmetric inside the centred block - the nav/cue bands above own the offsets */
+.hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0;}
+.hero-beam .meta-row{color:rgba(244,237,226,.6);justify-content:center;}
+.hb-wordmark{display:flex;justify-content:center;pointer-events:none;
+  will-change:transform,opacity;}
+/* min(20.5vw,30.5svh): the mark is sized by width on tall screens (stays big) but
+   capped by viewport height on short laptops so it can't push the CTAs off-screen.
+   round(): whole-pixel font size -> crisp, pixel-aligned glyphs (browsers without
+   round() keep the plain clamp). */
+.hb-wordmark .apar-logo{font-size:clamp(89px,min(20.5vw,30.5svh),356px);font-size:round(clamp(89px,min(20.5vw,30.5svh),356px),2px);
+  line-height:1;letter-spacing:0.0083em;color:#F3DAD3;}
+/* Optical centre: the lead-glyph slot is as wide as अ and the narrower Latin A
+   is right-aligned inside it, so the visible mark read ~0.07em right of centre
+   whenever A showed (and centred on अ). Split the swing so both states sit
+   within ~0.03em of true centre. (Inside this flex-centred parent a negative
+   margin moves the box by half its value.) Reduced motion never cycles - it
+   stays on the centred अ - so it keeps the plain centring. */
+@media (prefers-reduced-motion:no-preference){ .hb-wordmark .apar-logo{margin-left:-.062em;} }
+/* the soft dark halo that lifts the mark off the bright crest - applied once the
+   entrance has settled (see hero.tsx): animating a filtered layer re-renders the
+   64px blur every frame */
+.hero-beam[data-settled="1"] .hb-wordmark .apar-logo{filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}
+@media (prefers-reduced-motion:reduce){.hero-beam .hb-wordmark .apar-logo{filter:drop-shadow(0 18px 64px rgba(18,3,2,.65));}}
+/* Consistent tracking: the leading-glyph gap (अ / A) is kept equal to the P-A-R
+   letter-spacing above so the whole mark is evenly spaced - compact but never
+   touching/overlapping. */
+.hb-wordmark .apar-logo-inner{gap:0.0083em;}
+/* Match the logo mark's proportions: apar-logo-red.png sets its Fit width axis
+   wide (word ratio ≈ 1.85:1). The shared wdth 360 rendered the hero mark too
+   narrow/tall; wdth 482 reproduces the logo's blocky proportions here (hero only,
+   so the nav/footer/brand-band marks are untouched). */
+.hb-wordmark .apar-lead-char,
+.hb-wordmark .apar-par-text{
+  font-variation-settings:'wght' 1000,'wdth' 482,'HGHT' 100,'slnt' 0;
+}
+/* Reduced-motion: the framer entrance can leave the mark stuck at its non-reduce
+   initial (opacity:0 + blur(14px) + scale(1.06)) because the reduce variants never
+   clear those inline styles - so the logo would be invisible or a soft blob. Pin it
+   visible, crisp and settled so it still reads as the logo. */
+@media (prefers-reduced-motion: reduce){
+  .hb-wordmark{opacity:1!important;filter:none!important;transform:none!important;}
+}
+/* The wordmark is lifted onto the beam crest; open a bigger gap under it so the
+   tagline + CTAs drop back into the dark BELOW the beam and never overlap it. */
+.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);font-size:round(clamp(32px,4.4vw,64px),2px);
+  line-height:round(.96em,1px); /* two whole-pixel lines -> even box */
+  margin:clamp(44px,7.5vh,104px) 0 0;margin:round(clamp(44px,7.5vh,104px),2px) 0 0;}
+.hero-beam .hero-actions{margin-top:clamp(28px,4.2vh,38px);margin-top:round(clamp(28px,4.2vh,38px),2px);
+  align-items:baseline;} /* the ghost link's label shares the pill label's baseline (it sat 3px high) */
+.hero-beam .hero-h1 .hl{color:#ECC4BE;} /* the crest tint - the italic line glows like the beam */
+.hero-beam .lead{color:rgba(244,237,226,.66);max-width:52ch;margin:clamp(12px,1.7vh,24px) auto 0;}
+.hero-beam .hero-actions{justify-content:center;}
+.hero-beam .scroll-hint{position:absolute;left:0;right:0;bottom:30px;display:flex;
+  justify-content:center;margin:0;z-index:2;}
+.hero-beam .scroll-cue{color:rgba(244,237,226,.5);}
+.hero-beam .cue-mouse{border-color:rgba(244,237,226,.4);}
+@media (max-width:740px){
+  .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);font-size:round(clamp(30px,8.6vw,44px),2px);}
+}
+/* The entrance starts from SSR/CSS on every screen, before hydration or WebGL.
+   JS still owns scroll parallax, but never holds the hero invisible while fonts
+   load or the main thread is busy. Keep only compositor transforms/opacity. */
+@keyframes hero-mobile-mark-in{
+  from{opacity:0;transform:scale(1.04);}
+  to{opacity:1;transform:scale(1);}
+}
+@keyframes hero-word-in{
+  from{opacity:0;transform:translateY(120%);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes hero-mobile-copy-in{
+  from{opacity:0;transform:translateY(38px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes hero-action-in{
+  from{opacity:0;transform:translateY(22px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes hero-cue-in{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero-beam[data-enter="1"] .hb-wordmark{animation:hero-mobile-mark-in 1.2s cubic-bezier(.16,1,.3,1) .13s both;}
+  .hero-beam[data-enter="1"] .hero-h1 .gwi{animation:hero-word-in 1.05s cubic-bezier(.22,1,.36,1) .68s both;}
+  .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.735s;}
+  .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.79s;}
+  .hero-beam[data-enter="1"] .hero-actions{animation:hero-action-in .7s cubic-bezier(.16,1,.3,1) 1.38s both;}
+  .hero-beam[data-enter="1"] .scroll-cue{animation:hero-cue-in .6s cubic-bezier(.16,1,.3,1) 1.73s both;}
+}
+@media (max-width:740px) and (prefers-reduced-motion:no-preference){
+  .hero-beam[data-enter="1"] .hb-wordmark{animation-duration:.7s;animation-delay:.08s;}
+  .hero-beam[data-enter="1"] .hero-h1 .gwi{animation-name:hero-mobile-copy-in;animation-duration:.9s;animation-delay:.55s;}
+  .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.61s;}
+  .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.69s;}
+  .hero-beam[data-enter="1"] .hero-actions{animation-name:hero-mobile-copy-in;animation-delay:.85s;}
+  .hero-beam[data-enter="1"] .scroll-cue{animation-name:hero-mobile-copy-in;animation-delay:1.12s;}
+}
+
+.hero-home{padding:152px 0 60px;position:relative;}
+.hero-home-in{display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:end;}
+.hero-h1{font-size:clamp(44px,6.6vw,98px);margin:30px 0 0;line-height:.96;}
+.hero-h1 .gw{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .14em .12em 0;margin:0 -.14em -.12em 0;}
+.hero-h1 .gwi{display:inline-block;will-change:transform;}
+.hero-h1 .hl{font-style:italic;color:var(--red);}
+.hero-actions{display:flex;align-items:center;gap:28px;margin-top:38px;}
+.hero-feature .frame{position:relative;border-radius:4px;overflow:hidden;}
+.hero-feature-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-style:italic;color:var(--cream);font-size:24px;z-index:2;mix-blend-mode:difference;}
+.hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:12px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
+.hero-home .hero-copy,.hero-home .hero-feature-par{will-change:transform,opacity;}
+/* Lusion-style scroll cue - a mouse outline whose wheel-dot drops on a loop,
+   beside quiet microcopy. The whole cue dissolves as scrolling starts (wired
+   to scroll progress in hero.tsx). */
+.scroll-hint{margin-top:54px;transition:opacity .5s var(--ease);}
+.scroll-hint.gone{opacity:0;pointer-events:none;}
+.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
+.cue-mouse{width:22px;height:34px;flex:none;border:1.5px solid var(--ink-mid);border-radius:12px;position:relative;}
+.cue-mouse::after{
+  content:"";position:absolute;left:50%;top:6px;width:4px;height:4px;margin-left:-2px;
+  border-radius:50%;background:var(--red);
+  animation:cueDrop 1.9s cubic-bezier(.45,0,.25,1) infinite;
+}
+@keyframes cueDrop{
+  0%{transform:translateY(0);opacity:0;}
+  18%{opacity:1;}
+  64%{transform:translateY(14px);opacity:1;}
+  85%,100%{transform:translateY(18px);opacity:0;}
+}
+@media (prefers-reduced-motion:reduce){.cue-mouse::after{animation:none;opacity:1;}}
+.stats-band{position:relative;overflow:hidden;background:var(--ink);color:var(--cream);padding:96px 0;}
+.stats-band .wrap{position:relative;z-index:2;}
+/* numerals tinted to the strand palette (pale-gold crest -> vivid orange) so the
+   type sits IN the glow instead of fighting it; drop-shadow (not text-shadow,
+   which misrenders with clipped gradient text) lifts them off the bright core */
+.stats-band .stat .n{
+  background:linear-gradient(180deg,#FFF4E4 0%,#F6C57A 55%,#EE9A4D 100%);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;color:#F6C57A;
+  filter:drop-shadow(0 2px 14px rgba(0,0,0,.55)) drop-shadow(0 0 5px rgba(0,0,0,.35));
+}
+.stats-band .stat .l{color:rgba(246,197,122,.8);text-shadow:0 1px 14px rgba(0,0,0,.55);}
+.stats-inner{align-items:start;}
+
+/* ---- band backdrop: orange pixel-grid glowing dome (Algolia-style) ---- */
+.band-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#120302;}
+.pixel-dome{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;}
+/* React Bits Prism container (components/react-bits/Prism.tsx) - fills .band-bg */
+.prism-container{position:relative;width:100%;height:100%;}
+/* React Bits SideRays container (components/react-bits/SideRays.tsx) - fills .band-bg */
+.side-rays-container{position:relative;width:100%;height:100%;pointer-events:none;overflow:hidden;}
+.side-rays-container canvas{display:block;width:100%;height:100%;}
+
+/* ---- stats band backdrop: woven ribbons of light (React Bits Strands) ---- */
+.strands-container{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.strands-container canvas{display:block;width:100%;height:100%;}
+
+/* ---- process ---- */
+.proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;}
+.proc-card{border-top:2px solid var(--ink);padding-top:22px;}
+.proc-card .pn{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--red);}
+.proc-card h3{font-family:var(--serif);font-size:26px;margin:14px 0 10px;}
+.proc-card p{color:var(--ink-soft);font-size:15.5px;margin:0;}
+
+/* ---- testimonials ---- */
+.testi{background:var(--ink);color:var(--cream);}
+.testi .tag-line span{color:var(--ink-mid);}
+.testi .tag-line .ln{background:rgba(244,237,226,.2);}
+.testi .feat{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.4vw,60px);line-height:1.12;letter-spacing:-.01em;max-width:22ch;margin:30px 0 0;text-wrap:balance;}
+.testi .feat em{font-style:italic;color:var(--red);}
+.testi .by{margin-top:28px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mid);}
+.testi-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:72px;padding-top:48px;border-top:1px solid rgba(244,237,226,.16);}
+.testi-grid blockquote{margin:0;font-family:var(--serif);font-size:23px;line-height:1.36;color:var(--cream);}
+.testi-grid .by2{margin-top:18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mid);}
+
+/* ---- clients ---- */
+.featured-clients{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px;}
+.fc-card{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:300px;padding:30px;border-radius:14px;
+  overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));}
+.fc-card .fc-top{display:flex;align-items:center;justify-content:space-between;}
+.fc-card .fc-i{font-family:var(--serif);font-style:italic;font-size:22px;}
+.fc-card .fc-cat{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
+.fc-card h3{font-family:var(--serif);font-size:34px;margin:auto 0 12px;letter-spacing:-.01em;}
+.fc-card p{font-size:15px;line-height:1.5;opacity:.85;margin:0 0 22px;max-width:32ch;}
+.fc-card .fc-go{font-size:13px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+.fc-card .fc-go i{font-style:normal;transition:transform .4s var(--ease);}
+.fc-card:hover .fc-go i{transform:translate(4px,-4px);}
+/* Per-client colours come from --fc-* vars set inline from each case theme
+   (see FEATURED_CLIENTS / featuredCardVars in lib/cases/index.ts). */
+.fc-card .fc-cat,.fc-card .fc-i{color:var(--fc-accent,var(--red));}
+.fc-card h3{color:var(--fc-accent,var(--ink));}
+
+/* ── Glassy sheen on hover / press - all cards ──────────────────────────── */
+.fc-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;
+  opacity:0;transition:opacity .45s var(--ease);
+  background:linear-gradient(125deg,rgba(255,255,255,.30) 0%,rgba(255,255,255,.08) 26%,rgba(255,255,255,0) 52%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.18),inset 0 -60px 80px -50px rgba(255,255,255,.10);
+}
+.pin-card .frame::before,
+.work-card .frame::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+  opacity:0;transition:opacity .45s var(--ease);
+  background:linear-gradient(125deg,rgba(255,255,255,.26) 0%,rgba(255,255,255,.07) 24%,rgba(255,255,255,0) 50%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(255,255,255,.16);
+}
+.fc-card:hover::after,.fc-card:focus-visible::after,.fc-card:active::after,
+.pin-card:hover .frame::before,.pin-card:focus-visible .frame::before,.pin-card:active .frame::before,
+.work-card:hover .frame::before,.work-card:focus-visible .frame::before,.work-card:active .frame::before{opacity:1;}
+@media (prefers-reduced-motion:reduce){
+  .fc-glow:hover,.fc-glow:focus-within{transform:none;}
+}
+
+/* ── Card face: brand logo at rest, info revealed on hover/press ─────────── */
+.fc-card .fc-logo{
+  position:absolute;inset:0;z-index:3;opacity:1;pointer-events:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease);
+}
+/* logo image is invisible until it actually loads - a missing file shows nothing.
+   Scales + fades in for a sleek entrance. */
+.fc-logo-img{
+  position:absolute;inset:0;margin:auto;width:auto;height:auto;
+  max-width:80%;max-height:54%;object-fit:contain;
+  opacity:0;transform:scale(.9);
+  transition:opacity .55s var(--ease),transform .7s var(--ease);
+}
+.fc-logo-img[data-loaded="true"]{opacity:1;transform:scale(1);}
+/* brand-coloured logos that match their card → render as a white silhouette */
+.fc-logo-img--invert{filter:brightness(0) invert(1);}
+/* solid-colour (e.g. gold) silhouette via image mask */
+.fc-logo-mask{
+  position:absolute;inset:23% 10%;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:contain;mask-size:contain;
+}
+
+/* glassy shine streak that sweeps across the card on entrance */
+.fc-shine{
+  position:absolute;top:-20%;height:140%;left:0;width:45%;z-index:5;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.10) 42%,rgba(255,255,255,.32) 50%,rgba(255,255,255,.10) 58%,transparent);
+}
+@media (prefers-reduced-motion:reduce){ .fc-shine{display:none;} }
+.fc-logo-name{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;font-family:var(--serif);font-size:clamp(22px,2.5vw,34px);
+  line-height:1.05;letter-spacing:-.01em;color:var(--fc-accent,var(--ink));padding:0 26px;
+}
+.fc-body{
+  display:flex;flex-direction:column;flex:1 1 auto;width:100%;
+  opacity:0;transition:opacity .45s var(--ease);
+}
+.fc-card:hover .fc-logo,.fc-card:focus-visible .fc-logo,.fc-card:active .fc-logo{opacity:0;transform:scale(.96);}
+.fc-card:hover .fc-body,.fc-card:focus-visible .fc-body,.fc-card:active .fc-body{opacity:1;}
+@media (prefers-reduced-motion:reduce){
+  .fc-card .fc-logo,.fc-card .fc-body{transition:opacity .2s linear;}
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   BorderGlow (React Bits) - cursor-following edge glow + mesh-gradient border.
+   Component: components/react-bits/BorderGlow.tsx. Used to give each featured
+   card a premium halo tinted to its own brand colour (.fc-glow override below).
+   ════════════════════════════════════════════════════════════════════════ */
+.border-glow-card{
+  --edge-proximity:0;
+  --cursor-angle:45deg;
+  --edge-sensitivity:30;
+  --color-sensitivity:calc(var(--edge-sensitivity) + 20);
+  --border-radius:28px;
+  --glow-padding:40px;
+  --cone-spread:25;
+
+  position:relative;
+  border-radius:var(--border-radius);
+  isolation:isolate;
+  transform:translate3d(0,0,0.01px);
+  display:grid;
+  border:1px solid rgb(255 255 255 / 15%);
+  background:var(--card-bg,#120F17);
+  overflow:visible;
+  box-shadow:
+    rgba(0,0,0,.1) 0px 1px 2px,
+    rgba(0,0,0,.1) 0px 2px 4px,
+    rgba(0,0,0,.1) 0px 4px 8px,
+    rgba(0,0,0,.1) 0px 8px 16px,
+    rgba(0,0,0,.1) 0px 16px 32px,
+    rgba(0,0,0,.1) 0px 32px 64px;
+}
+.border-glow-card::before,
+.border-glow-card::after,
+.border-glow-card > .edge-light{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  transition:opacity .25s ease-out;z-index:-1;
+}
+.border-glow-card:not(:hover):not(.sweep-active)::before,
+.border-glow-card:not(:hover):not(.sweep-active)::after,
+.border-glow-card:not(:hover):not(.sweep-active) > .edge-light{
+  opacity:0;transition:opacity .75s ease-in-out;
+}
+/* colored mesh-gradient border */
+.border-glow-card::before{
+  border:1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg,#120F17) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
+    var(--gradient-one,radial-gradient(at 80% 55%,hsla(268,100%,76%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-two,radial-gradient(at 69% 34%,hsla(349,100%,74%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-three,radial-gradient(at 8% 6%,hsla(136,100%,78%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-four,radial-gradient(at 41% 38%,hsla(192,100%,64%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-five,radial-gradient(at 86% 85%,hsla(186,100%,74%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-six,radial-gradient(at 82% 18%,hsla(52,100%,65%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-seven,radial-gradient(at 51% 4%,hsla(12,100%,72%,1) 0px,transparent 50%)) border-box,
+    var(--gradient-base,linear-gradient(#c299ff 0 100%)) border-box;
+  opacity:calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 15) * 1%),
+      transparent calc((100 - var(--cone-spread) - 15) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
+    );
+}
+/* colored mesh-gradient background fill near edges */
+.border-glow-card::after{
+  border:1px solid transparent;
+  background:
+    var(--gradient-one,radial-gradient(at 80% 55%,hsla(268,100%,76%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-two,radial-gradient(at 69% 34%,hsla(349,100%,74%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-three,radial-gradient(at 8% 6%,hsla(136,100%,78%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-four,radial-gradient(at 41% 38%,hsla(192,100%,64%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-five,radial-gradient(at 86% 85%,hsla(186,100%,74%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-six,radial-gradient(at 82% 18%,hsla(52,100%,65%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-seven,radial-gradient(at 51% 4%,hsla(12,100%,72%,1) 0px,transparent 50%)) padding-box,
+    var(--gradient-base,linear-gradient(#c299ff 0 100%)) padding-box;
+  mask-image:
+    linear-gradient(to bottom,black,black),
+    radial-gradient(ellipse at 50% 50%,black 40%,transparent 65%),
+    radial-gradient(ellipse at 66% 66%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 33% 33%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 66% 33%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 33% 66%,black 5%,transparent 40%),
+    conic-gradient(from var(--cursor-angle) at center,transparent 5%,black 15%,black 85%,transparent 95%);
+  mask-composite:subtract,add,add,add,add,add;
+  opacity:calc(var(--fill-opacity,0.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode:soft-light;
+}
+/* outer glow layer */
+.border-glow-card > .edge-light{
+  inset:calc(var(--glow-padding) * -1);
+  pointer-events:none;z-index:1;
+  mask-image:
+    conic-gradient(from var(--cursor-angle) at center,black 2.5%,transparent 10%,transparent 90%,black 97.5%);
+  opacity:calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode:plus-lighter;
+}
+.border-glow-card > .edge-light::before{
+  content:"";position:absolute;inset:var(--glow-padding);border-radius:inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color,hsl(40deg 80% 80% / 100%)),
+    inset 0 0 1px 0 var(--glow-color-60,hsl(40deg 80% 80% / 60%)),
+    inset 0 0 3px 0 var(--glow-color-50,hsl(40deg 80% 80% / 50%)),
+    inset 0 0 6px 0 var(--glow-color-40,hsl(40deg 80% 80% / 40%)),
+    inset 0 0 15px 0 var(--glow-color-30,hsl(40deg 80% 80% / 30%)),
+    inset 0 0 25px 2px var(--glow-color-20,hsl(40deg 80% 80% / 20%)),
+    inset 0 0 50px 2px var(--glow-color-10,hsl(40deg 80% 80% / 10%)),
+    0 0 1px 0 var(--glow-color-60,hsl(40deg 80% 80% / 60%)),
+    0 0 3px 0 var(--glow-color-50,hsl(40deg 80% 80% / 50%)),
+    0 0 6px 0 var(--glow-color-40,hsl(40deg 80% 80% / 40%)),
+    0 0 15px 0 var(--glow-color-30,hsl(40deg 80% 80% / 30%)),
+    0 0 25px 2px var(--glow-color-20,hsl(40deg 80% 80% / 20%)),
+    0 0 50px 2px var(--glow-color-10,hsl(40deg 80% 80% / 10%));
+}
+.border-glow-inner{
+  display:flex;flex-direction:column;position:relative;z-index:1;
+}
+
+/* ── APAR featured-card integration ─────────────────────────────────────── */
+.fc-glow{
+  transition:transform .5s var(--spring),box-shadow .5s var(--ease);
+}
+.fc-glow:hover,.fc-glow:focus-within{
+  transform:translate3d(0,-6px,0.01px);
+  box-shadow:0 36px 84px -22px rgba(26,23,20,.5);
+}
+/* the inner brand card fills the glow shell; its own overflow clips logo/shine */
+.fc-glow > .border-glow-inner{overflow:visible;}
+.fc-glow .fc-card{width:100%;height:100%;}
+
+.client-wall{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:48px;}
+.cw-item{font-family:var(--serif);font-size:clamp(18px,2vw,26px);color:var(--ink-soft);padding:10px 20px;
+  border:1px solid var(--line);border-radius:100px;transition:.35s var(--ease);cursor:default;}
+.cw-item:hover{color:var(--cream);background:var(--ink);border-color:var(--ink);transform:translateY(-3px);}
+
+/* ---- faq ---- */
+.faq-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px;align-items:start;}
+.faq-head .display{max-width:12ch;}
+.faq-list{border-top:1px solid var(--line);}
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;background:none;border:none;cursor:pointer;
+  font-family:var(--serif);font-size:clamp(21px,2.4vw,32px);color:var(--ink);text-align:left;padding:28px 4px;transition:color .35s;}
+.faq-q:hover{color:var(--red);}
+.faq-q .ic{flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);transition:.45s var(--ease);}
+.faq-item[data-state="open"] .faq-q .ic{background:var(--grad);border-color:transparent;color:#fff;transform:rotate(135deg);}
+.faq-a{overflow:hidden;}
+.faq-a p{color:var(--ink-soft);font-size:17px;line-height:1.6;max-width:64ch;margin:0 4px 30px;}
+.faq-a[data-state="open"]{animation:accordion-down .55s var(--ease);}
+.faq-a[data-state="closed"]{animation:accordion-up .55s var(--ease);}
+
+@media (max-width:1024px){
+  .proc-grid{grid-template-columns:1fr 1fr;gap:36px 28px;}
+  .faq-wrap{grid-template-columns:1fr;gap:32px;}
+  .featured-clients{grid-template-columns:1fr;}
+}
+@media (max-width:760px){
+  .proc-grid{grid-template-columns:1fr;}
+  .testi-grid{grid-template-columns:1fr;gap:36px;}
+}
+@media (max-width:900px){
+  .hero-home-in{grid-template-columns:1fr;gap:40px;}
+  .hero-feature{max-width:430px;}
+}

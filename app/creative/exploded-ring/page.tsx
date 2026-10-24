@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExplodedRingStage } from "@/components/exploded/exploded-ring-stage";
+import { ExplodedRingStage } from "@/components/work/exploded/exploded-ring-stage";
 
 export const metadata: Metadata = {
   title: "Exploded ring - APAR Creative Studio",

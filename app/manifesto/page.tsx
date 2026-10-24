@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manifesto } from "@/components/manifesto";
+import { Manifesto } from "@/components/manifesto/manifesto";
 import "./manifesto.css";
 
 export const metadata: Metadata = {

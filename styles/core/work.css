@@ -1,0 +1,137 @@
+/* ============================================================
+   PAGE HERO + chips (shared by inner pages: work, clients)
+   ============================================================ */
+.page-hero{padding:160px 0 70px;position:relative;}
+.page-hero .eyebrow{margin-bottom:28px;}
+.page-hero .lead{margin-top:30px;}
+.chip-row{display:flex;gap:10px;flex-wrap:wrap;}
+.chip{position:relative;font-size:14px;padding:10.5px 17.5px;border:0;border-radius:0;cursor:pointer;transition:color .3s;user-select:none;white-space:nowrap;
+  /* Keep filters operable and their hit areas unchanged, with no capsule fill. */
+  background:transparent;color:inherit;font:inherit;font-size:14px;line-height:inherit;appearance:none;}
+.chip:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+.chip:hover,.chip.sel{color:var(--red);}
+.chip.sel::after{content:"";position:absolute;left:17.5px;right:17.5px;bottom:3px;height:1px;background:currentColor;}
+
+/* ============================================================
+   WORK page
+   ============================================================ */
+.filter-row{display:flex;gap:10px;margin-top:38px;flex-wrap:wrap;}
+.work-foot{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:48px;flex-wrap:wrap;}
+.empty-note{text-align:center;color:var(--ink-soft);padding:60px 0;font-family:var(--serif);font-style:italic;font-size:22px;}
+.work-card .cap p{font-size:14px;color:var(--ink-soft);margin:2px 0 0;}
+/* (work grid is masonry via CSS columns - responsive column count set on .work-grid) */
+
+/* ============================================================
+   CLIENTS page (roster)
+   ============================================================ */
+.roster{margin-top:40px;border-top:1px solid var(--line);}
+.roster-row{display:grid;grid-template-columns:60px 1fr auto 40px;gap:24px;align-items:center;padding:26px 6px;border-bottom:1px solid var(--line);
+  text-decoration:none;color:var(--ink);transition:background .35s var(--ease);}
+.roster-row:not(.static){cursor:pointer;}
+.roster-row:not(.static):hover{background:var(--paper);}
+.roster-row:not(.static):hover .rr-n,.roster-row:not(.static):hover .rr-name{transform:translateX(16px);}
+.rr-n{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-mid);transition:transform .45s var(--ease);}
+.rr-name{font-family:var(--serif);font-size:clamp(24px,3vw,40px);letter-spacing:-.01em;transition:color .35s,transform .45s var(--ease);}
+.roster-row:not(.static):hover .rr-name{color:var(--red);}
+.rr-cat{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
+.rr-go{font-size:20px;color:var(--ink-mid);text-align:right;transition:.45s var(--ease);}
+.roster-row:not(.static):hover .rr-go{color:var(--red);transform:translate(4px,-4px);}
+.roster-row.static{opacity:.92;}
+.clients-foot{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:48px;flex-wrap:wrap;}
+@media (max-width:680px){
+  .roster-row{grid-template-columns:40px 1fr;gap:14px;}
+  .rr-cat{grid-column:2;grid-row:2;transition:transform .45s var(--ease);}
+  .roster-row:not(.static):hover .rr-cat{transform:translateX(16px);}
+  .rr-go{display:none;}
+}
+
+/* ============================================================
+   CASE STUDY (themeable via .case-page wrapper --c-* vars)
+   ============================================================ */
+/* Per-company colours (--c-*) and fonts (--serif/--sans) are set inline on
+   .case-page from each case theme/fonts - see CaseStudy / lib/cases/index.ts. */
+.case-page{background:var(--c-bg);color:var(--c-ink);min-height:100vh;}
+.case-page ::selection{background:var(--c-accent);color:var(--c-bg);}
+.case-wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
+.case-hero{position:relative;min-height:94vh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:150px 0 64px;overflow:hidden;}
+.case-hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(80% 60% at 18% 12%, var(--c-accent-soft), transparent 60%);}
+.case-hero-in{position:relative;width:100%;} /* width:100% - as a flex item, the wrap's margin:auto would otherwise shrink-wrap it to its widest line and centre it */
+.case-eyebrow{display:inline-flex;align-items:center;gap:11px;font-size:12.5px;letter-spacing:.28em;text-transform:uppercase;font-weight:700;color:var(--c-accent);}
+.case-eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--c-accent);}
+.case-title{font-family:var(--serif);font-weight:500;font-size:clamp(56px,11vw,164px);line-height:.9;letter-spacing:-.02em;margin:22px 0 0;}
+.case-title em{font-style:italic;color:var(--c-accent);}
+.case-sub{font-size:clamp(18px,1.6vw,22px);line-height:1.5;max-width:54ch;margin:26px 0 0;color:var(--c-soft);}
+.case-meta{display:flex;flex-wrap:wrap;gap:32px 44px;margin-top:44px;}
+.case-meta .m h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-soft);font-weight:700;margin:0 0 9px;}
+.case-meta .m p{font-family:var(--serif);font-size:19px;margin:0;color:var(--c-ink);}
+/* Hero shows the full 9:16 creative - centered portrait, height-capped. */
+.case-hero-fig{margin:44px auto 0;width:fit-content;max-width:100%;}
+.case-hero-fig .img-slot{aspect-ratio:9/16;height:clamp(360px,56vh,580px);width:auto;display:block;}
+@media (max-width:560px){ .case-hero-fig{width:100%;} .case-hero-fig .img-slot{width:100%;height:auto;} }
+/* the glass panes do the sectioning (no full-bleed rules under inset panes) */
+.case-sec{padding:104px 0;}
+.case-tag{display:flex;align-items:center;gap:18px;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--c-soft);}
+.case-tag .ln{flex:1;height:1px;background:var(--c-line);}
+.case-lead{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.8vw,52px);line-height:1.18;letter-spacing:-.01em;
+  max-width:22ch;margin:34px 0 0;text-wrap:balance;}
+.case-lead em{font-style:italic;color:var(--c-accent);}
+.case-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:54px;align-items:start;}
+.case-cols h3{font-family:var(--serif);font-size:27px;margin:0 0 14px;}
+.case-cols p{color:var(--c-soft);font-size:16.5px;line-height:1.65;margin:0;}
+.case-list{list-style:none;padding:0;margin:18px 0 0;}
+.case-list li{position:relative;padding:14px 0 14px 26px;border-top:1px solid var(--c-line);font-size:16px;}
+.case-list li::before{content:"";position:absolute;left:0;top:21px;width:8px;height:8px;border-radius:50%;background:var(--c-accent);}
+.case-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:20px;}
+.case-stat .n{font-family:var(--serif);font-size:clamp(46px,6vw,88px);line-height:1;letter-spacing:-.02em;color:var(--c-accent);}
+.case-stat .l{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--c-soft);margin-top:12px;}
+/* Clean gallery - tiles match the creatives' 9:16 so nothing gets cropped. */
+.case-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:54px;align-items:start;}
+.case-gallery .g{grid-column:auto;}
+.case-gallery .g .img-slot,.case-gallery .img-slot{width:100%;aspect-ratio:9/16;display:block;}
+
+/* Per-page rhythm - different columns, spacing & alignment per case (all 9:16,
+   so creatives are never cropped) so the case studies don't look copy-pasted. */
+.case-page[data-variant="b"] .case-gallery{grid-template-columns:repeat(4,1fr);gap:14px;}
+.case-page[data-variant="b"] .case-lead{text-align:center;margin-inline:auto;}
+.case-page[data-variant="b"] .case-sec{padding:122px 0;}
+.case-page[data-variant="c"] .case-gallery{gap:36px;}
+.case-page[data-variant="c"] .case-lead{margin-left:8%;}
+.case-page[data-variant="c"] .case-sec{padding:86px 0;}
+@media (max-width:900px){
+  .case-page[data-variant="b"] .case-gallery{grid-template-columns:repeat(2,1fr);}
+}
+.case-quote{padding:110px 0;text-align:center;}
+.case-quote blockquote{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.2vw,58px);line-height:1.18;letter-spacing:-.01em;
+  max-width:20ch;margin:0 auto;}
+.case-quote blockquote em{font-style:italic;color:var(--c-accent);}
+.case-quote .by{margin-top:30px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c-soft);}
+.case-next{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;}
+.case-next .nx-l{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--c-soft);margin-bottom:10px;}
+.case-next .nx-name{font-family:var(--serif);font-size:clamp(34px,5vw,64px);letter-spacing:-.01em;}
+.case-next a.nx{color:var(--c-ink);text-decoration:none;transition:color .35s;}
+.case-next a.nx:hover .nx-name{color:var(--c-accent);}
+.case-btn{display:inline-flex;align-items:center;gap:12px;background:transparent;color:var(--c-ink);font-weight:700;font-size:15px;
+  padding:17px 28px;border-radius:0;text-decoration:none;white-space:nowrap;}
+
+/* ---------- scroll-to-next-client (pull meter + wipe) ---------- */
+.next-pull{position:fixed;left:0;right:0;bottom:0;z-index:300;display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:0 0 26px;opacity:0;transition:opacity .35s var(--ease);pointer-events:none;}
+.next-pull.show{opacity:1;}
+.next-pull-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--c-soft);font-weight:600;}
+.next-pull-label strong{color:var(--c-accent);font-weight:700;}
+.next-pull-bar{width:170px;height:3px;background:var(--c-line);border-radius:3px;overflow:hidden;}
+.next-pull-bar i{display:block;height:100%;width:100%;background:var(--c-accent);transform-origin:left;transform:scaleX(0);}
+@media (prefers-reduced-motion:reduce){ .next-pull{display:none;} }
+
+/* ---------- seamless page-transition wipe (cover → navigate → reveal) ---------- */
+.page-wipe{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;will-change:transform;}
+.page-wipe-label{font-family:var(--serif);font-style:italic;font-size:clamp(44px,10vw,128px);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.18em;}
+.page-wipe-arrow{font-style:normal;}
+@media (max-width:860px){
+  .case-cols{grid-template-columns:1fr;gap:34px;}
+  .case-stats{grid-template-columns:1fr;gap:30px;}
+  .case-gallery .g{grid-column:1/-1 !important;}
+  .case-meta{gap:24px;}
+}

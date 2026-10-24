@@ -1,11 +1,13 @@
-import { Hero } from "@/components/hero";
-import { MJShowcase } from "@/components/mj-showcase";
-import { HomeImageBento } from "@/components/home-image-bento";
-import { Faq } from "@/components/faq";
-import { TestimonialCarousel } from "@/components/testimonial-carousel";
+import { Hero } from "@/components/home/hero";
+import { MJShowcase } from "@/components/home/diamond";
+import { HomeImageBento } from "@/components/home/home-image-bento";
+import { Faq } from "@/components/home/faq";
+import { TestimonialCarousel } from "@/components/testimonials/testimonial-carousel";
 import { CASES } from "@/lib/cases";
-import { caseAssets } from "@/lib/case-assets";
-import { ProgressiveQuote, FeaturedProjects, MovingClients } from "@/components/home-flow";
+import { caseAssets } from "@/lib/cases/assets.server";
+import { ProgressiveQuote, FeaturedProjects } from "@/components/home/featured";
+
+import { MovingClients } from "@/components/home/featured/moving-clients";
 
 export default function Home() {
   return <main className="meeting-home">

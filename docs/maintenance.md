@@ -1,0 +1,38 @@
+# Maintenance guide
+
+## Add or update a brand
+
+1. Edit `lib/cases/brands/<slug>.tsx`; new modules export a `CaseData` value. Keep supplied copy, colours and font stacks intact.
+2. Register new modules in `lib/cases/index.ts` in the intended client order. That server-only index drives static routes, featured client cards and testimonial content. Update next links deliberately; the tests accept both case links and the `/clients` return route.
+3. Add optimized artwork under `public/work/<slug>/`. The default names are `hero.jpg`, `1.jpg`, `2.jpg` and so on. `CURATED_CASE_MEDIA` in `lib/cases/motion.ts` supports named WebP exports instead.
+4. Match `approach.gallery` entries to the media list. `assets.server.ts` checks files and reads image dimensions during static generation. Missing imagery keeps its brand fallback.
+5. A homepage feature is a separate editorial choice in `components/home/featured/index.tsx`; add the `-480.webp` and `-960.webp` variants alongside its full WebP. Keep the existing card ratio and breakpoints.
+6. Run `npm run check`, `npm run check:production`, and `npm run docs:tree`. Inspect the changed route on desktop and phone when browser access is available.
+
+## Structure and boundaries
+
+- `app/`: route composition, metadata and the private voice upload endpoint.
+- `components/`: UI grouped by feature; shared motion and media have their own folders. Import concrete files rather than broad barrels that pull unrelated effects into a browser bundle.
+- `lib/cases/types.ts`: shared type-only contracts. Do not import types from rendering components.
+- `lib/cases/index.ts` and `assets.server.ts`: server-only content and disk access. Client code receives the fields it needs as props.
+- `styles/core/`: the former global stylesheet split into named sections. These files concatenate in the exact original order via `styles/globals.css`.
+- `styles/mobile.css`: final override layer. Static phone text, native scrolling and one featured card at a time are intentional.
+- `design-source/`: editable and original files. The active logo fonts still live in `public/fit-devnagari/`; unused font experiments are archived outside public assets.
+
+Do not shorten code by compressing shaders, merging unrelated effects or hiding ownership. A small module with clear lifecycle cleanup is easier to maintain than fewer long lines.
+
+## Performance checks
+
+`npm run check:production` measures gzip bytes for each route's JavaScript and CSS, including ancestor layouts. The limits in `performance-budgets.json` are regression ceilings, not targets to inflate to. Investigate increases before changing a limit. The report does not include photographs, runtime scene downloads or user network/CPU conditions.
+
+Keep responsive `srcSet` images, explicit image dimensions, lazy loading below the fold, and viewport/visibility gating for scenes. Do not move source originals into `public/`, eagerly import Three.js scenes at the layout, or re-enable text animation on phones.
+
+The root `.gitignore` preserves local uploads outside version control; `.vercelignore` also excludes originals from direct CLI uploads. Git-based deployments already omit ignored local archives. The site still deliberately ships its optimized photos, fonts, models and videos.
+
+## Verification and delivery
+
+The offline tests check case links, image/video existence, image dimensions, resolved source imports, client/server separation and galaxy stroke recovery. Browser scripts live in `e2e/` and require a permitted browser connection. A build passing is not visual proof.
+
+Before an authorized push: run the checks, inspect `git diff --check`, review changed files, and verify the intended remote and branch. Keep existing user changes and raw source files separate from generated output. Do not change backend credentials, storage, fonts or brand palettes as a cleanup shortcut.
+
+Historical decisions in `docs/adr/` retain the filenames and trade-offs from when they were written. Use this guide and the current tree for present-day file locations.

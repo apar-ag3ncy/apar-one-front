@@ -1,5 +1,5 @@
 // Trace a single Fit glyph image into an SVG path you can paste into the APAR
-// wordmark cycle (components/apar-logo.tsx) as a baked `vector:` — genuine Fit,
+// wordmark cycle (components/layout/apar-logo.tsx) as a baked `vector:` — genuine Fit,
 // no Adobe kit needed (same technique as the baked Devanagari अ / Latin A).
 //
 // Why a tracer: Fit's exact geometry can't be reproduced faithfully by eye — it
@@ -49,6 +49,6 @@ potrace.trace(
     const out = input.replace(/\.[^.]+$/, ".path.txt");
     writeFileSync(out, d);
     console.log(`\n✓ traced ${input}\n  → ${d.length} chars written to ${out}\n`);
-    console.log("Paste into components/apar-logo.tsx SCRIPTS as a `vector:` entry.\n");
+    console.log("Paste into components/layout/apar-logo.tsx SCRIPTS as a `vector:` entry.\n");
   }
 );

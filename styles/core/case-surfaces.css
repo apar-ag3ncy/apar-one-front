@@ -1,0 +1,249 @@
+/* ---------- slow-mo layer (components/slow-mo.tsx) ---------- */
+/* Only the frames that actually run desktop parallax need an advance layer.
+   Promoting every gallery image (including offscreen mobile imagery) retained
+   dozens of full-resolution textures during scroll. */
+.img-slot > img{transform-origin:50% 50%;}
+.work-card .img-slot > img,.split-stack .img-slot > img,.hero-feature .img-slot > img{will-change:auto;}
+@media (min-width:741px) and (prefers-reduced-motion:no-preference){
+  .work-card .img-slot > img,.split-stack .img-slot > img,.hero-feature .img-slot > img{will-change:transform;}
+}
+/* frames take the velocity skew - a compositor layer keeps the stretch smooth */
+.work-card .frame,.split-stack .si .si-fig,.hero-feature .frame{will-change:transform;transform-origin:50% 50%;}
+/* SplitText line masks: each line rises out of its own overflow-hidden wrapper */
+.sm-line{display:block;}
+.footer-word{will-change:transform;}
+
+/* ============================================================
+   LIQUID GLASS (case pages) - components/liquid-glass.tsx + the .glass recipe.
+   See docs/adr/0002-case-page-liquid-glass.md. Everything derives from the
+   page's own --c-* palette, so there are no per-client rules: the liquid is
+   the client's colours moving under frost, the glass is light on top.
+
+   Deliberately NO backdrop-filter and NO mix-blend-mode: both were measured
+   (ADR-0002) to cost the case pages 2-3x their scroll frame rate - every pane
+   re-blurred / re-blended each frame while the backdrop moved beneath it. The
+   blobs are pre-softened gradients, so a blur added nothing visible anyway;
+   the frost is the fill + rim + sheen + grain, all static raster.
+
+   Layering: .case-page is NOT a stacking context (that would trap the fixed
+   overscroll meter and the page wipe under the body-level cursor canvas).
+   Instead the fixed backdrop sits at z 0 and the header/sections at z 1, so it
+   paints above .case-page's own background and under all content.
+   ============================================================ */
+.case-page{position:relative;
+  /* the on-pane variant of --c-soft (see .glass); computed here, off the theme
+     vars set inline on this element, so the pane can adopt it without a cycle */
+  --c-soft-pane:color-mix(in srgb,var(--c-soft) 55%,var(--c-ink) 45%);}
+.case-page > header,.case-page > section{position:relative;z-index:1;}
+/* one grain texture, shared by the liquid and every pane (SVG fractal noise,
+   white, alpha-only) */
+.case-page{--lg-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");}
+
+/* ---- the liquid: fixed, click-through, behind the content. Four big
+        PRE-SOFT radial gradients (no filter:blur - softness is in the stops).
+        Their drift is driven from JS on 2-D transforms and only while the page
+        is still (see liquid-glass.tsx) - no CSS animation, so nothing here is
+        a promoted layer during scroll. ---- */
+.lg-backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict;background:var(--c-bg);}
+.lg-blob{position:absolute;width:min(78vmax,1100px);height:min(78vmax,1100px);border-radius:50%;}
+.lg-a{left:-24vmax;top:-32vmax;background:radial-gradient(closest-side,var(--c-bg2),transparent 72%);}
+.lg-b{right:-30vmax;top:-10vmax;background:radial-gradient(closest-side,var(--c-accent-soft),transparent 70%);}
+.lg-c{left:-16vmax;bottom:-36vmax;
+  background:radial-gradient(closest-side,rgba(255,255,255,.10),transparent 70%);
+  background:radial-gradient(closest-side,color-mix(in oklab,var(--c-ink) 15%,transparent),transparent 70%);}
+.lg-d{right:-20vmax;bottom:-28vmax;background:radial-gradient(closest-side,rgba(0,0,0,.36),transparent 72%);}
+/* top light + a diagonal sheen across the whole liquid, then a fine grain so
+   the surface reads as material rather than a flat fill (plain alpha, no blend) */
+.lg-backdrop::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(70% 55% at 50% -12%,rgba(255,255,255,.12),transparent 60%),
+             linear-gradient(118deg,rgba(255,255,255,.07),transparent 38%,transparent 62%,rgba(0,0,0,.16));}
+.lg-backdrop::after{content:"";position:absolute;inset:0;background-size:160px 160px;
+  background-image:var(--lg-grain);}
+
+/* ---- the glass: one recipe for every surface, ONE element per pane. The
+        sheen and grain are painted into the pane's own background stack (no
+        pseudo layers, no isolation - measured: 13 isolated panes x 2 pseudo
+        layers over a fixed backdrop cost more scroll frames than the fill
+        itself). Translucent fill with a faint accent tint, a directional lit
+        rim over a dark hairline (holds on light themes and near-black), an
+        inset specular top edge, a tight drop shadow. Text sits on top of the
+        stack, so it is never washed. Media frames (.glass-media) are a bezel:
+        same fill and rim, no grain, no outer shadow, and the photo covers the
+        stack - nothing is ever painted over the picture. ---- */
+.case-page .glass{position:relative;
+  --g-fill:rgba(255,255,255,.09);--g-fill2:rgba(255,255,255,.03);
+  --g-rim:rgba(255,255,255,.18);--g-hi:rgba(255,255,255,.55);
+  --g-sheen:radial-gradient(120% 70% at 10% 0%,rgba(255,255,255,.16),transparent 46%),
+            linear-gradient(165deg,rgba(255,255,255,.05),transparent 34%,transparent 70%,rgba(255,255,255,.035));
+  background:var(--lg-grain) 0 0/160px 160px repeat,
+             var(--g-sheen),
+             linear-gradient(135deg,var(--g-fill),var(--g-fill2)),
+             linear-gradient(160deg,var(--c-accent-soft),transparent 32%);
+  border:1px solid var(--g-rim);border-radius:18px;
+  box-shadow:inset 0 1px 0 var(--g-hi),inset 1px 1px 0 rgba(255,255,255,.34),inset -1px -1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(0,0,0,.09),inset 0 -1px 0 rgba(0,0,0,.2),
+    0 18px 40px -22px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.18);
+  /* secondary copy sits a touch brighter ON a pane than on the bare page: the
+     white fill lifts the pane, and the theme's --c-soft alpha was tuned for
+     the bare bg. Mixed toward the ink (keeps hue + hierarchy) so 16px body
+     copy and the 11-12px labels stay >= 4.5:1 over the fill. */
+  --c-soft:var(--c-soft-pane);}
+.case-page .glass-media{
+  background:radial-gradient(110% 60% at 12% 0%,rgba(255,255,255,.10),transparent 44%),
+             linear-gradient(135deg,var(--g-fill),var(--g-fill2)),
+             linear-gradient(160deg,var(--c-accent-soft),transparent 32%);
+  box-shadow:inset 0 1px 0 var(--g-hi),inset 1px 1px 0 rgba(255,255,255,.34),inset -1px -1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(0,0,0,.09),inset 0 -1px 0 rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.18);}
+
+/* ---- smoked glass for the mid-light themes (bg luminance > .09: Girvaan,
+        Jatubhai Velji, High on Smiles - data-glass is derived in CaseStudy).
+        White glass would brighten a background that is already marginal for
+        light ink and push body copy under WCAG AA; toning the pane DOWN keeps
+        every text tier above 4.5:1 and still reads as glass. The liquid's
+        light-adding layers flip to shade for the same reason. ---- */
+.case-page[data-glass="dark"] .glass{--g-fill:rgba(0,0,0,.30);--g-fill2:rgba(0,0,0,.18);--g-rim:rgba(255,255,255,.26);
+  --g-sheen:radial-gradient(120% 70% at 10% 0%,rgba(255,255,255,.07),transparent 46%);
+  background:var(--lg-grain) 0 0/160px 160px repeat,var(--g-sheen),linear-gradient(135deg,var(--g-fill),var(--g-fill2));}
+.case-page[data-glass="dark"] .glass-media{
+  background:radial-gradient(110% 60% at 12% 0%,rgba(255,255,255,.06),transparent 44%),linear-gradient(135deg,var(--g-fill),var(--g-fill2));}
+.case-page[data-glass="dark"] .lg-c{background:radial-gradient(closest-side,rgba(0,0,0,.22),transparent 70%);}
+.case-page[data-glass="dark"] .lg-backdrop::before{
+  background:radial-gradient(70% 55% at 50% -12%,rgba(255,255,255,.05),transparent 60%),
+             linear-gradient(118deg,transparent 40%,rgba(0,0,0,.18));}
+
+/* ---- frames with no photo yet: a finished, branded card instead of a
+        drop-zone note. Panel in the page's own colours (bg2 -> bg with the
+        accent glow), the client's logo centred and contained. The visible
+        "Drop ... image" caption is suppressed on case pages (it stays as the
+        frame's accessible name). ---- */
+.case-page .ph-img{background:
+  radial-gradient(90% 70% at 30% 18%,var(--c-accent-soft),transparent 60%),
+  radial-gradient(70% 60% at 80% 90%,rgba(0,0,0,.28),transparent 65%),
+  linear-gradient(160deg,var(--c-bg2),var(--c-bg));}
+.case-page .img-slot-cap{display:none;}
+.case-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18%;}
+.case-ph-logo{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;opacity:.92;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.28));}
+.case-ph-logo--invert{filter:brightness(0) invert(1) drop-shadow(0 8px 24px rgba(0,0,0,.28));}
+.case-ph-mask{display:block;width:100%;height:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;opacity:.92;}
+.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;color:var(--c-soft);opacity:.85;}
+/* the four fallback tiles are one logo four times: vary the glow corner and
+   the logo scale down the grid so the row reads as a set, not a repeat */
+.case-page .case-gallery .g:nth-child(2n) .ph-img{background:
+  radial-gradient(90% 70% at 72% 80%,var(--c-accent-soft),transparent 60%),
+  radial-gradient(70% 60% at 15% 10%,rgba(0,0,0,.26),transparent 65%),
+  linear-gradient(200deg,var(--c-bg2),var(--c-bg));}
+.case-page .case-gallery .g:nth-child(3n) .case-ph{padding:26%;}
+.case-page .case-gallery .g:nth-child(4n) .case-ph{padding:14%;}
+@media (max-width:860px){ .case-ph-cap{left:16px;bottom:14px;font-size:10px;} }
+/* hero without a creative: a wide branded panel across the wrap, not an empty phone */
+.case-page .case-hero-fig.is-fallback{width:100%;}
+.case-page .case-hero-fig.is-fallback .img-slot{width:100%;height:auto;aspect-ratio:21/9;}
+.case-page .case-hero-fig.is-fallback .case-ph{padding:12% 24%;}
+@media (max-width:860px){
+  .case-page .case-hero-fig.is-fallback .img-slot{aspect-ratio:4/3;}
+  .case-page .case-hero-fig.is-fallback .case-ph{padding:16% 20%;}
+}
+/* gallery: branded fallbacks share one portrait ratio (set by the template),
+   so a placeholder page's rows stay level - real photos keep their natural
+   ratio, exactly as before */
+
+/* ---- surfaces: which parts of the case template are glass ---- */
+.case-page .case-hero-fig.glass{border-radius:20px;padding:10px;}
+.case-page .case-gallery .g.glass{border-radius:18px;padding:9px;}
+.case-page .case-meta.glass{border-radius:18px;padding:28px 32px;width:fit-content;max-width:100%;}
+.case-page .case-cols .glass{border-radius:20px;padding:36px;}
+.case-page .case-stat.glass{border-radius:20px;padding:34px 30px;}
+.case-page .glass-quote{border-radius:24px;padding:clamp(44px,7vw,84px) clamp(24px,5vw,72px);max-width:920px;margin-inline:auto;}
+
+@media (max-width:860px){
+  .case-page .case-meta.glass{padding:22px;}
+  .case-page .case-cols .glass{padding:26px;}
+  .case-page .case-stat.glass{padding:26px 24px;}
+  .case-page .case-hero-fig.glass{padding:8px;}
+  .case-page .case-gallery .g.glass{padding:7px;}
+  .lg-d{display:none;}
+}
+/* users who turn transparency off get solid panes on a still, flat page */
+@media (prefers-reduced-transparency:reduce){
+  .case-page .glass{background:var(--c-bg2);}
+  .lg-blob,.lg-backdrop::before,.lg-backdrop::after{display:none;}
+}
+
+/* ============================================================
+   CASE PAGE COMPOSITION - hero, next-case card, phone rhythm
+   (after the glass rules on purpose: same specificity, later wins)
+   ============================================================ */
+/* ---- hero: copy left, creative right, bottom-aligned on one baseline, so
+        eyebrow / title / sub / meta AND the whole frame sit inside the first
+        screen. The frame column is as wide as the height-capped 9:16 creative
+        (or the 4:5 brand card on pages without one). ---- */
+@media (min-width:901px){
+  .case-hero-in{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:clamp(32px,4vw,64px);align-items:end;}
+  .case-hero-copy{min-width:0;container-type:inline-size;}
+  /* the title is sized by its COLUMN (cqi), not the viewport, so a one-word
+     name like "Paramount" never breaks mid-word beside the frame; browsers
+     without container units keep the viewport clamp declared above */
+  .case-title{font-size:clamp(56px,min(11vw,17.5cqi),164px);overflow-wrap:normal;hyphens:manual;}
+  .case-hero-fig{margin:0;justify-self:end;}
+  .case-hero-fig .img-slot{height:clamp(360px,calc(100svh - 234px),580px);}
+  .case-page .case-hero-fig.is-fallback{width:auto;}
+  .case-page .case-hero-fig.is-fallback .img-slot{aspect-ratio:4/5;width:auto;height:clamp(360px,calc(100svh - 234px),580px);}
+  .case-page .case-hero-fig.is-fallback .case-ph{padding:22%;}
+  .case-page .case-meta.glass{width:auto;}
+}
+/* ---- next-case card: the next client's own colours (the wipe uses the same
+        `next.color`), so the card is a preview of the page it opens ---- */
+.case-page .case-next{background:var(--nx-bg);color:var(--nx-ink);border-radius:22px;padding:56px 52px;
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.55);}
+.case-page .case-next .nx-l{color:var(--nx-ink);opacity:.72;}
+.case-page .case-next a.nx{color:var(--nx-ink);}
+.case-page .case-next a.nx:hover .nx-name{color:var(--nx-ink);opacity:.8;}
+.case-page .case-next .case-btn{background:transparent;color:var(--nx-ink);}
+/* ---- phones + small tablets: tighter rhythm (the desktop 104-122px section
+        padding reads as 160-220px of flat colour between blocks on a phone),
+        a 2x2 meta grid, stats as compact rows, no lead indent ---- */
+@media (max-width:860px){
+  .case-page[data-variant="c"] .case-lead{margin-left:0;}
+  .case-stats{gap:12px;}
+  .case-page .case-stat.glass{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:20px 22px;}
+  .case-stat .l{margin-top:0;text-align:right;max-width:18ch;}
+  .case-page .case-next{padding:36px 26px;}
+  /* galleries of brand cards (no photos yet) go 2-up on phones - four
+     full-width logo cards in a row made the page a screen and a half longer */
+  .case-page .case-gallery:has(.has-brand){grid-template-columns:1fr 1fr;gap:12px;}
+  .case-page .case-gallery:has(.has-brand) .g.glass{padding:6px;grid-column:auto !important;}
+  .case-page .case-gallery:has(.has-brand) .case-ph{padding:22%;}
+  .case-page .case-gallery:has(.has-brand) .case-ph-cap{left:12px;bottom:10px;font-size:9.5px;letter-spacing:.16em;}
+}
+@media (max-width:760px){
+  .case-hero{padding:112px 0 40px;}
+  .case-sec,.case-page[data-variant="b"] .case-sec,.case-page[data-variant="c"] .case-sec{padding:72px 0;}
+  .case-quote{padding:80px 0;}
+  .case-meta,.case-page .case-meta.glass{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;width:100%;}
+  .case-meta .m:first-child{grid-column:1/-1;}
+  .case-meta .m p{font-size:17px;}
+}
+@media (max-width:480px){
+  .case-sec,.case-page[data-variant="b"] .case-sec,.case-page[data-variant="c"] .case-sec{padding:56px 0;}
+  .case-quote{padding:64px 0;}
+  .case-eyebrow{font-size:11.5px;letter-spacing:.2em;align-items:flex-start;}
+  .case-eyebrow i{margin-top:4px;flex:none;}
+}
+
+/* ============================================================
+   FIXES (audit 2026-09-16) - behaviour only, no visual change at rest
+   ============================================================ */
+/* closed mobile menu: also visibility:hidden (transform alone leaves its links
+   focusable and announced); the delay keeps the slide-up animation */
+.mobile-menu{visibility:hidden;transition:transform .6s var(--ease),visibility 0s .6s;}
+.mobile-menu.open{visibility:visible;transition:transform .6s var(--ease),visibility 0s;}
+@media (max-width:900px){
+  /* the nav keeps `scrolled` while the menu is open: its cream bar hid the
+     cream close icon on light routes - let the menu's ink show through */
+  .nav.menu-open{background:transparent;box-shadow:none;}
+}
+/* the case pages' fixed "keep scrolling" meter (z 300) sat above the open menu */
+body:has(.mobile-menu.open) .next-pull{display:none;}

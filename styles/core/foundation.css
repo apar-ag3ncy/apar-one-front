@@ -1,0 +1,238 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Restore the original editorial pairing, served locally for reliable loading. */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/editorial/Archivo-normal-latin-ext.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/editorial/Archivo-normal-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/editorial/Newsreader-normal-latin-ext.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/editorial/Newsreader-normal-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/editorial/Newsreader-italic-latin-ext.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 400 500;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('/fonts/editorial/Newsreader-italic-latin.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 400 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" - the Latin half of
+   the matched pair in /public/fit-devnagari/, sharing the SAME single `wdth` axis
+   as the Devanagari (weight + height are baked into the cut). WOFF2 first so Safari
+   renders the variable font; the source .otf is the fallback. */
+@font-face {
+  font-family: 'fit-vf';
+  src: url('/fit-devnagari/Fit_Latin_Variable.woff2') format('woff2'),
+       url('/fit-devnagari/fonnts.com-Fit_Variable_Normal.otf') format('opentype');
+  /* Declare the cut AS weight 900 so a 900 request matches exactly - no faux bold. */
+  font-weight: 900;
+  font-display: swap;
+}
+/* Real Fit Devanagari (local) - so the wordmark's leading अ renders in genuine
+   Fit, not a Noto fallback. Single `wdth` axis on the same instance scale as the
+   Latin (Condensed 293 · Normal 482 …); weight/height are baked into the cut.
+   WOFF2 first so Safari (which rejects this variable .otf) renders it too. */
+@font-face {
+  font-family: 'fit-devanagari-vf';
+  src: url('/fit-devnagari/Fit_Devanagari_Variable.woff2') format('woff2'),
+       url('/fit-devnagari/fonnts.com-Fit_Devanagari_Variable_Normal.otf') format('opentype');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* ============================================================
+   shadcn / Radix theme tokens (used by the FAQ accordion + ui)
+   ============================================================ */
+@theme inline {
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --color-brand-red: #eb3b25;
+  --color-brand-cream: #f4ede2;
+  --color-brand-ink: #1a1714;
+  --font-sans: var(--sans);
+  --font-serif: var(--serif);
+  --animate-accordion-down: accordion-down 0.3s ease-out;
+  --animate-accordion-up: accordion-up 0.3s ease-out;
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+/* ============================================================
+   APAR - Editorial Press · Shared design system
+   (ported from the design bundle: site.css + motion.css)
+   ============================================================ */
+:root{
+  --red:#EB3B25;
+  --red-deep:#C42A17;
+  /* signature APAR gradient (deep-red -> red -> warm orange) - reuse everywhere
+     an accent should feel premium instead of flat, so the site stays cohesive */
+  --grad:linear-gradient(120deg,#C42A17,#EB3B25 46%,#FF7A45);
+  --cream:#F4EDE2;
+  --cream-2:#EBE0CE;
+  --paper:#FBF7EF;
+  --ink:#1A1714;
+  --ink-soft:#6A6056;
+  --ink-mid:#A89C8C;
+  --line:rgba(26,23,20,.14);
+  --line-strong:rgba(26,23,20,.28);
+  --gut:56px;
+  --maxw:1320px;
+  --serif:'Newsreader',Georgia,serif;
+  --sans:'Archivo',system-ui,sans-serif;
+  /* APAR wordmark = Fit (DJR), variable-width, across the 9 scripts it ships in.
+     Real Fit (Adobe Fonts kit) wins; the logo's leading-"A" transition only
+     renders a script live once its real Fit family is confirmed loaded - see
+     components/apar-logo.tsx. Stand-ins below are only for non-logo Fit usage. */
+  /* Real Adobe Fonts family names for Fit are the `-vf` variants (from the Fit
+     web-project source). Arabic/Armenian/Kannada confirmed; the rest follow the
+     same `-vf` pattern. Noto stand-ins remain until the Adobe kit is connected. */
+  --fit:'fit-vf','Roboto Flex',var(--sans);                    /* Latin · Cyrillic · Greek */
+  --fit-deva:'fit-devanagari-vf','Noto Sans Devanagari',var(--sans);
+  --fit-kannada:'fit-kannada-vf','Noto Sans Kannada',var(--sans);
+  --fit-hebrew:'fit-hebrew-vf','Noto Sans Hebrew',var(--sans);
+  --fit-armenian:'fit-armenian-vf','Noto Sans Armenian',var(--sans);
+  --fit-tamil:'fit-tamil-vf','Noto Sans Tamil',var(--sans);
+  --fit-arabic:'fit-arabic-vf','Noto Sans Arabic',var(--sans);
+  --ease:cubic-bezier(.2,.7,.25,1);
+  --spring:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;}
+/* clip (NOT hidden) guards horizontal overflow without making html/body a scroll
+   container - `overflow-x:hidden` coerces overflow-y to `auto`, which breaks every
+   position:sticky pin on the page (.pin-sticky work gallery, .split-sticky). */
+html{overflow-x:clip;}
+html:not(.lenis){scroll-behavior:smooth;}
+/* lava fluid cursor trail - full-viewport overlay, click-through, under the nav.
+   One dye, plain `normal` blend on every page: the bright warm dye reads as a
+   glow over dark sections and as the same golden trail over light/cream ones, so
+   it's visible site-wide. (Do NOT add mix-blend-mode:multiply here - a bright dye
+   multiplied against a light background composites to nothing = invisible trail.) */
+.splash-cursor{position:fixed;inset:0;z-index:50;pointer-events:none;}
+.splash-cursor canvas{width:100vw;height:100vh;display:block;}
+
+/* pixel cursor trail - the hero pixel-dome tiles promoted site-wide. Full-viewport
+   overlay, click-through, under the nav (z-50 < z-120). The beam's cursor comet
+   on the beam's own 3:2 tiles, in the beam's dark shade (pixel-trail.tsx picks
+   it from the page's background). The canvas is fixed at the viewport, so it
+   stays put on scroll; its size is locked to whole device pixels inline. */
+.pixel-trail{position:fixed;inset:0;z-index:50;pointer-events:none;transition:opacity .25s var(--ease);}
+/* over a beam band (hero, footer) the beam's own tiles are the cursor - the
+   separate trail hides so two pixel grids never overlap (set by pixel-dome.tsx) */
+html[data-on-dome="1"] .pixel-trail{opacity:0;}
+html[data-on-image="1"] .pixel-trail{opacity:0;}
+.image-pixel-trail{position:absolute;left:0;top:0;z-index:2;pointer-events:none;visibility:hidden;transform-origin:50% 50%;}
+.pixel-trail canvas{width:100vw;height:100vh;display:block;}
+
+/* Lenis inertial scroll (Lusion feel) - native smooth-behavior must yield to it */
+html.lenis,html.lenis body{height:auto;}
+.lenis.lenis-smooth{scroll-behavior:auto!important;}
+.lenis.lenis-stopped{overflow:hidden;}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.6;
+  font-synthesis:none;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:clip;max-width:100vw;
+}
+::selection{background:var(--red);color:var(--cream);}
+a{color:inherit;text-decoration:none;}
+img,video{max-width:100%;display:block;}
+/* never let long words force horizontal scroll on small screens */
+h1,h2,h3,h4,p,li{overflow-wrap:break-word;}
+h1,h2,h3,h4{margin:0;font-weight:500;}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
+.section{padding:130px 0;}
+.section-sm{padding:84px 0;}
+.divline{height:1px;background:var(--line);width:100%;}
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.3em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-soft);
+  display:inline-flex;align-items:center;gap:11px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--grad);flex:none;}
+.eyebrow.on-red{color:rgba(244,237,226,.85);}
+.eyebrow.on-red .dot{background:var(--cream);}
+
+.display{font-family:var(--serif);font-weight:500;line-height:.95;letter-spacing:-.02em;text-wrap:balance;}
+.d-xl{font-size:clamp(56px,8.5vw,128px);}
+.d-lg{font-size:clamp(44px,6vw,92px);}
+.d-md{font-size:clamp(34px,4.4vw,62px);}
+.display em{font-style:italic;color:var(--red);}
+
+.lead{font-size:clamp(18px,1.5vw,21px);line-height:1.55;color:var(--ink-soft);max-width:58ch;text-wrap:pretty;}
+.section-num{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--red);}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:12px;cursor:pointer;border:none;
+  background:transparent;color:inherit;font-family:var(--sans);font-weight:700;
+  font-size:15px;letter-spacing:.01em;padding:17px 28px;border-radius:0;white-space:nowrap;
+  position:relative;
+}
+.btn .arr{transition:transform .45s var(--ease);}
+.btn:hover .arr{transform:translate(4px,-4px);}
+
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:10px;cursor:pointer;
+  font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap;
+  padding-bottom:3px;min-height:44px;
+}
+.btn-ghost.light{color:var(--cream);}

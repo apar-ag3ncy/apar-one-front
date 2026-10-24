@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CaseStudy } from "@/components/case-study";
+import { CaseStudy } from "@/components/work/case-study";
 import { CASES, CASE_SLUGS } from "@/lib/cases";
-import { caseAssets } from "@/lib/case-assets";
+import { caseAssets } from "@/lib/cases/assets.server";
 
 export function generateStaticParams() {
   return CASE_SLUGS.map((slug) => ({ slug }));
