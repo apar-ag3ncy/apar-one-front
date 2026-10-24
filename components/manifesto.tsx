@@ -1,10 +1,12 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HoverText } from "./hover-text";
+import { ManifestoSculpture } from "./manifesto-sculpture";
 
 const BELIEFS = [
   { word: "Meaning", title: <>Find the <em>real thing.</em></>,
@@ -40,7 +42,7 @@ export function Manifesto() {
     const media = gsap.matchMedia();
     let alive = true;
     media.add({ cinematic: "(min-width: 900px) and (min-height: 650px)",
-      motion: "(prefers-reduced-motion: no-preference)" }, context => {
+      motion: DESKTOP_MOTION_QUERY }, context => {
       if (!context.conditions?.motion) return;
       const track = el.querySelector<HTMLElement>(".manifesto-journey")!;
       const chapters = Array.from(el.querySelectorAll<HTMLElement>(".manifesto-chapter"));
@@ -127,6 +129,8 @@ export function Manifesto() {
         <div className="manifesto-journey-bottom"><div className="manifesto-steps">{BELIEFS.map((belief, i) => <span className="manifesto-step" key={belief.word}>0{i + 1} <span>{belief.word}</span></span>)}</div><div className="manifesto-meter" aria-hidden="true"><i className="manifesto-meter-fill" /></div></div>
       </div>
     </section>
+
+    <ManifestoSculpture />
 
     <section className="manifesto-closing wrap">
       <span className="manifesto-kicker">This is what we believe.</span>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import Link from "next/link";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
@@ -31,19 +32,20 @@ export function TalkToUs() {
 }
 
 function TalkToUsFallback() {
+  const mobile = useMobileLayout();
   const [orbReady, setOrbReady] = useState(false);
   useEffect(() => {
     // The decorative WebGL orb does not need to compete with the hero for
     // first paint, hydration, or its largest-contentful-paint window. The CSS
     // fallback has the same shape and keeps the contact link usable meanwhile.
-    const mobile = window.matchMedia("(max-width: 740px)").matches;
-    const timer = window.setTimeout(() => setOrbReady(true), mobile ? 8000 : 1800);
+    if (mobile) return;
+    const timer = window.setTimeout(() => setOrbReady(true), 1800);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [mobile]);
   return (
     <Link href="/#contact" className="ttu" aria-label="Talk to us">
       <span className="ttu-orb" aria-hidden="true">
-        {orbReady ? <Suspense fallback={<span className="ttu-orb-placeholder" />}><Strands
+        {orbReady && !mobile ? <Suspense fallback={<span className="ttu-orb-placeholder" />}><Strands
           colors={["#EB3B25", "#F0883B", "#F6C57A"]}
           count={5}
           speed={0.85}

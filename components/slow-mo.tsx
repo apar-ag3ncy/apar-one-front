@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
@@ -34,7 +36,7 @@ export function SlowMo() {
     // Touch scrolling is native. Keep the cinematic per-frame layer on wider
     // screens, where its image parallax, velocity skew and SplitText have room
     // to breathe; on phones they compete with touch scrolling and hydration.
-    media.add("(min-width: 741px) and (prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
     const splits: SplitText[] = [];
     let alive = true;
     const ctx = gsap.context((self) => {

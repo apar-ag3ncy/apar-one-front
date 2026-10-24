@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
+
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -30,6 +32,7 @@ const ITEMS = [
 ];
 
 export function Faq() {
+  const mobile = useMobileLayout();
   const root = useRef<HTMLElement>(null);
   const [pinned, setPinned] = useState("");
   const [hovered, setHovered] = useState<string | null>(null);
@@ -38,7 +41,7 @@ export function Faq() {
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       root.current?.querySelectorAll<HTMLElement>(".faq-label").forEach(label => {
         gsap.fromTo(label, { backgroundSize: "0% 100%" }, {
           backgroundSize: "100% 100%", ease: "none",
@@ -65,7 +68,7 @@ export function Faq() {
           {ITEMS.map((item, i) => {
             const value = `item-${i}`;
             return <AccordionItem key={value} value={value}
-              onPointerEnter={event => { if (event.pointerType === "mouse") setHovered(value); }}
+              onPointerEnter={event => { if (!mobile && event.pointerType === "mouse") setHovered(value); }}
               onPointerLeave={() => setHovered(null)}>
               <AccordionTrigger>
                 <span className="faq-label">{item.q}</span>

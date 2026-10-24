@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { motion, useReducedMotion } from "framer-motion";
 import { useMemo, type ComponentProps, type ComponentType, type ElementType } from "react";
 
@@ -26,6 +27,7 @@ const motionCache = new Map<ElementType, MotionComponent>();
  */
 export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: RevealProps) {
   const reduce = useReducedMotion();
+  const mobile = useMobileLayout();
   const MotionTag = useMemo<MotionComponent>(() => {
     if (typeof as === "string") {
       return (motion as unknown as Record<string, MotionComponent>)[as];
@@ -38,8 +40,14 @@ export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: Rev
     return cached;
   }, [as]);
 
+  if (mobile) {
+    const StaticTag = as as ComponentType<Record<string, unknown>>;
+    return <StaticTag {...props} data-static-reveal>{children}</StaticTag>;
+  }
+
   return (
     <MotionTag
+      data-static-reveal
       // Keep the first server/client frame identical. Reduced-motion users get
       // every section immediately, including content below the fold.
       initial={{ opacity: 0, y: 24 }}

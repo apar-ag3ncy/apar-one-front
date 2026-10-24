@@ -1,5 +1,6 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -19,7 +20,7 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
     const el = root.current;
     if (!el) return;
     const media = gsap.matchMedia();
-    media.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       const card = el.querySelector<HTMLElement>(".client-story-link")!;
       const art = el.querySelector<HTMLElement>(".client-story-art")!;
       const seal = el.querySelector<HTMLElement>(".client-story-seal");

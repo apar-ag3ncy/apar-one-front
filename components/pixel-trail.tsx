@@ -9,8 +9,7 @@ import { BoxTracker, Comet, LIFE, PopTexture, TILE_GLSL, snapToTiles, tilePitch 
  * dissolving tail, the same splat sizes) drawn on a full-viewport grid of the
  * beam's own tiles (landscape 3:2, TILE_CELL css px tall, hairline grooves,
  * rounded corners - identical pitch, snapped to whole device pixels) in the
- * very colour the popped tiles have on the landing beam, with the beam's own
- * hairline grooves (the same red a touch darker, never a hole).
+ * beam's original red/peach grade, with a translucent, beveled tile finish.
  *
  * Click-through fixed overlay under the nav (z-50 < z-120). Over a beam band
  * (html[data-on-dome], set by <PixelDome>) the beam's own tiles are the
@@ -42,11 +41,17 @@ void main(){
   float pop = texture2D(uPop, (cellId + 0.5) / uGrid).r;
   if (pop <= 0.0) discard;                              // untouched tile -> transparent
   pop *= twinkle(cellId, uTime);
-  // the beam's tile texture, exactly: grooves, cut corners and crossings are
-  // the same red a touch darker (never a hole), so the tiles almost touch
+  // Keep the beam's colour and tile geometry. Opacity across each tile gives
+  // the cursor a light-catching glass face without changing the red/peach hue.
   vec3 tm = tileMask(fc, uCell, uSeam, uRadius);
   float seam = max(max(tm.x * 0.38, tm.y * 0.55), tm.z * 0.8);
-  gl_FragColor = vec4(cometGrade(pop) * (1.0 - 0.22 * seam), pow(pop, 0.85) * 0.88);
+  vec2 local = mod(fc, uCell) / uCell;
+  float topEdge = 1.0 - smoothstep(0.0, 0.18, local.y);
+  float leftEdge = 1.0 - smoothstep(0.0, 0.14, local.x);
+  float lowerEdge = smoothstep(0.72, 1.0, local.y);
+  float bevel = max(topEdge * 0.22, leftEdge * 0.13) - lowerEdge * 0.10;
+  float alpha = pow(pop, 0.85) * (0.59 + bevel) * (1.0 - 0.22 * seam);
+  gl_FragColor = vec4(cometGrade(pop), alpha);
 }
 `;
 
@@ -72,7 +77,7 @@ export function PixelTrail() {
   const [armed, setArmed] = useState(false);
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (matchMedia("(pointer: coarse)").matches) return;
+    if (matchMedia("(max-width: 900px), (pointer: coarse)").matches) return;
     const arm = () => setArmed(true);
     window.addEventListener("pointermove", arm, { once: true, passive: true });
     return () => window.removeEventListener("pointermove", arm);
@@ -81,7 +86,7 @@ export function PixelTrail() {
   useEffect(() => {
     if (!armed) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (matchMedia("(pointer: coarse)").matches) return; // no cursor to trail on touch
+    if (matchMedia("(max-width: 900px), (pointer: coarse)").matches) return; // no cursor to trail on touch
 
     const canvas = ref.current;
     if (!canvas) return;

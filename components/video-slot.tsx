@@ -48,6 +48,7 @@ function centreDistance(v: HTMLVideoElement) {
 
 function reconcile() {
   scheduled = false;
+  const maxConcurrent = matchMedia("(max-width: 900px), (pointer: coarse)").matches ? 1 : MAX_CONCURRENT;
   const now = performance.now();
   const ranked = [...wanting].map(video => ({ video, distance: centreDistance(video) }))
     .sort((a, b) => a.distance - b.distance).map(({ video }) => video);
@@ -56,14 +57,14 @@ function reconcile() {
   let youngest = Infinity;
   for (const v of playing) {
     const age = now - (startedAt.get(v) ?? 0);
-    if (wanting.has(v) && age < HOLD_MS && allow.size < MAX_CONCURRENT) {
+    if (wanting.has(v) && age < HOLD_MS && allow.size < maxConcurrent) {
       allow.add(v);
       youngest = Math.min(youngest, HOLD_MS - age);
     }
   }
   // Held clips reserve a slot rather than being added on top of the cap.
   for (const v of ranked) {
-    if (allow.size >= MAX_CONCURRENT) break;
+    if (allow.size >= maxConcurrent) break;
     allow.add(v);
   }
   for (const v of playing) {

@@ -12,6 +12,7 @@ import {
 } from "framer-motion";
 import { Marquee } from "./magicui/marquee";
 import { useHeavyFx } from "@/lib/device";
+import { useMobileLayout } from "@/lib/motion-policy";
 
 const WORDS = [
   { t: "Branding", out: false },
@@ -26,6 +27,14 @@ const WORDS = [
  * Framer Motion scroll-velocity mapped to a live skewY (the "velocity skew").
  */
 export function VelocityMarquee() {
+  const mobile = useMobileLayout();
+  if (mobile) return <div className="vmarquee" aria-hidden="true"><div className="vtrack"><div>
+    {WORDS.map(w => <span key={w.t} className={w.out ? "out" : undefined}>{w.t}</span>)}
+  </div></div></div>;
+  return <DesktopVelocityMarquee />;
+}
+
+function DesktopVelocityMarquee() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { margin: "20% 0px" });
   const reduce = useReducedMotion();

@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { gsap } from "gsap";
 import type { CaseMotionProfile } from "@/lib/case-motion";
@@ -17,7 +19,7 @@ export const BrandSignature = forwardRef<BrandSignatureHandle, { profile: CaseMo
     const el = root.current;
     if (!el) return;
     const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
     const motionState = state.current;
     let alive = true;
     let initialized = false;

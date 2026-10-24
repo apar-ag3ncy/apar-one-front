@@ -4,6 +4,7 @@ import { Reveal } from "@/components/reveal";
 import { FEATURED_CLIENTS } from "@/lib/cases";
 import { FeaturedCard } from "@/components/featured-card";
 import { HoverText } from "@/components/hover-text";
+import styles from "./manish-card.module.css";
 
 export const metadata: Metadata = {
   title: "Clients — APAR AGENTIVE CREACY",
@@ -24,6 +25,7 @@ const ROSTER = [
   { n: "11", name: "High on Smiles", cat: "Dental", href: "/work/high-on-smiles" },
   { n: "12", name: "Signi", cat: "Lab-Grown Gems", href: "/work/signi" },
   { n: "13", name: "A Paramount", cat: "Engineering", href: "/work/a-paramount" },
+  { n: "14", name: "Manish Jewellers", cat: "Jewellery", href: "/#diamond-experience" },
 ];
 
 export default function ClientsPage() {
@@ -54,6 +56,17 @@ export default function ClientsPage() {
             {FEATURED_CLIENTS.map((c, i) => (
               <FeaturedCard key={c.slug} client={c} i={i} />
             ))}
+            <Link href="/#diamond-experience" className={styles.card} aria-label="Explore the Manish Jewellers diamond experience">
+              <span className={styles.media}>
+                {/* Both supplied marks retain their original colour and lettering. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className={styles.base} src="/brands/manish-jewellers/lockup-compact.png" alt="" width="961" height="503" loading="lazy" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className={styles.hover} src="/brands/manish-jewellers/monogram-1916.png" alt="" width="961" height="503" loading="lazy" />
+                <span className={styles.explore}>Explore the experience <span aria-hidden="true">↗</span></span>
+              </span>
+              <span className={styles.caption}><span>Jewellery · Since 1916</span><strong>Manish Jewellers</strong></span>
+            </Link>
           </div>
         </div>
       </section>

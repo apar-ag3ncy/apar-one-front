@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,11 +12,12 @@ import { HoverText } from "../hover-text";
 type Scene = { progress: (value:number)=>void; pointer:(x:number,y:number,active?:boolean)=>void; dispose:()=>void };
 
 function CosmicCanvas({ kind }: { kind:"galaxy"|"portrait"|"character" }) {
+  const mobile=useMobileLayout();
   const ref=useRef<HTMLDivElement>(null);
   const [motionRevision,setMotionRevision]=useState(0);
   const [status,setStatus]=useState<'preview'|'ready'|'fallback'>('preview');
   useEffect(()=>{
-    const host=ref.current;if(!host)return;
+    const host=ref.current;if(!host||mobile)return;
     let runtime:Scene|null=null,disposed=false,started=false,timeout=0;
     const state={progress:1};const reduced=matchMedia('(prefers-reduced-motion: reduce)');
     gsap.registerPlugin(ScrollTrigger);
@@ -40,8 +42,8 @@ function CosmicCanvas({ kind }: { kind:"galaxy"|"portrait"|"character" }) {
     const parent=host.parentElement!;parent.addEventListener('pointermove',move,{passive:true});parent.addEventListener('pointerleave',leave);parent.addEventListener('pointercancel',leave);window.addEventListener('blur',leave);
     const motionChange=()=>{setStatus(reduced.matches?'fallback':'preview');setMotionRevision(value=>value+1);};reduced.addEventListener('change',motionChange);
     return()=>{disposed=true;clearTimeout(timeout);observer.disconnect();parent.removeEventListener('pointermove',move);parent.removeEventListener('pointerleave',leave);parent.removeEventListener('pointercancel',leave);window.removeEventListener('blur',leave);reduced.removeEventListener('change',motionChange);ctx.revert();runtime?.dispose();};
-  },[kind,motionRevision]);
-  return <div ref={ref} className={`cosmic-canvas ${kind}-canvas`} data-status={status} aria-hidden="true" />;
+  },[kind,motionRevision,mobile]);
+  return <div ref={ref} className={`cosmic-canvas ${kind}-canvas`} data-status={mobile ? "fallback" : status} aria-hidden="true" />;
 }
 
 export function GalaxyFooterArt(){

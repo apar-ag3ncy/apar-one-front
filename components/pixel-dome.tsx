@@ -265,7 +265,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobi
         | null) ?? null;
     if (!gl) return;
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-    const hoverAvailable = matchMedia("(any-hover: hover)");
+    const hoverAvailable = matchMedia("(min-width: 901px) and (any-hover: hover)");
     // A touchscreen can also have a mouse or trackpad. Follow hover capability
     // rather than the primary pointer, and update when devices change.
     let interactive = !reducedMotion.matches && hoverAvailable.matches;
@@ -319,7 +319,7 @@ export function PixelDome({ cell = TILE_CELL, domeY = -0.15, intensity = 1, mobi
     // Native device pixels, up to 3x. The tiles must map 1:1 onto the screen's
     // pixels: a backing store rendered below the device ratio gets resampled by
     // the compositor and every tile edge turns into a soft ramp.
-    const DPR_CAP = 3;
+    const DPR_CAP = matchMedia("(max-width: 900px), (pointer: coarse)").matches ? 2 : 3;
     let w = 0;
     let h = 0;
     let dpr = 1;

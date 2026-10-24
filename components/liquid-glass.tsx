@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 
 /**
@@ -36,11 +37,12 @@ const DRIFT = [
 const IDLE_AFTER = 180; // ms without a scroll event before the drift resumes
 
 export function LiquidGlass() {
+  const mobile = useMobileLayout();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || mobile) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const blobs = Array.from(el.querySelectorAll<HTMLElement>(".lg-blob"));
 
@@ -100,7 +102,7 @@ export function LiquidGlass() {
       document.removeEventListener("visibilitychange", onVisibility);
       reduced.removeEventListener("change", onMotionChange);
     };
-  }, []);
+  }, [mobile]);
 
   return (
     <div ref={ref} className="lg-backdrop" aria-hidden="true">

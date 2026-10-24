@@ -34,6 +34,7 @@ const CARDS: {
   { href: "/work/maison-mireyaa", cat: "lifestyle", span: 4, ratio: "4/5", tag: "Florist", title: "Maison Mireyaa", year: "2025", desc: "Branding, seasonal content & campaigns", slot: "Drop Maison Mireyaa image", img: "/work/maison-mireyaa/hero.jpg" },
   { href: "/work/achal", cat: "lifestyle", span: 4, ratio: "4/5", tag: "Real Estate", title: "Achal", year: "2025", desc: "Premium real estate - branding & campaigns", slot: "Drop Achal image", img: "/work/achal/hero.jpg" },
   { href: "/work/signi", cat: "jewellery", span: 4, ratio: "4/5", tag: "Lab-Grown Gems", title: "Signi", year: "2025", desc: "Lab-grown gems - brand, content & campaigns", slot: "Drop Signi image", img: "/work/signi/3.jpg" },
+  { href: "/#diamond-experience", cat: "jewellery", span: 4, ratio: "961/503", tag: "Jewellery", title: "Manish Jewellers", year: "Since 1916", desc: "Identity assets · Diamond experience", slot: "Manish Jewellers identity", img: "/brands/manish-jewellers/lockup-full.png" },
 ];
 
 const FILTERS: { key: Cat; label: string }[] = [

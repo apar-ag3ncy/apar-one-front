@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+
 import { lazy, Suspense, useEffect, useState } from "react";
 
 const SlowMo = lazy(() => import("./slow-mo").then(module => ({ default: module.SlowMo })));
@@ -9,7 +11,7 @@ export function DesktopSlowMo() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 741px) and (prefers-reduced-motion: no-preference)");
+    const query = window.matchMedia(DESKTOP_MOTION_QUERY);
     const sync = () => setEnabled(query.matches);
     sync();
     query.addEventListener("change", sync);

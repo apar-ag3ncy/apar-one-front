@@ -70,9 +70,19 @@
 .flow-logo-track.row-1{animation-direction:reverse;animation-duration:48s;}
 .flow-logo-track.row-2{animation-duration:38s;}
 .flow-logo-group{display:flex;flex-shrink:0;}
-.flow-logo-group a{width:clamp(210px,24vw,340px);height:150px;display:flex;align-items:center;justify-content:center;padding:24px 48px;}
-.flow-logo-group img{width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);}
+.flow-logo-group a{width:clamp(210px,24vw,340px);height:150px;display:flex;align-items:center;justify-content:center;padding:24px 48px;position:relative;isolation:isolate;}
+.flow-logo-group a::before{content:"";position:absolute;inset:12px 20px;border-radius:14px;background:#f4ede2;opacity:0;transform:scale(.96);transition:opacity .25s ease,transform .25s ease;z-index:-1;}
+.flow-logo-group a[data-light-backdrop="true"]:is(:hover,:focus-visible)::before{opacity:1;transform:scale(1);}
+.flow-logo-mark{position:relative;display:block;width:100%;height:100%;}
+.flow-logo-group img{width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);transition:filter .28s ease,opacity .28s ease;}
+.flow-logo-tint{position:absolute;inset:0;mask-size:contain;mask-repeat:no-repeat;mask-position:center;-webkit-mask-size:contain;-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;opacity:0;transition:opacity .28s ease;pointer-events:none;}
+.flow-logo-group a:is(:hover,:focus-visible) img{filter:none;}
+.flow-logo-group a[data-colorized="true"]:is(:hover,:focus-visible) img{opacity:0;}
+.flow-logo-group a:is(:hover,:focus-visible) .flow-logo-tint{opacity:1;}
 .flow-logo-window:hover .flow-logo-track,.flow-logo-window:focus-within .flow-logo-track{animation-play-state:paused;}
+@media(prefers-reduced-motion:reduce){
+ .flow-logo-group img,.flow-logo-tint,.flow-logo-group a::before{transition:none;}
+}
 @keyframes client-drift{to{transform:translateX(-33.333333%);}}
 .meeting-home :is(a,button):focus-visible{outline:2px solid var(--red);outline-offset:5px;}
 .nav .brand-tag{font-size:10px;font-weight:500;letter-spacing:.22em;line-height:1.4;}

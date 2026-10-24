@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+
 import { useEffect, type RefObject } from "react";
 import { gsap } from "gsap";
 
@@ -8,7 +10,7 @@ export function useFeaturedHover(root: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
     if (!root.current) return;
     const media = gsap.matchMedia();
-    media.add("(min-width: 600px) and (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       const cleanups: (() => void)[] = [];
       root.current?.querySelectorAll<HTMLElement>(".flow-project").forEach(card => {
         const image = card.querySelector<HTMLImageElement>(".photo-slot-img");

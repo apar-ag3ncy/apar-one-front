@@ -7,6 +7,7 @@ import "./text-actions.css";
 import "./testimonial-carousel.css";
 import "./voice-feedback.css";
 import "./faq-motion.css";
+import "./mobile.css";
 import { Nav } from "@/components/nav";
 import { ConditionalFooter } from "@/components/conditional-footer";
 import { ScrollProgressBar } from "@/components/scroll-progress-bar";

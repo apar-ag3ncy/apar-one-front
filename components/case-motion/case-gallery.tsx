@@ -1,5 +1,6 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,6 +13,7 @@ import { caseMotion } from "@/lib/case-motion";
 import { getLenis } from "@/lib/scroll-state";
 
 export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: CaseAssets }) {
+  const mobile = useMobileLayout();
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,7 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
     preloadObserver.observe(section);
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
-    media.add({ desktop: "(min-width: 901px) and (min-height: 600px)", motion: "(prefers-reduced-motion: no-preference)" }, context => {
+    media.add({ desktop: "(min-width: 901px) and (min-height: 600px)", motion: DESKTOP_MOTION_QUERY }, context => {
       if (!context.conditions?.desktop || !context.conditions?.motion) return;
       section.dataset.pinned = "true";
       const travel = () => { measure(); return Math.max(0, track.scrollWidth - nativeViewport.clientWidth); };
@@ -120,7 +122,7 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
       return () => { delete section.dataset.pinned; scrollTween.current = null; nativeProgress(); };
     }, section);
     let refresh = 0;
-    const loaded = () => { cancelAnimationFrame(refresh); refresh = requestAnimationFrame(() => ScrollTrigger.refresh()); };
+    const loaded = () => { if (!scrollTween.current) return; cancelAnimationFrame(refresh); refresh = requestAnimationFrame(() => ScrollTrigger.refresh()); };
     const imgs = Array.from(track.querySelectorAll("img"));
     imgs.forEach(img => img.addEventListener("load", loaded));
     return () => {
@@ -170,7 +172,7 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
           return <figure key={i} className={`case-reel-panel${!assets.photoSrcs[i] && !item.video ? " is-identity" : ""}`} style={{ "--panel-ratio": ratio, "--identity-accent": data.theme.accent } as CSSProperties}>
             <div className="case-panel-visual">
               {item.video ? <VideoSlot src={item.video} placeholder={item.placeholder} radius={15} style={{ height: "100%", aspectRatio: item.ratio }} />
-                : <PhotoSlot src={assets.photoSrcs[i]} placeholder={item.placeholder} radius={15} fixedRatio={String(ratio)} priority={preload} {...brand} />}
+                : <PhotoSlot src={assets.photoSrcs[i]} placeholder={item.placeholder} radius={15} fixedRatio={String(ratio)} priority={preload && !mobile} {...brand} />}
               {!assets.photoSrcs[i] && !item.video && <span className="case-identity-pattern" data-form={profile.form} aria-hidden="true"><i /><i /><i /></span>}
             </div>
             <figcaption><span>{String(i + 1).padStart(2, "0")} / {item.placeholder}</span><span>{data.card.name}</span></figcaption>

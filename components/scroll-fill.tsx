@@ -1,5 +1,6 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -34,8 +35,8 @@ export function ScrollFill({ text, className }: { text: string; className?: stri
     const spans = Array.from(el.querySelectorAll<HTMLSpanElement>(".fw"));
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
-    media.add({ reduced: "(prefers-reduced-motion: reduce)", motion: "(prefers-reduced-motion: no-preference)" }, context => {
-    if (context.conditions?.reduced) {
+    media.add({ reduced: "(prefers-reduced-motion: reduce)", motion: DESKTOP_MOTION_QUERY, mobile: "(max-width: 900px), (hover: none) and (pointer: coarse)" }, context => {
+    if (!context.conditions?.motion) {
       spans.forEach(s => s.classList.add("lit"));
       return () => spans.forEach(s => s.classList.remove("lit"));
     }

@@ -1,11 +1,14 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
+
 import { Fragment, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 /** Reference hover: a sideways, slanted letter fade followed by a clean return.
  * Only the glyphs move; the link/button keeps its hit area and layout position. */
 export function HoverText({ children }: { children: string }) {
+  const mobile = useMobileLayout();
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -13,7 +16,7 @@ export function HoverText({ children }: { children: string }) {
     const control = label?.closest<HTMLElement>("a,button");
     if (!label || !control) return;
     const media = gsap.matchMedia();
-    media.add("(hover: hover) and (prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       const letters = Array.from(label.querySelectorAll<HTMLElement>(".hover-text-letter"));
       let over = false;
       let focused = false;
@@ -72,8 +75,9 @@ export function HoverText({ children }: { children: string }) {
       };
     }, label);
     return () => media.revert();
-  }, [children]);
+  }, [children, mobile]);
 
+  if (mobile) return <span className="hover-text">{children}</span>;
   return <span ref={ref} className="hover-text">
     <span className="hover-text-a11y">{children}</span>
     <span className="hover-text-visual" aria-hidden="true">

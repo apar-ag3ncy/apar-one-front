@@ -1,5 +1,6 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -11,6 +12,7 @@ type Scene = { render: () => void; dispose: () => void };
 
 /** The MJ client experience, presented as an optional hands-on portfolio piece. */
 export function MJShowcase() {
+  const mobile = useMobileLayout();
   const track = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
@@ -34,16 +36,21 @@ export function MJShowcase() {
   useEffect(() => {
     const el = track.current;
     if (!el) return;
+    if (mobile) {
+      Object.assign(motion.current, { burst: 0, progress: .5, baseYaw: -.12 });
+      setExpanded(false);
+      paint();
+      const state = motion.current;
+      return () => { gsap.killTweensOf(state); };
+    }
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setStatus("loading"); setRequested(true); io.disconnect(); }
-    // The SVG preview is already complete. On phones, start the optional 3D
-    // renderer only near this section so its download and shader compilation
-    // do not compete with the preceding imagery during ordinary scrolling.
-    }, { rootMargin: window.matchMedia("(max-width: 740px)").matches ? "100px" : "400px" });
+    // Phones use the interactive SVG; desktop loads the 3D scene near the section.
+    }, { rootMargin: "400px" });
     io.observe(el);
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       let refreshFrame = 0;
       Object.assign(motion.current, { burst: 1, progress: 0, baseYaw: -.12 });
       // Keep the client's three chapters, timing and camera choreography.
@@ -72,10 +79,10 @@ export function MJShowcase() {
       paint();
     });
     return () => { io.disconnect(); media.revert(); };
-  }, []);
+  }, [mobile]);
 
   useEffect(() => {
-    if (!requested || !host.current) return;
+    if (!requested || mobile || !host.current) return;
     const el = host.current;
     let disposed = false;
     let runtime: Scene | null = null;
@@ -100,11 +107,11 @@ export function MJShowcase() {
       runtime?.dispose();
       scene.current = null;
     };
-  }, [requested]);
+  }, [requested, mobile]);
 
   useEffect(() => {
     const el = stage.current;
-    if (!el) return;
+    if (!el || mobile) return;
     const state = motion.current;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const turn = (event: PointerEvent) => {
@@ -118,10 +125,10 @@ export function MJShowcase() {
     el.addEventListener("pointermove", turn);
     el.addEventListener("pointerleave", leave);
     return () => { el.removeEventListener("pointermove", turn); el.removeEventListener("pointerleave", leave); gsap.killTweensOf(state); };
-  }, []);
+  }, [mobile]);
 
   const toggle = () => {
-    if (!requested) { setStatus("loading"); setRequested(true); }
+    if (!mobile && !requested) { setStatus("loading"); setRequested(true); }
     const next = !expanded;
     setExpanded(next);
     gsap.to(motion.current, { burst: next ? 1 : 0, progress: next ? 1 : .5,
@@ -136,9 +143,15 @@ export function MJShowcase() {
           <div>
             <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
         </div>
-        <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
-          <div className="mj-showcase-label"><span>Manish Jewellers</span></div>
-          <DiamondFallback loadTexture={requested} />
+        <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={!mobile && status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={!mobile && status === "ready"}>
+          <div className="mj-showcase-label">
+            <span className="mj-brand-lockup">
+              {/* Preserve the supplied wordmark artwork, including its original type. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brands/manish-jewellers/wordmark.png" alt="Manish Jewellers" width="961" height="503" loading="lazy" decoding="async" />
+            </span>
+          </div>
+          <DiamondFallback loadTexture={requested && !mobile} />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">
             <span className="tc-sr-only" role="status">{status === "loading" ? "Loading interactive scene" : status === "fallback" ? "Interactive preview available" : ""}</span>

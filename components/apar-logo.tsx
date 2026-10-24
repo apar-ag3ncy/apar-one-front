@@ -1,5 +1,6 @@
 "use client";
 
+import { MOBILE_LAYOUT_QUERY, useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
@@ -44,6 +45,7 @@ const SCRIPTS: Script[] = [
 ];
 
 export function AparLogo({ onDark = false }: { onDark?: boolean }) {
+  const mobile = useMobileLayout();
   const containerRef = useRef<HTMLSpanElement>(null);
   const [active, setActive] = useState<string[]>(["deva", "latin"]);
   const [i, setI] = useState(0);
@@ -51,6 +53,7 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
 
   // Detect which live Fit scripts are GENUINELY loaded.
   useEffect(() => {
+    if (mobile || window.matchMedia(MOBILE_LAYOUT_QUERY).matches) return;
     let alive = true;
     const detect = async () => {
       if (!alive || !document.fonts) return;
@@ -81,10 +84,11 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
       clearTimeout(t);
       document.fonts?.removeEventListener?.("loadingdone", detect);
     };
-  }, []);
+  }, [mobile]);
 
   // Cross-fade through the available scripts, only while on screen.
   useEffect(() => {
+    if (mobile || window.matchMedia(MOBILE_LAYOUT_QUERY).matches) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     if (active.length < 2) return;
     const container = containerRef.current;
@@ -118,10 +122,10 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
       if (timer.current) clearTimeout(timer.current);
       timer.current = null;
     };
-  }, [active]);
+  }, [active, mobile]);
 
   const activeScripts = SCRIPTS.filter((s) => active.includes(s.key));
-  const currentKey = activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
+  const currentKey = mobile ? "deva" : activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
 
   return (
     <span ref={containerRef} className={`apar-logo${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">

@@ -21,7 +21,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
     const img = ref.current;
     const host = img?.parentElement;
     if (!ready || !img || !host) return;
-    const disabled = matchMedia("(prefers-reduced-motion: reduce), (pointer: coarse)");
+    const disabled = matchMedia("(prefers-reduced-motion: reduce), (max-width: 900px), (pointer: coarse)");
     let canvas: HTMLCanvasElement | undefined;
     let ctx: CanvasRenderingContext2D | null = null;
     let sample: HTMLCanvasElement | undefined;

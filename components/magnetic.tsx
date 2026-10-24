@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
@@ -17,7 +18,9 @@ export function Magnetic({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
+  const prefersReduced = useReducedMotion();
+  const mobile = useMobileLayout();
+  const reduced = prefersReduced || mobile;
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.4 });
@@ -31,6 +34,7 @@ export function Magnetic({
   }, [reduced, x, y]);
 
   useEffect(() => {
+    if (reduced) return;
     const markDirty = () => {
       dirtyRef.current = true;
     };
@@ -40,7 +44,7 @@ export function Magnetic({
       window.removeEventListener("scroll", markDirty);
       window.removeEventListener("resize", markDirty);
     };
-  }, []);
+  }, [reduced]);
 
   const measure = () => {
     const el = ref.current;
@@ -73,7 +77,7 @@ export function Magnetic({
       ref={ref}
       className={className}
       style={{ x: reduced ? 0 : sx, y: reduced ? 0 : sy, display: "inline-flex" }}
-      onMouseEnter={measure}
+      onMouseEnter={reduced ? undefined : measure}
       onMouseMove={onMove}
       onMouseLeave={reset}
     >

@@ -7,6 +7,7 @@ import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { Environment, MeshRefractionMaterial } from "@react-three/drei";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MOBILE_LAYOUT_QUERY } from "@/lib/motion-policy";
 
 /**
  * ExplodedRing - a scroll-driven exploded view of a piece of jewellery.
@@ -174,8 +175,10 @@ function Scene({ sectionRef, captionRefs, hintRef, reduce }: ExplodedRingProps &
     tl.to(camera.position, { z: 3.7, y: 1.25, duration: 1 }, 0);
     // captions + hint (HTML, outside the canvas)
     const caps = captionRefs.current ?? [];
-    caps.forEach((el, i) => { if (el) tl.to(el, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.18 + i * 0.16); });
-    if (hintRef.current) tl.to(hintRef.current, { opacity: 0, duration: 0.08 }, 0);
+    if (!window.matchMedia(MOBILE_LAYOUT_QUERY).matches) {
+      caps.forEach((el, i) => { if (el) tl.to(el, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.18 + i * 0.16); });
+      if (hintRef.current) tl.to(hintRef.current, { opacity: 0, duration: 0.08 }, 0);
+    }
 
     // Lenis/GSAP already sync; a refresh after mount picks up the section's height.
     const raf = requestAnimationFrame(() => ScrollTrigger.refresh());

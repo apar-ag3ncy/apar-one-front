@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useMobileLayout } from "@/lib/motion-policy";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { BandBackdrop } from "./band-backdrop";
@@ -20,13 +21,8 @@ const LINE_2 = "remembering.".split(" ");
  */
 export function Hero({ start }: { start: boolean }) {
   const reduce = useReducedMotion();
+  const mobile = useMobileLayout();
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
-  const copyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
   // Lusion-style: the scroll cue dissolves as soon as the user starts scrolling
   // (plain scroll listener + CSS transition - kept out of framer's opacity
@@ -55,15 +51,15 @@ export function Hero({ start }: { start: boolean }) {
   // applied once the choreography has settled (data-settled), so the entrance
   // animates a plain layer and the rest state looks exactly as before.
   const [settled, setSettled] = useState(false);
-  const isSettled = settled || !!reduce || !start;
+  const isSettled = mobile || settled || !!reduce || !start;
   // CSS starts the entrance with the server-rendered HTML, before hydration.
   // The cue's animationend normally settles it; this timer also covers a slow
   // hydrate that attaches the event handler after the CSS animation has ended.
   useEffect(() => {
-    if (!start || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (mobile || !start || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = window.setTimeout(() => setSettled(true), 2400);
     return () => window.clearTimeout(timer);
-  }, [start]);
+  }, [start, mobile]);
   // Tell decorative loops (the "Talk to us" orb on low-power devices) that the
   // page's own load-in motion is running, so they hold until it has settled.
   useEffect(() => {
@@ -99,10 +95,7 @@ export function Hero({ start }: { start: boolean }) {
       {/* domeY is scaled by 0.2 in the shader: -0.5 moves the beam down 10% of the hero. */}
       <BandBackdrop domeY={-0.74} intensity={0.98} mobileFullBleed />
       <div className="wrap">
-        <motion.div
-          className="hero-beam-in"
-          style={{ y: copyY, opacity: copyOpacity, willChange: "transform, opacity" }}
-        >
+        <HeroCopy target={ref} mobile={mobile || !!reduce}>
           <div className="hb-wordmark">
             <AparLogo />
           </div>
@@ -124,7 +117,7 @@ export function Hero({ start }: { start: boolean }) {
               <HoverText>What we do</HoverText>
             </Link>
           </div>
-        </motion.div>
+        </HeroCopy>
       </div>
 
       <div ref={cueRef} className="scroll-hint">
@@ -138,4 +131,16 @@ export function Hero({ start }: { start: boolean }) {
       </div>
     </section>
   );
+}
+
+// Unmount the scroll subscriber entirely on phones, rather than merely hiding
+// its output with CSS. Desktop keeps exactly the same parallax mapping.
+function HeroCopy({ target, mobile, children }: { target: RefObject<HTMLElement | null>; mobile: boolean; children: ReactNode }) {
+  return mobile ? <div className="hero-beam-in">{children}</div> : <DesktopHeroCopy target={target}>{children}</DesktopHeroCopy>;
+}
+function DesktopHeroCopy({ target, children }: { target: RefObject<HTMLElement | null>; children: ReactNode }) {
+  const { scrollYProgress } = useScroll({ target, offset: ["start start", "end start"] });
+  const copyY = useTransform(scrollYProgress, [0, 1], ["0%", "-14%"]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  return <motion.div className="hero-beam-in" style={{ y: copyY, opacity: copyOpacity, willChange: "transform, opacity" }}>{children}</motion.div>;
 }

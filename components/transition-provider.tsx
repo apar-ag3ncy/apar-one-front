@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
@@ -26,7 +27,9 @@ const REVEAL_TIMEOUT_MS = 2500;
 export function TransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const reduced = useReducedMotion();
+  const prefersReduced = useReducedMotion();
+  const mobile = useMobileLayout();
+  const reduced = prefersReduced || mobile;
   const [target, setTarget] = useState<TransitionTarget | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const busy = useRef(false);

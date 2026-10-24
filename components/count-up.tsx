@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 
 /** Count-up number that fires once when scrolled into view. */
@@ -12,6 +13,7 @@ export function CountUp({
   suffix?: string;
   duration?: number;
 }) {
+  const mobile = useMobileLayout();
   const ref = useRef<HTMLSpanElement>(null);
   const dec = (String(to).split(".")[1] || "").length;
 
@@ -21,7 +23,7 @@ export function CountUp({
     let frame = 0;
     let alive = true;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduced.matches || duration <= 0) {
+    if (mobile || reduced.matches || duration <= 0) {
       el.textContent = to.toFixed(dec) + suffix;
       return;
     }
@@ -54,7 +56,7 @@ export function CountUp({
     );
     io.observe(el);
     return () => { alive = false; cancelAnimationFrame(frame); io.disconnect(); };
-  }, [to, suffix, duration, dec]);
+  }, [to, suffix, duration, dec, mobile]);
 
   return (
     <span ref={ref} style={{ fontVariantNumeric: "tabular-nums" }}>

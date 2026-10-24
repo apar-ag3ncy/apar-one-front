@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 export function isLowPowerDevice(): boolean {
   if (typeof window === "undefined") return true;
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return true;
+  if (window.matchMedia("(max-width: 900px), (pointer: coarse)").matches) return true;
   const nav = navigator as Navigator & { deviceMemory?: number };
   if (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 4) return true;
   if (typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4)

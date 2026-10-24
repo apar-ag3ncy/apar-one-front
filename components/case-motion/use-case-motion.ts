@@ -1,5 +1,7 @@
 "use client";
 
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+
 import { useEffect, type RefObject } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,7 +16,7 @@ export function useCaseMotion(root: RefObject<HTMLDivElement | null>, profile: C
     gsap.registerPlugin(ScrollTrigger, SplitText);
     const media = gsap.matchMedia();
     let alive = true;
-    media.add("(prefers-reduced-motion: no-preference)", () => {
+    media.add(DESKTOP_MOTION_QUERY, () => {
       let active = true;
       const splits: SplitText[] = [];
       const ctx = gsap.context(self => {

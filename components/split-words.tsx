@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ComponentType, ElementType, ReactNode } from "react";
 
@@ -26,8 +27,10 @@ export function SplitWords({
   className?: string;
 }) {
   const reduce = useReducedMotion();
+  const mobile = useMobileLayout();
   const words = text.trim().split(/\s+/);
   const Wrapper = Tag as ComponentType<TagProps>;
+  if (mobile) return <Wrapper className={className}>{text}</Wrapper>;
   return (
     <Wrapper className={className}>
       {words.map((w, i) => (
@@ -42,6 +45,7 @@ export function SplitWords({
             }}
           >
             <motion.span
+              data-static-word
               style={{ display: "inline-block" }}
               initial={reduce ? false : { y: "105%", rotate: 1, opacity: 0.2 }}
               whileInView={{ y: 0, rotate: 0, opacity: 1 }}

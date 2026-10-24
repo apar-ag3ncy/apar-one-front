@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -16,6 +17,7 @@ interface Spark {
 }
 
 export default function ReelCoverShowcase() {
+  const mobile = useMobileLayout();
   // Toggle states
   const [safeZones, setSafeZones] = useState(true);
   const [spotlight, setSpotlight] = useState(true);
@@ -260,17 +262,17 @@ export default function ReelCoverShowcase() {
                     <div className="rc-text-overlay">
                       <motion.h2 
                         className="rc-headline"
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={mobile ? false : { opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
+                        transition={{ duration: mobile ? 0 : 0.8, delay: mobile ? 0 : 0.3 }}
                       >
                         ⚡ QUICK DELIVERY
                       </motion.h2>
                       <motion.p 
                         className="rc-subheadline"
-                        initial={{ opacity: 0, letterSpacing: "0.1em" }}
+                        initial={mobile ? false : { opacity: 0, letterSpacing: "0.1em" }}
                         animate={{ opacity: 0.95, letterSpacing: "0.26em" }}
-                        transition={{ duration: 1.2, delay: 0.5 }}
+                        transition={{ duration: mobile ? 0 : 1.2, delay: mobile ? 0 : 0.5 }}
                       >
                         WITHOUT COMPROMISING QUALITY
                       </motion.p>
@@ -314,10 +316,10 @@ export default function ReelCoverShowcase() {
                       {safeZones && (
                         <motion.div 
                           className="rc-safe-zones"
-                          initial={{ opacity: 0 }}
+                          initial={mobile ? false : { opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
+                          transition={{ duration: mobile ? 0 : 0.3 }}
                         >
                           {/* 4:5 center square crop margin */}
                           <div className="rc-crop-square" />
@@ -507,10 +509,10 @@ export default function ReelCoverShowcase() {
                   {promptOpen && (
                     <motion.div
                       className="rc-prompt-content"
-                      initial={{ height: 0, opacity: 0 }}
+                      initial={mobile ? false : { height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: mobile ? 0 : 0.3 }}
                     >
                       <p>
                         This Instagram Reel Cover combines high-end retail visual triggers with dynamic speed metaphors. 

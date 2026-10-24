@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { useCaseTransition } from "./transition-provider";
@@ -23,6 +24,7 @@ export function NextCaseScroll({
   ink: string;
 }) {
   const reduced = useReducedMotion();
+  const mobile = useMobileLayout();
   const startTransition = useCaseTransition();
   const barRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -32,7 +34,7 @@ export function NextCaseScroll({
     // The pull meter is hidden by CSS under reduced motion; without it the
     // overscroll would navigate with no affordance at all. The visible "Next
     // case" link already covers navigation, so the gesture is off entirely.
-    if (reduced) return;
+    if (reduced || mobile) return;
     const pull = { v: 0 };
     let locked = false;
     let raf = 0;
@@ -113,7 +115,7 @@ export function NextCaseScroll({
       window.removeEventListener("resize", onResize);
       wrap?.classList.remove("show");
     };
-  }, [href, name, color, ink, reduced, startTransition]);
+  }, [href, name, color, ink, reduced, mobile, startTransition]);
 
   return (
     <div ref={wrapRef} className="next-pull" aria-hidden>

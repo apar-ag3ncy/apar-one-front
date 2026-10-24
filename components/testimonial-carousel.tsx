@@ -1,5 +1,6 @@
 "use client";
 
+import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { PhotoSlot } from "./photo-slot";
@@ -22,6 +23,7 @@ export interface TestimonialStory {
 }
 
 export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
+  const mobile = useMobileLayout();
   const [active, setActive] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
   const sources = useRef<HTMLDivElement>(null);
@@ -40,16 +42,45 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
         setNearViewport(true);
         observer.disconnect();
       }
-    }, { rootMargin: "1400px" });
+    }, { rootMargin: mobile ? "500px" : "1400px" });
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [mobile]);
 
   useLayoutEffect(() => {
     if (!nearViewport) return;
     const root = stage.current, source = sources.current, host = visual.current;
     if (!root || !source || !host || !pages.length) return;
     const cards = Array.from(source.children) as HTMLElement[];
+    if (mobile) {
+      let frame = 0;
+      let stride = 1;
+      const update = () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => setActive(Math.max(0, Math.min(pages.length - 1, Math.round(source.scrollLeft / stride)))));
+      };
+      const measure = () => {
+        stride = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : cards[0].offsetWidth;
+        update();
+      };
+      const key = (event: KeyboardEvent) => {
+        if (event.target !== root) return;
+        const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!step && event.key !== "Home" && event.key !== "End") return;
+        event.preventDefault();
+        const index = event.key === "Home" ? 0 : event.key === "End" ? pages.length - 1 : Math.round(source.scrollLeft / stride) + step;
+        source.scrollTo({ left: index * stride, behavior: "auto" });
+      };
+      const observer = new ResizeObserver(measure);
+      observer.observe(source);
+      source.addEventListener("scroll", update, { passive: true });
+      root.addEventListener("keydown", key);
+      measure();
+      return () => {
+        cancelAnimationFrame(frame); observer.disconnect();
+        source.removeEventListener("scroll", update); root.removeEventListener("keydown", key);
+      };
+    }
     const model = { position: 0 };
     const wrap = gsap.utils.wrap(0, pages.length);
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
@@ -141,12 +172,12 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
       root.removeEventListener("wheel", wheel); reduced.removeEventListener("change", motionChange);
       delete root.dataset.ready; delete root.dataset.motion;
     };
-  }, [pages.length, nearViewport]);
+  }, [pages.length, nearViewport, mobile]);
 
   if (!pages.length) return null;
   const renderPage = (index: number) => {
     const page = pages[index];
-    return <article className="tc-page" role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${pages.length}: ${page.name}`} aria-hidden={index !== active || undefined} data-active={index === active} key={page.slug} data-brand={page.slug}>
+    return <article className="tc-page" role="group" aria-roledescription="slide" aria-label={`${index + 1} of ${pages.length}: ${page.name}`} aria-hidden={!mobile && index !== active || undefined} data-active={index === active} key={page.slug} data-brand={page.slug}>
       <div className="tc-hero" style={{ "--tc-brand": page.surface } as CSSProperties}>
         <PhotoSlot src={page.image} placeholder={page.imageAlt} fixedRatio="1/1" radius={0}
           logo={page.logo} logoTint={page.logoTint} logoInvert={page.logoInvert} logoSurface={page.surface} />
