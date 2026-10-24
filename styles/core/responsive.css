@@ -55,6 +55,7 @@
     0 0 52px -4px rgba(235,59,37,.58);}
 .ttu:focus-visible{outline:2px solid var(--red);outline-offset:4px;}
 .ttu-orb{
+  display:block;position:relative;
   width:100%;height:100%;
   border-radius:50%;overflow:hidden;
   background:#0c0a08;
@@ -66,6 +67,8 @@
     radial-gradient(circle at 50% 50%,#352016 8%,#0c0a08 72%);
   box-shadow:inset 0 0 9px 1px rgba(250,194,115,.3);
 }
+.ttu-orb-effect{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.ttu-orb-effect[data-ready="true"]{opacity:1;}
 /* hover-only message: small, soft, warm - sits to the LEFT so it never clips
    the right edge; tinted with the orb's gold strand shade. */
 .ttu-tip{

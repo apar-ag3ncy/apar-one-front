@@ -206,9 +206,10 @@ export interface StrandsProps {
   glassSize?: number;
   className?: string;
   style?: CSSProperties;
+  onReadyChange?: (ready: boolean) => void;
 }
 
-type StrandsState = Required<Omit<StrandsProps, "className" | "style">>;
+type StrandsState = Required<Omit<StrandsProps, "className" | "style" | "onReadyChange">>;
 
 export default function Strands({
   colors = ["#FF4242", "#7C3AED", "#06B6D4", "#EAB308"],
@@ -230,8 +231,11 @@ export default function Strands({
   dispersion = 1,
   glassSize = 1,
   className = "",
-  style
+  style,
+  onReadyChange
 }: StrandsProps) {
+  const readyCallback = useRef(onReadyChange);
+  readyCallback.current = onReadyChange;
   const propsRef = useRef<StrandsState>({
     colors,
     count,
@@ -360,6 +364,12 @@ export default function Strands({
     });
     const glassMesh = new Mesh(gl, { geometry, program: glassProgram });
 
+    if (!gl.getProgramParameter(program.program, gl.LINK_STATUS) ||
+        (glass && !gl.getProgramParameter(glassProgram.program, gl.LINK_STATUS))) {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return; // Keep the contact fallback if a GPU cannot compile either pass.
+    }
+
     ctn.appendChild(gl.canvas);
 
     let lastW = 0;
@@ -386,6 +396,7 @@ export default function Strands({
     resize();
 
     let paletteSource = propsRef.current.colors;
+    let painted = false;
     const draw = (t: number) => {
       const current = propsRef.current;
       program.uniforms.uTime.value = t * 0.001;
@@ -421,6 +432,10 @@ export default function Strands({
       } else {
         renderer.render({ scene: mesh });
       }
+      if (!painted) {
+        painted = true;
+        readyCallback.current?.(true);
+      }
     };
 
     let rafId = 0;
@@ -439,7 +454,7 @@ export default function Strands({
     };
     let startTimer = 0;
     const start = () => {
-      if (running || reduceMotion) return;
+      if (running || reduceMotion || gl.isContextLost()) return;
       running = true;
       if (halfRate && !startedOnce && document.documentElement.dataset.heroEntrance) {
         // Low-power devices: show the first frame at once, but let the page's
@@ -447,7 +462,6 @@ export default function Strands({
         // finish before the orb starts drifting - its glass pass competes for
         // the same frame budget. Polled, capped at 8s.
         startedOnce = true;
-        draw(performance.now());
         const waited = performance.now();
         const poll = () => {
           if (!running) return;
@@ -470,11 +484,12 @@ export default function Strands({
 
     // Respect reduced-motion (render a single static frame) and never burn the
     // GPU while the tab is hidden - keeps this off the scroll/idle frame budget.
-    if (reduceMotion) {
-      draw(0);
-    } else {
-      start();
-    }
+    // Draw once even during scroll: the live loop can pause without making
+    // the first appearance of the contact affordance wait for scrolling to end.
+    draw(reduceMotion ? 0 : performance.now());
+    if (!reduceMotion) start();
+    const onContextLost = () => { stop(); readyCallback.current?.(false); };
+    gl.canvas.addEventListener("webglcontextlost", onContextLost);
     const onVisibility = () => {
       if (document.hidden) stop();
       else start();
@@ -484,6 +499,7 @@ export default function Strands({
     return () => {
       stop();
       document.removeEventListener("visibilitychange", onVisibility);
+      gl.canvas.removeEventListener("webglcontextlost", onContextLost);
       window.removeEventListener("resize", resize);
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);

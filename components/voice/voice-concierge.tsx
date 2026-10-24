@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useConversation } from "@elevenlabs/react";
 import { Mic, MicOff, PhoneOff, X } from "lucide-react";
 import Strands from "@/components/effects/strands";
+import { ContactOrb } from "@/components/voice/contact-orb";
 import { CONCIERGE_NAME, ELEVENLABS_AGENT_ID } from "@/lib/elevenlabs";
 
 /** Brand strand palette (red → orange → gold), shared with the stats band. */
@@ -219,9 +220,7 @@ export function VoiceConcierge() {
           aria-label={`Talk to ${CONCIERGE_NAME}, APAR's voice concierge`}
           onClick={startCall}
         >
-          <span className="ttu-orb" aria-hidden="true">
-            <Strands {...ORB_PROPS} />
-          </span>
+          <ContactOrb />
           <span className="ttu-tip" aria-hidden="true">
             Talk to us
           </span>

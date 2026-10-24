@@ -6,6 +6,8 @@ import { gsap } from "gsap";
 import { PhotoSlot } from "@/components/media/photo-slot";
 import { createTestimonialDrum } from "@/components/testimonials/testimonial-drum";
 import { VoiceFeedback } from "@/components/voice/voice-feedback";
+import { ClientVoices } from "@/components/testimonials/client-voices";
+import type { ClientVoice } from "@/lib/client-voices";
 
 export interface TestimonialStory {
   slug: string;
@@ -22,7 +24,7 @@ export interface TestimonialStory {
   kind: "Client words" | "Campaign line";
 }
 
-export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
+export function TestimonialCarousel({ pages, voices = [] }: { pages: TestimonialStory[]; voices?: ClientVoice[] }) {
   const mobile = useMobileLayout();
   const [active, setActive] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
@@ -200,7 +202,7 @@ export function TestimonialCarousel({ pages }: { pages: TestimonialStory[] }) {
       <div ref={sources} className="tc-sources">{(nearViewport ? pages : pages.slice(0, 1)).map((_, index) => renderPage(index))}</div>
       <div ref={visual} className="tc-visual" aria-hidden="true" />
     </div>
-    <div className="wrap tc-voice-wrap"><VoiceFeedback /></div>
+    <div className="wrap"><ClientVoices notes={voices} /><div className="tc-voice-wrap"><VoiceFeedback /></div></div>
     <span className="tc-sr-only" aria-live="polite" aria-atomic="true">{pages[active].name} — story {active + 1} of {pages.length}</span>
   </section>;
 }

@@ -92,7 +92,7 @@ export function SlowMo() {
 
       // ---- 3) slow line reveals on the big statements --------------------------
       const statements = Array.from(document.querySelectorAll<HTMLElement>("h1.display, h2.display, .feat, .hero-h1")).filter(
-        (el) => !el.querySelector("span span") && !el.closest(".pin, .hero-beam, #intro") && el.textContent?.trim()
+        (el) => !el.querySelector("span span") && !el.closest(".pin, .hero-beam, #intro, [data-static-reveal], .case-page") && el.textContent?.trim()
       );
       // `arm` may run later (fonts.ready): guard against a cleaned-up effect
       // (StrictMode's double invoke, a fast route change) and create the tweens
@@ -103,6 +103,8 @@ export function SlowMo() {
         if (!alive) return;
         self.add(() => {
         for (const el of statements) {
+          // A late font must not split/hide a heading already on screen.
+          if (el.getBoundingClientRect().top < window.innerHeight) continue;
           splits.push(
             SplitText.create(el, {
               type: "lines",

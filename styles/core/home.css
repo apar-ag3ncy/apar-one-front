@@ -97,8 +97,8 @@
   to{opacity:1;transform:translateY(0);}
 }
 @keyframes hero-action-in{
-  from{opacity:0;transform:translateY(22px);}
-  to{opacity:1;transform:translateY(0);}
+  from{transform:translateY(8px);}
+  to{transform:translateY(0);}
 }
 @keyframes hero-cue-in{
   from{opacity:0;transform:translateY(10px);}
@@ -109,7 +109,8 @@
   .hero-beam[data-enter="1"] .hero-h1 .gwi{animation:hero-word-in 1.05s cubic-bezier(.22,1,.36,1) .68s both;}
   .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.735s;}
   .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.79s;}
-  .hero-beam[data-enter="1"] .hero-actions{animation:hero-action-in .7s cubic-bezier(.16,1,.3,1) 1.38s both;}
+  /* Controls are visible from the first paint; only their settling motion runs. */
+  .hero-beam[data-enter="1"] .hero-actions{animation:hero-action-in .45s cubic-bezier(.16,1,.3,1) both;}
   .hero-beam[data-enter="1"] .scroll-cue{animation:hero-cue-in .6s cubic-bezier(.16,1,.3,1) 1.73s both;}
 }
 @media (max-width:740px) and (prefers-reduced-motion:no-preference){
@@ -117,7 +118,7 @@
   .hero-beam[data-enter="1"] .hero-h1 .gwi{animation-name:hero-mobile-copy-in;animation-duration:.9s;animation-delay:.55s;}
   .hero-beam[data-enter="1"] .hero-h1>span:nth-of-type(2) .gwi{animation-delay:.61s;}
   .hero-beam[data-enter="1"] .hero-h1 .hl .gwi{animation-delay:.69s;}
-  .hero-beam[data-enter="1"] .hero-actions{animation-name:hero-mobile-copy-in;animation-delay:.85s;}
+  .hero-beam[data-enter="1"] .hero-actions{animation:none;}
   .hero-beam[data-enter="1"] .scroll-cue{animation-name:hero-mobile-copy-in;animation-delay:1.12s;}
 }
 

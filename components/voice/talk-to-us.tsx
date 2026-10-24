@@ -1,12 +1,11 @@
 "use client";
 
-import { useMobileLayout } from "@/lib/motion-policy";
 import Link from "next/link";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { VOICE_CONCIERGE_ENABLED } from "@/lib/elevenlabs";
+import { ContactOrb } from "@/components/voice/contact-orb";
 
 const TalkToUsVoice = lazy(() => import("@/components/voice/talk-to-us-voice"));
-const Strands = lazy(() => import("@/components/effects/strands"));
 
 /**
  * Floating contact orb - a refractive glass "siri" (react-bits Strands) docked
@@ -32,39 +31,9 @@ export function TalkToUs() {
 }
 
 function TalkToUsFallback() {
-  const mobile = useMobileLayout();
-  const [orbReady, setOrbReady] = useState(false);
-  useEffect(() => {
-    // The decorative WebGL orb does not need to compete with the hero for
-    // first paint, hydration, or its largest-contentful-paint window. The CSS
-    // fallback has the same shape and keeps the contact link usable meanwhile.
-    if (mobile) return;
-    const timer = window.setTimeout(() => setOrbReady(true), 1800);
-    return () => window.clearTimeout(timer);
-  }, [mobile]);
   return (
     <Link href="/#contact" className="ttu" aria-label="Talk to us">
-      <span className="ttu-orb" aria-hidden="true">
-        {orbReady && !mobile ? <Suspense fallback={<span className="ttu-orb-placeholder" />}><Strands
-          colors={["#EB3B25", "#F0883B", "#F6C57A"]}
-          count={5}
-          speed={0.85}
-          amplitude={1.3}
-          waviness={1.1}
-          thickness={0.85}
-          glow={2.8}
-          taper={1.8}
-          spread={1}
-          intensity={0.85}
-          saturation={1.5}
-          opacity={1}
-          scale={1.4}
-          glass
-          refraction={1.1}
-          dispersion={1}
-          glassSize={1.05}
-        /></Suspense> : <span className="ttu-orb-placeholder" />}
-      </span>
+      <ContactOrb />
       <span className="ttu-tip" aria-hidden="true">
         Talk to us
       </span>

@@ -8,6 +8,7 @@ import { caseAssets } from "@/lib/cases/assets.server";
 import { ProgressiveQuote, FeaturedProjects } from "@/components/home/featured";
 
 import { MovingClients } from "@/components/home/featured/moving-clients";
+import { CLIENT_VOICES } from "@/lib/client-voices";
 
 export default function Home() {
   return <main className="meeting-home">
@@ -17,7 +18,7 @@ export default function Home() {
     <MJShowcase />
     <HomeImageBento />
     <MovingClients />
-    <TestimonialCarousel pages={Object.values(CASES).map(data => ({
+    <TestimonialCarousel voices={CLIENT_VOICES} pages={Object.values(CASES).map(data => ({
       slug: data.slug,
       name: data.card.name,
       category: data.card.cat,

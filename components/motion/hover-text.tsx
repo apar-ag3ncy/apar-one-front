@@ -23,27 +23,35 @@ export function HoverText({ children }: { children: string }) {
       let distance = 0;
       // Keep long contact addresses within the same restrained timing envelope.
       const stagger = Math.min(0.018, 0.18 / Math.max(letters.length - 1, 1));
-      const cycle = gsap.timeline({ paused: true, onComplete: () => { label.dataset.hoverState = "active"; } });
-      cycle.to(letters, { x: () => -distance, skewX: -18, opacity: 0,
-        duration: 0.18, stagger, ease: "power2.in" }, 0);
-      cycle.fromTo(letters, { x: () => distance, skewX: -18, opacity: 0 },
-        { x: 0, skewX: 0, opacity: 1, duration: 0.36, stagger,
-          ease: "power3.out", immediateRender: false }, 0.23);
-      const settle = gsap.timeline({ paused: true, onComplete: () => { label.dataset.hoverState = "rest"; } })
-        .to(letters, { x: 0, skewX: 0, opacity: 1, duration: 0.24,
-          stagger: { amount: 0.06, from: "end" }, ease: "power3.out" });
+      let cycle: gsap.core.Timeline | undefined;
+      let settle: gsap.core.Timeline | undefined;
+      // Create glyph tweens only for the control being used, not every footer
+      // address, navigation label and CTA during page hydration.
+      const prepare = () => {
+        if (cycle) return;
+        cycle = gsap.timeline({ paused: true, onComplete: () => { label.dataset.hoverState = "active"; } });
+        cycle.to(letters, { x: () => -distance, skewX: -18, opacity: 0,
+          duration: 0.18, stagger, ease: "power2.in" }, 0);
+        cycle.fromTo(letters, { x: () => distance, skewX: -18, opacity: 0 },
+          { x: 0, skewX: 0, opacity: 1, duration: 0.36, stagger,
+            ease: "power3.out", immediateRender: false }, 0.23);
+        settle = gsap.timeline({ paused: true, onComplete: () => { label.dataset.hoverState = "rest"; } })
+          .to(letters, { x: 0, skewX: 0, opacity: 1, duration: 0.24,
+            stagger: { amount: 0.06, from: "end" }, ease: "power3.out" });
+      };
       const activate = () => {
         if (control.matches(":disabled,[aria-disabled='true'],[aria-busy='true']")) return;
         distance = parseFloat(getComputedStyle(label).fontSize) * 0.65;
-        settle.pause();
+        prepare();
+        settle?.pause();
         label.dataset.hoverState = "rolling";
-        cycle.invalidate().restart();
+        cycle?.invalidate().restart();
       };
       const deactivate = () => {
-        if (over || focused) return;
+        if (over || focused || !cycle) return;
         cycle.pause();
         label.dataset.hoverState = "settling";
-        settle.invalidate().restart();
+        settle?.invalidate().restart();
       };
       const enter = (event: PointerEvent) => {
         if (event.pointerType !== "mouse") return;
@@ -71,6 +79,9 @@ export function HoverText({ children }: { children: string }) {
         control.removeEventListener("focus", focus);
         control.removeEventListener("blur", blur);
         window.removeEventListener("blur", cancel);
+        // Event-created timelines are outside matchMedia's initial callback.
+        settle?.revert();
+        cycle?.revert();
         delete label.dataset.hoverState;
       };
     }, label);

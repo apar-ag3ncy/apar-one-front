@@ -1,63 +1,49 @@
 "use client";
 
-import { useMobileLayout } from "@/lib/motion-policy";
-import { motion, useReducedMotion } from "framer-motion";
-import { useMemo, type ComponentProps, type ComponentType, type ElementType } from "react";
+import { useEffect, useRef, type ComponentType, type ElementType, type HTMLAttributes } from "react";
+import { gsap } from "gsap";
+import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-type RevealProps = {
+type RevealProps = HTMLAttributes<HTMLElement> & {
   as?: ElementType;
-  /** stagger index - adds 90ms * i delay, matching the original .reveal --i */
   i?: number;
   delay?: number;
-} & ComponentProps<typeof motion.div> & { href?: string; "data-cat"?: string };
+  href?: string;
+  "data-cat"?: string;
+};
 
-// Cache motion-wrapped custom components (e.g. next/link) so motion.create()
-// isn't called on every render. Typed as a component (not `ElementType`):
-// @react-three/fiber merges its three.js element types into the global JSX
-// map, and JSX on a bare `ElementType` union resolves its props to `never`.
-type MotionComponent = ComponentType<Record<string, unknown>>;
-const motionCache = new Map<ElementType, MotionComponent>();
-
-/**
- * Framer Motion port of the design's `.reveal` - fade + rise on scroll-in,
- * spring-eased, with optional stagger index. `as` accepts a string tag or a
- * component (e.g. next/link's Link), so cards can be real routed links.
- */
+/** Visible HTML first. Only unseen desktop content gets a scroll entrance. */
 export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: RevealProps) {
-  const reduce = useReducedMotion();
-  const mobile = useMobileLayout();
-  const MotionTag = useMemo<MotionComponent>(() => {
-    if (typeof as === "string") {
-      return (motion as unknown as Record<string, MotionComponent>)[as];
-    }
-    let cached = motionCache.get(as);
-    if (!cached) {
-      cached = motion.create(as as React.ComponentType) as unknown as MotionComponent;
-      motionCache.set(as, cached);
-    }
-    return cached;
-  }, [as]);
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const media = gsap.matchMedia();
+    media.add(DESKTOP_MOTION_QUERY, () => {
+      // Slow hydration, restored scroll and direct hashes must never hide
+      // content the visitor can already see or is using with the keyboard.
+      if (el.getBoundingClientRect().top < window.innerHeight || el.contains(document.activeElement)) return;
+      const interactive = el.matches("a,button") || el.querySelector("a,button,input,select,textarea");
+      const tween = gsap.from(el, {
+        y: 24, ...(interactive ? {} : { opacity: 0 }), paused: true,
+        duration: .8, delay: Math.min(.21, Math.max(0, delay + i * .07)),
+        ease: "power4.out",
+      });
+      const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        observer.disconnect();
+        tween.play();
+      }, { rootMargin: "0px 0px 12% 0px" });
+      // Start slightly before entering the screen. Interactive cards remain
+      // opaque throughout, and keyboard focus bypasses the entrance entirely.
+      const show = () => { observer.disconnect(); tween.progress(1); };
+      observer.observe(el);
+      el.addEventListener("focusin", show);
+      return () => { observer.disconnect(); el.removeEventListener("focusin", show); };
+    });
+    return () => media.revert();
+  }, [as, delay, i]);
 
-  if (mobile) {
-    const StaticTag = as as ComponentType<Record<string, unknown>>;
-    return <StaticTag {...props} data-static-reveal>{children}</StaticTag>;
-  }
-
-  return (
-    <MotionTag
-      data-static-reveal
-      // Keep the first server/client frame identical. Reduced-motion users get
-      // every section immediately, including content below the fold.
-      initial={{ opacity: 0, y: 24 }}
-      animate={reduce ? { opacity: 1, y: 0 } : undefined}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -7% 0px" }}
-      transition={{ duration: reduce ? 0 : 0.8, ease: EASE, delay: reduce ? 0 : delay + i * 0.07 }}
-      {...props}
-    >
-      {children}
-    </MotionTag>
-  );
+  const Tag = as as ComponentType<Record<string, unknown>>;
+  return <Tag {...props} ref={ref} data-static-reveal>{children}</Tag>;
 }

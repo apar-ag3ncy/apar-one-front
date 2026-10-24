@@ -23,7 +23,7 @@ export function useCaseMotion(root: RefObject<HTMLDivElement | null>, profile: C
         const hero = el.querySelector<HTMLElement>(".case-hero")!;
         const figure = el.querySelector<HTMLElement>(".case-hero-fig")!;
         const art = el.querySelector<HTMLElement>(".case-hero-media")!;
-        gsap.from(el.querySelectorAll(".case-eyebrow, .case-sub, .case-meta, .case-explore"), {
+        gsap.from(el.querySelectorAll(".case-eyebrow, .case-sub, .case-meta"), {
           y: 24, opacity: 0, duration: 1, stagger: .08, delay: .1, ease: profile.opening,
         });
         if (profile.gallery) {
@@ -41,15 +41,17 @@ export function useCaseMotion(root: RefObject<HTMLDivElement | null>, profile: C
         gsap.to(figure, { y: -45, opacity: .4, ease: "none", scrollTrigger: {
           trigger: hero, start: "top top", end: "bottom top", scrub: .85,
         } });
+        const fontsReadyAtMount = document.fonts.status === "loaded";
         const arm = () => {
           if (!alive || !active) return;
           self.add(() => {
             const title = el.querySelector<HTMLElement>(".case-title");
-            if (title) splits.push(SplitText.create(title, {
+            if (title && fontsReadyAtMount) splits.push(SplitText.create(title, {
               type: "lines", mask: "lines", autoSplit: true,
               onSplit: split => gsap.from(split.lines, { yPercent: 105, duration: 1.2, stagger: .1, ease: profile.opening }),
             }));
             el.querySelectorAll<HTMLElement>(".case-lead").forEach(lead => {
+              if (lead.getBoundingClientRect().top < window.innerHeight) return;
               splits.push(SplitText.create(lead, { type: "words", wordsClass: "case-reveal-word" }));
               const words = lead.querySelectorAll(".case-reveal-word");
               gsap.from(words, { opacity: .3, y: 8, stagger: .04, ease: "none", scrollTrigger: {
@@ -58,7 +60,7 @@ export function useCaseMotion(root: RefObject<HTMLDivElement | null>, profile: C
             });
           });
         };
-        if (document.fonts.status === "loaded") arm();
+        if (fontsReadyAtMount) arm();
         else document.fonts.ready.then(arm).catch(arm);
         el.querySelectorAll<HTMLElement>(".case-stat .n").forEach(number => {
           gsap.from(number, { y: 18, scale: .95, opacity: .25, duration: 1.1, ease: "power3.out", scrollTrigger: {

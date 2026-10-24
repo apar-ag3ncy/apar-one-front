@@ -38,6 +38,9 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   const start = useCallback((t: TransitionTarget) => {
     if (busy.current) return;
     if (reduced) { router.push(t.href); return; }
+    // Fetch during the cover animation, rather than starting the network wait
+    // only after the screen has been covered.
+    router.prefetch(t.href);
     busy.current = true;
     // Every entry point (cards, next-case links and overscroll) lands on the
     // same white story palette, without changing the cover/reveal choreography.

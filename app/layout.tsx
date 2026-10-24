@@ -6,6 +6,7 @@ import "@/styles/site-polish.css";
 import "@/styles/text-actions.css";
 import "@/styles/testimonial-carousel.css";
 import "@/styles/voice-feedback.css";
+import "@/styles/client-voices.css";
 import "@/styles/faq-motion.css";
 import "@/styles/mobile.css";
 import { Nav } from "@/components/layout/nav";
@@ -55,8 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
             skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
         <DesktopSlowMo />
-        {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere).
-            Swap back to <SplashCursor /> for the fluid lava trail. */}
+        {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere). */}
         <PixelTrail />
         <ScrollProgressBar />
         <Nav />
