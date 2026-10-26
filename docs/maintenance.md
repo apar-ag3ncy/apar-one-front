@@ -11,6 +11,8 @@
 
 ## Structure and boundaries
 
+The homepage bento is defined in `components/home/home-image-bento.tsx`; each entry owns its brand link, crop and named grid area. Desktop and phone compositions live in `styles/home-flow.css`. Export additions with `node scripts/export-home-bento.mjs --image <source-file> <output-name> <width>` to create 640px and full-size WebPs without copying originals into production. Match the exported dimensions in the entry and keep both layouts' grid areas in sync.
+
 - `app/`: route composition, metadata and the private voice upload endpoint.
 - `components/`: UI grouped by feature; shared motion and media have their own folders. Import concrete files rather than broad barrels that pull unrelated effects into a browser bundle.
 - `lib/cases/types.ts`: shared type-only contracts. Do not import types from rendering components.
