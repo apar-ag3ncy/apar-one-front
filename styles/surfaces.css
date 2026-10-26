@@ -1,0 +1,67 @@
+/* Material sits in the background, never over photography or typography.
+   One tiny, cached raster; no filters, listeners or continuously animated grain. */
+:root {
+  --surface-grain: url("/textures/paper-grain.png");
+  --surface-sheen: linear-gradient(115deg, #ffffff52, #c7ac830d 48%, transparent 80%);
+}
+
+body,
+:is(.progressive-quote, .home-image-bento, .flow-clients, .testimonial-carousel,
+    .mj-showcase, .case-page, .start, .cosmic-footer, .mobile-menu,
+    .manifesto-page, .manifesto-journey, .xr-page) {
+  background-image: var(--surface-grain);
+  background-size: 96px 96px;
+  background-repeat: repeat;
+}
+
+/* Small editorial surfaces have a quiet paper edge and a warm grazing light.
+   Background-only pseudo-elements preserve every existing image and hit area. */
+:is(.page-hero, .service-pillar, .roster-row, .cv-card, .case-cinematic .case-next) {
+  position: relative;
+  isolation: isolate;
+}
+
+.cv-card {
+  background-image: var(--surface-grain), var(--surface-sheen);
+  background-size: 96px 96px, auto;
+  box-shadow: inset 0 1px 0 #ffffff80;
+}
+
+.case-cinematic .case-next {
+  background-image: var(--surface-grain);
+  box-shadow: 0 1px 0 var(--c-line), 0 16px 42px -34px #1a171433;
+}
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
+  :is(.page-hero, .service-pillar, .roster-row, .cv-card, .case-cinematic .case-next)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: inherit;
+    background: var(--surface-grain),
+      radial-gradient(ellipse at 12% 0, #c7ac831a, transparent 72%),
+      var(--surface-sheen);
+    background-size: 96px 96px, auto, auto;
+    opacity: 0;
+    transition: opacity 650ms var(--ease);
+  }
+
+  :is(.page-hero, .service-pillar, .roster-row, .cv-card, .case-cinematic .case-next):is(:hover, :focus-within)::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.page-hero, .service-pillar, .roster-row, .cv-card, .case-cinematic .case-next)::before {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --surface-grain: none;
+    --surface-sheen: none;
+  }
+}

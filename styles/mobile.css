@@ -3,7 +3,7 @@
 @media (max-width:900px), (hover:none) and (pointer:coarse) {
   html,html:not(.lenis) { scroll-behavior:auto; scroll-padding-top:80px; }
   body { -webkit-text-size-adjust:100%; }
-  :root { --gut:clamp(18px,4.6vw,32px); }
+  :root { --gut:max(clamp(18px,4.6vw,32px),env(safe-area-inset-left),env(safe-area-inset-right)); }
   .wrap { min-width:0; }
   button,a { touch-action:manipulation; }
   input,textarea,select { font-size:16px; }
@@ -33,21 +33,36 @@
   .lg-backdrop,.pixel-trail { display:none; }
 
   /* A stable header and a menu that never moves its text while opening. */
-  .nav,.nav.scrolled { height:72px; transition:background .2s; backdrop-filter:none; -webkit-backdrop-filter:none; }
+  .nav,.nav.scrolled { height:calc(72px + env(safe-area-inset-top)); transition:background .2s; backdrop-filter:none; -webkit-backdrop-filter:none; }
+  .nav-in { padding-top:env(safe-area-inset-top); }
   .nav.scrolled { background:var(--cream); }
   .nav .apar-logo,.nav.scrolled .apar-logo { font-size:40px; }
   .nav-links,.nav .nav-cta { display:none; }
   .nav-burger { display:flex; width:48px; height:48px; margin-right:-8px; }
   .nav.on-dark.scrolled { background:#1a1714; }
   .mobile-menu { transform:none; visibility:hidden; pointer-events:none; transition:none;
-    padding:96px var(--gut) max(24px,env(safe-area-inset-bottom)); justify-content:flex-start;
+    padding:calc(88px + env(safe-area-inset-top)) var(--gut) max(24px,env(safe-area-inset-bottom)); justify-content:flex-start;
     overscroll-behavior:contain; gap:28px; }
   .mobile-menu.open { visibility:visible; pointer-events:auto; transition:none; }
   .mobile-menu .mm-links { gap:4px; }
-  .mobile-menu a { font-size:clamp(32px,9vw,48px); line-height:1.1; min-height:48px; padding:8px 0; }
+  .mobile-menu a { font-size:clamp(28px,7.6vw,42px); line-height:1.1; min-height:48px; padding:8px 0; }
   .mobile-menu .mm-foot { position:static; margin-top:auto; flex-wrap:wrap; gap:12px;
     padding-top:20px; font-size:13px; flex-shrink:0; }
   .btn,.btn-ghost,.case-btn { min-height:48px; }
+
+  /* Compact introductions lead into the imagery; stable gutters follow it. */
+  .page-hero,
+  :is(.clients-page,.services-page) .page-hero {
+    padding-block:calc(108px + env(safe-area-inset-top)) 36px;
+  }
+  .page-hero .eyebrow { margin-bottom:18px; letter-spacing:.16em; }
+  .page-hero .lead { margin-top:20px; font-size:17px; line-height:1.6; }
+  .page-hero h1 { font-size:clamp(42px,9vw,72px); line-height:1.06; }
+  .filter-row { gap:4px 8px; margin-top:24px; }
+  .filter-row .chip { min-height:44px; padding:10px 12px; }
+  .filter-row .chip.sel::after { inset-inline:12px; }
+  .work-foot,.clients-foot { gap:24px; }
+  .work-foot .btn,.clients-foot .btn { padding-inline:0; }
 
   /* Keep the original red beam behind the large mark, with stable viewport units. */
   .hero-beam { --hero-nav:88px; --hero-cue:76px; --hero-lift:0px; min-height:100svh; }
@@ -134,10 +149,18 @@
   .faq-motion .faq-a[data-state="open"] { display:block; }
   .meeting-home .faq-motion .faq-a p { transform:none; transition:none; font-size:16px; line-height:1.65; }
 
-  .case-cinematic .case-hero { padding-top:108px; min-height:0; }
-  .case-cinematic .case-hero-in { gap:32px; }
+  .case-cinematic .case-hero { padding-top:calc(108px + env(safe-area-inset-top)); min-height:0; }
+  .case-cinematic .case-hero-in { gap:20px; }
+  .case-cinematic .case-hero-copy { display:contents; }
+  .case-cinematic .case-eyebrow { order:0; }
+  .case-cinematic .case-title { order:1; margin-top:0; }
+  .case-cinematic .case-sub { order:2; margin-top:0; }
+  .case-page.case-cinematic .case-hero-fig { order:3; margin-block:8px; }
+  .case-cinematic .case-explore { order:4; margin:0; justify-content:space-between; }
+  .case-cinematic .case-meta { order:5; margin-top:0; padding-top:22px; border-top:1px solid var(--c-line); }
   .case-cinematic .case-title { font-size:clamp(40px,10vw,70px); overflow-wrap:anywhere; }
   .case-cinematic .case-next { padding:24px; }
+  .case-cinematic .case-next .case-btn { padding-inline:0; white-space:normal; }
   .case-reel-controls button { width:46px; height:46px; }
   .case-reel-instruction { gap:10px; }
   .case-reel-stage { height:auto; min-height:0; padding-block:24px; }
@@ -153,17 +176,52 @@
   .ttu-tip { display:none; }
   .footer-talk { font-size:clamp(42px,12vw,72px); }
   .fcol a { min-height:44px; display:inline-flex; align-items:center; }
+  .footer-row { gap:36px; }
+  .footer-cols { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px 24px; width:100%; }
+  .footer-cols .fcol:first-child { grid-column:1/-1; }
+  .fcol { min-width:0; gap:4px; }
+  .fcol-h { margin-bottom:10px; font-size:11px; }
+  .footer-base { padding-right:64px; font-size:12px; gap:10px; line-height:1.6; }
+  .vc-panel { max-height:calc(100dvh - 32px - env(safe-area-inset-top)); overflow-y:auto; }
+  .vc-x { min-width:44px; min-height:44px; }
+  .start-close { display:inline-flex; align-items:center; min-height:44px; }
   .manifesto-sculpture-activate { position:absolute; z-index:3; bottom:4%; left:50%; transform:translateX(-50%);
     border:1px solid #f4ede266; background:#181613; color:var(--cream); padding:12px 20px;
     min-height:48px; white-space:nowrap; font:500 14px var(--sans); border-radius:24px; }
 }
 @media (max-width:600px) {
+  /* One column needs no JavaScript row measurement or reserved masonry tracks. */
+  .work-grid { display:flex; flex-direction:column; gap:32px; }
+  .work-card { width:100%; margin:0; }
+  .work-card .frame,.work-card .img-slot>img { will-change:auto; }
+  .work-card .cap { gap:12px; }
+  .work-card .cap .yr { flex:none; font-size:11px; }
   .flow-project-caption h3 { font-size:clamp(26px,6.7vw,38px); }
   .hero-beam .hb-wordmark .apar-logo { font-size:clamp(108px,31vw,178px); margin-left:-.062em; }
   .hero-beam .hero-h1 { font-size:clamp(32px,8.6vw,46px); }
   .is-cinematic h2 { font-size:clamp(37px,9.5vw,54px); }
   .tc-copy { padding:22px; }
   .tc-copy blockquote { font-size:24px; }
+}
+
+/* The compact header also prevents the six desktop links crowding on tablets.
+   This changes navigation only; desktop content and image grids keep their size. */
+@media (max-width:1100px), (hover:none) and (pointer:coarse) {
+  .nav-links,.nav .nav-cta { display:none; }
+  .nav-burger { display:flex; width:48px; height:48px; }
+  .nav.menu-open { background:var(--ink); box-shadow:none; }
+  .nav.on-case.menu-open { background:#fff; }
+  .nav.menu-open .nav-burger span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .nav.menu-open .nav-burger span:nth-child(2) { opacity:0; }
+  .nav.menu-open .nav-burger span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  .nav.menu-open:not(.on-case) .nav-burger span { background:var(--cream); }
+  .mobile-menu .mm-project { display:flex; align-items:center; gap:24px; margin-top:16px; font:500 15px/1.4 var(--sans); color:var(--red); }
+  .mobile-menu .mm-project span { font-size:23px; }
+}
+@media (min-width:901px) and (max-width:1100px) {
+  .mobile-menu { justify-content:flex-start; padding:96px var(--gut) 32px; gap:24px; }
+  .mobile-menu a { font-size:36px; min-height:48px; }
+  .mobile-menu .mm-foot { position:static; margin-top:auto; flex-shrink:0; }
 }
 @media (max-width:900px) and (max-height:600px) {
   .hero-beam { min-height:620px; }

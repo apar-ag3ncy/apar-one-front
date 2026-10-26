@@ -59,7 +59,9 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
     if (!grid) return;
     const GAP = 32;
     let raf = 0;
+    const columns = window.matchMedia("(min-width: 601px)");
     const layout = () => {
+      if (!columns.matches) return;
       // Measure every card before writing spans, preserving the existing grid.
       const sizes = Array.from(grid.querySelectorAll<HTMLElement>(".work-card"), card => ({ card, height: card.offsetHeight }));
       sizes.forEach(({ card, height }) => {
@@ -69,11 +71,20 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
     };
     const schedule = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(layout);
+      if (columns.matches) raf = requestAnimationFrame(layout);
     };
-    schedule();
     const ro = new ResizeObserver(schedule);
-    grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => ro.observe(card));
+    const syncColumns = () => {
+      ro.disconnect();
+      cancelAnimationFrame(raf);
+      grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => {
+        if (columns.matches) ro.observe(card);
+        else card.style.removeProperty("grid-row-end");
+      });
+      schedule();
+    };
+    syncColumns();
+    columns.addEventListener("change", syncColumns);
     const imgs = Array.from(grid.querySelectorAll("img"));
     imgs.forEach((img) => {
       if (!(img as HTMLImageElement).complete) img.addEventListener("load", schedule);
@@ -82,6 +93,7 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      columns.removeEventListener("change", syncColumns);
       imgs.forEach((img) => img.removeEventListener("load", schedule));
       window.removeEventListener("resize", schedule);
     };

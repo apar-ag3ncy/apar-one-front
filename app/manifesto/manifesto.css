@@ -1,4 +1,4 @@
-.manifesto-page{background:var(--cream);color:var(--ink);}
+.manifesto-page{background-color:var(--cream);color:var(--ink);}
 .manifesto-page :is(h1,h2,p){margin:0;}
 .manifesto-opening{padding-top:clamp(140px,15vw,210px);padding-bottom:80px;}
 .manifesto-meta,.manifesto-opening-bottom,.manifesto-journey-top,.manifesto-journey-bottom,.manifesto-closing-bottom{display:flex;justify-content:space-between;gap:32px;}
@@ -10,7 +10,7 @@
 .manifesto-scroll{display:flex;align-items:center;gap:28px;font-size:12px;padding-block:16px;}
 .manifesto-scroll span{font-size:29px;transition:transform .35s;}
 .manifesto-scroll:hover span{transform:translate(4px,4px);}
-.manifesto-journey{background:#181613;color:var(--cream);scroll-margin-top:84px;}
+.manifesto-journey{background-color:#181613;color:var(--cream);scroll-margin-top:84px;}
 .manifesto-stage{padding-block:48px;}
 .manifesto-journey-top{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#c7beb2;padding-bottom:32px;border-bottom:1px solid #f4ede229;}
 .manifesto-stage-body{display:grid;grid-template-columns:1fr 1fr;gap:7vw;align-items:start;padding-block:64px;}

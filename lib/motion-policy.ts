@@ -5,6 +5,8 @@ import { useSyncExternalStore } from "react";
 // A single boundary for phone layouts, touch devices and their live previews.
 // Desktop choreography is unchanged; phones always use stationary text.
 export const MOBILE_LAYOUT_QUERY = "(max-width: 900px), (hover: none) and (pointer: coarse)";
+// Navigation needs room for six links, the wordmark and its project action.
+export const COMPACT_NAV_QUERY = "(max-width: 1100px), (hover: none) and (pointer: coarse)";
 export const DESKTOP_MOTION_QUERY = "(min-width: 901px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
 
 const subscribe = (notify: () => void) => {

@@ -93,7 +93,7 @@ try {
   await page.goto(base, { waitUntil: "load" }); await settle();
   await check("Manifesto moved off home; featured image pairs stay unchanged", async () => {
     assert.equal(await page.locator("#manifesto").count(), 0);
-    assert.equal(await page.locator(".flow-project").count(), 12);
+    assert.equal(await page.locator(".flow-project").count(), 8);
     const geometry = await page.locator(".flow-project-image").evaluateAll(items => items.map(el => { const r = el.getBoundingClientRect(); return { y: r.y, w: r.width, h: r.height }; }));
     for (let i = 0; i < geometry.length; i += 2) {
       assert(Math.abs(geometry[i].y - geometry[i + 1].y) < 1);

@@ -8,6 +8,7 @@ import "@/styles/testimonial-carousel.css";
 import "@/styles/voice-feedback.css";
 import "@/styles/client-voices.css";
 import "@/styles/faq-motion.css";
+import "@/styles/surfaces.css";
 import "@/styles/mobile.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

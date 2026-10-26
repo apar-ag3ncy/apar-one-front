@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
+import assert from "node:assert/strict";
 
-const URL = process.env.URL || "http://localhost:3000";
+const URL = process.env.URL || "http://127.0.0.1:3021";
 
 const state = (page) =>
   page.evaluate(() => {
@@ -107,6 +108,26 @@ const run = async () => {
   await page.goto(URL + "/work", { waitUntil: "load" });
   await page.waitForTimeout(1500);
   all = (await scenario(page, "/work (scrolled)", { scrollTo: 900 })) && all;
+
+  // Keyboard users stay in the menu and can always dismiss it.
+  await page.locator(".nav-burger").click();
+  assert.equal(await page.locator(".mm-links a").first().evaluate(el => el === document.activeElement), true);
+  await page.locator(".mm-project").focus();
+  await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".nav-burger").evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator(".nav-burger").getAttribute("aria-expanded"), "false");
+
+  // A fine-pointer tablet must release the lock when resized to desktop.
+  const desktop = await browser.newContext({ viewport: { width: 1024, height: 768 } });
+  const tabletPage = await desktop.newPage();
+  await tabletPage.goto(URL + "/work", { waitUntil: "load" });
+  await tabletPage.locator(".nav-burger").click();
+  await tabletPage.setViewportSize({ width: 1440, height: 900 });
+  await tabletPage.locator(".mobile-menu").waitFor({ state: "hidden" });
+  assert.equal(await tabletPage.evaluate(() => document.documentElement.style.overflow), "");
+  assert.equal(await tabletPage.locator(".nav-burger").getAttribute("aria-expanded"), "false");
+  await desktop.close();
 
   console.log("\nconsole errors:", errors.length ? [...new Set(errors)].slice(0, 5) : "none");
   console.log(all ? "VERDICT: PASS — mobile menu works everywhere." : "VERDICT: FAIL");

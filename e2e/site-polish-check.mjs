@@ -44,7 +44,7 @@ try {
     assert.equal(await page.locator(".work-card").last().evaluate(el => getComputedStyle(el).opacity), "1");
   });
   await check("Work filters report and display the right projects", async () => {
-    for (const [label, count] of [["Jewellery", 3], ["Lifestyle", 2], ["All work", 5]]) {
+    for (const [label, count] of [["Jewellery", 4], ["Lifestyle", 2], ["All work", 6]]) {
       await page.getByRole("button", { name: new RegExp(`^${label}`) }).click();
       await page.waitForTimeout(200);
       assert.equal(await page.locator(".work-card").count(), count);
@@ -77,9 +77,9 @@ try {
         assert(state.overflow <= 1, JSON.stringify(state));
         assert.deepEqual(state.broken, []);
         if (route === "/") {
-          assert.equal(await page.locator(".flow-project").count(), 12);
+          assert.equal(await page.locator(".flow-project").count(), 8);
           assert.equal(await page.locator('img[src*="achal-one-glass"]').count(), 0);
-          if (size.width >= 768) {
+          if (size.width > 900) {
             const boxes = await page.locator(".flow-project-image").evaluateAll(images => images.map(image => {
               const box = image.getBoundingClientRect(); return { x: box.x, y: box.y, width: box.width, height: box.height };
             }));
