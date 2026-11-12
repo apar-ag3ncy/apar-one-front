@@ -11,8 +11,8 @@
   /* These selectors also apply to SSR, before JS chooses the static wrappers. */
   [data-static-reveal], [data-static-word], .hero-beam-in,
   .hero-beam .hb-wordmark, .hero-beam .gwi, .hero-beam .hero-actions,
-  .hero-beam .scroll-cue, .hover-text-letter, .pq-letter, .pq-beyond-word,
-  .pq-limitless, .manifesto-chapter, .flow-letter-stack {
+  .hero-beam .scroll-cue, .hover-text-letter, .pq-copy, .pq-landscape,
+  .manifesto-chapter, .flow-letter-stack {
     animation:none!important; transition:none!important;
     opacity:1!important; visibility:visible!important; transform:none!important;
     will-change:auto!important;
@@ -77,9 +77,15 @@
   .progressive-quote,.progressive-quote.is-cinematic,.progressive-quote.is-dark { min-height:0; }
   .pq-sticky,.is-cinematic .pq-sticky { position:relative; top:auto; min-height:0; padding-block:76px; }
   .progressive-quote h2 { margin:0; }
-  .pq-boundary { display:none; }
-  .pq-stroke { transform:none!important; height:1px; }
-  .meeting-home { --flow-gap:64px; }
+  /* Portrait composition: architecture above, copy on the softly lit ground.
+     No sticky track or background attachment on touch devices. */
+  .pq-scene { position:relative; top:auto; height:82svh; min-height:520px; max-height:860px; }
+  .pq-landscape { inset:0; }
+  .pq-landscape img { object-position:74% 44%; }
+  .pq-scene::after { background:linear-gradient(0deg,var(--cream) 0%,#f4ede2ed 16%,#f4ede2b3 32%,transparent 62%); }
+  .is-cinematic .pq-sticky { height:100%; justify-content:flex-end; padding-block:48px 64px; }
+  .is-cinematic h2 { font-size:clamp(42px,9vw,80px); }
+  .meeting-home { --flow-gap:64px; --studio-join:clamp(72px,11svh,104px); }
   .flow-featured>.wrap,.home-image-bento .wrap { width:calc(100% - var(--gut) * 2); }
   .flow-featured .flow-heading { margin-bottom:30px; }
   .flow-featured .flow-heading h2 { font-size:clamp(42px,10vw,70px); }

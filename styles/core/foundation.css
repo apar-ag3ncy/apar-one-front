@@ -127,6 +127,7 @@
    position:sticky pin on the page (.pin-sticky work gallery, .split-sticky). */
 html{overflow-x:clip;}
 html:not(.lenis){scroll-behavior:smooth;}
+@media(prefers-reduced-motion:reduce){html:not(.lenis){scroll-behavior:auto;}}
 /* lava fluid cursor trail - full-viewport overlay, click-through, under the nav.
    One dye, plain `normal` blend on every page: the bright warm dye reads as a
    glow over dark sections and as the same golden trail over light/cream ones, so

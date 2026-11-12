@@ -1,5 +1,5 @@
 /* Meeting-approved homepage sequence. Scoped to preserve the landing and footer. */
-.meeting-home{--flow-gap:clamp(70px,8vw,120px);}
+.meeting-home{--flow-gap:clamp(70px,8vw,120px);--studio-join:clamp(100px,16svh,180px);}
 .meeting-home :is(#featured-work,#clients,#testimonials,#contact){scroll-margin-top:90px;}
 .flow-section{padding-block:var(--flow-gap);}
 .flow-kicker{display:block;font:500 11px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;}
@@ -121,31 +121,27 @@
  .flow-logo-group[aria-hidden="true"]{display:none;}
 }
 
-/* A typographic reveal: break the frame, then reveal what lies beyond it. */
-.progressive-quote.is-cinematic{min-height:180svh;}
-.is-cinematic .pq-sticky{min-height:82svh;}
-.is-cinematic h2{max-width:none;width:fit-content;font-size:clamp(52px,8vw,118px);}
-.pq-limitless{position:relative;display:block;transform-origin:left center;width:fit-content;}
-.pq-letter-mask,.pq-word-mask{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.12em;margin-bottom:-.12em;perspective:700px;}
-/* Let italic overhang extend past the word advance without clipping the reveal. */
-.pq-word-mask{padding-inline:.18em;margin-inline:-.18em;}
-.pq-letter,.pq-beyond-word{display:inline-block;transform-origin:50% 100%;}
-.pq-boundary{position:absolute;top:10%;height:85%;width:20px;border-block:1px solid var(--red);pointer-events:none;}
-.pq-boundary-left{left:-28px;border-left:1px solid var(--red);}
-.pq-boundary-right{right:-28px;border-right:1px solid var(--red);}
-.pq-beyond{position:relative;display:block;color:var(--red);font-style:italic;margin-top:.08em;padding-bottom:.16em;}
-.pq-stroke{position:absolute;bottom:0;left:0;width:100%;height:2px;background:var(--red);transform-origin:left center;}
-@media(max-width:560px){
- .is-cinematic h2{font-size:clamp(38px,9vw,50px);}
- .pq-boundary-left{left:-12px;}.pq-boundary-right{right:-12px;}
- .pq-boundary{width:8px;}
+/* Both sides meet at the beam's actual base colour. Only the artwork fades;
+   headings and controls keep their contrast. No extra scroll track or pin. */
+.meeting-home>.hero-beam{background:#120302;}
+/* A small static overlay avoids masking the full-resolution WebGL canvas. */
+.meeting-home>.hero-beam::after{content:"";position:absolute;inset:auto 0 0;height:var(--studio-join);z-index:1;pointer-events:none;
+ background:linear-gradient(#12030200,#120302);}
+.progressive-quote.is-cinematic{min-height:0;}
+.pq-scene{position:relative;height:calc(100svh - 80px);min-height:540px;overflow:hidden;isolation:isolate;background:#f0e4d5;}
+.pq-scene::before{content:"";position:absolute;inset:0 0 auto;height:var(--studio-join);z-index:2;pointer-events:none;
+ background:linear-gradient(#120302 0%,#120302e0 22%,#12030266 62%,#12030200 100%);}
+.pq-landscape{position:absolute;inset:-5% 0;pointer-events:none;}
+.pq-landscape img{display:block;width:100%;height:100%;object-fit:cover;object-position:60% 50%;}
+.pq-scene::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(0deg,var(--cream),transparent 18%),linear-gradient(90deg,#f4ede2d9 0%,#f4ede2b8 42%,#f4ede200 72%);}
+.is-cinematic .pq-sticky{position:relative;top:auto;z-index:2;height:100%;min-height:0;padding-block:80px;}
+.is-cinematic h2{max-width:100%;width:fit-content;font-size:clamp(52px,7.4vw,118px);margin:0;}
+.pq-limitless,.pq-beyond{display:block;white-space:nowrap;}
+.pq-beyond{color:var(--red);margin-top:.14em;}
+@media(min-width:901px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ .pq-landscape{will-change:transform;}
 }
-@media(prefers-reduced-motion:reduce){
- .progressive-quote.is-cinematic{min-height:0;}
- .is-cinematic .pq-sticky{min-height:0;}
- .pq-boundary{display:none;}
-}
-
 /* Homepage headings no longer have section labels above them. */
 .meeting-home .flow-client-heading h2,.meeting-home .tc-heading h2,.meeting-home .mj-showcase-heading h2{margin-top:0;}
 .meeting-home .mj-showcase-controls{justify-content:flex-end;}

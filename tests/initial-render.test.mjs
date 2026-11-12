@@ -7,6 +7,7 @@ import { loadTypeScript } from "./load-typescript.mjs";
 const { Reveal } = loadTypeScript("components/motion/reveal.tsx");
 const { ContactOrb } = loadTypeScript("components/voice/contact-orb.tsx");
 const { TalkToUs } = loadTypeScript("components/voice/talk-to-us.tsx");
+const { ProgressiveQuote } = loadTypeScript("components/home/featured/progressive-quote.tsx");
 
 const hiddenStyle = /(?:opacity:\s*0(?:;|"|\s)|visibility:\s*hidden|display:\s*none|translateY\()/;
 
@@ -41,5 +42,16 @@ test("Talk to us has an accessible contact destination before hydration", () => 
   assert.match(html, /<a[^>]*href="\/#contact"/);
   assert.match(html, /aria-label="Talk to us"/);
   assert.match(html, /ttu-orb-placeholder/);
+  assert.doesNotMatch(html, hiddenStyle);
+});
+
+test("studio copy and responsive artwork arrive together without waiting for animation", () => {
+  const html = renderToStaticMarkup(createElement(ProgressiveQuote, {
+    id: "studio", text: "Limitless. Beyond Culture.",
+  }));
+  assert.match(html, /aria-labelledby="studio-quote"/);
+  assert.match(html, /aria-label="Limitless\. Beyond Culture\."/);
+  assert.match(html, /<img[^>]*srcSet="[^"]*640w[^"]*1536w"/);
+  assert.match(html, /width="1536" height="1024"/);
   assert.doesNotMatch(html, hiddenStyle);
 });

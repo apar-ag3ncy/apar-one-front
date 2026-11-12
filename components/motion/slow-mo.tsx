@@ -14,8 +14,8 @@ import { SplitText } from "gsap/SplitText";
  * re-armed on every route change. Four effects, all declarative by selector:
  *
  *  1. MEDIA PARALLAX + SLOW ZOOM  - every real image inside a frame drifts slower
- *     than the page and slowly zooms out. `scrub: 0.45` makes the tween LAG the
- *     scroll by ~0.45s - that lag is the slow-motion feel. Animated on the inner
+ *     than the page and slowly zooms out. Direct scrub follows Lenis's already
+ *     smoothed position without a second catch-up delay. Animated on the inner
  *     <img> so it never fights the framer <Reveal> wrappers or CSS hover scales.
  *  2. VELOCITY SKEW - frames skew/stretch with scroll speed and settle over ~0.55s
  *     (Lusion's signature), via quickTo on the frame wrappers.
@@ -53,7 +53,7 @@ export function SlowMo() {
             yPercent: 3,
             scale: 1.08, // enough overscan for the three-percent drift
             ease: "none",
-            scrollTrigger: { trigger: wrap, start: "top bottom", end: "bottom top", scrub: 0.45 },
+            scrollTrigger: { trigger: wrap, start: "top bottom", end: "bottom top", scrub: true },
           }
         );
       }
@@ -135,7 +135,7 @@ export function SlowMo() {
         gsap.fromTo(
           fw,
           { yPercent: 22 },
-          { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".footer", start: "top bottom", end: "bottom bottom", scrub: 0.55 } }
+          { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".footer", start: "top bottom", end: "bottom bottom", scrub: true } }
         );
       }
     });

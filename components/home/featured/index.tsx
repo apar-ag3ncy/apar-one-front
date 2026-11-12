@@ -1,68 +1,15 @@
 "use client";
 
-import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
+import { useMobileLayout } from "@/lib/motion-policy";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Reveal } from "@/components/motion/reveal";
 import { PhotoSlot } from "@/components/media/photo-slot";
 import { useFeaturedHover } from "@/components/home/featured/use-featured-hover";
 import { HoverText } from "@/components/motion/hover-text";
 
-export function ProgressiveQuote({ id, text, dark = false }: {
-  id: string; text: string; dark?: boolean;
-}) {
-  const root = useRef<HTMLElement>(null);
-  const cinematic = id === "studio";
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    const media = gsap.matchMedia();
-    media.add(DESKTOP_MOTION_QUERY, () => {
-      if (cinematic && root.current) {
-        const el = root.current;
-        const timeline = gsap.timeline({ scrollTrigger: {
-          trigger: el, start: "top 65%", end: "bottom 90%", scrub: 0.65,
-          invalidateOnRefresh: true,
-        }});
-        timeline.fromTo(el.querySelectorAll(".pq-letter"),
-          { yPercent: 115, rotateX: -70, opacity: 0 },
-          { yPercent: 0, rotateX: 0, opacity: 1, stagger: 0.025, duration: 0.85, ease: "power3.out" }, 0)
-          .fromTo(el.querySelectorAll(".pq-boundary"), { scaleY: 0.25, opacity: 0 },
-            { scaleY: 1, opacity: 1, duration: 0.6 }, 0.2)
-          .to(el.querySelector(".pq-boundary-left"), { xPercent: -160, opacity: 0, duration: 1 }, 0.8)
-          .to(el.querySelector(".pq-boundary-right"), { xPercent: 160, opacity: 0, duration: 1 }, 0.8)
-          .fromTo(el.querySelector(".pq-limitless"), { scale: 0.9 },
-            { scale: 1, duration: 1.1, ease: "power2.inOut" }, 0.4)
-          .fromTo(el.querySelectorAll(".pq-beyond-word"), { yPercent: 110, rotate: 5, opacity: 0 },
-            { yPercent: 0, rotate: 0, opacity: 1, stagger: 0.15, duration: 1, ease: "power3.out" }, 0.65)
-          .fromTo(el.querySelector(".pq-stroke"), { scaleX: 0 },
-            { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 1.35);
-        return;
-      }
-      const words = root.current?.querySelectorAll(".pq-word");
-      if (!words) return;
-      gsap.fromTo(words, { opacity: 0.18 }, {
-        opacity: 1, stagger: 0.3, ease: "none",
-        scrollTrigger: { trigger: root.current, start: "top 45%", end: "bottom 75%", scrub: 0.3 },
-      });
-    }, root);
-    return () => media.revert();
-  }, [cinematic]);
-  return <section ref={root} id={id} className={`progressive-quote${cinematic ? " is-cinematic" : ""}${dark ? " is-dark" : ""}`} aria-labelledby={`${id}-quote`}>
-    <div className="pq-sticky wrap">
-      {cinematic ? <h2 id={`${id}-quote`} aria-label={text}>
-        <span className="pq-limitless" aria-hidden="true">
-          <i className="pq-boundary pq-boundary-left" />
-          <span className="pq-letter-mask">{"Limitless.".split("").map((letter, i) => <span className="pq-letter" key={i}>{letter}</span>)}</span>
-          <i className="pq-boundary pq-boundary-right" />
-        </span>
-        <span className="pq-beyond" aria-hidden="true"><span className="pq-word-mask"><span className="pq-beyond-word">Beyond</span></span>{" "}<span className="pq-word-mask"><span className="pq-beyond-word">Culture.</span></span><i className="pq-stroke" /></span>
-      </h2> : <h2 id={`${id}-quote`} aria-label={text}>{text.split(" ").map((word, i) => <span className="pq-word" aria-hidden="true" key={i}>{word}{" "}</span>)}</h2>}
-    </div>
-  </section>;
-}
+export { ProgressiveQuote } from "./progressive-quote";
 
 const SELECTED = [
   {

@@ -1,21 +1,17 @@
 // Shared "is the page actively scrolling" signal, driven by Lenis (see
-// components/smooth-scroll.tsx). Decorative per-frame WebGL backdrops read this
+// components/motion/smooth-scroll.tsx). Decorative per-frame WebGL backdrops read this
 // to skip their GPU render while scrolling, so they never compete with scroll
 // compositing on weaker GPUs - they resume the moment scrolling settles.
 
-let scrolling = false;
-let timer: ReturnType<typeof setTimeout> | null = null;
+let lastScrollAt = -Infinity;
 
 export function markScrolling() {
-  scrolling = true;
-  if (timer) clearTimeout(timer);
-  timer = setTimeout(() => {
-    scrolling = false;
-  }, 150);
+  // No timer creation/cancellation on every animation frame.
+  lastScrollAt = performance.now();
 }
 
 export function isScrolling() {
-  return scrolling;
+  return performance.now() - lastScrollAt < 150;
 }
 
 // The live Lenis instance (registered by components/smooth-scroll.tsx) so the

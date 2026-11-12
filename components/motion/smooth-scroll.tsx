@@ -39,15 +39,14 @@ export function SmoothScroll() {
     const media = gsap.matchMedia();
     media.add(DESKTOP_MOTION_QUERY, () => {
     let alive = true;
-    // Duration/easing (time-based) instead of lerp (frame-based): on a busy
-    // machine that drops frames, a fixed lerp steps unevenly and reads as a
-    // stuttery "catching-up" scroll. Time-based easing stays a consistent glide
-    // regardless of frame rate.
+    // Lenis normalizes damping by elapsed time, including on 120Hz displays.
+    // Wheel input follows a short, continuous settle instead of restarting a
+    // long duration-based easing curve on every event. Links get their own
+    // finite duration below; touch scrolling remains native.
     const lenis = new Lenis({
-      // One responsive easing layer. Scroll-linked media uses a short settle
-      // below, so wheel input never queues up behind multiple long glides.
-      duration: 1.1,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.12,
+      autoRaf: false,
+      syncTouch: false,
       smoothWheel: true,
       wheelMultiplier: 1,
       // touch is left NATIVE (syncTouch defaults false); keep the multiplier at
@@ -64,7 +63,8 @@ export function SmoothScroll() {
     lenisRef.current = lenis;
 
     const raf = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(raf);
+    // Move the viewport before GSAP paints this frame's animation positions.
+    gsap.ticker.add(raf, false, true);
     gsap.ticker.lagSmoothing(0);
 
     // Keep Lenis's cached scroll limits in lockstep with the real document height.
@@ -97,7 +97,7 @@ export function SmoothScroll() {
       // Lenis already honours scroll-margin-top. Adding a nav offset as well
       // left case-page anchors 150px down the screen instead of at the gutter.
       const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-      lenis.scrollTo(target, { offset: margin ? 0 : -70 });
+      lenis.scrollTo(target, { offset: margin ? 0 : -70, duration: 0.85, lerp: 0 });
     };
     document.addEventListener("click", onClick);
 
