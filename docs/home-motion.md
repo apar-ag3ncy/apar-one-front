@@ -8,8 +8,9 @@ The homepage keeps its existing content order, artwork, typography and two-colum
 - `components/home/featured/featured-scroll-runtime.ts` uses one canvas for the whole work grid. Photographs fill the unchanged landscape cards with the minimum proportional crop and no additional zoom. Signi keeps its face-safe focal point and tiny export-edge trim. Curved scroll edges, gentle card parallax and hover lift move the whole surface. Texture uploads are cached per source and display size. The HTML images disappear only after their first successful draw and return on cleanup or context loss.
 - `components/home/featured/use-featured-hover.ts` owns the caption arrow and letter exchange. It never writes image transforms.
 - `components/home/bento-motion.tsx` moves collage photographs inside the existing cells using GSAP transforms. It does not alter the grid or animate copy.
+- Motion (`motion/react`) owns magnetic CTA feedback, the scroll-progress indicator, case-page wipes and voice-player press feedback. `MotionProvider` honours the system reduced-motion preference. CTA wrappers keep a stationary hit area; only their inner surface moves, bounded to 6px horizontally and 4px vertically. Page wipes run only on desktop and reveal after the destination route mounts. Voice playback still starts directly from the native button click, with no audio prefetch.
 
-All new effects use `DESKTOP_MOTION_QUERY`. Phones, coarse pointers and reduced-motion preferences keep static photographs and normal document scrolling. The image renderers allocate no phone WebGL contexts. Current page links remain ordinary HTML links throughout.
+GSAP effects use `DESKTOP_MOTION_QUERY`; Motion components follow the same phone and reduced-motion policy. Phones and coarse pointers keep static text, static photographs and normal document scrolling. The voice play button retains brief press feedback unless reduced motion is requested. The image renderers allocate no phone WebGL contexts. Current page links remain ordinary HTML links throughout.
 
 ## Editing and checking
 

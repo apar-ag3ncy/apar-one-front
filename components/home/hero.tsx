@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useMobileLayout } from "@/lib/motion-policy";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { BandBackdrop } from "@/components/home/band-backdrop";
 import { AparLogo } from "@/components/layout/apar-logo";
 import { Magnetic } from "@/components/motion/magnetic";

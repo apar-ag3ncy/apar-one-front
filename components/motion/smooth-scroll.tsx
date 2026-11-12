@@ -7,6 +7,7 @@ import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { markScrolling, setLenis } from "@/lib/scroll-state";
+import { focusAnchor, samePageAnchor } from "@/lib/motion/anchor-navigation";
 
 /**
  * Lusion-style inertial scrolling (Lenis), driven from GSAP's ticker so
@@ -79,17 +80,18 @@ export function SmoothScroll() {
 
     // same-page hash links glide via Lenis instead of jumping
     const onClick = (ev: MouseEvent) => {
-      if (ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
-      const a = (ev.target as HTMLElement).closest?.("a[href*='#']") as HTMLAnchorElement | null;
-      if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
-      const url = new URL(a.href, location.href);
-      if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !url.hash) return;
-      let target: HTMLElement | null = null;
-      try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
+      if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+      const a = ev.target instanceof Element ? ev.target.closest<HTMLAnchorElement>("a[href*='#']") : null;
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      const anchor = samePageAnchor(a.href, location.href);
+      if (!anchor) return;
+      const target = document.getElementById(anchor.id);
       if (!target) return;
       // The menu owns the lock; let its Next link handle navigation after close.
       if (lenis.isStopped) return;
       ev.preventDefault();
+      // Preserve Next's history metadata and the native Back/bookmark behaviour.
+      if (location.hash !== anchor.hash) history.pushState(history.state, "", anchor.hash);
       // Keyboard focus / browser scrollIntoView can move the real viewport
       // while a glide still holds its old animatedScroll. Element targets use
       // that cached value, so reconcile it before calculating the destination.
@@ -97,13 +99,24 @@ export function SmoothScroll() {
       // Lenis already honours scroll-margin-top. Adding a nav offset as well
       // left case-page anchors 150px down the screen instead of at the gutter.
       const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-      lenis.scrollTo(target, { offset: margin ? 0 : -70, duration: 0.85, lerp: 0 });
+      const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+      const previousFocus = document.activeElement;
+      lenis.scrollTo(target, {
+        offset: margin || padding ? 0 : -84,
+        duration: 0.85,
+        lerp: 0,
+        onComplete: () => {
+          // A user tabbing away during the glide owns the new focus position.
+          if (alive && target.isConnected && document.activeElement === previousFocus) focusAnchor(target);
+        },
+      });
     };
-    document.addEventListener("click", onClick);
+    // Run before Next's bubbling Link handler so one navigation owns the scroll.
+    document.addEventListener("click", onClick, true);
 
     return () => {
       alive = false;
-      document.removeEventListener("click", onClick);
+      document.removeEventListener("click", onClick, true);
       ScrollTrigger.removeEventListener("refresh", onRefresh);
       window.removeEventListener("load", onLoad);
       gsap.ticker.remove(raf);

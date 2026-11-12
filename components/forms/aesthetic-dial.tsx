@@ -117,13 +117,12 @@ export function AestheticDial({
         <button type="button" className="dial-arrow" onClick={() => go(-1)} aria-label="Previous direction">
           ‹
         </button>
-        <div className="dial-dots" role="tablist" aria-label="Aesthetic options">
+        <div className="dial-dots" role="group" aria-label="Aesthetic options">
           {options.map((o, i) => (
             <button
               type="button"
               key={o.key}
-              role="tab"
-              aria-selected={i === value}
+              aria-pressed={i === value}
               aria-label={o.label}
               className={`dial-dot${i === value ? " on" : ""}`}
               onClick={() => onChange(i)}

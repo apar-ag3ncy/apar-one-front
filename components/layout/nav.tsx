@@ -110,7 +110,7 @@ export function Nav() {
               CREACY
             </span>
           </Link>
-          <nav className="nav-links">
+          <nav className="nav-links" aria-label="Main navigation">
             {LINKS.map((l) => (
               <Link key={l.href} href={l.href} aria-current={!l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")) ? "page" : undefined}>
                 <HoverText>{l.label}</HoverText>

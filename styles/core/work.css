@@ -1,9 +1,9 @@
 /* ============================================================
    PAGE HERO + chips (shared by inner pages: work, clients)
    ============================================================ */
-.page-hero{padding:160px 0 70px;position:relative;}
+.page-hero{padding:var(--space-page-top) 0 var(--space-section-sm);position:relative;}
 .page-hero .eyebrow{margin-bottom:28px;}
-.page-hero .lead{margin-top:30px;}
+.page-hero .lead{margin-top:var(--space-content);}
 .chip-row{display:flex;gap:10px;flex-wrap:wrap;}
 .chip{position:relative;font-size:19px;padding:10.5px 17.5px;border:0;border-radius:0;cursor:pointer;transition:color .3s;user-select:none;white-space:nowrap;
   /* Keep filters operable and their hit areas unchanged, with no capsule fill. */
@@ -71,7 +71,7 @@
 .case-hero-fig .img-slot{aspect-ratio:9/16;height:clamp(360px,56vh,580px);width:auto;display:block;}
 @media (max-width:560px){ .case-hero-fig{width:100%;} .case-hero-fig .img-slot{width:100%;height:auto;} }
 /* the glass panes do the sectioning (no full-bleed rules under inset panes) */
-.case-sec{padding:104px 0;}
+.case-sec{padding:var(--space-section) 0;}
 .case-tag{display:flex;align-items:center;gap:18px;font-size:17px;letter-spacing:.26em;text-transform:uppercase;color:var(--c-soft);}
 .case-tag .ln{flex:1;height:1px;background:var(--c-line);}
 .case-lead{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.8vw,52px);line-height:1.18;letter-spacing:-.01em;

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { voiceTime, voiceWaveform, type ClientVoice } from "@/lib/client-voices";
+import { useMobileLayout } from "@/lib/motion-policy";
 
 export function ClientVoices({ notes }: { notes: ClientVoice[] }) {
   const active = useRef<HTMLAudioElement | null>(null);
@@ -18,6 +20,8 @@ export function ClientVoices({ notes }: { notes: ClientVoice[] }) {
 }
 
 function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: HTMLAudioElement) => void }) {
+  const reduced = useReducedMotion();
+  const mobile = useMobileLayout();
   const ref = useRef<HTMLAudioElement>(null);
   const pendingSeek = useRef<number | null>(null);
   const request = useRef(0);
@@ -68,12 +72,15 @@ function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: 
     <div className="cv-identity"><span className="cv-label">Client voice</span>
       <h4>{note.name}</h4>{note.brand && <p>{note.brand}</p>}</div>
     <div className="cv-controls">
-      <button type="button" className="cv-play" onClick={toggle} data-loading={phase === "loading"}
+      <motion.button type="button" className="cv-play" onClick={toggle} data-loading={phase === "loading"}
+        whileHover={reduced || mobile ? undefined : { scale: 1.05 }}
+        whileTap={reduced ? undefined : { scale: 0.94 }}
+        transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.5 }}
         aria-label={`${active ? "Pause" : phase === "error" ? "Retry" : "Play"} ${note.name}'s voice note`}>
         <svg viewBox="0 0 24 24" aria-hidden="true">{active
           ? <path d="M7 5h3v14H7zm7 0h3v14h-3z" />
           : <path d="M8 4.5v15l12-7.5z" />}</svg>
-      </button>
+      </motion.button>
       <div className="cv-track">
         <div className="cv-wave" aria-hidden="true"><svg viewBox="0 0 600 64" preserveAspectRatio="none"><path d={wave} /></svg>
           <svg className="cv-wave-progress" viewBox="0 0 600 64" preserveAspectRatio="none" style={{ clipPath: `inset(0 ${100 - progress}% 0 0)` }}><path d={wave} /></svg></div>

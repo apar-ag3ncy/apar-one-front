@@ -1,5 +1,5 @@
 /* Meeting-approved homepage sequence. Scoped to preserve the landing and footer. */
-.meeting-home{--flow-gap:clamp(70px,8vw,120px);--studio-join:clamp(100px,16svh,180px);}
+.meeting-home{--flow-gap:var(--space-section);--studio-join:clamp(100px,16svh,180px);}
 .meeting-home :is(#featured-work,#clients,#testimonials,#contact){scroll-margin-top:90px;}
 .flow-section{padding-block:var(--flow-gap);}
 .flow-kicker{display:block;font:500 16px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;}
@@ -13,16 +13,16 @@
 .progressive-quote.is-dark{background:var(--ink);color:var(--cream);min-height:160svh;}
 .progressive-quote.is-dark h2{font-size:clamp(42px,6.7vw,96px);max-width:20ch;}
 .progressive-quote.is-dark p{color:#c4bcb1;}
-.flow-heading{display:grid;grid-template-columns:1.5fr 1fr;gap:64px;align-items:end;margin-bottom:48px;}
+.flow-heading{display:grid;grid-template-columns:1.5fr 1fr;gap:var(--space-heading);align-items:end;margin-bottom:var(--space-heading);}
 .flow-heading h2{font-size:clamp(38px,5vw,72px);line-height:1.06;margin-top:24px;}
 .flow-heading h2 em{color:var(--red);}
 .flow-heading>p{max-width:35ch;font-size:20px;line-height:1.75;color:var(--ink-soft);}
 /* Reference proportions: 5vw gutters, 44vw cards, 65% image height. */
 .flow-featured>.wrap{width:90%;max-width:none;padding-inline:0;}
-.flow-featured .flow-heading{grid-template-columns:minmax(0,1fr) minmax(220px,21vw);gap:4vw;margin-bottom:5vw;}
+.flow-featured .flow-heading{display:block;margin-bottom:clamp(32px,4.5vw,72px);}
 .flow-featured .flow-heading h2{font-size:clamp(48px,8vw,160px);line-height:1.02;margin:0;}
 .flow-featured .flow-heading p{font-size:clamp(17px,1vw,20px);line-height:1.5;text-transform:uppercase;margin:0;}
-.flow-project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5.5vw 2vw;max-width:none;margin-inline:auto;}
+.flow-project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(48px,5.5vw,88px) 2vw;max-width:none;margin-inline:auto;}
 .flow-project{min-width:0;width:100%;display:block;justify-self:center;align-self:start;}
 .flow-project-image{position:relative;aspect-ratio:20/13;background:#e9e3db;border-radius:15px;overflow:hidden;}
 .flow-project-art{position:relative;width:100%;height:100%;}
@@ -33,7 +33,7 @@
 .girvaan-store-sign img{display:block;width:100%;height:100%;object-fit:contain;}
 .flow-project .img-slot{border-radius:0;}
 .flow-project .photo-slot-img[src="/work/signi/hero.webp"]{object-position:50% 20%;}
-.flow-project-caption{padding-top:1.5vw;display:flex;flex-direction:column;gap:8px;}
+.flow-project-caption{padding-top:clamp(16px,1.5vw,28px);display:flex;flex-direction:column;gap:8px;}
 .flow-project-caption h3{position:relative;font-size:clamp(20px,3vw,48px);line-height:1.2;margin:0;}
 .flow-project-caption>span{font-size:clamp(16px,.9vw,19px);line-height:1.35;text-transform:uppercase;color:var(--ink);}
 .flow-project-arrow{position:absolute;top:0;left:0;display:block;font:inherit;font-style:normal;opacity:0;visibility:hidden;pointer-events:none;}
@@ -41,9 +41,9 @@
 .flow-letter-window{display:inline-block;vertical-align:bottom;overflow:hidden;height:1.2em;}
 .flow-letter-stack{display:flex;flex-direction:column;line-height:1.2;}
 .flow-letter-stack>span{display:block;}
-.flow-project-end{display:flex;justify-content:center;padding-top:54px;}
+.flow-project-end{display:flex;justify-content:center;padding-top:var(--space-heading);}
 .meeting-home .mj-showcase{padding-top:60px;}
-.home-image-bento{padding:clamp(64px,9vw,140px) 0;background:var(--cream);}
+.home-image-bento{padding:var(--space-section) 0;background:var(--cream);}
 .home-image-bento .wrap{width:90%;max-width:none;padding-inline:0;}
 .home-bento-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"ruby bridal campaign campaign" "ruby blue girvaan paramount" "smiles smiles chheda chheda";grid-auto-rows:clamp(160px,21vw,420px);gap:clamp(10px,1.5vw,24px);}
 .home-bento-tile{position:relative;display:block;min-width:0;min-height:0;overflow:hidden;border-radius:15px;background:#e3c5cb;isolation:isolate;}
@@ -61,7 +61,7 @@
 .meeting-home .mj-manual{display:none;}
 .meeting-home .mj-showcase-controls{flex-wrap:wrap;}
 .flow-clients{background:#080808;color:#f4ede2;overflow:hidden;}
-.flow-client-heading{container-type:inline-size;margin-bottom:70px;}
+.flow-client-heading{container-type:inline-size;margin-bottom:var(--space-heading);}
 #flow-clients-title{font-size:min(clamp(42px,5vw,76px),11cqi);white-space:nowrap;}
 .flow-logo-rows{display:grid;gap:35px;}
 .flow-logo-window{overflow:hidden;}

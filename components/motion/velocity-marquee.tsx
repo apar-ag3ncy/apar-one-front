@@ -9,7 +9,7 @@ import {
   useTransform,
   useInView,
   useReducedMotion,
-} from "framer-motion";
+} from "motion/react";
 import { Marquee } from "@/components/ui/marquee";
 import { useHeavyFx } from "@/lib/device";
 import { useMobileLayout } from "@/lib/motion-policy";

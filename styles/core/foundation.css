@@ -97,6 +97,13 @@
   --line-strong:rgba(26,23,20,.28);
   --gut:56px;
   --maxw:1320px;
+  /* Shared editorial rhythm. Phone overrides live in mobile.css. */
+  --space-section:clamp(64px,8vw,120px);
+  --space-section-sm:clamp(40px,5.5vw,80px);
+  --space-heading:clamp(28px,4vw,56px);
+  --space-content:clamp(20px,2.4vw,32px);
+  --space-page-top:clamp(132px,12vw,176px);
+  --target-size:44px;
   --ui-font:'New Title',Georgia,serif;
   --heading:var(--ui-font);
   --heading-weight:700;
@@ -164,8 +171,8 @@ h1,h2,h3,h4{margin:0;}
 
 /* ---------- layout ---------- */
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);}
-.section{padding:130px 0;}
-.section-sm{padding:84px 0;}
+.section{padding:var(--space-section) 0;}
+.section-sm{padding:var(--space-section-sm) 0;}
 .divline{height:1px;background:var(--line);width:100%;}
 
 /* ---------- type ---------- */

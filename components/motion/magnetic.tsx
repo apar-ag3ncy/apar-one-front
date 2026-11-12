@@ -2,11 +2,11 @@
 
 import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "motion/react";
 
 /**
  * Magnetic wrapper - pulls its child toward the pointer, then springs back.
- * Used for buttons / CTAs (Framer Motion).
+ * Used for buttons / CTAs (Motion).
  */
 export function Magnetic({
   children,
@@ -23,8 +23,8 @@ export function Magnetic({
   const reduced = prefersReduced || mobile;
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 200, damping: 18, mass: 0.4 });
+  const sx = useSpring(x, { stiffness: 280, damping: 24, mass: 0.55 });
+  const sy = useSpring(y, { stiffness: 280, damping: 24, mass: 0.55 });
   const centerRef = useRef<{ x: number; y: number } | null>(null);
   const dirtyRef = useRef(true);
 
@@ -37,6 +37,8 @@ export function Magnetic({
     if (reduced) return;
     const markDirty = () => {
       dirtyRef.current = true;
+      x.set(0);
+      y.set(0);
     };
     window.addEventListener("scroll", markDirty, { passive: true });
     window.addEventListener("resize", markDirty, { passive: true });
@@ -44,28 +46,27 @@ export function Magnetic({
       window.removeEventListener("scroll", markDirty);
       window.removeEventListener("resize", markDirty);
     };
-  }, [reduced]);
+  }, [reduced, x, y]);
 
   const measure = () => {
     const el = ref.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
-    // subtract current spring offset to get the true resting center
     centerRef.current = {
-      x: r.left + r.width / 2 - sx.get(),
-      y: r.top + r.height / 2 - sy.get(),
+      x: r.left + r.width / 2,
+      y: r.top + r.height / 2,
     };
     dirtyRef.current = false;
   };
 
-  const onMove = (e: React.MouseEvent) => {
-    if (reduced) return;
+  const onMove = (e: React.PointerEvent) => {
+    if (reduced || e.pointerType !== "mouse") return;
     if (dirtyRef.current || !centerRef.current) measure();
     const c = centerRef.current;
     if (!c) return;
     const pull = strength / (1 + strength);
-    x.set((e.clientX - c.x) * pull);
-    y.set((e.clientY - c.y) * pull);
+    x.set(Math.max(-6, Math.min(6, (e.clientX - c.x) * pull)));
+    y.set(Math.max(-4, Math.min(4, (e.clientY - c.y) * pull)));
   };
   const reset = () => {
     x.set(0);
@@ -73,15 +74,19 @@ export function Magnetic({
   };
 
   return (
-    <motion.div
+    <div
       ref={ref}
       className={className}
-      style={{ x: reduced ? 0 : sx, y: reduced ? 0 : sy, display: "inline-flex" }}
-      onMouseEnter={reduced ? undefined : measure}
-      onMouseMove={onMove}
-      onMouseLeave={reset}
+      style={{ display: "inline-flex" }}
+      onPointerEnter={reduced ? undefined : measure}
+      onPointerMove={onMove}
+      onPointerLeave={reset}
+      onPointerCancel={reset}
+      onFocusCapture={reset}
     >
-      {children}
-    </motion.div>
+      <motion.div style={{ x: reduced ? 0 : sx, y: reduced ? 0 : sy, display: "inline-flex" }}>
+        {children}
+      </motion.div>
+    </div>
   );
 }

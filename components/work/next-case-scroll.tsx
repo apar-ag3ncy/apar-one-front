@@ -2,7 +2,7 @@
 
 import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "motion/react";
 import { useCaseTransition } from "@/components/layout/transition-provider";
 
 /**

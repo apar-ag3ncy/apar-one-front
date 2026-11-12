@@ -65,29 +65,49 @@ export function SlowMo() {
       if (frames.length) {
         const skewTo = frames.map((el) => gsap.quickTo(el, "skewY", { duration: 0.55, ease: "power3.out" }));
         const scaleTo = frames.map((el) => gsap.quickTo(el, "scaleY", { duration: 0.55, ease: "power3.out" }));
+        const visible = new Set<number>();
+        const indices = new Map(frames.map((frame, index) => [frame, index]));
         let vel = 0;
-        ScrollTrigger.create({ onUpdate: (self) => (vel = self.getVelocity()) });
-        let idle = false;
+        let ticking = false;
+        const sleep = () => {
+          gsap.ticker.remove(tick);
+          ticking = false;
+        };
+        const wake = () => {
+          if (ticking || !visible.size) return;
+          ticking = true;
+          gsap.ticker.add(tick);
+        };
         const tick = (_time: number, deltaTime: number) => {
           vel *= Math.exp(-Math.min(deltaTime, 64) / 120); // settle toward stillness between scroll events
-          // Snap to rest: the geometric decay never reaches 0, and every quickTo
-          // call restarts a 1.1s tween - so at rest this was ~2 tween restarts
-          // and a transform write per frame per frame element, forever.
-          if (Math.abs(vel) < 0.5) {
-            if (idle) return;
-            vel = 0;
-            idle = true;
-          } else idle = false;
+          const settled = Math.abs(vel) < 0.5;
+          if (settled) vel = 0;
           const skew = gsap.utils.clamp(-1.0, 1.0, vel / -1600);
           const stretch = 1 + Math.min(0.018, Math.abs(vel) / 50000);
-          for (let i = 0; i < frames.length; i++) {
+          for (const i of visible) {
             if (!frames[i].isConnected) continue;
             skewTo[i](skew);
             scaleTo[i](stretch);
           }
+          if (settled || !visible.size) sleep();
         };
-        gsap.ticker.add(tick);
-        self.add(() => () => gsap.ticker.remove(tick)); // context-owned cleanup (no TDZ on `ctx`)
+        // The observer supplies visibility without layout reads on scroll frames.
+        const observer = new IntersectionObserver(entries => {
+          if (!alive) return;
+          for (const entry of entries) {
+            const index = indices.get(entry.target as HTMLElement)!;
+            if (entry.isIntersecting) visible.add(index);
+            else if (visible.delete(index)) {
+              skewTo[index](0);
+              scaleTo[index](1);
+            }
+          }
+          if (visible.size) wake();
+          else sleep();
+        }, { rootMargin: "80px 0px" });
+        frames.forEach(frame => observer.observe(frame));
+        ScrollTrigger.create({ onUpdate: trigger => { vel = trigger.getVelocity(); wake(); } });
+        self.add(() => () => { observer.disconnect(); sleep(); });
       }
 
       // ---- 3) slow line reveals on the big statements --------------------------

@@ -1,7 +1,7 @@
 /* Drum geometry lives inside the carousel; the rest of the site's grid is untouched. */
 .testimonial-carousel{background:var(--ink);color:var(--cream);overflow:hidden;}
 .tc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
-.tc-heading{display:flex;align-items:end;justify-content:space-between;gap:32px;margin-bottom:34px;}
+.tc-heading{display:flex;align-items:end;justify-content:space-between;gap:var(--space-content);margin-bottom:var(--space-heading);}
 .tc-heading h2{font-size:clamp(38px,5.2vw,74px);line-height:1.06;margin:24px 0 0;}
 .tc-heading h2 em{color:var(--red);}
 .tc-heading>p{font:400 19px/1.7 var(--sans);color:#c4bcb1;margin:0 0 5px;}

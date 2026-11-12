@@ -14,7 +14,6 @@
 }
 @media (max-width:760px){
   :root{--gut:22px;}
-  .section{padding:84px 0;}
   .cols-2,.cols-3{grid-template-columns:1fr;}
   .work-grid{column-gap:20px;}
   .svc-item{grid-template-columns:40px 1fr;gap:18px;}
@@ -143,7 +142,7 @@
 }
 .vc-x{
   appearance:none;border:0;cursor:pointer;
-  width:30px;height:30px;border-radius:50%;
+  width:44px;height:44px;border-radius:50%;
   display:grid;place-items:center;
   color:rgba(244,237,226,.6);
   background:rgba(244,237,226,.05);
@@ -295,7 +294,6 @@
 /* Small phones (≤480): the existing tiers stop scaling above this. */
 @media (max-width:480px){
   :root{--gut:18px;}
-  .section{padding-top:56px;padding-bottom:56px;}
   .footer{padding:64px 0 32px;}
   .hb-wordmark .apar-logo{font-size:clamp(80px,24vw,150px);font-size:round(clamp(80px,24vw,150px),2px);}
   .sector{min-height:340px;padding:26px;}

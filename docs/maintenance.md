@@ -18,6 +18,19 @@ independent. Small labels use at least 14px; form text uses at least 20px.
 
 ## Structure and boundaries
 
+Shared spacing lives in `styles/core/foundation.css`: `--space-section` for
+section padding, `--space-section-sm` for shorter transitions, `--space-heading`
+between headings and content, and `--space-content` for related copy/actions.
+`--space-page-top` includes room for the fixed navigation. `styles/mobile.css`
+sets the phone rhythm. Keep full-screen artwork, the two-column desktop work
+grid and the one-card phone layout on their own geometry; these tokens do not
+replace image aspect ratios or scene heights.
+
+Navigation and footer links retain the text-only treatment with larger hit
+areas. Navigation underlines animate transforms and also identify the current
+route and keyboard focus. The aesthetic selector uses labelled toggle buttons
+(not tabs without tab panels); its visible dots sit inside larger click targets.
+
 The homepage bento is defined in `components/home/home-image-bento.tsx`; each entry owns its brand link, crop and named grid area. Desktop and phone compositions live in `styles/home-flow.css`. Export additions with `node scripts/export-home-bento.mjs --image <source-file> <output-name> <width>` to create 640px and full-size WebPs without copying originals into production. Match the exported dimensions in the entry and keep both layouts' grid areas in sync.
 
 - `app/`: route composition, metadata and the private voice upload endpoint.
@@ -38,6 +51,14 @@ Do not shorten code by compressing shaders, merging unrelated effects or hiding 
 Keep responsive `srcSet` images, explicit image dimensions, lazy loading below the fold, and viewport/visibility gating for scenes. Do not move source originals into `public/`, eagerly import Three.js scenes at the layout, or re-enable text animation on phones.
 
 Phone layouts use the shared 900px/touch motion policy. Navigation switches earlier, at 1100px, to leave room for all desktop links. Below 601px the Work index uses normal flex flow and disconnects masonry observers. Test a menu open/resize cycle when changing either boundary; it must release the scroll lock and keyboard focus.
+
+`SmoothScroll` owns the only Lenis instance and uses GSAP's ticker (no second
+RAF loop). Desktop same-document anchors are intercepted before Next's link
+handler; other routes, query changes, modified clicks and locked menus retain
+their normal navigation. The URL hash is preserved and a completed glide moves
+focus without scrolling again. Existing scroll margins/padding are respected.
+`SlowMo` only updates visible media frames and removes its velocity ticker when
+motion settles. Both integrations clean up on breakpoint/route changes.
 
 The root `.gitignore` preserves local uploads outside version control; `.vercelignore` also excludes originals from direct CLI uploads. Git-based deployments already omit ignored local archives. The site still deliberately ships its optimized photos, fonts, models and videos.
 

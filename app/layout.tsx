@@ -16,6 +16,7 @@ import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";
 import { TransitionProvider } from "@/components/layout/transition-provider";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { DesktopSlowMo } from "@/components/motion/desktop-slow-mo";
 import { PixelTrail } from "@/components/motion/pixel-trail";
 import { TalkToUs } from "@/components/voice/talk-to-us";
@@ -55,19 +56,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ) : null}
       </head>
       <body id="top" data-page="index">
-        <SmoothScroll />
-        {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
-            skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
-        <DesktopSlowMo />
-        {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere). */}
-        <PixelTrail />
-        <ScrollProgressBar />
-        <Nav />
-        <TalkToUs />
-        <TransitionProvider>
-          {children}
-          <ConditionalFooter />
-        </TransitionProvider>
+        <MotionProvider>
+          <SmoothScroll />
+          {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
+              skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
+          <DesktopSlowMo />
+          {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere). */}
+          <PixelTrail />
+          <ScrollProgressBar />
+          <Nav />
+          <TalkToUs />
+          <TransitionProvider>
+            {children}
+            <ConditionalFooter />
+          </TransitionProvider>
+        </MotionProvider>
       </body>
     </html>
   );

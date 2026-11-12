@@ -3,7 +3,7 @@
 import { useMobileLayout } from "@/lib/motion-policy";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { CASE_PAGE_THEME } from "@/lib/cases/presentation";
 
 export interface TransitionTarget {
@@ -91,10 +91,11 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       {phase !== "idle" && target && (
         <motion.div
           className="page-wipe"
+          aria-hidden="true"
           style={{ background: target.color, color: target.ink }}
           initial={{ y: "100%" }}
           animate={{ y: phase === "cover" ? "0%" : "-100%" }}
-          transition={{ duration: 0.62, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: phase === "cover" ? 0.42 : 0.48, ease: [0.65, 0, 0.25, 1] }}
           onAnimationComplete={onComplete}
         >
           <span className="page-wipe-label">

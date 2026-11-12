@@ -2,7 +2,7 @@
 
 import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 // Typings for Particle sparks
 interface Spark {

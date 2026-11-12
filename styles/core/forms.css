@@ -69,7 +69,7 @@
 
 /* ---- the rotary "tyre" dial ---- */
 .dial{--dial-size:clamp(258px,29vw,372px);--dr:calc(var(--dial-size)/2 - 25px);
-  display:flex;flex-direction:column;align-items:center;gap:24px;user-select:none;}
+  display:flex;flex-direction:column;align-items:center;gap:24px;user-select:none;width:100%;}
 .dial-face{position:relative;width:var(--dial-size);height:var(--dial-size);border-radius:50%;
   display:grid;place-items:center;cursor:grab;touch-action:none;}
 .dial-face.dragging{cursor:grabbing;}
@@ -98,15 +98,15 @@
 .dial-count i{font-style:normal;opacity:.5;margin:0 3px;}
 .dial-name{font-size:clamp(21px,2.5vw,31px);line-height:1;color:var(--cream);}
 .dial-desc{font-size:17px;line-height:1.4;color:rgba(244,237,226,.6);max-width:15ch;}
-.dial-controls{display:flex;align-items:center;gap:16px;}
-.dial-arrow{width:40px;height:40px;border-radius:50%;border:1px solid rgba(244,237,226,.2);
+.dial-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;width:min(100%,360px);}
+.dial-arrow{width:44px;height:44px;border-radius:50%;border:1px solid rgba(244,237,226,.2);
   background:rgba(244,237,226,.05);color:var(--cream);font-size:20px;line-height:1;cursor:pointer;
-  display:grid;place-items:center;transition:.25s var(--ease);}
+  display:grid;place-items:center;transition:background .25s var(--ease),transform .25s var(--ease);}
 .dial-arrow:hover{background:var(--red);border-color:transparent;transform:translateY(-1px);}
-.dial-dots{display:flex;gap:9px;align-items:center;}
-.dial-dot{width:8px;height:8px;border-radius:50%;border:none;padding:0;cursor:pointer;
-  background:rgba(244,237,226,.28);transition:.25s var(--ease);}
-.dial-dot.on{background:linear-gradient(120deg,#EB3B25,#FF7A45);width:22px;border-radius:100px;}
+.dial-dots{display:flex;align-items:center;min-width:0;}
+.dial-dot{display:grid;place-items:center;flex:1;min-width:24px;height:44px;border:0;padding:0;cursor:pointer;background:none;}
+.dial-dot::after{content:"";width:8px;height:8px;border-radius:100px;background:rgba(244,237,226,.28);transition:transform .25s var(--ease);}
+.dial-dot.on::after{background:var(--grad);transform:scaleX(2.5);}
 /* Decision-aid panel under the dial: "Best for" + signal chips update per spin so
    the client can weigh whether a direction fits their brand. Fades in on change. */
 .aesthetic-guide{width:100%;max-width:340px;margin-top:6px;display:flex;flex-direction:column;
