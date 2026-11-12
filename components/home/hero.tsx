@@ -9,9 +9,6 @@ import { AparLogo } from "@/components/layout/apar-logo";
 import { Magnetic } from "@/components/motion/magnetic";
 import { HoverText } from "@/components/motion/hover-text";
 
-const LINE_1 = "Brands worth".split(" ");
-const LINE_2 = "remembering.".split(" ");
-
 /**
  * Home hero - the brand's Algolia-style beam promoted to the landing screen:
  * the red pixel-dome arc sweeps behind the giant APAR wordmark (tinted to the
@@ -74,22 +71,6 @@ export function Hero({ start }: { start: boolean }) {
     };
   }, [isSettled]);
 
-  // word index across both lines for a continuous stagger
-  let wi = -1;
-  const word = (txt: string) => {
-    wi += 1;
-    const idx = wi;
-    return (
-      <span key={`${txt}-${idx}`}>
-        <span className="gw">
-          <span className="gwi">
-            {txt}
-          </span>
-        </span>{" "}
-      </span>
-    );
-  };
-
   return (
     <section ref={ref} className="hero-beam" data-screen-label="Home - Hero" data-enter={start ? "1" : undefined} data-settled={isSettled ? "1" : undefined}>
       {/* domeY is scaled by 0.2 in the shader: -0.5 moves the beam down 10% of the hero. */}
@@ -101,9 +82,9 @@ export function Hero({ start }: { start: boolean }) {
           </div>
 
           <h1 className="display hero-h1">
-            {LINE_1.map(word)}
-            <br />
-            <span className="hl">{LINE_2.map(word)}</span>
+            <span className="gw"><span className="gwi">Brands</span></span>{" "}
+            <span className="gw"><span className="gwi">worth</span></span>{" "}
+            <span className="gw hl"><span className="gwi">remembering.</span></span>
           </h1>
 
           <div className="hero-actions">

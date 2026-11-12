@@ -18,7 +18,7 @@ export function VoiceFeedback() {
   const [consent, setConsent] = useState(false);
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
-  const pieces = useRef<Blob[]>([]);
+  const upload = useRef<AbortController | null>(null);
   const blob = useRef<Blob | null>(null);
   const started = useRef(0);
   const timer = useRef<number>(0);
@@ -41,6 +41,7 @@ export function VoiceFeedback() {
   useEffect(() => () => {
     requestId.current += 1;
     discardOnStop.current = true;
+    upload.current?.abort(); upload.current = null;
     window.clearInterval(timer.current);
     if (recorder.current?.state === "recording") recorder.current.stop();
     stream.current?.getTracks().forEach(track => track.stop());
@@ -61,12 +62,17 @@ export function VoiceFeedback() {
       const mimeType = TYPES.find(type => MediaRecorder.isTypeSupported(type));
       if (!mimeType) { releaseMic(); setError("This browser does not support a compatible audio format."); return; }
       const current = new MediaRecorder(media, { mimeType, audioBitsPerSecond: 64_000 });
-      recorder.current = current; pieces.current = [];
-      current.ondataavailable = event => { if (event.data.size) pieces.current.push(event.data); };
-      current.onerror = () => { stop(); setError("Recording failed. Please try again."); setPhase("ready"); };
+      const pieces: Blob[] = [];
+      recorder.current = current;
+      current.ondataavailable = event => { if (event.data.size) pieces.push(event.data); };
+      current.onerror = () => {
+        if (currentRequest !== requestId.current) return;
+        discardOnStop.current = true;
+        stop(); setError("Recording failed. Please try again."); setPhase("ready");
+      };
       current.onstop = () => {
-        if (discardOnStop.current) { pieces.current = []; releaseMic(); return; }
-        const recording = new Blob(pieces.current, { type: mimeType });
+        if (currentRequest !== requestId.current || discardOnStop.current) return;
+        const recording = new Blob(pieces, { type: mimeType });
         releaseMic();
         if (recording.size < 200) { setError("The recording was too short. Please try again."); setPhase("ready"); return; }
         if (recording.size > MAX_BYTES) { setError("The recording exceeded 4 MB. Please try a shorter note."); setPhase("ready"); return; }
@@ -81,10 +87,14 @@ export function VoiceFeedback() {
         setSeconds(elapsed);
         if (elapsed >= LIMIT_SECONDS) stop();
       }, 250);
-    } catch { releaseMic(); if (currentRequest === requestId.current) setError("Microphone access is unavailable. Check your browser permission and try again."); }
+    } catch {
+      if (currentRequest !== requestId.current) return;
+      releaseMic(); setError("Microphone access is unavailable. Check your browser permission and try again.");
+    }
   };
 
   const submit = async () => {
+    if (upload.current) return;
     if (!blob.current) { setError("Record a voice note before sending it."); return; }
     if (name.trim().length < 2) { setError("Enter your name (at least two characters) to send your note."); nameInput.current?.focus(); return; }
     if (!consent) { setError("Tick the privacy box to send your note to APĀR."); consentInput.current?.focus(); return; }
@@ -95,17 +105,34 @@ export function VoiceFeedback() {
     form.append("name", name.trim()); form.append("brand", brand.trim());
     form.append("duration", String(Math.max(1, Math.min(LIMIT_SECONDS, seconds))));
     form.append("consent", "yes"); form.append("website", "");
+    const controller = new AbortController();
+    upload.current = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 30_000);
     try {
-      const result = await fetch("/api/voice-feedback", { method: "POST", body: form });
+      const result = await fetch("/api/voice-feedback", { method: "POST", body: form, signal: controller.signal });
       if (!result.ok) {
         const payload = await result.json().catch(() => ({}));
         throw new Error(payload.error || "Could not send the recording. Please try again.");
       }
+      if (upload.current !== controller) return;
       clearPreview(); setName(""); setBrand(""); setConsent(false); setPhase("sent");
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not send the recording."); setPhase("review"); }
+    } catch (cause) {
+      if (upload.current !== controller) return;
+      setError(controller.signal.aborted
+        ? "Delivery is taking too long to confirm. Your note may have reached us; please check with our team before resending."
+        : cause instanceof Error ? cause.message : "Could not send the recording.");
+      setPhase("review");
+    } finally {
+      window.clearTimeout(timeout);
+      if (upload.current === controller) upload.current = null;
+    }
   };
 
-  const close = () => { requestId.current += 1; discardOnStop.current = true; stop(); clearPreview(); setError(""); setConsent(false); setPhase("closed"); };
+  const close = () => {
+    requestId.current += 1; discardOnStop.current = true;
+    upload.current?.abort(); upload.current = null;
+    stop(); clearPreview(); setError(""); setConsent(false); setPhase("closed");
+  };
   return <div className="vf-wrap">
     {phase !== "closed" && <div className="vf-panel" role="group" aria-label="Private voice feedback">
       <div className="vf-panel-head"><div><span className="vf-eyebrow">A NOTE FOR APĀR</span><h3>Tell us in your own voice.</h3></div><button type="button" className="vf-close" onClick={close} aria-label="Close voice feedback">×</button></div>

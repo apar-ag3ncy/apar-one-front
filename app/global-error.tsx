@@ -9,7 +9,7 @@
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="en">
-      <head><style>{`@font-face{font-family:'Archivo';src:url('/fonts/editorial/Archivo-normal-latin.woff2') format('woff2');font-style:normal;font-weight:300 900;font-display:swap}@font-face{font-family:'Newsreader';src:url('/fonts/editorial/Newsreader-normal-latin.woff2') format('woff2');font-style:normal;font-weight:400 500;font-display:swap}`}</style></head>
+      <head><style>{`@font-face{font-family:'General Sans';src:url('/fonts/fontshare/GeneralSans-Variable.woff2') format('woff2');font-style:normal;font-weight:200 700;font-display:swap}@font-face{font-family:'New Title';src:url('/fonts/fontshare/NewTitle-Variable.woff2') format('woff2');font-style:normal;font-weight:200 700;font-display:swap}`}</style></head>
       <body
         style={{
           margin: 0,
@@ -18,7 +18,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           placeItems: "center",
           background: "#F4EDE2",
           color: "#1A1714",
-          fontFamily: "'Archivo', system-ui, sans-serif",
+          fontFamily: "'General Sans', system-ui, sans-serif",
           fontSynthesis: "none",
           padding: "40px 24px",
         }}
@@ -27,7 +27,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
           <p style={{ fontSize: 12, letterSpacing: ".2em", textTransform: "uppercase", fontWeight: 700, color: "#EB3B25", margin: 0 }}>
             Something went wrong
           </p>
-          <h1 style={{ fontFamily: "'Newsreader', Georgia, serif", fontWeight: 500, fontSize: "clamp(36px, 6vw, 64px)", lineHeight: 1.05, margin: "14px 0 18px" }}>
+          <h1 style={{ fontFamily: "'New Title', Georgia, serif", fontWeight: 700, textTransform: "uppercase", fontSize: "clamp(36px, 6vw, 64px)", lineHeight: 1.12, letterSpacing: ".04em", wordSpacing: ".10em", margin: "14px 0 18px" }}>
             APAR couldn&apos;t load this page.
           </h1>
           <p style={{ fontSize: 17, lineHeight: 1.6, color: "#6A6056", margin: "0 0 28px" }}>

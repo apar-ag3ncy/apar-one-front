@@ -1,54 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Restore the original editorial pairing, served locally for reliable loading. */
+/* Local variable UI faces; brand wordmark fonts below are independent. */
 @font-face {
-  font-family: 'Archivo';
-  src: url('/fonts/editorial/Archivo-normal-latin-ext.woff2') format('woff2');
+  font-family: 'General Sans';
+  src: url('/fonts/fontshare/GeneralSans-Variable.woff2') format('woff2');
   font-style: normal;
-  font-weight: 300 900;
+  font-weight: 200 700;
   font-display: swap;
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
-  font-family: 'Archivo';
-  src: url('/fonts/editorial/Archivo-normal-latin.woff2') format('woff2');
+  font-family: 'New Title';
+  src: url('/fonts/fontshare/NewTitle-Variable.woff2') format('woff2');
   font-style: normal;
-  font-weight: 300 900;
+  font-weight: 200 700;
   font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Newsreader';
-  src: url('/fonts/editorial/Newsreader-normal-latin-ext.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Newsreader';
-  src: url('/fonts/editorial/Newsreader-normal-latin.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: 'Newsreader';
-  src: url('/fonts/editorial/Newsreader-italic-latin-ext.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 400 500;
-  font-display: swap;
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Newsreader';
-  src: url('/fonts/editorial/Newsreader-italic-latin.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 400 500;
-  font-display: swap;
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* APAR logo Latin/Cyrillic/Greek/Armenian = "Fit Variable" - the Latin half of
@@ -131,8 +97,13 @@
   --line-strong:rgba(26,23,20,.28);
   --gut:56px;
   --maxw:1320px;
-  --serif:'Newsreader',Georgia,serif;
-  --sans:'Archivo',system-ui,sans-serif;
+  --heading:'New Title',Georgia,serif;
+  --heading-weight:700;
+  /* Condensed capitals need proportionally more space at caption sizes. */
+  --heading-tracking:clamp(.04em, calc(.025em + .75px), .08em);
+  --heading-word-gap:.10em;
+  --serif:var(--heading);
+  --sans:'General Sans',system-ui,sans-serif;
   /* APAR wordmark = Fit (DJR), variable-width, across the 9 scripts it ships in.
      Real Fit (Adobe Fonts kit) wins; the logo's leading-"A" transition only
      renders a script live once its real Fit family is confirmed loaded - see

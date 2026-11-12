@@ -21,7 +21,6 @@
 .meeting-home .faq-q{line-height:1.4;padding-block:27px;}
 .meeting-home .faq-item[data-state="open"] .faq-q{color:var(--red);}
 .meeting-home .faq-a p{max-width:57ch;text-wrap:pretty;}
-.meeting-home .testi-grid blockquote{line-height:1.5;text-wrap:pretty;}
 .team-page .people-next{background:var(--red);}
 .team-page .people-next:hover{background:#d72d1c;}
 .team-page .people-top p,.team-page .people-index{color:#adbfc8;}

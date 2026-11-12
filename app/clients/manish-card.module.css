@@ -9,6 +9,6 @@
 .card:hover .explore,.card:focus-visible .explore{opacity:1;transform:none;}
 .caption{display:flex;flex-direction:column;gap:8px;padding-top:20px;}
 .caption>span{font:500 11px/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);}
-.caption strong{font:400 clamp(28px,3vw,42px)/1.1 var(--sans);letter-spacing:-.035em;}
+.caption strong{font:var(--heading-weight) clamp(28px,3vw,42px)/1.2 var(--heading);letter-spacing:var(--heading-tracking);word-spacing:var(--heading-word-gap);text-transform:uppercase;}
 @media(hover:none){.explore{opacity:1;transform:none;}}
 @media(prefers-reduced-motion:reduce){.media img,.explore{transition:none;}}

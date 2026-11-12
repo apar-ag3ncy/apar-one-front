@@ -1,20 +1,22 @@
 import * as THREE from "three";
-import { GalaxyBrush, RETURN_SECONDS, STROKES, BRUSH_RADIUS, PUSH_STRENGTH, MAX_PUSH, RETURN_DAMPING } from "@/components/layout/cosmic-footer/galaxy-motion";
+import { GalaxyBrush, PULSE_COUNT, BRUSH_RADIUS, MAX_PUSH } from "@/components/layout/cosmic-footer/galaxy-motion";
 
 /** Fine stellar cores, restrained halos and an analytic damped return to each orbit. */
 export function particleMaterial(brush: GalaxyBrush, orbit = 0, scatter = 1, interactive = true) {
   return new THREE.ShaderMaterial({
-    // Touch devices do not need the desktop cursor's per-star stroke calculations.
+    // Touch devices do not need the desktop cursor's per-star hover calculations.
     defines: interactive ? { GALAXY_INTERACTIVE: 1 } : {},
     uniforms: {
       uTime: { value: 0 }, uDpr: { value: 1 }, uAspect: { value: 1 }, uOpacity: { value: 1 },
       uOrbit: { value: orbit }, uScatter: { value: scatter },
-      uStrokes: { value: brush.segments }, uEvents: { value: brush.events },
+      uPulses: { value: brush.pulses },
     },
     vertexShader: `
       attribute float aSize,aLight,aTint,aSeed;
       uniform float uTime,uDpr,uAspect,uOpacity,uOrbit,uScatter;
-      uniform vec4 uStrokes[${STROKES}];uniform vec2 uEvents[${STROKES}];
+      #ifdef GALAXY_INTERACTIVE
+      uniform vec3 uPulses[${PULSE_COUNT}];
+      #endif
       varying float vLight,vTint,vSpark;
       void main(){
         vec3 p=position;float radius=length(p.xy);
@@ -24,31 +26,30 @@ export function particleMaterial(brush: GalaxyBrush, orbit = 0, scatter = 1, int
         p.z+=sin(uTime*.38+aSeed*30.)*.022;
         #endif
         vec4 mv=modelViewMatrix*vec4(p,1.);
-        vec4 clip=projectionMatrix*mv;vec2 screen=clip.xy/clip.w;
-        vec2 metric=vec2(uAspect,1.);vec2 push=vec2(0.);
         #ifdef GALAXY_INTERACTIVE
-        for(int i=0;i<${STROKES};i++){
-          float age=uTime-uEvents[i].x;
-          if(age<0.||age>${RETURN_SECONDS.toFixed(1)})continue;
-          vec2 start=uStrokes[i].xy*metric,end=uStrokes[i].zw*metric;
-          vec2 line=end-start;
-          float along=clamp(dot(screen*metric-start,line)/max(dot(line,line),.00001),0.,1.);
-          vec2 delta=screen*metric-mix(start,end,along);
-          float distance=length(delta);
-          if(distance>${BRUSH_RADIUS.toFixed(3)})continue;
-          vec2 direction=delta/max(distance,.006);
-          if(distance<.006)direction=vec2(cos(aSeed*63.),sin(aSeed*63.));
-          float influence=exp(-distance*distance/.011);
-          // A gentle lift and a longer, uninterrupted settling tail.
-          float spring=age*4.4*exp(-age*${RETURN_DAMPING.toFixed(1)})*(1.-smoothstep(2.7,${RETURN_SECONDS.toFixed(1)},age));
-          vec2 swirl=vec2(-direction.y,direction.x)*(.12+.1*aSeed);
-          push+=(direction+swirl)*influence*spring*uEvents[i].y*(.42+aSeed*1.1)*${PUSH_STRENGTH.toFixed(3)};
+        vec4 clip = projectionMatrix * mv;
+        vec2 screen = clip.xy / clip.w;
+        float energy = 0.;
+        vec2 outward = vec2(0.);
+        for (int i = 0; i < ${PULSE_COUNT}; i++) {
+          vec3 pulse = uPulses[i];
+          if (pulse.z <= 0.) continue;
+          vec2 offset = (screen - pulse.xy) * vec2(uAspect, 1.) / ${BRUSH_RADIUS.toFixed(3)};
+          float weight = (1. - smoothstep(0., 1., dot(offset, offset))) * pulse.z;
+          energy += weight;
+          outward += weight * offset;
+        }
+        if (energy > 0.) {
+          // A fixed direction per star lets neighbours separate in all three
+          // dimensions without flicker or a ridge along the cursor's path.
+          float angle = aSeed * 6.2831853;
+          float z = fract(aSeed * 251.) * 2. - 1.;
+          vec2 drift = vec2(cos(angle), sin(angle)) * sqrt(max(0., 1. - z*z));
+          vec3 displacement = vec3(drift + .38 * outward / energy, .7 * z);
+          float amount = ${MAX_PUSH.toFixed(3)} * (1. - exp(-1.6 * energy)) * uScatter;
+          mv.xyz += displacement * amount * (-mv.z / projectionMatrix[1][1]);
         }
         #endif
-        // Repeated passes remain a small local disturbance, even at high speed.
-        push=push/(1.+length(push)/${MAX_PUSH.toFixed(3)})*uScatter;
-        mv.xy+=push*(-mv.z/projectionMatrix[1][1]);
-        mv.z+=length(push)*(.4+aSeed)*.65;
         gl_Position=projectionMatrix*mv;
         float depth=clamp(9./max(2.,-mv.z),.5,2.4);
         gl_PointSize=clamp(aSize*uDpr*depth,.65,22.*uDpr);

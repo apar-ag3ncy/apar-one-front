@@ -272,7 +272,6 @@
    existing 760 and 1024 breakpoints. */
 @media (max-width:900px){
   .cols-2{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;gap:36px;}
 }
 
 /* Touch devices: comfortable ≥44px tap targets everywhere. */

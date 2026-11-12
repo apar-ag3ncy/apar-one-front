@@ -1,40 +1,44 @@
-// Strokes outlive the spring response, so slot reuse never snaps stars home.
-export const STROKES = 14;
-export const STROKE_INTERVAL = .32;
+// Each hover sample stays at the place it was emitted until its stars settle.
+export const PULSE_INTERVAL = .32;
 export const RETURN_SECONDS = 4.2;
-export const BRUSH_RADIUS = .24;
-export const PUSH_STRENGTH = .075;
+export const PULSE_COUNT = Math.ceil(RETURN_SECONDS / PULSE_INTERVAL);
+export const BRUSH_RADIUS = .26;
 export const MAX_PUSH = .075;
-export const RETURN_DAMPING = 2.2;
 
 export class GalaxyBrush {
-  readonly segments = new Float32Array(STROKES * 4);
-  readonly events = new Float32Array(STROKES * 2);
+  // Packed GPU uniform: pointer x/y in clip space and current pulse strength.
+  readonly pulses = new Float32Array(PULSE_COUNT * 3);
+  private readonly started = new Float64Array(PULSE_COUNT).fill(-Infinity);
+  private readonly strength = new Float32Array(PULSE_COUNT);
   private slot = -1;
   private connected = false;
-  private x = 0;
-  private y = 0;
-  private started = -100;
 
-  constructor() { for (let i = 0; i < STROKES; i++) this.events[i * 2] = -100; }
   leave() { this.connected = false; }
+
   move(x: number, y: number, time: number, aspect: number) {
-    const distance = Math.hypot((x - this.x) * aspect, y - this.y);
-    if (this.connected && distance < .002) return;
-    const isEntry = !this.connected;
-    if (isEntry && this.slot >= 0 && time - this.started < STROKE_INTERVAL) return;
-    if (isEntry || time - this.started >= STROKE_INTERVAL) {
-      this.slot = (this.slot + 1) % STROKES;
-      const index = this.slot * 4;
-      this.segments[index] = isEntry ? x : this.x;
-      this.segments[index + 1] = isEntry ? y : this.y;
-      this.started = time;
+    const previous = this.slot * 3;
+    const distance = this.connected
+      ? Math.hypot((x - this.pulses[previous]) * aspect, y - this.pulses[previous + 1])
+      : 0;
+    if (this.slot >= 0 && time - this.started[this.slot] < PULSE_INTERVAL) return;
+    if (this.connected && distance < .012) return;
+
+    this.slot = (this.slot + 1) % PULSE_COUNT;
+    const index = this.slot * 3;
+    this.pulses[index] = x;
+    this.pulses[index + 1] = y;
+    this.started[this.slot] = time;
+    this.strength[this.slot] = Math.min(1.15, .8 + distance * 2);
+    this.connected = true;
+  }
+
+  update(time: number) {
+    for (let i = 0; i < PULSE_COUNT; i++) {
+      const age = time - this.started[i];
+      // A gentle lift, then a long tail that reaches zero before slot reuse.
+      this.pulses[i * 3 + 2] = age >= 0 && age < RETURN_SECONDS
+        ? this.strength[i] * age * 4.4 * Math.exp(-2.2 * age) * (1 - age / RETURN_SECONDS)
+        : 0;
     }
-    const index = this.slot * 4;
-    this.segments[index + 2] = x;
-    this.segments[index + 3] = y;
-    this.events[this.slot * 2] = this.started;
-    this.events[this.slot * 2 + 1] = Math.min(1.3, .65 + distance * 8);
-    this.x = x; this.y = y; this.connected = true;
   }
 }

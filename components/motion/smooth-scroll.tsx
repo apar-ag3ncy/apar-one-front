@@ -83,7 +83,7 @@ export function SmoothScroll() {
       const a = (ev.target as HTMLElement).closest?.("a[href*='#']") as HTMLAnchorElement | null;
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       const url = new URL(a.href, location.href);
-      if (url.pathname !== location.pathname || !url.hash) return;
+      if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !url.hash) return;
       let target: HTMLElement | null = null;
       try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
       if (!target) return;

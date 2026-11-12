@@ -52,7 +52,7 @@
 .case-cinematic .case-hero{min-height:100svh;padding:140px 0 70px;}
 .case-cinematic .case-hero-in{display:grid;grid-template-columns:minmax(0,.45fr) minmax(0,.55fr);gap:5vw;align-items:center;}
 .case-cinematic .case-hero-copy{container-type:normal;}
-.case-cinematic .case-title{font-size:clamp(52px,6.3vw,100px);line-height:1.04;letter-spacing:-.045em;margin-top:26px;overflow-wrap:normal;}
+.case-cinematic .case-title{font-size:clamp(52px,6.3vw,100px);line-height:1.12;margin-top:26px;overflow-wrap:break-word;}
 .case-cinematic .case-title>div{padding-inline:3px;margin-inline:-3px;}
 .case-cinematic .case-eyebrow{font-size:10px;letter-spacing:.16em;}
 .case-cinematic .case-sub{font-size:clamp(15px,1.2vw,18px);max-width:44ch;margin-top:26px;line-height:1.65;}

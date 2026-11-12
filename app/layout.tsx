@@ -10,6 +10,7 @@ import "@/styles/client-voices.css";
 import "@/styles/faq-motion.css";
 import "@/styles/surfaces.css";
 import "@/styles/mobile.css";
+import "@/styles/typography.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";
@@ -43,9 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Devanagari अ - renders in real Fit on first paint, no fallback flash. */}
         <link rel="preload" href="/fit-devnagari/Fit_Latin_Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fit-devnagari/Fit_Devanagari_Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/editorial/Archivo-normal-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/editorial/Newsreader-normal-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        {/* UI uses the original Newsreader / Archivo pair, hosted locally;
+        <link rel="preload" href="/fonts/fontshare/GeneralSans-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/fontshare/NewTitle-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* UI uses New Title / General Sans, hosted locally;
             the wordmark uses its existing local Fit faces.
             Do not block every page on unused external fallback fonts. An agency
             Adobe kit may still add genuine Fit scripts when configured. */}

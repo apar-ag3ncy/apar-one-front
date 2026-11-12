@@ -1,0 +1,36 @@
+/* UI roles are independent of Fit wordmark spans and client logo artwork.
+   Important family/style rules beat route-level font shorthands, including
+   styles loaded after this file during client navigation. Sizes stay local. */
+body :is(p,blockquote),body .vc-caption,body .empty-note{
+  font-family:var(--sans)!important;
+  font-style:normal;
+}
+body :is(
+  h1, h2, h3, h4, h5, h6, [role="heading"], .display,
+  .s-name, .rr-name, .nx-name, .dial-name, .faq-q, .page-wipe-label,
+  .mobile-menu a, .rc-headline, .rc-subheadline, .rc-controls-title, .rc-prompt-header,
+  .vmarquee span, .fcol-h, .footer-talk, .tc-image-caption, .home-bento-name,
+  .case-reel-heading, .vc-name
+) {
+  font-family: var(--heading) !important;
+  font-weight: var(--heading-weight) !important;
+  letter-spacing: var(--heading-tracking) !important;
+  word-spacing: var(--heading-word-gap);
+  font-kerning: normal;
+  text-transform: uppercase;
+  font-style: normal;
+  font-synthesis: none;
+}
+/* Keep stacked display lines together, with extra leading on smaller cards. */
+body :is(h1, h2, .display, .nx-name) {
+  line-height: 1.12;
+  text-wrap: balance;
+}
+body :is(h3, .rr-name, .dial-name, .s-name) {
+  line-height: 1.2;
+}
+body :is(em,i,.hl,.pq-beyond){font-style:normal!important;}
+body blockquote{text-transform:none;}
+/* General Sans is wider than the former serif: fit quotes inside drum cards. */
+.tc-copy blockquote{font-size:clamp(20px,1.7vw,25px);line-height:1.3;}
+@media(max-width:600px){.tc-copy blockquote{font-size:clamp(18px,5vw,22px);}}

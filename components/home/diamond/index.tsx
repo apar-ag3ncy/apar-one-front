@@ -144,13 +144,6 @@ export function MJShowcase() {
             <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
         </div>
         <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={!mobile && status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={!mobile && status === "ready"}>
-          <div className="mj-showcase-label">
-            <span className="mj-brand-lockup">
-              {/* Preserve the supplied wordmark artwork, including its original type. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brands/manish-jewellers/wordmark.png" alt="Manish Jewellers" width="961" height="503" loading="lazy" decoding="async" />
-            </span>
-          </div>
           <DiamondFallback loadTexture={requested && !mobile} />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">

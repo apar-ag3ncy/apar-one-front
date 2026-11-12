@@ -16,7 +16,9 @@ const DARK_ORIGINAL_LOGOS = new Set(["achal", "girvaan", "silver-emporium", "sig
 export function MovingClients() {
   const rows = [FEATURED_CLIENTS.slice(0, 4), FEATURED_CLIENTS.slice(4, 8), FEATURED_CLIENTS.slice(8, 12)];
   return <section id="clients" className="flow-clients flow-section" aria-labelledby="flow-clients-title">
-    <div className="wrap flow-client-heading"><div><h2 id="flow-clients-title">Recommended<br /> by the best.</h2></div></div>
+    <div className="wrap flow-client-heading">
+      <h2 id="flow-clients-title">Recommended by the best.</h2>
+    </div>
     <div className="flow-logo-rows">{rows.map((row, i) => <div className="flow-logo-window" key={i}><div className={`flow-logo-track row-${i}`}>
       {[0, 1, 2].map(copy => <div className="flow-logo-group" key={copy} aria-hidden={copy ? true : undefined}>{row.map(client => <Link href={client.href} tabIndex={copy ? -1 : undefined} aria-label={client.name} data-light-backdrop={DARK_ORIGINAL_LOGOS.has(client.slug) || undefined} data-colorized={Boolean(MONOCHROME_LOGO_COLORS[client.slug]) || undefined} key={client.slug}>
         {/* Client-owned logo assets; duplicate groups are decorative. */}

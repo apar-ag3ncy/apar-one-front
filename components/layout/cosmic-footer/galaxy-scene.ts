@@ -121,7 +121,10 @@ export function createGalaxy(host: HTMLElement, ready: () => void, failed: () =>
     const now = performance.now();
     if (now - last < frameInterval) { frame = requestAnimationFrame(render); return; }
     const dt = Math.min((now - last) / 1000, .05); last = now; time += dt;
-    if (pointerActive) brush.move(pointerX, pointerY, time, camera.aspect);
+    if (!mobile) {
+      if (pointerActive) brush.move(pointerX, pointerY, time, camera.aspect);
+      brush.update(time);
+    }
     const smooth = 1 - Math.exp(-dt * 2.5);
     galaxy.rotation.y += ((pointerActive ? pointerX * .08 : 0) - .08 - galaxy.rotation.y) * smooth;
     galaxy.rotation.x = .93 + Math.sin(time * .13) * .035;

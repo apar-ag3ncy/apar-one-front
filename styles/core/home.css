@@ -23,7 +23,7 @@
      whole pixel at any viewport height - no 50%-blended button edges */
   padding-bottom:calc(var(--hero-cue) + var(--hero-lift) * 2 + mod(100svh,2px));}
 /* symmetric inside the centred block - the nav/cue bands above own the offsets */
-.hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0;}
+.hero-beam-in{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0;container-type:inline-size;}
 .hero-beam .meta-row{color:rgba(244,237,226,.6);justify-content:center;}
 .hb-wordmark{display:flex;justify-content:center;pointer-events:none;
   will-change:transform,opacity;}
@@ -66,8 +66,10 @@
 }
 /* The wordmark is lifted onto the beam crest; open a bigger gap under it so the
    tagline + CTAs drop back into the dark BELOW the beam and never overlap it. */
-.hero-beam .hero-h1{font-size:clamp(32px,4.4vw,64px);font-size:round(clamp(32px,4.4vw,64px),2px);
-  line-height:round(.96em,1px); /* two whole-pixel lines -> even box */
+.hero-beam .hero-h1{
+  --tagline-size:clamp(32px,4.4vw,64px);
+  font-size:min(var(--tagline-size),10.5cqi);
+  white-space:nowrap;
   margin:clamp(44px,7.5vh,104px) 0 0;margin:round(clamp(44px,7.5vh,104px),2px) 0 0;}
 .hero-beam .hero-actions{margin-top:clamp(28px,4.2vh,38px);margin-top:round(clamp(28px,4.2vh,38px),2px);
   align-items:baseline;} /* the ghost link's label shares the pill label's baseline (it sat 3px high) */
@@ -79,7 +81,7 @@
 .hero-beam .scroll-cue{color:rgba(244,237,226,.5);}
 .hero-beam .cue-mouse{border-color:rgba(244,237,226,.4);}
 @media (max-width:740px){
-  .hero-beam .hero-h1{font-size:clamp(30px,8.6vw,44px);font-size:round(clamp(30px,8.6vw,44px),2px);}
+  .hero-beam .hero-h1{--tagline-size:clamp(30px,8.6vw,44px);}
 }
 /* The entrance starts from SSR/CSS on every screen, before hydration or WebGL.
    JS still owns scroll parallax, but never holds the hero invisible while fonts
@@ -173,17 +175,6 @@
 .proc-card .pn{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--red);}
 .proc-card h3{font-family:var(--serif);font-size:26px;margin:14px 0 10px;}
 .proc-card p{color:var(--ink-soft);font-size:15.5px;margin:0;}
-
-/* ---- testimonials ---- */
-.testi{background:var(--ink);color:var(--cream);}
-.testi .tag-line span{color:var(--ink-mid);}
-.testi .tag-line .ln{background:rgba(244,237,226,.2);}
-.testi .feat{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.4vw,60px);line-height:1.12;letter-spacing:-.01em;max-width:22ch;margin:30px 0 0;text-wrap:balance;}
-.testi .feat em{font-style:italic;color:var(--red);}
-.testi .by{margin-top:28px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mid);}
-.testi-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:72px;padding-top:48px;border-top:1px solid rgba(244,237,226,.16);}
-.testi-grid blockquote{margin:0;font-family:var(--serif);font-size:23px;line-height:1.36;color:var(--cream);}
-.testi-grid .by2{margin-top:18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mid);}
 
 /* ---- clients ---- */
 .featured-clients{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px;}
@@ -426,7 +417,6 @@
 }
 @media (max-width:760px){
   .proc-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;gap:36px;}
 }
 @media (max-width:900px){
   .hero-home-in{grid-template-columns:1fr;gap:40px;}

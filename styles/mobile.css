@@ -105,11 +105,10 @@
   .meeting-home .mj-showcase-controls { inset:auto 18px 18px; align-items:flex-start; gap:6px; }
   .mj-skip { min-height:44px; display:inline-flex; align-items:center; }
   .mj-showcase-heading h2,.tc-heading h2 { font-size:clamp(36px,8vw,56px); }
-  .mj-showcase-label { inset:20px 18px auto; }
   .mj-showcase-caption a { display:inline-flex; align-items:center; min-height:44px; }
 
   /* Twelve accessible brand links, no endlessly composited duplicate tracks. */
-  .flow-client-heading h2 { font-size:clamp(32px,8vw,52px); }
+  #flow-clients-title { font-size:min(clamp(32px,8vw,52px),11cqi); }
   .flow-logo-rows { gap:0; }
   .flow-logo-track { animation:none; width:100%; }
   .flow-logo-group { width:100%; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); padding-inline:var(--gut); }
@@ -198,7 +197,7 @@
   .work-card .cap .yr { flex:none; font-size:11px; }
   .flow-project-caption h3 { font-size:clamp(26px,6.7vw,38px); }
   .hero-beam .hb-wordmark .apar-logo { font-size:clamp(108px,31vw,178px); margin-left:-.062em; }
-  .hero-beam .hero-h1 { font-size:clamp(32px,8.6vw,46px); }
+  .hero-beam .hero-h1 { --tagline-size:clamp(32px,8.6vw,46px); }
   .is-cinematic h2 { font-size:clamp(37px,9.5vw,54px); }
   .tc-copy { padding:22px; }
   .tc-copy blockquote { font-size:24px; }
