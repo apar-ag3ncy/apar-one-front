@@ -18,7 +18,8 @@
     "test:galaxy": "node --test tests/galaxy-motion.test.mjs",
     "check": "npm run lint && npm run typecheck && npm test",
     "check:production": "npm run build && node scripts/check-build.mjs",
-    "docs:tree": "node scripts/project-tree.mjs"
+    "docs:tree": "node scripts/project-tree.mjs",
+    "test:motion": "node e2e/featured-motion-check.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.6.7",

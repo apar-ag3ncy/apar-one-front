@@ -13,7 +13,7 @@ export const CASE_PAGE_THEME = {
   line: "rgba(17,17,17,.18)",
 } as const;
 
-/** CSS custom properties that theme a `.fc-card` - colours + fonts from a case. */
+/** Client palettes and identity type; page controls inherit the shared UI font. */
 export function featuredCardVars(c: {
   theme: CaseData["theme"];
   fonts: CaseFonts;
@@ -23,7 +23,7 @@ export function featuredCardVars(c: {
     "--fc-bg2": c.theme.bg2,
     "--fc-ink": c.theme.ink,
     "--fc-accent": c.theme.accent,
-    "--serif": c.fonts.serif,
-    "--sans": c.fonts.sans,
+    "--brand-serif": c.fonts.serif,
+    "--brand-sans": c.fonts.sans,
   } as CSSProperties;
 }

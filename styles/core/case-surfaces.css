@@ -127,7 +127,7 @@
 .case-ph-logo--invert{filter:brightness(0) invert(1) drop-shadow(0 8px 24px rgba(0,0,0,.28));}
 .case-ph-mask{display:block;width:100%;height:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;opacity:.92;}
-.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:16px;letter-spacing:.2em;text-transform:uppercase;
   font-weight:700;color:var(--c-soft);opacity:.85;}
 /* the four fallback tiles are one logo four times: vary the glow corner and
    the logo scale down the grid so the row reads as a set, not a repeat */
@@ -137,7 +137,7 @@
   linear-gradient(200deg,var(--c-bg2),var(--c-bg));}
 .case-page .case-gallery .g:nth-child(3n) .case-ph{padding:26%;}
 .case-page .case-gallery .g:nth-child(4n) .case-ph{padding:14%;}
-@media (max-width:860px){ .case-ph-cap{left:16px;bottom:14px;font-size:10px;} }
+@media (max-width:860px){ .case-ph-cap{left:16px;bottom:14px;font-size:16px;} }
 /* hero without a creative: a wide branded panel across the wrap, not an empty phone */
 .case-page .case-hero-fig.is-fallback{width:100%;}
 .case-page .case-hero-fig.is-fallback .img-slot{width:100%;height:auto;aspect-ratio:21/9;}
@@ -216,7 +216,7 @@
   .case-page .case-gallery:has(.has-brand){grid-template-columns:1fr 1fr;gap:12px;}
   .case-page .case-gallery:has(.has-brand) .g.glass{padding:6px;grid-column:auto !important;}
   .case-page .case-gallery:has(.has-brand) .case-ph{padding:22%;}
-  .case-page .case-gallery:has(.has-brand) .case-ph-cap{left:12px;bottom:10px;font-size:9.5px;letter-spacing:.16em;}
+  .case-page .case-gallery:has(.has-brand) .case-ph-cap{left:12px;bottom:10px;font-size:15px;letter-spacing:.16em;}
 }
 @media (max-width:760px){
   .case-hero{padding:112px 0 40px;}
@@ -224,12 +224,12 @@
   .case-quote{padding:80px 0;}
   .case-meta,.case-page .case-meta.glass{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;width:100%;}
   .case-meta .m:first-child{grid-column:1/-1;}
-  .case-meta .m p{font-size:17px;}
+  .case-meta .m p{font-size:22px;}
 }
 @media (max-width:480px){
   .case-sec,.case-page[data-variant="b"] .case-sec,.case-page[data-variant="c"] .case-sec{padding:56px 0;}
   .case-quote{padding:64px 0;}
-  .case-eyebrow{font-size:11.5px;letter-spacing:.2em;align-items:flex-start;}
+  .case-eyebrow{font-size:16px;letter-spacing:.2em;align-items:flex-start;}
   .case-eyebrow i{margin-top:4px;flex:none;}
 }
 

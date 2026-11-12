@@ -2,6 +2,13 @@
 
 ## Add or update a brand
 
+UI typography uses the local New Title family via `--ui-font` in
+`styles/core/foundation.css`. `styles/typography.css` owns heading/action roles
+and brand exceptions. Keep client fonts in `--brand-serif` / `--brand-sans`,
+never in `--sans` / `--serif`, which would change controls and running copy.
+APAR's Fit wordmark, supplied logo artwork, and existing brand signatures remain
+independent. Small labels use at least 14px; form text uses at least 20px.
+
 1. Edit `lib/cases/brands/<slug>.tsx`; new modules export a `CaseData` value. Keep supplied copy, colours and font stacks intact.
 2. Register new modules in `lib/cases/index.ts` in the intended client order. That server-only index drives static routes, featured client cards and testimonial content. Update next links deliberately; the tests accept both case links and the `/clients` return route.
 3. Add optimized artwork under `public/work/<slug>/`. The default names are `hero.jpg`, `1.jpg`, `2.jpg` and so on. `CURATED_CASE_MEDIA` in `lib/cases/motion.ts` supports named WebP exports instead.

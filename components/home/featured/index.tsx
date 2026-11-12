@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { PhotoSlot } from "@/components/media/photo-slot";
 import { useFeaturedHover } from "@/components/home/featured/use-featured-hover";
+import { useFeaturedScroll } from "@/components/home/featured/use-featured-scroll";
 import { HoverText } from "@/components/motion/hover-text";
 
 export { ProgressiveQuote } from "./progressive-quote";
@@ -25,7 +26,7 @@ const SELECTED = [
     "src": "/work/featured/chheda-heritage.webp",
     "title": "Chheda Jewellers",
     "type": "Heritage collection",
-    "ratio": "2000/1334"
+    "ratio": "1600/1067"
   },
   {
     "slug": "achal",
@@ -46,14 +47,14 @@ const SELECTED = [
     "src": "/work/featured/paramount-ceiling.webp",
     "title": "A Paramount",
     "type": "Architectural craft",
-    "ratio": "1875/1400"
+    "ratio": "1600/1195"
   },
   {
     "slug": "maison-mireyaa",
     "src": "/work/featured/mireyaa-botanical.webp",
     "title": "Maison Mireyaa",
     "type": "Botanical identity",
-    "ratio": "1980/1400"
+    "ratio": "1600/1131"
   },
   {
     "slug": "kundan-jewellers",
@@ -67,31 +68,34 @@ const SELECTED = [
     "src": "/work/featured/girvaan-storefront.webp",
     "title": "Girvaan",
     "type": "Jewellery brand world",
-    "ratio": "20/13"
+    "ratio": "1600/1041"
   }
 ];
 export function FeaturedProjects() {
   const mobile = useMobileLayout();
   const grid = useRef<HTMLDivElement>(null);
   useFeaturedHover(grid);
+  useFeaturedScroll(grid);
   return <section id="featured-work" className="flow-featured flow-section"><div className="wrap">
     <div className="flow-heading"><Reveal as="h2">Featured Work</Reveal></div>
-    <div ref={grid} className="flow-project-grid">{SELECTED.map((project, i) => <Reveal as={Link} href={`/work/${project.slug}`} className="flow-project" key={project.src} i={i % 2}>
-      <div className="flow-project-image"><PhotoSlot src={project.src}
+    <div ref={grid} className="flow-project-grid">{SELECTED.map(project => <Link href={`/work/${project.slug}`} className="flow-project" key={project.src}>
+      <div className="flow-project-image" data-edge-trim={project.slug === "signi" ? .008 : undefined}>
+        <div className="flow-project-art">
+        <PhotoSlot src={project.src}
         srcSet={`${project.src.replace(/\.webp$/, "-480.webp")} 480w, ${project.src.replace(/\.webp$/, "-960.webp")} 960w, ${project.src} ${"width" in project ? project.width : 1600}w`}
         sizes="(max-width: 900px) 92vw, (hover: none) and (pointer: coarse) calc(100vw - 64px), 44vw"
-        placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={15} style={{ width: "100%" }} />
+        placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={0} style={{ width: "100%", height: "100%" }} />
         {project.slug === "girvaan" && <span className="girvaan-store-sign" aria-hidden="true">
           {/* The original client wordmark sits on the blank photographed fascia. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logos/girvaan.png" alt="" width="1600" height="1000" loading="lazy" decoding="async" />
-        </span>}</div>
+        </span>}</div></div>
       <div className="flow-project-caption"><span>{project.type}</span>
         <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true">→</i>
           <span aria-hidden="true">{mobile ? project.title : project.title.split(" ").map((word, wi) => <span key={wi} className="flow-title-word">{[...word].map((letter, li) => <span className="flow-letter-window" key={li}><span className="flow-letter-stack"><span>{letter}</span><span>{letter}</span></span></span>)}{wi < project.title.split(" ").length - 1 ? " " : ""}</span>)}</span>
         </h3>
       </div>
-    </Reveal>)}</div>
+    </Link>)}</div>
     <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText><span className="arr" aria-hidden="true">↗</span></Link></div>
   </div></section>;
 }

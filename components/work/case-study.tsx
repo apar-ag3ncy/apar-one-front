@@ -45,9 +45,9 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
     "--c-accent": t.accent,
     "--c-accent-soft": t.accentSoft,
     "--c-line": t.line,
-    // Per-company typography - overrides the site default --serif/--sans for this page only.
-    "--serif": data.fonts.serif,
-    "--sans": data.fonts.sans,
+    // Client type remains available for identity treatments, separate from UI.
+    "--brand-serif": data.fonts.serif,
+    "--brand-sans": data.fonts.sans,
   } as React.CSSProperties;
 
   // The editorial page stays white; identity cards retain the client's palette.

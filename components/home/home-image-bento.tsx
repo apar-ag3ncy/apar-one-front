@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BentoMotion } from "./bento-motion";
 
 const frames = [
   {
@@ -47,7 +48,7 @@ const frames = [
 export function HomeImageBento() {
   return <section className="home-image-bento" aria-label="Selected brand imagery">
     <div className="wrap">
-      <div className="home-bento-grid">
+      <BentoMotion>
         {frames.map(frame => <Link href={frame.href} prefetch={false} className="home-bento-tile" style={{ gridArea: frame.area, backgroundColor: frame.background }} key={frame.image} aria-label={`Explore ${frame.brand}`}>
           {/* The original assets stay intact; fixed cells make the collage stable while loading. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -55,7 +56,7 @@ export function HomeImageBento() {
           <span className="home-bento-name" aria-hidden="true">{frame.brand}</span>
           <span className="home-bento-arrow" aria-hidden="true">↗</span>
         </Link>)}
-      </div>
+      </BentoMotion>
     </div>
   </section>;
 }

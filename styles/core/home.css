@@ -121,14 +121,14 @@
 .hero-actions{display:flex;align-items:center;gap:28px;margin-top:38px;}
 .hero-feature .frame{position:relative;border-radius:4px;overflow:hidden;}
 .hero-feature-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-style:italic;color:var(--cream);font-size:24px;z-index:2;mix-blend-mode:difference;}
-.hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:12px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
+.hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:17px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
 .hero-home .hero-copy,.hero-home .hero-feature-par{will-change:transform,opacity;}
 /* Lusion-style scroll cue - a mouse outline whose wheel-dot drops on a loop,
    beside quiet microcopy. The whole cue dissolves as scrolling starts (wired
    to scroll progress in hero.tsx). */
 .scroll-hint{margin-top:54px;transition:opacity .5s var(--ease);}
 .scroll-hint.gone{opacity:0;pointer-events:none;}
-.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
+.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:17px;letter-spacing:.2em;text-transform:uppercase;}
 .cue-mouse{width:22px;height:34px;flex:none;border:1.5px solid var(--ink-mid);border-radius:12px;position:relative;}
 .cue-mouse::after{
   content:"";position:absolute;left:50%;top:6px;width:4px;height:4px;margin-left:-2px;
@@ -173,8 +173,8 @@
 .proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;}
 .proc-card{border-top:2px solid var(--ink);padding-top:22px;}
 .proc-card .pn{font-family:var(--serif);font-style:italic;font-size:30px;color:var(--red);}
-.proc-card h3{font-family:var(--serif);font-size:26px;margin:14px 0 10px;}
-.proc-card p{color:var(--ink-soft);font-size:15.5px;margin:0;}
+.proc-card h3{font-size:26px;margin:14px 0 10px;}
+.proc-card p{color:var(--ink-soft);font-size:20px;margin:0;}
 
 /* ---- clients ---- */
 .featured-clients{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:24px;}
@@ -182,10 +182,10 @@
   overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));}
 .fc-card .fc-top{display:flex;align-items:center;justify-content:space-between;}
 .fc-card .fc-i{font-family:var(--serif);font-style:italic;font-size:22px;}
-.fc-card .fc-cat{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
-.fc-card h3{font-family:var(--serif);font-size:34px;margin:auto 0 12px;letter-spacing:-.01em;}
-.fc-card p{font-size:15px;line-height:1.5;opacity:.85;margin:0 0 22px;max-width:32ch;}
-.fc-card .fc-go{font-size:13px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+.fc-card .fc-cat{font-size:16px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
+.fc-card h3{font-size:34px;margin:auto 0 12px;}
+.fc-card p{font-size:20px;line-height:1.5;opacity:.85;margin:0 0 22px;max-width:32ch;}
+.fc-card .fc-go{font-size:18px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
 .fc-card .fc-go i{font-style:normal;transition:transform .4s var(--ease);}
 .fc-card:hover .fc-go i{transform:translate(4px,-4px);}
 /* Per-client colours come from --fc-* vars set inline from each case theme
@@ -400,13 +400,12 @@
 .faq-head .display{max-width:12ch;}
 .faq-list{border-top:1px solid var(--line);}
 .faq-item{border-bottom:1px solid var(--line);}
-.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;background:none;border:none;cursor:pointer;
-  font-family:var(--serif);font-size:clamp(21px,2.4vw,32px);color:var(--ink);text-align:left;padding:28px 4px;transition:color .35s;}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;background:none;border:none;cursor:pointer;font-size:clamp(21px,2.4vw,32px);color:var(--ink);text-align:left;padding:28px 4px;transition:color .35s;}
 .faq-q:hover{color:var(--red);}
 .faq-q .ic{flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line-strong);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);transition:.45s var(--ease);}
 .faq-item[data-state="open"] .faq-q .ic{background:var(--grad);border-color:transparent;color:#fff;transform:rotate(135deg);}
 .faq-a{overflow:hidden;}
-.faq-a p{color:var(--ink-soft);font-size:17px;line-height:1.6;max-width:64ch;margin:0 4px 30px;}
+.faq-a p{color:var(--ink-soft);font-size:22px;line-height:1.6;max-width:64ch;margin:0 4px 30px;}
 .faq-a[data-state="open"]{animation:accordion-down .55s var(--ease);}
 .faq-a[data-state="closed"]{animation:accordion-up .55s var(--ease);}
 

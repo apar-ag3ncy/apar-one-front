@@ -46,8 +46,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/fit-devnagari/Fit_Devanagari_Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/fontshare/GeneralSans-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/fontshare/NewTitle-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        {/* UI uses New Title / General Sans, hosted locally;
-            the wordmark uses its existing local Fit faces.
+        {/* UI uses local New Title; General Sans is reserved for existing
+            brand signatures and the wordmark keeps its local Fit faces.
             Do not block every page on unused external fallback fonts. An agency
             Adobe kit may still add genuine Fit scripts when configured. */}
         {ADOBE_FONTS_KIT ? (

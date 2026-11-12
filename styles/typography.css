@@ -1,9 +1,12 @@
-/* UI roles are independent of Fit wordmark spans and client logo artwork.
-   Important family/style rules beat route-level font shorthands, including
-   styles loaded after this file during client navigation. Sizes stay local. */
+/* New Title is the shared UI family. Brand artwork and Fit wordmark spans
+   stay independent. Role rules also survive late-loaded route styles. */
 body :is(p,blockquote),body .vc-caption,body .empty-note{
-  font-family:var(--sans)!important;
+  font-family:var(--ui-font)!important;
   font-style:normal;
+}
+body :is(button,input,textarea,select){font-family:var(--ui-font);font-synthesis:none;}
+body :is(.btn,.btn-ghost,.nav-links a,.nav-cta,.start-submit,.vf-trigger,.vf-action,.chip){
+  font-weight:700;letter-spacing:.06em;word-spacing:.1em;text-transform:uppercase;
 }
 body :is(
   h1, h2, h3, h4, h5, h6, [role="heading"], .display,
@@ -31,6 +34,9 @@ body :is(h3, .rr-name, .dial-name, .s-name) {
 }
 body :is(em,i,.hl,.pq-beyond){font-style:normal!important;}
 body blockquote{text-transform:none;}
-/* General Sans is wider than the former serif: fit quotes inside drum cards. */
-.tc-copy blockquote{font-size:clamp(20px,1.7vw,25px);line-height:1.3;}
-@media(max-width:600px){.tc-copy blockquote{font-size:clamp(18px,5vw,22px);}}
+/* Keep client signatures and the agency lockup in their existing type. */
+body :is(.brand-tag,.tc-page-brand,.cv-identity p){font-family:var(--brand-sans)!important;word-spacing:normal;}
+.tc-page-brand,.cv-identity p{letter-spacing:normal;}
+/* Short testimonial copy can breathe without changing the drum geometry. */
+.tc-copy blockquote{font-size:clamp(24px,2vw,29px);line-height:1.3;letter-spacing:.02em;}
+@media(max-width:600px){.tc-copy blockquote{font-size:clamp(23px,6vw,27px);}}

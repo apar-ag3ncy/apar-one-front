@@ -14,13 +14,13 @@
 .faq-motion .faq-a{display:flex;align-items:center;z-index:1;background:var(--red);padding:32px 84px 32px 24px;pointer-events:none;clip-path:inset(50% 0);transition:clip-path .48s cubic-bezier(.16,1,.3,1);}
 .faq-motion .faq-a[data-state]{animation:none;}
 .faq-motion .faq-a[data-state="open"]{clip-path:inset(0);}
-.meeting-home .faq-motion .faq-a p{max-width:72ch;margin:0;font:400 clamp(16px,1.6vw,21px)/1.5 var(--sans);color:var(--ink);text-wrap:pretty;transform:translateY(10px);transition:transform .5s var(--ease);}
+.meeting-home .faq-motion .faq-a p{max-width:72ch;margin:0;font:500 clamp(20px,1.6vw,24px)/1.5 var(--sans);color:var(--ink);text-wrap:pretty;transform:translateY(10px);transition:transform .5s var(--ease);}
 .faq-motion .faq-a[data-state="open"] p{transform:translateY(0);}
 @media(max-width:760px){
  .faq-motion .faq-wrap{grid-template-columns:1fr;gap:24px;}
  .meeting-home .faq-motion .faq-q{grid-template-columns:minmax(0,1fr) 24px;gap:14px;padding:26px 12px;min-height:132px;font-size:26px;}
  .faq-motion .faq-a{padding:26px 50px 26px 12px;}
- .meeting-home .faq-motion .faq-a p{font-size:16px;line-height:1.5;}
+ .meeting-home .faq-motion .faq-a p{font-size:20px;line-height:1.5;}
  .faq-motion .faq-q .ic{width:24px;height:24px;font-size:26px;}
 }
 @media(prefers-reduced-motion:reduce){

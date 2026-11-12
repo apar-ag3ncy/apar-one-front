@@ -1,6 +1,6 @@
 # APAR — AGENTIVE CREACY
 
-Brand portfolio built with Next.js App Router, React, TypeScript, GSAP, Motion and Three.js. The site uses the original APAR wordmark, Archivo / Newsreader typography and supplied client artwork.
+Brand portfolio built with Next.js App Router, React, TypeScript, GSAP, Motion and Three.js. The site uses New Title for UI typography, the original APAR wordmark and supplied client artwork.
 
 ## Run locally
 
@@ -53,13 +53,15 @@ Only `public/` is served. Keep original high-resolution uploads outside that dir
 
 - `npm run check`: strict lint, TypeScript, case/media/import-boundary tests and galaxy motion regression checks; no browser or provider credentials required.
 - `npm run check:production`: production build plus gzip asset budgets for major routes, including shared layout code. Results go to ignored `reports/`.
-- `npm run test:mobile`, `test:cases`, `test:polish`, `test:pixeltrail`, `test:manifesto`, `test:testimonials`: existing browser checks against an allowed local preview. These require browser access and are not part of the offline check.
+- `npm run test:mobile`, `test:cases`, `test:polish`, `test:pixeltrail`, `test:motion`, `test:manifesto`, `test:testimonials`: existing browser checks against an allowed local preview. These require browser access and are not part of the offline check.
 
 The GitHub workflow runs offline checks and a production build on pushes to `main` and pull requests. Asset budgets detect regressions; they are not Lighthouse scores or proof of smoothness on a real phone.
 
 ## Motion and accessibility
 
 Desktop retains its scroll, hover and text choreography. Mobile uses native scrolling and static text. Expensive scenes load near the viewport and stop when hidden; the mobile footer keeps its lower-cost galaxy. Reduced motion and image/logo fallbacks remain available. Keep effect initialization and cleanup in the owning feature; avoid assigning the same transform to multiple animation systems.
+
+See [homepage motion](docs/home-motion.md) for the existing pixel cursor, curved work surfaces and desktop-only collage parallax.
 
 `styles/globals.css` imports the original core CSS in order. `app/layout.tsx` imports feature sheets afterward and `styles/mobile.css` last. Preserve this order when editing; responsive behaviour depends on it.
 
