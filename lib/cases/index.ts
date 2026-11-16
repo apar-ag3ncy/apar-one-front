@@ -13,6 +13,7 @@ import jatubhaiVelji from "./brands/jatubhai-velji";
 import signi from "./brands/signi";
 import tarava from "./brands/tarava";
 import harshitGold from "./brands/harshit-gold";
+import manishJewellers from "./brands/manish-jewellers";
 
 // Ordered once for static routes, client cards and testimonials.
 export const CASES: Record<string, CaseData> = {
@@ -29,6 +30,7 @@ export const CASES: Record<string, CaseData> = {
   "signi": signi,
   "tarava": tarava,
   "harshit-gold": harshitGold,
+  "manish-jewellers": manishJewellers,
 };
 
 export const CASE_SLUGS = Object.keys(CASES);

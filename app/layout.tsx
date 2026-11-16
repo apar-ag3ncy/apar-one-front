@@ -4,13 +4,11 @@ import "@/styles/home-flow.css";
 import "@/styles/case-motion.css";
 import "@/styles/site-polish.css";
 import "@/styles/text-actions.css";
-import "@/styles/testimonial-carousel.css";
-import "@/styles/voice-feedback.css";
-import "@/styles/client-voices.css";
 import "@/styles/faq-motion.css";
 import "@/styles/surfaces.css";
 import "@/styles/mobile.css";
 import "@/styles/typography.css";
+import "@/styles/glass.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";
@@ -35,6 +33,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import sharp from "sharp";
 import { sourceGraph } from "../scripts/lib/source-analysis.mjs";
 import { loadTypeScript } from "./load-typescript.mjs";
 
@@ -35,6 +36,24 @@ test("all curated image references exist without downloading external resources"
   for (const media of Object.values(CURATED_CASE_MEDIA)) {
     for (const src of [media.hero, ...media.photos].filter(Boolean)) assert.ok(assetExists(src), src);
   }
+});
+
+test("the MJ story uses all ten supplied images with valid natural ratios and alpha", async () => {
+  const data = CASES["manish-jewellers"];
+  const assets = caseAssets(data.slug, data.approach.gallery.length);
+  const files = [assets.heroSrc, ...assets.photoSrcs];
+  const folder = `public/work/${data.slug}/curated`;
+  assert.deepEqual(files.map(src => src.split("/").at(-1)).sort(), fs.readdirSync(folder).sort());
+  assert.equal(new Set(files).size, 10);
+  const ratios = [assets.heroRatio, ...assets.photoRatios];
+  for (const [index, src] of files.entries()) {
+    const meta = await sharp(`public${src}`).metadata();
+    assert.equal(ratios[index], meta.width / meta.height, src);
+    assert.ok(meta.width <= 1600 && meta.height <= 1800, src);
+    if (src.endsWith("gold-portrait.webp")) assert.equal(meta.hasAlpha, true);
+  }
+  assert.equal(data.theme.bg, "#793f48");
+  assert.match(data.quote.by, /Campaign line/);
 });
 
 test("client bundles cannot import the full case catalogue or server file access", () => {

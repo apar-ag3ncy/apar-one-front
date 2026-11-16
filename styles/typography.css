@@ -37,6 +37,3 @@ body blockquote{text-transform:none;}
 /* Keep client signatures and the agency lockup in their existing type. */
 body :is(.brand-tag,.tc-page-brand,.cv-identity p){font-family:var(--brand-sans)!important;word-spacing:normal;}
 .tc-page-brand,.cv-identity p{letter-spacing:normal;}
-/* Short testimonial copy can breathe without changing the drum geometry. */
-.tc-copy blockquote{font-size:clamp(24px,2vw,29px);line-height:1.3;letter-spacing:.02em;}
-@media(max-width:600px){.tc-copy blockquote{font-size:clamp(23px,6vw,27px);}}

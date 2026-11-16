@@ -25,7 +25,7 @@ const ROSTER = [
   { n: "11", name: "High on Smiles", cat: "Dental", href: "/work/high-on-smiles" },
   { n: "12", name: "Signi", cat: "Lab-Grown Gems", href: "/work/signi" },
   { n: "13", name: "A Paramount", cat: "Engineering", href: "/work/a-paramount" },
-  { n: "14", name: "Manish Jewellers", cat: "Jewellery", href: "/#diamond-experience" },
+  { n: "14", name: "Manish Jewellers", cat: "Jewellery", href: "/work/manish-jewellers" },
 ];
 
 export default function ClientsPage() {
@@ -53,17 +53,16 @@ export default function ClientsPage() {
             <i className="ln" />
           </Reveal>
           <div className="featured-clients" style={{ marginTop: 40 }}>
-            {FEATURED_CLIENTS.map((c, i) => (
+            {FEATURED_CLIENTS.filter(c => c.slug !== "manish-jewellers").map((c, i) => (
               <FeaturedCard key={c.slug} client={c} i={i} />
             ))}
-            <Link href="/#diamond-experience" className={styles.card} aria-label="Explore the Manish Jewellers diamond experience">
+            <Link href="/work/manish-jewellers" className={styles.card} aria-label="Explore Manish Jewellers' case study">
               <span className={styles.media}>
-                {/* Both supplied marks retain their original colour and lettering. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className={styles.base} src="/brands/manish-jewellers/lockup-compact.png" alt="" width="961" height="503" loading="lazy" />
+                <img className={styles.base} src="/work/manish-jewellers/curated/brand-monogram.webp" alt="Manish Jewellers rose-gold monogram" width="1600" height="1195" loading="lazy" decoding="async" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className={styles.hover} src="/brands/manish-jewellers/monogram-1916.png" alt="" width="961" height="503" loading="lazy" />
-                <span className={styles.explore}>Explore the experience <span aria-hidden="true">↗</span></span>
+                <img className={styles.hover} src="/work/manish-jewellers/curated/trio-landscape.webp" alt="" width="1600" height="792" loading="lazy" decoding="async" />
+                <span className={styles.explore}>Explore the story <span aria-hidden="true">↗</span></span>
               </span>
               <span className={styles.caption}><span>Jewellery · Since 1916</span><strong>Manish Jewellers</strong></span>
             </Link>

@@ -18,11 +18,18 @@ the houses it works with.
 |---|---|
 | `components/voice/talk-to-us.tsx` | Picks voice mode vs. the original `#contact` link, wraps the app in `<ConversationProvider>`. |
 | `components/voice/voice-concierge.tsx` | The call UI + ElevenLabs `useConversation` logic (start/end, mute, waveform, captions). |
+| `components/voice/contact-orb-artwork.tsx` | Inline glass-and-strand artwork, included in server HTML without another network request. |
+| `components/voice/contact-orb.tsx` | Enhances the artwork with desktop WebGL motion; keeps the complete static artwork on phones, reduced motion, or GPU failure. |
 | `lib/elevenlabs.ts` | Reads `NEXT_PUBLIC_ELEVENLABS_AGENT_ID`, the concierge name, the enabled flag. |
-| `app/globals.css` | `.vc-*` panel styles + `.ttu-button` reset. |
+| `styles/core/responsive.css` | `.vc-*` panel styles, orb crossfade and `.ttu-button` reset. |
 
 **Graceful fallback:** with no Agent ID set, the orb behaves exactly as before
 (links to `#contact`). Nothing breaks before you connect the agent.
+
+The launcher's finished artwork is visible before hydration. Desktop animation
+crossfades in only after its first successful draw; context loss restores the
+inline artwork. Phones use the same gold/orange glass appearance without
+starting a canvas or an animation loop.
 
 ---
 

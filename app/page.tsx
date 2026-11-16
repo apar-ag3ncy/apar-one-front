@@ -1,4 +1,8 @@
+import type { Viewport } from "next";
 import { Hero } from "@/components/home/hero";
+import "@/styles/testimonial-carousel.css";
+import "@/styles/voice-feedback.css";
+import "@/styles/client-voices.css";
 import { MJShowcase } from "@/components/home/diamond";
 import { HomeImageBento } from "@/components/home/home-image-bento";
 import { Faq } from "@/components/home/faq";
@@ -9,6 +13,8 @@ import { ProgressiveQuote, FeaturedProjects } from "@/components/home/featured";
 
 import { MovingClients } from "@/components/home/featured/moving-clients";
 import { CLIENT_VOICES } from "@/lib/client-voices";
+
+export const viewport: Viewport = { themeColor: "#120302" };
 
 export default function Home() {
   return <main className="meeting-home">

@@ -1,7 +1,7 @@
-/* Refinements to the existing editorial / cream / ink / APAR-red system. */
+/* Shared refinements for the white, ink and APAR-red editorial system. */
 :where(a,button,input,textarea,select):focus-visible{outline:2px solid var(--red);outline-offset:5px;}
 @media(prefers-reduced-motion:reduce){
- .nav-links a::after,.dial-arrow,.dial-dot::after{transition:none;}
+ .nav-links a::after{transition:none;}
 }
 :where(.clients-page,.services-page) .page-hero .lead{max-width:53ch;line-height:1.65;text-wrap:pretty;}
 :where(.clients-page,.services-page) .page-hero h1{line-height:1.06;text-wrap:balance;}
@@ -25,11 +25,11 @@
 .team-page .people-next:hover{background:#d72d1c;}
 .team-page .people-top p,.team-page .people-index{color:#adbfc8;}
 .start .fld-in{backdrop-filter:none;-webkit-backdrop-filter:none;}
-.start .fld-l{color:rgba(244,237,226,.72);}
-.start .fld-in::placeholder{color:rgba(244,237,226,.48);}
-.start-delivery-note{font-size:17px;line-height:1.6;color:rgba(244,237,226,.66);max-width:44ch;}
-.start-copy{font:inherit;cursor:pointer;padding:13px 19px;background:none;color:var(--cream);border:0;border-radius:0;}
-.start-copy-status{font-size:18px;line-height:1.5;color:var(--cream);margin-top:18px;}
+.start .fld-l{color:var(--ink-soft);}
+.start .fld-in::placeholder{color:#746c64;}
+.start-delivery-note{font-size:17px;line-height:1.6;color:var(--ink-soft);max-width:44ch;}
+.start-copy{font:inherit;cursor:pointer;padding:13px 19px;background:none;color:var(--ink);border:0;border-radius:0;}
+.start-copy-status{font-size:18px;line-height:1.5;color:var(--ink);margin-top:18px;}
 @media(max-width:800px){
  .service-pillar{grid-template-columns:40px minmax(0,1fr);gap:20px;padding-block:32px;}
  .service-deliverables{grid-column:2;margin-top:0;}

@@ -57,7 +57,7 @@ export function MJShowcase() {
       const timeline = gsap.timeline({
         defaults: { ease: "power2.inOut" }, onUpdate: paint,
         scrollTrigger: {
-          trigger: el, start: "top 100px", end: "bottom bottom", scrub: 1.1,
+          trigger: el, start: "top top", end: "bottom bottom", scrub: 1.1,
           invalidateOnRefresh: true,
           onRefresh: () => {
             cancelAnimationFrame(refreshFrame);
@@ -138,12 +138,13 @@ export function MJShowcase() {
 
   return (
     <section className="mj-showcase" aria-labelledby="mj-showcase-title" data-screen-label="Home - Manish Jewellers experience">
-      <div className="wrap">
-        <div className="mj-showcase-heading">
-          <div>
-            <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2></div>
+      <div className="wrap mj-showcase-heading">
+        <div>
+          <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2>
         </div>
-        <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={!mobile && status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}><div ref={stage} className="mj-showcase-stage" data-ready={!mobile && status === "ready"}>
+      </div>
+      <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={!mobile && status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}>
+        <div ref={stage} className="mj-showcase-stage" data-ready={!mobile && status === "ready"}>
           <DiamondFallback loadTexture={requested && !mobile} />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
           <div className="mj-showcase-controls">
@@ -154,9 +155,8 @@ export function MJShowcase() {
             </button>
           </div>
         </div>
-        </div>
-        <div className="mj-showcase-caption"><Link href="/start">Build something with us ↗</Link></div>
       </div>
+      <div className="wrap mj-showcase-caption"><Link href="/start">Build something with us ↗</Link></div>
     </section>
   );
 }

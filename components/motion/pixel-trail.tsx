@@ -172,7 +172,7 @@ export function PixelTrail() {
     let prev = 0;
     let t = 0; // elapsed seconds
     let lastMoveT = -100; // t at the last pointer move
-    let blanked = false; // hidden over a beam band and already cleared
+    let blanked = false; // suppressed and already cleared
     const headAge = () => Math.max(0, t - lastMoveT - REST);
 
     const setUniforms = () => {
@@ -203,11 +203,14 @@ export function PixelTrail() {
       const dt = prev ? Math.min((now - prev) / 1000, 0.05) : 0.016;
       prev = now;
       t += dt;
-      // Over a beam or photo its own tiles are the cursor and this canvas is
-      // faded out by CSS: keep the head on the pointer, drop the tail (so it
-      // restarts fresh off the band, never trailing back over the beam), blank
-      // once, and park - there is nothing to draw.
-      if (document.documentElement.dataset.onDome === "1" || document.documentElement.dataset.onImage === "1") {
+      // Clear and park over local effects or sections that opt out. Checking
+      // :hover also handles a section scrolling under a stationary pointer.
+      if (
+        document.documentElement.dataset.onDome === "1" ||
+        document.documentElement.dataset.onImage === "1" ||
+        document.querySelector("[data-no-pixel-trail]:hover")
+      ) {
+        active = false;
         comet.snap(comet.tx, comet.ty);
         comet.clearTail();
         if (!blanked) {

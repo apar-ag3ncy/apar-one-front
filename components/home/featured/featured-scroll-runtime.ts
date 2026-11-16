@@ -1,7 +1,8 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { coverFit, mediaBend, planeMesh } from "@/lib/motion/media-plane";
+import { coverFit, mediaBend, photoPoint, planeMesh } from "@/lib/motion/media-plane";
 import { createMotionProgram } from "@/lib/motion/webgl-program";
+import { FeaturedPixelHover, imagePixelShader, pixelUniforms } from "./featured-pixel-hover";
 
 const vertex = `
 attribute vec2 aUv;
@@ -27,18 +28,20 @@ precision highp float;
 uniform sampler2D uImage;
 uniform vec2 uSize;
 varying vec2 vUv;
+${imagePixelShader}
 void main(){
   vec2 q=abs((vUv-.5)*uSize)-(uSize*.5-vec2(15.));
   float distance=length(max(q,0.))+min(max(q.x,q.y),0.)-15.;
   float alpha=1.-smoothstep(-.7,.7,distance);
   if(alpha<=0.) discard;
-  gl_FragColor=vec4(texture2D(uImage,vUv).rgb,alpha);
+  gl_FragColor=vec4(imagePixels(vUv,texture2D(uImage,vUv).rgb),alpha);
 }`;
 
 type Surface = {
   frame: HTMLElement; image: HTMLImageElement; logo: HTMLImageElement | null;
   texture: WebGLTexture | null; source: string; near: boolean; side: number; background: string;
   bounds: DOMRect | null;
+  pixels: FeaturedPixelHover;
   state: { entry: number; parallax: number; hover: number; x: number; y: number };
 };
 
@@ -60,14 +63,17 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
   const motion = shader.uniform("uMotion"), photo = shader.uniform("uPhoto");
   const size = shader.uniform("uSize"), pointer = shader.uniform("uPointer");
   gl.uniform1i(shader.uniform("uImage"), 0);
+  const pixelLocations = pixelUniforms(gl, shader.uniform);
   const surfaces: Surface[] = Array.from(grid.querySelectorAll<HTMLElement>(".flow-project-image")).flatMap((frame, i) => {
     const image = frame.querySelector<HTMLImageElement>(".photo-slot-img");
     return image ? [{ frame, image, logo: frame.querySelector<HTMLImageElement>(".girvaan-store-sign img"),
       texture: null, source: "", near: false, bounds: null, side: i % 2 ? -1 : 1,
+      pixels: new FeaturedPixelHover(gl, pixelLocations),
       background: getComputedStyle(frame).backgroundColor,
       state: { entry: 1, parallax: 0, hover: 0, x: 0, y: 0 } }] : [];
   });
   let raf = 0, previousTime = 0, bend = 0, scrollTime = 0, velocity = 0, disposed = false;
+  let hovered: { surface: Surface; x: number; y: number } | null = null;
   const cleanups: (() => void)[] = [];
   const fallback = () => surfaces.forEach(surface => { delete surface.frame.dataset.motionReady; });
 
@@ -123,10 +129,16 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
     bend += (target - bend) * (1 - Math.exp(-dt * 9));
     // Read all visible frames before changing any DOM style.
     const visible = surfaces.filter(surface => surface.near).map(surface => ({ surface, rect: surface.frame.getBoundingClientRect() }));
+    if (hovered && !hovered.surface.frame.contains(document.elementFromPoint(hovered.x, hovered.y))) {
+      hovered.surface.pixels.leave(); hovered = null;
+    }
+    let fadingPixels = false;
     gl.clear(gl.COLOR_BUFFER_BIT);
     for (const { surface, rect } of visible) {
       surface.bounds = rect;
-      if (!rect.width || !rect.height || rect.bottom < -40 || rect.top > innerHeight + 40) continue;
+      if (!rect.width || !rect.height || rect.bottom < -40 || rect.top > innerHeight + 40) {
+        surface.pixels.clear(); continue;
+      }
       upload(surface, rect.width, rect.height);
       if (!surface.texture) continue;
       gl.bindTexture(gl.TEXTURE_2D, surface.texture);
@@ -135,27 +147,40 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
       gl.uniform3f(motion, surface.state.entry, bend, surface.side);
       gl.uniform2f(photo, surface.state.parallax, surface.state.hover);
       gl.uniform2f(pointer, surface.state.x, surface.state.y);
+      // Both sampler units stay complete even before a card's first hover.
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, surface.texture);
+      gl.activeTexture(gl.TEXTURE0);
+      fadingPixels = surface.pixels.draw(rect.width, rect.height, now) || fadingPixels;
       gl.drawArrays(gl.TRIANGLES, 0, mesh.length / 2);
       surface.frame.dataset.motionReady = "true";
     }
-    if (Math.abs(bend) > .02 || Math.abs(target) > .02) raf = requestAnimationFrame(draw);
+    if (fadingPixels || Math.abs(bend) > .02 || Math.abs(target) > .02) raf = requestAnimationFrame(draw);
   };
   const request = () => { if (!raf && !disposed && !document.hidden) raf = requestAnimationFrame(draw); };
   const scroll = () => { if (surfaces.some(surface => surface.near)) request(); };
+  const clearPixels = () => {
+    hovered = null;
+    for (const surface of surfaces) surface.pixels.clear();
+    request();
+  };
   const resize = () => {
+    clearPixels();
     const dpr = Math.min(devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr);
     gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform2f(viewport, innerWidth, innerHeight);
     request();
   };
   const visibility = () => {
-    if (document.hidden) { cancelAnimationFrame(raf); raf = 0; previousTime = 0; }
+    if (document.hidden) { clearPixels(); cancelAnimationFrame(raf); raf = 0; previousTime = 0; }
     else request();
   };
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) {
       const surface = surfaces.find(item => item.frame === entry.target);
-      if (surface) surface.near = entry.isIntersecting;
+      if (surface) {
+        surface.near = entry.isIntersecting;
+        if (!surface.near) surface.pixels.clear();
+      }
     }
     request();
   }, { rootMargin: "120px" });
@@ -183,7 +208,11 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
         over = true; surface.bounds = frame.getBoundingClientRect(); hover(1);
       };
       const reset = () => { if (!over && !focused) { hover(0); x(0); y(0); } };
-      const leave = () => { over = false; reset(); };
+      const leave = () => {
+        over = false; surface.pixels.leave();
+        if (hovered?.surface === surface) hovered = null;
+        reset();
+      };
       const focus = () => { focused = true; hover(1); };
       const blur = () => { focused = false; reset(); };
       const move = (event: PointerEvent) => {
@@ -191,14 +220,22 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
         if (!over || !bounds || event.pointerType !== "mouse") return;
         x(gsap.utils.clamp(-.5, .5, (event.clientX - bounds.left) / bounds.width - .5));
         y(gsap.utils.clamp(-.5, .5, (event.clientY - bounds.top) / bounds.height - .5));
+        if (frame.dataset.motionReady !== "true") return;
+        const point = photoPoint(event.clientX - bounds.left, event.clientY - bounds.top,
+          bounds.width, bounds.height, state, bend, surface.side);
+        surface.pixels.move(point.x, point.y, bounds.width, bounds.height, performance.now());
+        hovered = { surface, x: event.clientX, y: event.clientY };
+        request();
       };
       frame.addEventListener("pointerenter", enter); frame.addEventListener("pointerleave", leave);
       frame.addEventListener("pointermove", move, { passive: true });
+      frame.addEventListener("pointercancel", leave);
       card?.addEventListener("focusin", focus); card?.addEventListener("focusout", blur);
       image.addEventListener("load", request); logo?.addEventListener("load", request);
       cleanups.push(() => {
         frame.removeEventListener("pointerenter", enter); frame.removeEventListener("pointerleave", leave);
         frame.removeEventListener("pointermove", move); image.removeEventListener("load", request); logo?.removeEventListener("load", request);
+        frame.removeEventListener("pointercancel", leave);
         card?.removeEventListener("focusin", focus); card?.removeEventListener("focusout", blur);
       });
     }
@@ -209,11 +246,16 @@ export function mountFeaturedScroll(grid: HTMLElement): () => void {
     disposed = true; cancelAnimationFrame(raf); context.revert(); observer.disconnect(); fallback();
     for (const cleanup of cleanups) cleanup();
     window.removeEventListener("scroll", scroll); window.removeEventListener("resize", resize);
+    window.removeEventListener("blur", clearPixels);
     document.removeEventListener("visibilitychange", visibility); canvas.removeEventListener("webglcontextlost", contextLost);
-    for (const surface of surfaces) if (surface.texture) gl.deleteTexture(surface.texture);
+    for (const surface of surfaces) {
+      surface.pixels.dispose();
+      if (surface.texture) gl.deleteTexture(surface.texture);
+    }
     gl.deleteBuffer(buffer); shader.dispose(); canvas.remove();
   };
   window.addEventListener("scroll", scroll, { passive: true }); window.addEventListener("resize", resize);
+  window.addEventListener("blur", clearPixels);
   document.addEventListener("visibilitychange", visibility); canvas.addEventListener("webglcontextlost", contextLost);
   resize();
   return dispose;

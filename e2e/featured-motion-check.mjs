@@ -29,6 +29,26 @@ try {
   assert.ok(first && second, "the original image frames must remain in the document");
   assert.ok(Math.abs(first.width - second.width) < 1 && Math.abs(first.y - second.y) < 1);
 
+  // The same photo-coloured mosaic must work on the lower work-grid rows too.
+  for (const slug of ["a-paramount", "maison-mireyaa"]) {
+    const frame = page.locator(`.flow-project[href="/work/${slug}"] .flow-project-image`);
+    await frame.scrollIntoViewIfNeeded();
+    await frame.locator(".photo-slot-img").evaluate(img => img.decode());
+    await page.waitForFunction(selector => document.querySelector(selector)?.dataset.motionReady === "true",
+      `.flow-project[href="/work/${slug}"] .flow-project-image`);
+    await page.waitForTimeout(700);
+    const box = await frame.boundingBox();
+    await page.mouse.move(box.x + box.width * .3, box.y + box.height * .5);
+    await page.mouse.move(box.x + box.width * .65, box.y + box.height * .5, { steps: 10 });
+    await page.waitForFunction(() => document.documentElement.dataset.onImage === "1");
+    assert.equal(await page.evaluate(() => document.querySelector(".featured-media-plane").getContext("webgl").getError()), 0);
+    await page.screenshot({ path: `reports/motion/${slug}-pixel-hover.png` });
+    await page.mouse.move(5, 450);
+    await page.waitForFunction(() => !document.documentElement.dataset.onImage);
+    await page.waitForTimeout(1000);
+    await page.screenshot({ path: `reports/motion/${slug}-restored.png` });
+  }
+
   // A graphics failure restores the actual photographs immediately.
   await page.evaluate(() => {
     document.querySelector(".featured-media-plane").getContext("webgl")
@@ -36,6 +56,12 @@ try {
   });
   await page.waitForFunction(() => !document.querySelector(".flow-project-image[data-motion-ready]"));
   assert.equal(await images.first().locator(".flow-project-art").evaluate(el => getComputedStyle(el).opacity), "1");
+  await images.first().scrollIntoViewIfNeeded();
+  const fallback = await images.first().boundingBox();
+  await page.mouse.move(fallback.x + fallback.width * .5, fallback.y + fallback.height * .5);
+  await images.first().locator(".image-pixel-trail").waitFor({ state: "visible" });
+  await page.mouse.move(5, 450);
+  await page.waitForFunction(() => !document.documentElement.dataset.onImage);
 
   // Live breakpoint changes must remove the renderer and restore untransformed text.
   await page.setViewportSize({ width: 390, height: 844 });
@@ -53,7 +79,7 @@ try {
   await page.waitForFunction(() => !document.querySelector(".featured-media-plane"));
   assert.equal(await images.first().locator(".flow-project-art").evaluate(el => getComputedStyle(el).opacity), "1");
   assert.deepEqual(errors, []);
-  console.log("PASS: grid alignment, graphics fallback, phone and reduced-motion checks.");
+  console.log("PASS: grid alignment, image-pixel hover, graphics fallback, phone and reduced-motion checks.");
 } finally {
   await browser.close();
 }

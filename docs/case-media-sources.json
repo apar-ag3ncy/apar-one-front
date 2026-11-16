@@ -4,7 +4,8 @@
     "a-paramount": "final paramount assets",
     "girvaan": "Girvaan products ",
     "harshit-gold": "HARSHIT GOLD IMAGES",
-    "kundan-jewellers": "Kundan Jewellers - Jewellery "
+    "kundan-jewellers": "Kundan Jewellers - Jewellery ",
+    "manish-jewellers": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot"
   },
   "export": {
     "format": "webp",
@@ -400,6 +401,96 @@
       "height": 1222,
       "bytes": 38952,
       "sourceBytes": 48419
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/gold-portrait.webp",
+      "file": "/work/manish-jewellers/curated/gold-portrait.webp",
+      "width": 1532,
+      "height": 1027,
+      "bytes": 272242,
+      "sourceBytes": 284852
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/trio-landscape.webp",
+      "file": "/work/manish-jewellers/curated/trio-landscape.webp",
+      "width": 1600,
+      "height": 792,
+      "bytes": 161518,
+      "sourceBytes": 553704
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/blue-necklace.webp",
+      "file": "/work/manish-jewellers/curated/blue-necklace.webp",
+      "width": 1374,
+      "height": 1145,
+      "bytes": 140066,
+      "sourceBytes": 162314
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/blue-portrait.webp",
+      "file": "/work/manish-jewellers/curated/blue-portrait.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 266982,
+      "sourceBytes": 283260
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/crimson-drop-earrings.webp",
+      "file": "/work/manish-jewellers/curated/crimson-drop-earrings.webp",
+      "width": 1124,
+      "height": 1399,
+      "bytes": 80870,
+      "sourceBytes": 109248
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/crimson-fan-necklace.webp",
+      "file": "/work/manish-jewellers/curated/crimson-fan-necklace.webp",
+      "width": 1124,
+      "height": 1399,
+      "bytes": 85568,
+      "sourceBytes": 109008
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/ruby-earrings.webp",
+      "file": "/work/manish-jewellers/curated/ruby-earrings.webp",
+      "width": 1122,
+      "height": 1402,
+      "bytes": 131078,
+      "sourceBytes": 155270
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/ruby-portrait.webp",
+      "file": "/work/manish-jewellers/curated/ruby-portrait.webp",
+      "width": 1122,
+      "height": 1402,
+      "bytes": 187374,
+      "sourceBytes": 213864
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/manish-jewellers/public/og-shoot/blue-earrings.webp",
+      "file": "/work/manish-jewellers/curated/blue-earrings.webp",
+      "width": 1122,
+      "height": 1402,
+      "bytes": 128150,
+      "sourceBytes": 146844
+    },
+    {
+      "slug": "manish-jewellers",
+      "source": "/Users/apar/Desktop/MANISH JEWELLERS/magnific_absolutely.-use-5d2532-as_79NAy5jJAL.jpg",
+      "file": "/work/manish-jewellers/curated/brand-monogram.webp",
+      "width": 1600,
+      "height": 1195,
+      "bytes": 36518,
+      "sourceBytes": 2404268
     }
   ]
 }

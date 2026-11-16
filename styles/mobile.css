@@ -25,7 +25,7 @@
   [data-fill] .fw.accent { color:var(--red); }
   .flow-project-arrow { display:none; }
   .flow-project-caption h3>span { transform:none!important; }
-  .cue-mouse::after,.vf-orb i { animation:none; }
+  .cue-mouse::after { animation:none; }
   .vmarquee { padding-block:24px; }
   .vmarquee .vtrack { overflow:visible; }
   .vmarquee .vtrack>div { display:flex; animation:none!important; flex-wrap:wrap; justify-content:flex-start; }
@@ -37,7 +37,7 @@
   /* A stable header and a menu that never moves its text while opening. */
   .nav,.nav.scrolled { height:calc(72px + env(safe-area-inset-top)); transition:background .2s; backdrop-filter:none; -webkit-backdrop-filter:none; }
   .nav-in { padding-top:env(safe-area-inset-top); }
-  .nav.scrolled { background:var(--cream); }
+  .nav.scrolled { background:var(--surface); }
   .nav .apar-logo,.nav.scrolled .apar-logo { font-size:40px; }
   .nav-links,.nav .nav-cta { display:none; }
   .nav-burger { display:flex; width:48px; height:48px; margin-right:-8px; }
@@ -84,7 +84,7 @@
   .pq-scene { position:relative; top:auto; height:82svh; min-height:520px; max-height:860px; }
   .pq-landscape { inset:0; }
   .pq-landscape img { object-position:74% 44%; }
-  .pq-scene::after { background:linear-gradient(0deg,var(--cream) 0%,#f4ede2ed 16%,#f4ede2b3 32%,transparent 62%); }
+  .pq-scene::after { background:linear-gradient(0deg,var(--surface) 0%,#ffffffed 16%,#ffffffb3 32%,transparent 62%); }
   .is-cinematic .pq-sticky { height:100%; justify-content:flex-end; padding-block:48px 64px; }
   .is-cinematic h2 { font-size:clamp(42px,9vw,80px); }
   .meeting-home { --studio-join:clamp(72px,11svh,104px); }
@@ -108,9 +108,9 @@
 
   /* The small-screen diamond is tap-to-explore, not a two-screen scroll trap. */
   .mj-scroll-track { height:auto; }
-  .meeting-home .mj-showcase-stage { position:relative; top:auto; height:auto; min-height:420px; aspect-ratio:4/5; border-radius:16px; }
+  .meeting-home .mj-showcase-stage { position:relative; top:auto; }
   .meeting-home .mj-manual { display:inline-flex; gap:12px; }
-  .meeting-home .mj-showcase-controls { inset:auto 18px 18px; align-items:flex-start; gap:6px; }
+  .meeting-home .mj-showcase-controls { inset:auto 18px max(18px,env(safe-area-inset-bottom)); align-items:flex-start; gap:6px; }
   .mj-skip { min-height:44px; display:inline-flex; align-items:center; }
   .mj-showcase-heading h2,.tc-heading h2 { font-size:clamp(36px,8vw,56px); }
   .mj-showcase-caption a { display:inline-flex; align-items:center; min-height:44px; }
@@ -122,27 +122,6 @@
   .flow-logo-group { width:100%; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); padding-inline:var(--gut); }
   .flow-logo-group[aria-hidden="true"] { display:none; }
   .flow-logo-group a { width:100%; height:112px; padding:22px; }
-
-  /* Native horizontal scroll: one actual card per story, zero drum slices. */
-  .tc-stage { --card-width:min(84vw,400px); height:auto; perspective:none; touch-action:auto; }
-  .tc-stage .tc-visual { display:none; }
-  .tc-stage .tc-sources { position:relative; inset:auto; width:100%; height:auto;
-    transform:none; opacity:1!important; pointer-events:auto!important; display:flex;
-    gap:16px; overflow-x:auto; overflow-y:hidden; padding:12px var(--gut) 24px;
-    scroll-snap-type:x mandatory; scroll-padding-inline:var(--gut); overscroll-behavior-x:contain;
-    scrollbar-width:none; }
-  .tc-sources::-webkit-scrollbar { display:none; }
-  .tc-stage .tc-sources>.tc-page { position:relative; inset:auto; flex:0 0 var(--card-width);
-    height:auto; min-height:550px; opacity:1; pointer-events:auto; scroll-snap-align:start; }
-  .tc-hero { flex-basis:220px; }
-  .tc-copy { min-height:330px; padding:24px; }
-  .tc-copy blockquote { font-size:25px; line-height:1.22; }
-  .tc-heading { margin-bottom:var(--space-content); }
-  .tc-voice-wrap { padding-top:12px; padding-bottom:12px; }
-  .vf-close { min-width:44px; min-height:44px; margin:-8px -8px 0 0; }
-  .vf-action { min-height:46px; }
-  .vf-field input { font-size:20px; }
-  .vf-trigger,.vf-action { transition:none; transform:none!important; }
 
   /* Tap an FAQ: keep the question visible and place its answer below it. */
   .faq-motion .faq-item { display:block; }
@@ -206,8 +185,6 @@
   .hero-beam .hb-wordmark .apar-logo { font-size:clamp(108px,31vw,178px); margin-left:-.062em; }
   .hero-beam .hero-h1 { --tagline-size:clamp(32px,8.6vw,46px); }
   .is-cinematic h2 { font-size:clamp(37px,9.5vw,54px); }
-  .tc-copy { padding:22px; }
-  .tc-copy blockquote { font-size:24px; }
 }
 
 /* The compact header also prevents the six desktop links crowding on tablets.
@@ -215,12 +192,12 @@
 @media (max-width:1100px), (hover:none) and (pointer:coarse) {
   .nav-links,.nav .nav-cta { display:none; }
   .nav-burger { display:flex; width:48px; height:48px; }
-  .nav.menu-open { background:var(--ink); box-shadow:none; }
+  .nav.menu-open,.nav.on-dark.menu-open { background:var(--surface); box-shadow:none; }
   .nav.on-case.menu-open { background:#fff; }
   .nav.menu-open .nav-burger span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
   .nav.menu-open .nav-burger span:nth-child(2) { opacity:0; }
   .nav.menu-open .nav-burger span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-  .nav.menu-open:not(.on-case) .nav-burger span { background:var(--cream); }
+  .nav.menu-open:not(.on-case) .nav-burger span { background:var(--ink); }
   .mobile-menu .mm-project { display:flex; align-items:center; gap:24px; margin-top:16px; font:500 20px/1.4 var(--sans); color:var(--red); }
   .mobile-menu .mm-project span { font-size:23px; }
 }

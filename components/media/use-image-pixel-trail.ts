@@ -1,26 +1,20 @@
 "use client";
 
 import { useEffect, type RefObject } from "react";
-import { TILE_CELL } from "@/lib/comet";
-
-const hovered = new Set<HTMLImageElement>();
-const LIFE = 900;
-const CELL_X = TILE_CELL * 1.5;
-const CELL_Y = TILE_CELL;
-
-function hoverImage(img: HTMLImageElement, active: boolean) {
-  if (active) hovered.add(img);
-  else hovered.delete(img);
-  if (hovered.size) document.documentElement.dataset.onImage = "1";
-  else delete document.documentElement.dataset.onImage;
-}
+import { setImageHover } from "@/lib/motion/image-hover";
+import { IMAGE_PIXEL_LIFE as LIFE, IMAGE_PIXEL_RADIUS, IMAGE_PIXEL_WIDTH as CELL_X,
+  IMAGE_PIXEL_HEIGHT as CELL_Y } from "@/lib/motion/image-pixels";
 
 /** A temporary mosaic of the photo itself, leaving its layout and original pixels intact. */
 export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, ready: boolean) {
   useEffect(() => {
     const img = ref.current;
     const host = img?.parentElement;
-    if (!ready || !img || !host || img.closest(".meeting-home")) return;
+    if (!ready || !img || !host) return;
+    const featuredFrame = img.closest<HTMLElement>(".flow-project-image");
+    if (img.closest(".meeting-home") && !featuredFrame) return;
+    const hoverOwner = {};
+    const renderedOnPlane = () => featuredFrame?.dataset.motionReady === "true";
     const disabled = matchMedia("(prefers-reduced-motion: reduce), (max-width: 900px), (pointer: coarse)");
     let canvas: HTMLCanvasElement | undefined;
     let ctx: CanvasRenderingContext2D | null = null;
@@ -35,7 +29,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
 
     const leave = () => {
       inside = false;
-      hoverImage(img, false);
+      setImageHover(hoverOwner, false);
       if (listening) {
         listening = false;
         window.removeEventListener("scroll", scroll, true);
@@ -67,7 +61,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
 
     const frame = (now: number) => {
       raf = 0;
-      if (disabled.matches || document.hidden || !img.isConnected) { clear(); return; }
+      if (disabled.matches || document.hidden || !img.isConnected || renderedOnPlane()) { clear(); return; }
       if (!ctx || !canvas || !sample || !sampleCtx) return;
       const style = getComputedStyle(img);
       const w = img.offsetWidth, h = img.offsetHeight;
@@ -141,7 +135,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
       if (!points.length) { canvas.style.visibility = "hidden"; return; }
       canvas.style.visibility = "visible";
       ctx.imageSmoothingEnabled = false;
-      const radius = 80 / scale;
+      const radius = IMAGE_PIXEL_RADIUS / scale;
       const x0 = Math.max(0, Math.floor((Math.min(...points.map(p => p.x)) - radius) / CELL_X));
       const x1 = Math.min(sample.width, Math.ceil((Math.max(...points.map(p => p.x)) + radius) / CELL_X));
       const y0 = Math.max(0, Math.floor((Math.min(...points.map(p => p.y)) - radius) / CELL_Y));
@@ -169,7 +163,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
     let pending = false;
     const wake = () => { if (!raf) raf = requestAnimationFrame(frame); };
     const move = (event: PointerEvent) => {
-      if (disabled.matches || event.pointerType === "touch" || !prepare()) return;
+      if (disabled.matches || event.pointerType === "touch" || renderedOnPlane() || !prepare()) return;
       pointerX = event.clientX; pointerY = event.clientY;
       if (!listening) {
         listening = true;
@@ -180,7 +174,7 @@ export function useImagePixelTrail(ref: RefObject<HTMLImageElement | null>, read
       }
       inside = true;
       pending = true;
-      hoverImage(img, true);
+      setImageHover(hoverOwner, true);
       wake();
     };
     const scroll = () => { if (inside) wake(); };

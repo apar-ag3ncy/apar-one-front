@@ -11,6 +11,8 @@ export interface CaseMotionProfile {
 
 /** Art direction belongs to the brand; timing/lifecycle belong to the shared components. */
 const PROFILES: Record<string, CaseMotionProfile> = {
+  "manish-jewellers": { form: "facet", direction: -1, bend: .4, opening: "power3.out", cover: "/work/manish-jewellers/curated/trio-landscape.webp",
+    gallery: { lift: 20, tilt: .3, restingScale: .98, scrub: .8 } },
   chheda: { form: "petal", direction: 1, bend: .8, opening: "power3.out", cover: "/work/featured/chheda-banner.webp",
     gallery: { lift: 30, tilt: .65, restingScale: .965, scrub: .8 } },
   girvaan: { form: "petal", direction: -1, bend: .8, opening: "power2.out", cover: "/work/girvaan/curated/pink-bangle-hero.webp",
@@ -38,6 +40,11 @@ export function caseMotion(slug: string): CaseMotionProfile {
 
 /** Supplied APAR artwork, never generated stand-ins for a client's project. */
 export const CURATED_CASE_MEDIA: Record<string, { hero: string; photos: string[] }> = {
+  "manish-jewellers": {
+    hero: "/work/manish-jewellers/curated/blue-portrait.webp",
+    photos: ["brand-monogram", "trio-landscape", "gold-portrait", "blue-necklace", "blue-earrings", "ruby-portrait", "ruby-earrings", "crimson-fan-necklace", "crimson-drop-earrings"]
+      .map(name => `/work/manish-jewellers/curated/${name}.webp`),
+  },
   "high-on-smiles": {
     hero: "/work/high-on-smiles/curated/smiling-patient-hero.webp",
     photos: ["patient-education", "brand-stationery", "child-portrait", "care-products", "treatment-suite", "clinic-exterior", "reception-signage", "clinic-interior"]

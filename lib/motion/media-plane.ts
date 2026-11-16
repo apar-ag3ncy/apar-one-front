@@ -24,3 +24,18 @@ export function planeMesh(columns = 24, rows = 16) {
 }
 
 export const mediaBend = (velocity: number) => Math.max(-14, Math.min(14, velocity * .006));
+
+/** Invert the small vertex bend so hover pixels stay underneath the pointer. */
+export function photoPoint(x: number, y: number, width: number, height: number,
+  state: { entry: number; parallax: number; hover: number; x: number; y: number }, bend: number, side: number) {
+  const entry = 1 - state.entry;
+  const localX = x - state.x * state.hover * 3;
+  const localY = y - entry * 24 - state.parallax * 6 + state.hover * 3 - state.y * state.hover * 3;
+  let u = x / width, v = y / height;
+  for (let i = 0; i < 4; i++) {
+    u = (localX - width * .03 * entry - Math.sin(v * 3.14159) * side * entry * 8) / (width * (1 - .06 * entry));
+    const curve = Math.sin(u * 3.14159);
+    v = (localY - curve * (bend - entry * 11)) / (height + curve * entry * 22);
+  }
+  return { x: u * width, y: v * height };
+}

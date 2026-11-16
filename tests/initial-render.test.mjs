@@ -32,9 +32,24 @@ test("reveal wrappers do not hide routed links or nested buttons in server HTML"
 
 test("contact artwork exists without JavaScript, WebGL or a downloaded effect", () => {
   const html = renderToStaticMarkup(createElement(ContactOrb));
-  assert.match(html, /class="ttu-orb-placeholder"/);
+  assert.match(html, /<svg[^>]*class="ttu-orb-placeholder"[^>]*viewBox="0 0 100 100"/);
+  assert.match(html, /<path[^>]*stroke-width="2.2"/);
+  assert.match(html, /#F6C57A/);
+  assert.match(html, /#EB3B25/);
+  assert.doesNotMatch(html, /<img|<image|<use|<script/);
   assert.doesNotMatch(html, /canvas|ttu-orb-effect/);
   assert.doesNotMatch(html, hiddenStyle);
+});
+
+test("multiple contact orbs keep their gradient references independent", () => {
+  const html = renderToStaticMarkup(createElement("div", null,
+    createElement(ContactOrb), createElement(ContactOrb)));
+  const ids = [...html.matchAll(/ id="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(ids.length, 8);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const [, reference] of html.matchAll(/url\(#([^)]+)\)/g)) {
+    assert.ok(ids.includes(reference));
+  }
 });
 
 test("Talk to us has an accessible contact destination before hydration", () => {

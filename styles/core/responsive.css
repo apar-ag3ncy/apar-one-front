@@ -8,9 +8,9 @@
   .nav-links{display:none;}
   .nav-cta{display:none;}
   .nav-burger{display:flex;}
-  .nav.menu-open .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--cream);}
+  .nav.menu-open .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--ink);}
   .nav.menu-open .nav-burger span:nth-child(2){opacity:0;}
-  .nav.menu-open .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--cream);}
+  .nav.menu-open .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--ink);}
 }
 @media (max-width:760px){
   :root{--gut:22px;}
@@ -62,10 +62,9 @@
 }
 .ttu-orb-placeholder{
   display:block;width:100%;height:100%;border-radius:50%;
-  background:radial-gradient(ellipse 72% 24% at 50% 50%,#ffe9bc 0%,#ffb443 28%,#dd4b19 55%,transparent 85%),
-    radial-gradient(circle at 50% 50%,#352016 8%,#0c0a08 72%);
-  box-shadow:inset 0 0 9px 1px rgba(250,194,115,.3);
+  opacity:1;transition:opacity .2s ease;
 }
+.ttu-orb[data-ready="true"] .ttu-orb-placeholder{opacity:0;}
 .ttu-orb-effect{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .2s ease;}
 .ttu-orb-effect[data-ready="true"]{opacity:1;}
 /* hover-only message: small, soft, warm - sits to the LEFT so it never clips

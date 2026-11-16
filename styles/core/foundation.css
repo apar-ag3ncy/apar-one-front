@@ -90,6 +90,8 @@
   --cream:#F4EDE2;
   --cream-2:#EBE0CE;
   --paper:#FBF7EF;
+  --surface:#fff;
+  --surface-soft:#F6F7F9;
   --ink:#1A1714;
   --ink-soft:#6A6056;
   --ink-mid:#A89C8C;
@@ -147,6 +149,8 @@ html:not(.lenis){scroll-behavior:smooth;}
    separate trail hides so two pixel grids never overlap (set by pixel-dome.tsx) */
 html[data-on-dome="1"] .pixel-trail{opacity:0;}
 html[data-on-image="1"] .pixel-trail{opacity:0;}
+/* Hide immediately across the entire opted-out section, including its gaps. */
+body:has([data-no-pixel-trail]:hover) .pixel-trail{opacity:0;transition:none;}
 .image-pixel-trail{position:absolute;left:0;top:0;z-index:2;pointer-events:none;visibility:hidden;transform-origin:50% 50%;}
 .pixel-trail canvas{width:100vw;height:100vh;display:block;}
 
@@ -155,7 +159,7 @@ html.lenis,html.lenis body{height:auto;}
 .lenis.lenis-smooth{scroll-behavior:auto!important;}
 .lenis.lenis-stopped{overflow:hidden;}
 body{
-  margin:0;background:var(--cream);color:var(--ink);
+  margin:0;background:var(--surface);color:var(--ink);
   font-family:var(--sans);font-size:22px;line-height:1.5;font-weight:500;
   letter-spacing:.035em;word-spacing:.08em;
   font-synthesis:none;

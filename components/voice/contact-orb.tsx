@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
+import { ContactOrbArtwork } from "@/components/voice/contact-orb-artwork";
 import type Strands from "@/components/effects/strands";
 
 const ORB_PROPS = {
@@ -11,7 +12,7 @@ const ORB_PROPS = {
   glass: true, refraction: 1.1, dispersion: 1, glassSize: 1.05,
 };
 
-/** The contact target never depends on a shader, a timer or an animation chunk. */
+/** Complete artwork arrives in HTML; desktop motion progressively enhances it. */
 export function ContactOrb() {
   const [Canvas, setCanvas] = useState<typeof Strands | null>(null);
   const [ready, setReady] = useState(false);
@@ -22,13 +23,12 @@ export function ContactOrb() {
     const enhance = () => {
       cancelAnimationFrame(frame);
       if (!media.matches) { setCanvas(null); setReady(false); return; }
-      // Give the visible, functional CSS orb its first paint; start enhancement
-      // next frame instead of imposing the old fixed 1.8-second hold.
+      // Let the complete inline artwork paint before compiling desktop shaders.
       frame = requestAnimationFrame(() => {
         frame = requestAnimationFrame(() => {
           import("@/components/effects/strands").then(module => {
             if (active && media.matches) setCanvas(() => module.default);
-          }).catch(() => { /* The CSS orb remains usable offline. */ });
+          }).catch(() => { /* Inline artwork remains complete and usable offline. */ });
         });
       });
     };
@@ -37,8 +37,8 @@ export function ContactOrb() {
     return () => { active = false; cancelAnimationFrame(frame); media.removeEventListener("change", enhance); };
   }, []);
 
-  return <span className="ttu-orb" aria-hidden="true">
-    <span className="ttu-orb-placeholder" />
+  return <span className="ttu-orb" data-ready={ready} aria-hidden="true">
+    <ContactOrbArtwork />
     {Canvas && <span className="ttu-orb-effect" data-ready={ready}>
       <Canvas {...ORB_PROPS} onReadyChange={setReady} />
     </span>}

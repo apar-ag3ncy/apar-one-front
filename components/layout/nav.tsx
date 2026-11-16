@@ -10,9 +10,8 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { HoverText } from "@/components/motion/hover-text";
 import { COMPACT_NAV_QUERY } from "@/lib/motion-policy";
 
-// Dark landing routes use light navigation. Internal client stories now share
-// white surfaces and use the normal dark navigation treatment.
-const DARK_ROUTES = new Set(["/", "/team", "/start", "/creative/reel-cover", "/creative/exploded-ring"]);
+// The dark homepage hero and creative exhibits use light navigation.
+const DARK_ROUTES = new Set(["/", "/team", "/creative/reel-cover", "/creative/exploded-ring"]);
 const isCasePage = (path: string) => /^\/work\/[^/]+$/.test(path);
 
 const LINKS = [
@@ -103,7 +102,7 @@ export function Nav() {
       <header className={cn("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
           <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
-            <AparLogo onDark={onDark} />
+            <AparLogo onDark={onDark && !open} />
             <span className="brand-tag">
               AGENTIVE
               <br />
