@@ -14,7 +14,7 @@ const source = ts.transpileModule(fs.readFileSync("components/voice/voice-feedba
 function harness(t) {
   const slots = [], cleanups = [];
   t.after(() => cleanups.forEach(cleanup => cleanup?.()));
-  let cursor = 0, first = true, deadline, recorder, signal, resolveUpload;
+  let cursor = 0, first = true, deadline, recorder, signal, resolveUpload, body;
   const hooks = {
     useState(initial) {
       const index = cursor++;
@@ -41,7 +41,8 @@ function harness(t) {
     window: { MediaRecorder: Recorder, setInterval: () => 1, clearInterval() {}, setTimeout: callback => { deadline = callback; return 1; }, clearTimeout() {} },
     fetch: (_url, options) => new Promise((resolve, reject) => {
       signal = options.signal;
-      resolveUpload = () => resolve({ ok: true });
+      body = options.body;
+      resolveUpload = (result = { ok: true }) => resolve(result);
       signal.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
     }),
   };
@@ -70,7 +71,7 @@ function harness(t) {
     find(props => props.placeholder === "Your name").props.onChange({ target: { value: "Test Client" } });
     find(props => props.type === "checkbox").props.onChange({ target: { checked: true } });
   };
-  return { click, find, prepare, deadline: () => deadline(), recorder: () => recorder, signal: () => signal, resolve: () => resolveUpload() };
+  return { click, find, prepare, deadline: () => deadline(), recorder: () => recorder, signal: () => signal, body: () => body, resolve: result => resolveUpload(result) };
 }
 
 test("closing an upload aborts it and a late completion cannot reopen feedback", async t => {
@@ -101,4 +102,26 @@ test("recorder errors cannot turn failed audio into a reviewable note", async t 
   ui.recorder().onerror();
   assert.ok(ui.find(props => props.children === "Start recording"));
   assert.equal(ui.find(props => props.children === "Send privately ↗"), undefined);
+});
+
+test("the honeypot submits the current DOM value, including autofill without a change event", async t => {
+  const ui = harness(t);
+  await ui.prepare();
+  ui.find(props => props.name === "website").props.ref.current = { value: "filled-by-bot.invalid" };
+  const sending = ui.click("Send privately ↗");
+  assert.equal(ui.body().get("website"), "filled-by-bot.invalid");
+  ui.resolve();
+  await sending;
+});
+
+test("uncertain server delivery keeps the recording and displays the reconciliation warning", async t => {
+  const ui = harness(t);
+  await ui.prepare();
+  const sending = ui.click("Send privately ↗");
+  const message = "Delivery could not be confirmed. Your note may have reached us; please check with our team before resending.";
+  ui.resolve({ ok: false, json: async () => ({ error: message }) });
+  await sending;
+  assert.equal(ui.find(props => props.role === "alert").props.children, message);
+  assert.ok(ui.find(props => props.children === "Send privately ↗"));
+  assert.ok(ui.find(props => props.className === "vf-audio"));
 });

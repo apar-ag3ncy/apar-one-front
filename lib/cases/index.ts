@@ -35,6 +35,11 @@ export const CASES: Record<string, CaseData> = {
 
 export const CASE_SLUGS = Object.keys(CASES);
 
+/** Route params must never resolve inherited keys such as constructor or __proto__. */
+export function getCase(slug: string): CaseData | undefined {
+  return Object.hasOwn(CASES, slug) ? CASES[slug] : undefined;
+}
+
 /**
  * Single source of truth for the featured-client cards shown on the home page
  * and the clients page. Colours are pulled straight from each case `theme`, so

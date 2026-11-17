@@ -21,9 +21,8 @@ import { TalkToUs } from "@/components/voice/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
 
 export const metadata: Metadata = {
-  // Absolute base for OG/canonical URLs (silences the build warning and makes
-  // social previews resolve). Update when the custom domain goes live.
-  metadataBase: new URL("https://apar-one-front.vercel.app"),
+  // Production origin for absolute social-preview URLs.
+  metadataBase: new URL("https://apar.agency"),
   title: "APAR — AGENTIVE CREACY",
   description:
     "APAR is a digital marketing and branding agency in Mumbai for jewellery houses and premium brands. Strategy, branding, performance marketing, AI content and campaigns.",

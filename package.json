@@ -18,40 +18,47 @@
     "test:galaxy": "node --test tests/galaxy-motion.test.mjs",
     "check": "npm run lint && npm run typecheck && npm test",
     "check:production": "npm run build && node scripts/check-build.mjs",
+    "check:http": "node scripts/check-http.mjs",
     "docs:tree": "node scripts/project-tree.mjs",
     "test:motion": "node e2e/featured-motion-check.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.6.7",
+    "@eslint/eslintrc": "^3.3.7",
     "@radix-ui/react-accordion": "^1.2.3",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
-    "clsx": "^2.1.1",
-    "gsap": "^3.12.7",
-    "lenis": "^1.3.23",
-    "lucide-react": "^0.475.0",
-    "motion": "12.40.0",
-    "next": "^15.5.19",
-    "ogl": "^1.0.11",
-    "react": "19.2.7",
-    "react-dom": "19.2.7",
-    "tailwind-merge": "^3.0.1",
-    "three": "^0.186.0"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.3.7",
     "@tailwindcss/postcss": "^4.0.6",
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/three": "^0.186.0",
+    "clsx": "^2.1.1",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^15.5.19",
-    "playwright": "^1.60.0",
-    "potrace": "^2.1.8",
+    "eslint-config-next": "15.5.29",
+    "gsap": "^3.12.7",
+    "lenis": "^1.3.23",
+    "lucide-react": "^0.475.0",
+    "motion": "12.40.0",
+    "next": "15.5.29",
+    "ogl": "^1.0.11",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "sharp": "0.35.5",
+    "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.6",
+    "three": "^0.186.0",
     "tw-animate-css": "^1.2.4",
-    "typescript": "^5.7.3",
-    "sharp": "0.34.5"
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0",
+    "potrace": "^2.1.8"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "overrides": {
+    "postcss": "8.5.33"
   }
 }

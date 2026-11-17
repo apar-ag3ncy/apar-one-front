@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CaseStudy } from "@/components/work/case-study";
-import { CASES, CASE_SLUGS } from "@/lib/cases";
+import { CASE_SLUGS, getCase } from "@/lib/cases";
 import { caseAssets } from "@/lib/cases/assets.server";
 
 export function generateStaticParams() {
@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const data = CASES[slug];
+  const data = getCase(slug);
   if (!data) return {};
   return {
     title: `${data.card.name} - APAR Case Study`,
@@ -24,7 +24,7 @@ export async function generateMetadata({
 
 export default async function CasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const data = CASES[slug];
+  const data = getCase(slug);
   if (!data) notFound();
   const assets = caseAssets(slug, data.approach.gallery.length);
   return <CaseStudy data={data} assets={assets} />;

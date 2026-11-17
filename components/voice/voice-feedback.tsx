@@ -27,6 +27,7 @@ export function VoiceFeedback() {
   const discardOnStop = useRef(false);
   const nameInput = useRef<HTMLInputElement>(null);
   const consentInput = useRef<HTMLInputElement>(null);
+  const websiteInput = useRef<HTMLInputElement>(null);
 
   const releaseMic = () => { stream.current?.getTracks().forEach(track => track.stop()); stream.current = null; };
   const clearPreview = () => {
@@ -104,7 +105,7 @@ export function VoiceFeedback() {
     form.append("recording", blob.current, `feedback.${mime === "audio/mp4" ? "m4a" : mime === "audio/ogg" ? "ogg" : "webm"}`);
     form.append("name", name.trim()); form.append("brand", brand.trim());
     form.append("duration", String(Math.max(1, Math.min(LIMIT_SECONDS, seconds))));
-    form.append("consent", "yes"); form.append("website", "");
+    form.append("consent", "yes"); form.append("website", websiteInput.current?.value ?? "");
     const controller = new AbortController();
     upload.current = controller;
     const timeout = window.setTimeout(() => controller.abort(), 30_000);
@@ -140,7 +141,7 @@ export function VoiceFeedback() {
         <p className="vf-help">{phase === "review" ? "Listen back, enter your name, tick the privacy box, then send. Your note stays private." : "Up to one minute. You can listen back before sending. This recording is private and will not appear on the website."}</p>
         <label className="vf-field">Your name <input ref={nameInput} autoComplete="name" maxLength={80} value={name} onChange={e => { setName(e.target.value); setError(""); }} placeholder="Your name" disabled={phase === "sending" || phase === "recording"} /></label>
         <label className="vf-field">Brand / project <span>(optional)</span><input maxLength={80} value={brand} onChange={e => setBrand(e.target.value)} placeholder="Your brand" disabled={phase === "sending" || phase === "recording"} /></label>
-        <label className="vf-honeypot" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
+        <label className="vf-honeypot" aria-hidden="true">Website<input ref={websiteInput} name="website" tabIndex={-1} autoComplete="off" /></label>
         {phase === "review" && preview && <audio className="vf-audio" controls preload="metadata" src={preview} aria-label="Review your voice note" />}
         {phase === "recording" && <p className="vf-recording" role="status"><span className="vf-rec-dot" /> Recording · {seconds}s / {LIMIT_SECONDS}s</p>}
         {error && <p className="vf-error" role="alert">{error}</p>}
