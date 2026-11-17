@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manifesto } from "@/components/manifesto/manifesto";
 import "./manifesto.css";
+import "@/styles/inner-mobile.css";
 
 export const metadata: Metadata = {
   title: "Manifesto — APAR AGENTIVE CREACY",

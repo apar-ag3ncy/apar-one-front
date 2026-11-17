@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/core/forms.css";
+import "@/styles/inner-mobile.css";
 import { StartForm } from "@/components/forms/start-form";
 
 export const metadata: Metadata = {

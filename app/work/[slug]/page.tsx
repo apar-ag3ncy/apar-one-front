@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import "@/styles/inner-mobile.css";
 import type { Metadata } from "next";
 import { CaseStudy } from "@/components/work/case-study";
 import { CASE_SLUGS, getCase } from "@/lib/cases";

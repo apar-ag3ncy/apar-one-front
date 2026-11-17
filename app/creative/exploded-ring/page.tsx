@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/inner-mobile.css";
 import Link from "next/link";
 import { ExplodedRingStage } from "@/components/work/exploded/exploded-ring-stage";
 

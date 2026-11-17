@@ -9,7 +9,6 @@ import "@/styles/surfaces.css";
 import "@/styles/mobile.css";
 import "@/styles/typography.css";
 import "@/styles/glass.css";
-import "@/styles/inner-mobile.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";

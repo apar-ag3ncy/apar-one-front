@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/inner-mobile.css";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { FEATURED_CLIENTS } from "@/lib/cases";
