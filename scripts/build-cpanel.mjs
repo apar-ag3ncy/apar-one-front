@@ -40,10 +40,14 @@ try {
   await fs.writeFile(path.join(api, '.htaccess'), '<Files "voice.php">\n  Require all denied\n</Files>\n');
   const manifest = [];
   async function walk(dir) {
+    // Source images can inherit macOS 0600 permissions. Apache must be able
+    // to read public assets; private credentials are never part of this tree.
+    await fs.chmod(dir, 0o755);
     for (const item of (await fs.readdir(dir, { withFileTypes: true })).sort((a,b)=>a.name.localeCompare(b.name))) {
       const file = path.join(dir, item.name);
       if (item.isDirectory()) await walk(file);
       else {
+        await fs.chmod(file, 0o644);
         const bytes = await fs.readFile(file);
         manifest.push({ path: path.relative(path.join(destination, 'public'), file), bytes: bytes.length,
           sha256: createHash('sha256').update(bytes).digest('hex') });
