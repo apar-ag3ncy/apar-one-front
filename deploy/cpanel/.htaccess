@@ -4,6 +4,7 @@ RewriteCond %{HTTP_HOST} !^(www\.)?apar\.agency(?::[0-9]+)?$ [NC]
 RewriteCond %{HTTP_HOST} !^preview\.apar\.agency(?::[0-9]+)?$ [NC]
 RewriteRule ^ - [L]
 RewriteRule ^(calendar\.apar\.agency|\.well-known|cgi-bin)(/|$) - [L]
+RewriteRule (^|/)\. - [F,L]
 
 RewriteRule ^api/voice-feedback/?$ api/voice-feedback/index.php [L]
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f

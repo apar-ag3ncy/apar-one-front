@@ -17,7 +17,10 @@ const source = await fs.mkdtemp(path.join(os.tmpdir(), 'apar-cpanel-build-'));
 try {
   for (const name of ['app', 'components', 'lib', 'public', 'styles', 'next.config.mjs',
     'package.json', 'package-lock.json', 'tsconfig.json', 'postcss.config.mjs', 'eslint.config.mjs']) {
-    await fs.cp(path.join(root, name), path.join(source, name), { recursive: true });
+    await fs.cp(path.join(root, name), path.join(source, name), {
+      recursive: true,
+      filter: file => !['.DS_Store', '__MACOSX'].includes(path.basename(file)) && !path.basename(file).startsWith('._'),
+    });
   }
   // Remove the Node-only route only from this isolated build, never the checkout.
   await fs.rm(path.join(source, 'app/api'), { recursive: true });
@@ -48,7 +51,7 @@ try {
     }
   }
   await walk(path.join(destination, 'public'));
-  const forbidden = manifest.filter(x => /(^|\/)(?:\.env[^/]*|node_modules|\.git|voice-config\.php)(\/|$)/.test(x.path));
+  const forbidden = manifest.filter(x => /(^|\/)(?:\.env[^/]*|node_modules|\.git|\.DS_Store|__MACOSX|\._[^/]*|voice-config\.php)(\/|$)/.test(x.path));
   if (forbidden.length) throw new Error('Private/build files found in public export');
   await fs.writeFile(path.join(destination, 'manifest.json'), JSON.stringify({ target: 'cpanel-static-php', files: manifest }, null, 2) + '\n');
   console.log(`cPanel package: ${destination}/public (${manifest.length} files). No server credentials included.`);
