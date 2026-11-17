@@ -100,7 +100,7 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
   }, [filter]);
 
   return (
-    <>
+    <main className="work-page">
       <section className="page-hero" data-screen-label="Work - Hero">
         <div className="wrap">
           <Reveal className="eyebrow">
@@ -131,7 +131,7 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
 
       <VelocityMarquee />
 
-      <section className="section" style={{ paddingTop: 24 }} data-screen-label="Work - Grid">
+      <section className="section work-grid-section" data-screen-label="Work - Grid">
         <div className="wrap">
           <div className="work-grid" ref={gridRef}>
             {shown.map((c, i) => (
@@ -171,7 +171,7 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
 
       <div id="showreel"><PinnedGallery clients={clients} /></div>
 
-      <section className="section-sm" style={{ paddingTop: 0 }} data-screen-label="Work - CTA strip">
+      <section className="section-sm work-cta" data-screen-label="Work - CTA strip">
         <div className="wrap">
           <div className="divline" />
           <div className="work-foot">
@@ -187,6 +187,6 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

@@ -187,6 +187,41 @@
   .is-cinematic h2 { font-size:clamp(37px,9.5vw,54px); }
 }
 
+/* Work is a browsable portfolio on phones: get to the projects sooner and
+   keep the original, uncropped creatives in a compact two-column grid. */
+@media (max-width:900px) {
+  .work-page .page-hero { padding-block:calc(96px + env(safe-area-inset-top)) 24px; }
+  .work-page .page-hero .eyebrow { margin-bottom:12px; }
+  .work-page .page-hero .lead { margin-top:14px; font-size:20px; line-height:1.45; }
+  .work-page .filter-row { margin-top:16px; gap:4px; }
+  .work-page .filter-row .chip { padding:10px; }
+  .work-page .filter-row .chip.sel::after { inset-inline:10px; }
+  .work-page .vmarquee { padding:12px var(--gut); }
+  .work-page .vmarquee span { font-size:22px; padding:.18em .3em; }
+  .work-page .work-grid-section { padding-block:16px 36px; }
+  .work-page .pin { padding-block:40px 32px; }
+  .work-page .pin-intro h2 { font-size:clamp(36px,7vw,48px); margin-block:14px 12px; }
+  .work-page .pin-intro p { font-size:18px; line-height:1.45; }
+  .work-page .pin-controls { padding-block:16px; }
+  .work-page .pin-track { gap:16px; padding-bottom:16px; }
+  .work-page .work-foot { margin-top:24px; gap:16px; }
+  .work-page .work-cta { padding-bottom:40px; }
+}
+@media (max-width:600px) {
+  .work-page .work-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:auto; gap:24px 14px; align-items:start; }
+  .work-page .work-card { min-width:0; }
+  .work-page .work-card .tagpill { top:8px; left:8px; max-width:calc(100% - 16px);
+    padding:5px 8px; font-size:12px; line-height:1.2; letter-spacing:.07em; }
+  .work-page .work-card .cap { margin-top:10px; gap:6px; }
+  .work-page .work-card .cap h3 { min-width:0; font-size:22px; line-height:1.15; }
+  .work-page .work-card .cap .yr { font-size:15px; letter-spacing:.04em; }
+  .work-page .work-card .cap p { margin-top:4px; font-size:17px; line-height:1.35; }
+  .work-page .pin-card { width:min(68vw,280px); }
+  .work-page .pin-card .cap { margin-top:12px; }
+  .work-page .pin-card .cap p { font-size:18px; line-height:1.4; }
+}
+
 /* The compact header also prevents the six desktop links crowding on tablets.
    This changes navigation only; desktop content and image grids keep their size. */
 @media (max-width:1100px), (hover:none) and (pointer:coarse) {

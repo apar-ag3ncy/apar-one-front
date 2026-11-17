@@ -16,6 +16,8 @@
    WORK page
    ============================================================ */
 .filter-row{display:flex;gap:10px;margin-top:38px;flex-wrap:wrap;}
+.work-grid-section{padding-top:24px;}
+.work-cta{padding-top:0;}
 .work-foot{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:48px;flex-wrap:wrap;}
 .empty-note{text-align:center;color:var(--ink-soft);padding:60px 0;font-family:var(--serif);font-style:italic;font-size:22px;}
 .work-card .cap p{font-size:19px;color:var(--ink-soft);margin:2px 0 0;}
