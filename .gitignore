@@ -56,3 +56,6 @@ next-env.d.ts
 /high on smiles/
 /silver-emporium products/
 /reports/
+
+# Server-only cPanel secrets (the example template is safe to commit).
+/deploy/cpanel/voice-config.php

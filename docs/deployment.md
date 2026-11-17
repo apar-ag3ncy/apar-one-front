@@ -1,8 +1,10 @@
 # APAR production deployment
 
-Target: `https://apar.agency`. Runtime: Node.js 22, Next.js 15, React 19,
-TypeScript and Tailwind CSS. Use the Node.js app included with the existing
-GoDaddy hosting plan so `/api/voice-feedback` remains server-side.
+Target: `https://apar.agency`. Build stack: Node.js 22, Next.js 15, React 19,
+TypeScript and Tailwind CSS. The cPanel File Manager release uses Next's static
+export for pages and Apache/PHP 8.3 for `/api/voice-feedback`. The normal Node
+deployment remains supported. No SSH or additional hosting purchase is required
+for the cPanel release.
 
 ## Protected service
 
@@ -36,7 +38,49 @@ TypeScript, Tailwind and lint packages are included in `dependencies` because
 GoDaddy's documented installer omits development dependencies. Playwright and
 the offline logo tracing tool remain development-only.
 
-## Package and hosting
+## cPanel File Manager release
+
+Build an isolated export with `npm run build:cpanel -- /absolute/new/release`.
+The builder copies source into a temporary directory, removes the Node API only
+from that copy, exports the pages, and adds the tested PHP adapter. It leaves
+the normal `.next` and source route intact. `public/` in the release contains
+only deployable files; `manifest.json` records every file's SHA-256. Run
+`npm run test:cpanel` and `node scripts/check-cpanel.mjs /absolute/new/release`.
+The latter uses deliberately invalid fixture credentials and tests rejection
+paths, never real uploads. CI performs both checks on PHP 8.3.
+
+ZIP the *contents* of the release's `public/`, including its dotfiles. Upload
+outside the live document root and extract into a new staging directory. Do not
+upload the source tree, `node_modules`, `.next`, `.env*` or private configuration.
+Use a separate preview document root and hostname so root-relative assets and
+links behave exactly as they will on production. The supplied rules recognize
+`preview.apar.agency` and send `X-Robots-Tag: noindex, nofollow` there.
+
+Create `/home/fm44mg4nvhpo/apar-private/voice-config.php` outside `public_html`
+using `deploy/cpanel/voice-config.example.php`. The owner enters the current
+server secret directly in cPanel; do not put it in chat, Git or the ZIP. Limit
+the directory/file to the hosting account (0700/0600). Set
+`allowed_origins` to `['https://preview.apar.agency']` for preview testing.
+PHP must have cURL and iconv enabled. The API-specific `.user.ini` turns off
+PHP's automatic form parsing so duplicate fields can be rejected rather than
+silently collapsed. Verify the hosting runtime honors it; the endpoint returns
+503 if it does not. Do not change account-wide PHP settings or Calendar's PHP
+configuration. A `.user.ini` cache delay may apply after first upload.
+
+The PHP adapter uses the same private Supabase bucket, metadata table and
+database-backed rate limiter as the Node route. It bounds upload and provider
+work, verifies audio format, hashes the connection IP, and reconciles uncertain
+saves without deleting potentially committed audio. Validate one explicitly
+labelled synthetic recording on the hosted preview and inspect its private
+storage and metadata before declaring this feature ready.
+
+Apache tests must cover `/work`, `/work/`, case pages, real 404 status codes,
+direct API POSTs without redirects, denied library access, and Calendar host
+isolation. The website-specific directory/headers/error rules are host-scoped;
+the Calendar path is excluded from rewrites. Never replace a host-generated
+`.htaccess` block without inspecting and preserving unrelated directives.
+
+## Optional Node package
 
 The upload ZIP must have `package.json` and `package-lock.json` at its root,
 plus `app/`, `components/`, `lib/`, `public/`, `styles/` and config files.

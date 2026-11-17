@@ -1,0 +1,28 @@
+# Main APAR website only. Calendar has its own document root and rules.
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^(www\.)?apar\.agency(?::[0-9]+)?$ [NC]
+RewriteCond %{HTTP_HOST} !^preview\.apar\.agency(?::[0-9]+)?$ [NC]
+RewriteRule ^ - [L]
+RewriteRule ^(calendar\.apar\.agency|\.well-known|cgi-bin)(/|$) - [L]
+
+RewriteRule ^api/voice-feedback/?$ api/voice-feedback/index.php [L]
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/?$ $1.html [L]
+
+<If "%{HTTP_HOST} == 'apar.agency' || %{HTTP_HOST} == 'www.apar.agency' || %{HTTP_HOST} == 'preview.apar.agency'">
+  # Exported /work.html coexists with the /work/ asset directory. Avoid a
+  # directory redirect before the clean-URL rewrite; never list directories.
+  DirectorySlash Off
+  Options -Indexes
+  ErrorDocument 404 /404.html
+  <IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header set Cache-Control "no-cache" "expr=%{REQUEST_URI} !~ m#^/api/#"
+    Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_URI} =~ m#^/_next/static/#"
+  </IfModule>
+</If>
+<If "%{HTTP_HOST} == 'preview.apar.agency'">
+  <IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow"
+  </IfModule>
+</If>

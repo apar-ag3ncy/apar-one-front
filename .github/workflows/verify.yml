@@ -19,6 +19,16 @@ jobs:
       - run: npm run check
       - run: npm audit --omit=dev
       - run: npm run check:production
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, iconv
+          coverage: none
+      - run: npm run test:cpanel
+      - name: Verify cPanel static export
+        run: npm run build:cpanel -- /tmp/apar-cpanel-build
+      - name: Verify cPanel pages and PHP rejection paths
+        run: node scripts/check-cpanel.mjs /tmp/apar-cpanel-build
       - name: Check production routes and assets
         run: |
           npm start -- --hostname 127.0.0.1 --port 3021 > /tmp/apar-server.log 2>&1 &
