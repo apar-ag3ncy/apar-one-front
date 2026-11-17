@@ -2,7 +2,8 @@
 
 Target: `https://apar.agency`. Build stack: Node.js 22, Next.js 15, React 19,
 TypeScript and Tailwind CSS. The cPanel File Manager release uses Next's static
-export for pages and Apache/PHP 8.3 for `/api/voice-feedback`. The normal Node
+export for pages. Private voice recording is disabled for this launch; a small
+PHP endpoint returns HTTP 410 without loading credentials or contacting storage. The normal Node
 deployment remains supported. No SSH or additional hosting purchase is required
 for the cPanel release.
 
@@ -23,14 +24,14 @@ recursive sync or delete against the entire `public_html` directory.
    This checks HTTP routes, assets and rejection paths, not browser interaction.
 5. Test the hosted preview on desktop and phone: navigation, all case pages,
    menus, animations, image hover, audio controls and the brief form.
-6. Configure and verify the real backend before declaring voice feedback live.
-   Add `--require-voice` to HTTP checks once its environment is configured.
+6. For the cPanel launch, run HTTP checks with `--voice-disabled` and confirm
+   the recording entry point is absent. Existing approved audio testimonials remain.
 7. Commit the tested source and wait for the GitHub `Verify production build`
    workflow to pass. Compare the published source to the tested commit.
 
 CI also audits production dependencies and starts the built server for HTTP
 route/asset checks. Its missing voice credentials are explicitly reported as a
-warning; the hosted release must pass `--require-voice` with real configuration.
+warning on the optional Node build. The cPanel release must pass `--voice-disabled`.
 
 Next and Sharp are pinned to patched versions. The PostCSS 8.5.33 override
 replaces a vulnerable transitive version while retaining Next 15. Build-time
@@ -42,12 +43,12 @@ the offline logo tracing tool remain development-only.
 
 Build an isolated export with `npm run build:cpanel -- /absolute/new/release`.
 The builder copies source into a temporary directory, removes the Node API only
-from that copy, exports the pages, and adds the tested PHP adapter. It leaves
+from that copy, exports the pages, and adds the disabled API response. It leaves
 the normal `.next` and source route intact. `public/` in the release contains
 only deployable files; `manifest.json` records every file's SHA-256. Run
 `npm run test:cpanel` and `node scripts/check-cpanel.mjs /absolute/new/release`.
-The latter uses deliberately invalid fixture credentials and tests rejection
-paths, never real uploads. CI performs both checks on PHP 8.3.
+The latter requires the disabled API response for every probe and never uploads
+recordings. CI performs both checks on PHP 8.3.
 
 ZIP the *contents* of the release's `public/`, including its dotfiles. Upload
 outside the live document root and extract into a new staging directory. Do not
@@ -56,23 +57,10 @@ Use a separate preview document root and hostname so root-relative assets and
 links behave exactly as they will on production. The supplied rules recognize
 `preview.apar.agency` and send `X-Robots-Tag: noindex, nofollow` there.
 
-Create `/home/fm44mg4nvhpo/apar-private/voice-config.php` outside `public_html`
-using `deploy/cpanel/voice-config.example.php`. The owner enters the current
-server secret directly in cPanel; do not put it in chat, Git or the ZIP. Limit
-the directory/file to the hosting account (0700/0600). Set
-`allowed_origins` to `['https://preview.apar.agency']` for preview testing.
-PHP must have cURL and iconv enabled. The API-specific `.user.ini` turns off
-PHP's automatic form parsing so duplicate fields can be rejected rather than
-silently collapsed. Verify the hosting runtime honors it; the endpoint returns
-503 if it does not. Do not change account-wide PHP settings or Calendar's PHP
-configuration. A `.user.ini` cache delay may apply after first upload.
-
-The PHP adapter uses the same private Supabase bucket, metadata table and
-database-backed rate limiter as the Node route. It bounds upload and provider
-work, verifies audio format, hashes the connection IP, and reconciles uncertain
-saves without deleting potentially committed audio. Validate one explicitly
-labelled synthetic recording on the hosted preview and inspect its private
-storage and metadata before declaring this feature ready.
+No Supabase credentials, upload handler, or PHP upload settings are included in
+this launch. Existing private configuration is not read. The adapter source is
+retained for future development and is excluded from the release. Re-enabling
+recording requires a separate hosted integration test before publication.
 
 Apache tests must cover `/work`, `/work/`, case pages, real 404 status codes,
 direct API POSTs without redirects, denied library access, and Calendar host

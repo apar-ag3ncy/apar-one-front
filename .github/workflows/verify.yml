@@ -27,7 +27,7 @@ jobs:
       - run: npm run test:cpanel
       - name: Verify cPanel static export
         run: npm run build:cpanel -- /tmp/apar-cpanel-build
-      - name: Verify cPanel pages and PHP rejection paths
+      - name: Verify cPanel pages and disabled recording endpoint
         run: node scripts/check-cpanel.mjs /tmp/apar-cpanel-build
       - name: Check production routes and assets
         run: |

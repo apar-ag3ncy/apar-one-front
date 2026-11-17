@@ -30,9 +30,9 @@ test("every brand has one accessible story with its original attribution", () =>
   assert.match(html, /Manish Jewellers · Campaign line/);
 });
 
-test("new feedback stays private and no audio is downloaded with the gallery", () => {
+test("the launch has no recording entry point or eager audio downloads", () => {
   const html = renderToStaticMarkup(createElement(TestimonialCarousel, { pages }));
-  assert.match(html, /Leave APĀR a private voice note/);
+  assert.doesNotMatch(html, /Leave APĀR a private voice note|Start recording|tc-voice-wrap/);
   assert.doesNotMatch(html, /<audio|autoplay|<canvas/);
 });
 

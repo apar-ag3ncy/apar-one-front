@@ -22,6 +22,7 @@ Usage: node scripts/check-http.mjs [URL] [options]
   --concurrency N      Concurrent HTTP requests (default 4, max 12)
   --max-assets N       Asset discovery cap; exceeding it FAILS (default 2000, max 10000)
   --require-voice      Treat unavailable voice configuration (503) as failure
+  --voice-disabled    Require every voice API probe to return the launch-disabled response
   --help              Show this help without making requests
 
 Checks source app routes/cases, missing/inherited 404s, HTML/CSS asset references,
@@ -36,13 +37,14 @@ This does not verify UI, hydration, playback, visual appearance or persistence.
 
 export function parseOptions(args = process.argv.slice(2), env = process.env) {
   const options = { baseUrl: env.BASE_URL || "http://127.0.0.1:3021", sourceRoot: ROOT,
-    reportPath: null, timeoutMs: 10_000, concurrency: 4, maxAssets: 2000, requireVoice: false };
+    reportPath: null, timeoutMs: 10_000, concurrency: 4, maxAssets: 2000, requireVoice: false, voiceDisabled: false };
   const flags = { "--base-url": "baseUrl", "--source-root": "sourceRoot", "--report": "reportPath",
     "--timeout-ms": "timeoutMs", "--concurrency": "concurrency", "--max-assets": "maxAssets" };
   let positional = false;
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--help" || arg === "-h") return { help: true };
+    if (arg === "--voice-disabled") { options.voiceDisabled = true; continue; }
     if (arg === "--require-voice") { options.requireVoice = true; continue; }
     if (Object.hasOwn(flags, arg)) {
       if (!args[i + 1] || args[i + 1].startsWith("--")) throw new Error(`Missing value for ${arg}`);
@@ -50,6 +52,7 @@ export function parseOptions(args = process.argv.slice(2), env = process.env) {
     } else if (!arg.startsWith("-") && !positional) { options.baseUrl = arg; positional = true; }
     else throw new Error(`Unknown argument: ${arg}`);
   }
+  if (options.requireVoice && options.voiceDisabled) throw new Error("Voice cannot be both required and disabled");
   const base = new URL(options.baseUrl);
   if (!["http:", "https:"].includes(base.protocol) || base.username || base.password || base.pathname !== "/" || base.search || base.hash) {
     throw new Error("BASE_URL must be an HTTP(S) origin without credentials, path, query or fragment");
@@ -331,10 +334,16 @@ export async function runSmoke(options, transport = fetch) {
     { name: "duplicate field", init: { method: "POST", headers: { Origin: "https://apar.agency" }, body: duplicate }, expected: 400 },
   ];
   for (const probe of probes) {
+    if (options.voiceDisabled) probe.expected = 410;
     const result = await getResponse(apiUrl, probe.init, options, transport);
     const issues = result.error ? [result.error] : [];
     let outcome;
-    if (probe.init.method === "POST") {
+    if (options.voiceDisabled) {
+      if (result.status !== 410) issues.push(`Expected disabled status 410, received ${result.status}`);
+      let payload;
+      try { payload = JSON.parse(result.body.toString("utf8")); } catch {}
+      if (result.contentType !== "application/json" || payload?.error !== "Voice feedback is disabled for this launch." || payload.ok === true) issues.push("Expected the explicit launch-disabled response");
+    } else if (probe.init.method === "POST") {
       let payload;
       try { payload = JSON.parse(result.body.toString("utf8")); } catch { /* Report MIME/schema failure below. */ }
       if (result.contentType !== "application/json" || !payload || typeof payload.error !== "string" || !payload.error.trim() || payload.ok === true) issues.push("Expected a JSON error response");
@@ -348,7 +357,7 @@ export async function runSmoke(options, transport = fetch) {
   const counts = Object.fromEntries(["pass", "fail", "warn"].map(outcome => [outcome, checks.filter(check => check.outcome === outcome).length]));
   return { createdAt: new Date().toISOString(), baseUrl: options.baseUrl, sourceRoot: options.sourceRoot, httpOnly: true,
     source: { appRoutes: targets.routes.length - targets.slugs.length, cases: targets.slugs.length, caseSlugs: targets.slugs, publicAudioPaths: targets.audio.length },
-    settings: { timeoutMs: options.timeoutMs, concurrency: options.concurrency, maxAssets: options.maxAssets, requireVoice: options.requireVoice },
+    settings: { timeoutMs: options.timeoutMs, concurrency: options.concurrency, maxAssets: options.maxAssets, requireVoice: options.requireVoice, voiceDisabled: options.voiceDisabled },
     summary: { ...counts, checks: checks.length, outcome: counts.fail ? "fail" : counts.warn ? "pass-with-warnings" : "pass" },
     coverage: { ...coverage, skippedExternalOrigins: [...skippedExternal].sort(), assetCapExceeded: capExceeded },
     limitations: ["HTTP responses only; no UI, browser execution, hydration, playback or visual verification.",

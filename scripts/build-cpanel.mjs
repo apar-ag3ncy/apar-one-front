@@ -32,12 +32,9 @@ try {
   await fs.cp(path.join(source, 'out'), path.join(destination, 'public'), { recursive: true });
   const api = path.join(destination, 'public/api/voice-feedback');
   await fs.mkdir(api, { recursive: true });
-  for (const name of ['index.php', 'voice.php', '.user.ini']) {
-    await fs.copyFile(path.join(root, 'deploy/cpanel', name), path.join(api, name));
-  }
+  // This launch has no recording UI or storage credentials. Fail closed for old links.
+  await fs.copyFile(path.join(root, 'deploy/cpanel/voice-disabled.php'), path.join(api, 'index.php'));
   await fs.copyFile(path.join(root, 'deploy/cpanel/.htaccess'), path.join(destination, 'public/.htaccess'));
-  // Disallow direct browsing of the adapter library; the endpoint includes it locally.
-  await fs.writeFile(path.join(api, '.htaccess'), '<Files "voice.php">\n  Require all denied\n</Files>\n');
   const manifest = [];
   async function walk(dir) {
     // Source images can inherit macOS 0600 permissions. Apache must be able
@@ -57,7 +54,7 @@ try {
   await walk(path.join(destination, 'public'));
   const forbidden = manifest.filter(x => /(^|\/)(?:\.env[^/]*|node_modules|\.git|\.DS_Store|__MACOSX|\._[^/]*|voice-config\.php)(\/|$)/.test(x.path));
   if (forbidden.length) throw new Error('Private/build files found in public export');
-  await fs.writeFile(path.join(destination, 'manifest.json'), JSON.stringify({ target: 'cpanel-static-php', files: manifest }, null, 2) + '\n');
+  await fs.writeFile(path.join(destination, 'manifest.json'), JSON.stringify({ target: 'cpanel-static', voiceFeedback: 'disabled', files: manifest }, null, 2) + '\n');
   console.log(`cPanel package: ${destination}/public (${manifest.length} files). No server credentials included.`);
 } finally {
   await fs.rm(source, { recursive: true, force: true });
