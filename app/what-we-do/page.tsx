@@ -38,7 +38,7 @@ export default function WhatWeDoPage() {
           <Reveal className="eyebrow">
             <i className="dot" /> What we do
           </Reveal>
-          <Reveal as="h1" className="display d-lg" style={{ marginTop: 8, maxWidth: "16ch" }}>
+          <Reveal as="h1" className="display d-lg service-title" style={{ marginTop: 8 }}>
             We build brands - and <em>look after them.</em>
           </Reveal>
           <Reveal as="p" className="lead" i={1} style={{ maxWidth: "54ch" }}>
@@ -97,7 +97,7 @@ export default function WhatWeDoPage() {
             <span>The founder</span>
             <i className="ln" />
           </div>
-          <div className="cols cols-2" style={{ marginTop: 44, alignItems: "start" }}>
+          <div className="cols cols-2 service-founder">
             <Reveal as="h2" className="display d-md">
               Built by <em>Preyansh Vora.</em>
             </Reveal>

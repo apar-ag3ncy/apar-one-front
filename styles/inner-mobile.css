@@ -1,0 +1,109 @@
+/* Inner-page phone/tablet rhythm. Keep every rule anchored to a route shell:
+   the landing page, shared navigation/footer and desktop layouts stay intact. */
+@media (max-width:900px) {
+  :is(.services-page,.clients-page) .page-hero {
+    padding-block:calc(96px + env(safe-area-inset-top)) 24px;
+  }
+  :is(.services-page,.clients-page) .page-hero .eyebrow { margin-bottom:12px; }
+  :is(.services-page,.clients-page) .page-hero .lead { margin-top:14px; font-size:20px; line-height:1.45; }
+  :is(.services-page,.clients-page) .section { padding-block:36px; }
+  :is(.services-page,.clients-page) .section-sm { padding-bottom:36px; }
+  :is(.services-page,.clients-page) :is(.work-foot,.clients-foot) { margin-top:24px; gap:16px; }
+
+  .services-page .service-title { max-width:100%; }
+  .services-page .service-pillars { margin-top:16px; }
+  .services-page .service-pillar { grid-template-columns:28px minmax(0,1fr); gap:12px 14px; padding-block:24px; }
+  .services-page .service-pillar p { margin-top:10px; line-height:1.5; }
+  .services-page .service-deliverables { grid-column:2; margin:0; }
+  .services-page .service-deliverables li { display:inline-block; border:0; padding:4px 10px 4px 0; }
+  .services-page .service-founder { margin-top:24px; gap:20px; }
+  .services-page .service-founder .lead { font-size:20px; line-height:1.5; max-width:100%; }
+  .services-page .service-team-link { margin-top:16px; white-space:normal; }
+
+  .clients-page .clients-featured { padding-top:16px; }
+  .clients-page .featured-clients { margin-top:24px; gap:28px 18px; }
+  .clients-page .client-story-caption { padding-top:12px; }
+  .clients-page .client-story-caption h3 { margin-block:8px; }
+  .clients-page .client-story-caption p { line-height:1.45; }
+  .clients-page .roster { margin-top:20px; }
+  .clients-page .roster-row { padding-block:16px; gap:8px 14px; }
+  .clients-page .rr-name { overflow-wrap:anywhere; }
+
+  .case-page.case-cinematic .case-hero { padding-block:calc(96px + env(safe-area-inset-top)) 28px; }
+  .case-page.case-cinematic .case-hero-in { gap:14px; }
+  .case-page.case-cinematic .case-sub { line-height:1.45; max-width:100%; }
+  .case-page.case-cinematic .case-meta { gap:16px; padding-top:16px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .case-page.case-cinematic .case-meta .m:first-child { grid-column:auto; }
+  .case-page.case-cinematic .case-meta .m p { font-size:19px; }
+  .case-page.case-cinematic .case-meta .m h4 { margin-bottom:4px; }
+  .case-page.case-cinematic .case-sec { padding-block:32px; }
+  .case-page.case-cinematic .case-lead { max-width:100%; margin:20px 0 0; text-align:left; font-size:28px; line-height:1.25; }
+  .case-page.case-cinematic .case-cols { margin-top:28px; gap:24px; }
+  .case-page.case-cinematic .case-cols h3 { margin-bottom:10px; }
+  .case-page.case-cinematic .case-cols p { font-size:20px; line-height:1.5; }
+  .case-page.case-cinematic .case-list { margin-top:12px; }
+  .case-page.case-cinematic .case-list li { padding-block:10px; font-size:19px; }
+  .case-page.case-cinematic .case-list li::before { top:18px; }
+  .case-page.case-cinematic .case-work-journey { padding-block:28px; }
+  .case-page.case-cinematic .case-reel-stage { padding-block:16px; }
+  .case-page.case-cinematic .case-reel-track { padding-block:16px; gap:20px; }
+  .case-page.case-cinematic .case-reel-panel figcaption { padding-top:12px; }
+  .case-page.case-cinematic .case-quote { padding-block:32px; }
+  .case-page.case-cinematic .glass-quote { padding:24px 0; }
+  .case-page.case-cinematic .case-quote blockquote { max-width:100%; font-size:30px; }
+  .case-page.case-cinematic .case-quote .by { margin-top:18px; }
+  .case-page.case-cinematic .case-next { padding:24px; gap:20px; min-height:0; }
+
+  .manifesto-page .manifesto-opening { padding-block:calc(96px + env(safe-area-inset-top)) 28px; }
+  .manifesto-page .manifesto-meta { margin-bottom:24px; }
+  .manifesto-page .manifesto-opening-bottom { margin-top:24px; gap:12px; }
+  .manifesto-page .manifesto-stage { padding-block:24px; }
+  .manifesto-page .manifesto-journey-top { padding-bottom:20px; }
+  .manifesto-page .manifesto-stage-body { padding-block:24px; gap:20px; }
+  .manifesto-page .manifesto-art { width:min(64%,240px); }
+  .manifesto-page .manifesto-art-label { font-size:14px; margin-top:12px; }
+  .manifesto-page .manifesto-chapter { padding-block:24px; }
+  .manifesto-page .manifesto-chapter+.manifesto-chapter { margin-top:8px; padding-top:32px; }
+  .manifesto-page .manifesto-kicker { margin-bottom:16px; }
+  .manifesto-page .manifesto-chapter h2 { max-width:100%; }
+  .manifesto-page .manifesto-chapter p { max-width:100%; margin-top:16px; line-height:1.5; }
+  .manifesto-page .manifesto-chapter small { margin-top:18px; max-width:100%; }
+  .manifesto-page .manifesto-sculpture-inner { min-height:0; padding-block:36px 24px; }
+  .manifesto-page .manifesto-sculpture-copy p { margin-top:16px; }
+  .manifesto-page .manifesto-closing { padding-block:40px; }
+  .manifesto-page .manifesto-closing-bottom { margin-top:24px; gap:16px; }
+
+  .start { padding-block:calc(92px + env(safe-area-inset-top)) 36px; }
+  .start .start-form { margin-top:20px; }
+  .start .start-grid { gap:24px; }
+  .start .start-lead { line-height:1.45; max-width:100%; margin-top:12px; }
+  .start .start-aesthetic-hint { margin-bottom:10px; line-height:1.4; }
+  .start .dial { gap:16px; }
+  .start .aesthetic-guide { padding-top:12px; gap:8px; }
+  .start .ag-tag { padding:4px 12px; }
+  .start .start-fields { gap:16px; }
+  .start .fld { gap:7px; }
+  .start .start-delivery-note { margin-top:0; max-width:100%; }
+
+  .xr-page .xr-intro { padding-top:calc(96px + env(safe-area-inset-top)); }
+  .xr-page .xr-lead { margin-top:16px; font-size:20px; line-height:1.5; }
+  .xr-page .xr-notes { padding-block:36px; }
+  .xr-page .xr-note-grid { margin-top:24px; gap:24px; }
+  .xr-page .xr-note p { max-width:100%; line-height:1.5; }
+  .xr-page .xr-foot { margin-top:28px; gap:16px; }
+}
+
+@media (max-width:600px) {
+  .clients-page .featured-clients { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 14px; }
+  .clients-page .client-story-media { border-radius:12px; }
+  .clients-page .client-story-index { top:10px; left:10px; font-size:12px; }
+  .clients-page .client-story-explore { right:6px; bottom:6px; padding:4px; gap:6px; font-size:13px; }
+  .clients-page .client-story-meta { flex-wrap:wrap; gap:4px; font-size:13px; letter-spacing:.05em; }
+  .clients-page .client-story-caption h3 { font-size:24px; }
+  .clients-page .client-story-caption p { font-size:17px; }
+  .clients-page .roster-row { grid-template-columns:28px minmax(0,1fr); }
+  .clients-page .rr-name { font-size:28px; }
+  .start .dial { --dial-size:230px; }
+  .start .dial-hub { padding:6%; }
+  .start .dial-desc { max-width:100%; font-size:16px; }
+}

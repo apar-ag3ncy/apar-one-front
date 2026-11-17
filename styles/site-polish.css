@@ -6,6 +6,10 @@
 :where(.clients-page,.services-page) .page-hero .lead{max-width:53ch;line-height:1.65;text-wrap:pretty;}
 :where(.clients-page,.services-page) .page-hero h1{line-height:1.06;text-wrap:balance;}
 .services-page .service-pillars{margin-top:32px;}
+.services-page .service-title{max-width:16ch;}
+.services-page .service-founder{margin-top:44px;align-items:start;}
+.clients-page .clients-featured{padding-top:30px;}
+.clients-page .featured-clients{margin-top:40px;}
 .service-pillar{display:grid;grid-template-columns:65px minmax(0,1fr) minmax(170px,.4fr);gap:var(--space-heading);align-items:start;padding:var(--space-heading) 0;border-bottom:1px solid var(--line);}
 .service-number{color:var(--red);font-style:oblique;font-size:18px;padding-top:6px;}
 .service-pillar h3{font-size:clamp(28px,3vw,44px);line-height:1.15;margin:0;}

@@ -46,13 +46,13 @@ export default function ClientsPage() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 30 }} data-screen-label="Clients - Featured">
+      <section className="section clients-featured" data-screen-label="Clients - Featured">
         <div className="wrap">
           <Reveal className="tag-line">
             <span>Featured stories</span>
             <i className="ln" />
           </Reveal>
-          <div className="featured-clients" style={{ marginTop: 40 }}>
+          <div className="featured-clients">
             {FEATURED_CLIENTS.filter(c => c.slug !== "manish-jewellers").map((c, i) => (
               <FeaturedCard key={c.slug} client={c} i={i} />
             ))}

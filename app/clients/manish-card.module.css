@@ -12,3 +12,10 @@
 .caption strong{font:var(--heading-weight) clamp(28px,3vw,42px)/1.2 var(--heading);letter-spacing:var(--heading-tracking);word-spacing:var(--heading-word-gap);text-transform:uppercase;}
 @media(hover:none){.explore{opacity:1;transform:none;}}
 @media(prefers-reduced-motion:reduce){.media img,.explore{transition:none;}}
+@media(max-width:600px){
+ .media{border-radius:12px;}
+ .caption{padding-top:12px;gap:8px;}
+ .caption>span{font-size:13px;letter-spacing:.05em;}
+ .caption strong{font-size:24px;}
+ .explore{right:6px;bottom:6px;padding:4px;gap:6px;font-size:13px;}
+}
