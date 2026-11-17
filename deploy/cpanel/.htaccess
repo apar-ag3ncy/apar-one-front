@@ -6,6 +6,11 @@ RewriteRule ^ - [L]
 RewriteRule ^(calendar\.apar\.agency|\.well-known|cgi-bin)(/|$) - [L]
 RewriteRule (^|/)\. - [F,L]
 
+# Keep the public launch on HTTPS without affecting sibling subdomains.
+RewriteCond %{HTTP_HOST} ^(www\.)?apar\.agency(?::[0-9]+)?$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://apar.agency%{REQUEST_URI} [R=301,L]
+
 RewriteRule ^api/voice-feedback/?$ api/voice-feedback/index.php [L]
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f
 RewriteRule ^(.+?)/?$ $1.html [L]
