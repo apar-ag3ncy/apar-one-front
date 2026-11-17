@@ -2,8 +2,8 @@
 
 Target: `https://apar.agency`. Build stack: Node.js 22, Next.js 15, React 19,
 TypeScript and Tailwind CSS. The cPanel File Manager release uses Next's static
-export for pages. Private voice recording is disabled for this launch; a small
-PHP endpoint returns HTTP 410 without loading credentials or contacting storage. The normal Node
+export for pages. Private voice recording uses PHP and an account-private folder outside
+`public_html`; no external storage service or API key is required. The normal Node
 deployment remains supported. No SSH or additional hosting purchase is required
 for the cPanel release.
 
@@ -24,14 +24,15 @@ recursive sync or delete against the entire `public_html` directory.
    This checks HTTP routes, assets and rejection paths, not browser interaction.
 5. Test the hosted preview on desktop and phone: navigation, all case pages,
    menus, animations, image hover, audio controls and the brief form.
-6. For the cPanel launch, run HTTP checks with `--voice-disabled` and confirm
-   the recording entry point is absent. Existing approved audio testimonials remain.
+6. For cPanel, run HTTP checks with `--require-voice` and test a synthetic upload
+   on the hosted preview. Verify the private audio file and metadata through cPanel
+   before enabling the UI. Existing approved audio testimonials remain.
 7. Commit the tested source and wait for the GitHub `Verify production build`
    workflow to pass. Compare the published source to the tested commit.
 
 CI also audits production dependencies and starts the built server for HTTP
 route/asset checks. Its missing voice credentials are explicitly reported as a
-warning on the optional Node build. The cPanel release must pass `--voice-disabled`.
+warning on the optional Node build. The cPanel release must pass `--require-voice` and private upload integration checks.
 
 Next and Sharp are pinned to patched versions. The PostCSS 8.5.33 override
 replaces a vulnerable transitive version while retaining Next 15. Build-time
@@ -43,12 +44,14 @@ the offline logo tracing tool remain development-only.
 
 Build an isolated export with `npm run build:cpanel -- /absolute/new/release`.
 The builder copies source into a temporary directory, removes the Node API only
-from that copy, exports the pages, and adds the disabled API response. It leaves
+from that copy, exports the pages, and adds the PHP private-upload endpoint. It leaves
 the normal `.next` and source route intact. `public/` in the release contains
 only deployable files; `manifest.json` records every file's SHA-256. Run
 `npm run test:cpanel` and `node scripts/check-cpanel.mjs /absolute/new/release`.
-The latter requires the disabled API response for every probe and never uploads
-recordings. CI performs both checks on PHP 8.3.
+The latter checks pages and rejection paths, then sends synthetic tones to an isolated
+local PHP server with temporary private storage. It checks exact stored bytes, 0700/0600
+permissions and rate limits using both native PHP multipart handling and raw-body
+fallback. Test files are removed at the end. CI performs these checks on PHP 8.3.
 
 ZIP the *contents* of the release's `public/`, including its dotfiles. Upload
 outside the live document root and extract into a new staging directory. Do not
@@ -57,10 +60,14 @@ Use a separate preview document root and hostname so root-relative assets and
 links behave exactly as they will on production. The supplied rules recognize
 `preview.apar.agency` and send `X-Robots-Tag: noindex, nofollow` there.
 
-No Supabase credentials, upload handler, or PHP upload settings are included in
-this launch. Existing private configuration is not read. The adapter source is
-retained for future development and is excluded from the release. Re-enabling
-recording requires a separate hosted integration test before publication.
+Recordings are saved under `/home/fm44mg4nvhpo/apar-private/voice-notes/YYYY-MM-DD/<id>/`.
+Each private submission has `note.json` and `recording.m4a`, `.webm`, or `.ogg`.
+Review and download them through authenticated cPanel File Manager; no public inbox
+route is exposed. Existing Supabase configuration is not read. Limits: 4 MiB per
+upload, three attempts per visitor per hour, 200 per day across the site and 512 MiB
+private storage. The browser caps recordings at 60 seconds; the server validates the
+reported duration and file signature, not a decoded media duration. Archive/download
+old notes before the storage ceiling is reached; never publish the private folder.
 
 Apache tests must cover `/work`, `/work/`, case pages, real 404 status codes,
 direct API POSTs without redirects, denied library access, and Calendar host

@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^voice-(local|validation)\.php$">
+  Require all denied
+</FilesMatch>

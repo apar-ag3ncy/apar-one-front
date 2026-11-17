@@ -19,7 +19,15 @@ The two featured recordings were approved for public playback by the site owner 
 
 These are AAC mono exports at 64 kbps with the full recordings preserved (about 27 and 36 seconds). The synthetic backend verification entry is excluded. Waveforms contain 48 normalized RMS measurements; no client-side decoding or animation loop is needed. The public copies total about 514 KiB and are not requested during page load.
 
-## Storage and access
+## GoDaddy PHP storage (current production)
+
+PHP stores submissions in `/home/fm44mg4nvhpo/apar-private/voice-notes`, outside the web root. In cPanel File Manager open that path, then the date and submission ID. `note.json` contains the sender, brand, timestamp and consent; download the adjacent audio file to listen. Direct public access is not provided. Directories use 0700 and files use 0600. The existing Supabase credentials are unused by this deployment.
+
+The upload endpoint accepts native PHP multipart uploads and falls back to bounded raw parsing if the server disables automatic parsing. It validates fields, consent, MIME and signatures, imposes a 4 MiB file cap, and saves each note atomically before confirming success. Limits are three attempts per visitor per hour, 200 site-wide per day, and 512 MiB of private storage. Browser recording is capped at 60 seconds; duration in metadata is client-reported. No note is published automatically.
+
+`APAR_VOICE_STORAGE_DIR` is a server-only override for tests; production uses the fixed private account path. The synthetic two-second tone in `tests/fixtures/voice-tone.m4a` is test audio, not a client recording.
+
+## Supabase storage (optional Node deployment)
 
 - `supabase/migrations/20261015_client_voice_feedback.sql` creates the private `client-voice-feedback` Storage bucket, metadata table, and submission rate-limit function.
 - Files live in Storage under `client-voice-feedback/YYYY-MM-DD/<uuid>.<extension>`. The `client_voice_feedback.storage_path` field links each metadata row to its file.

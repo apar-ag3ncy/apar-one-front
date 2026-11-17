@@ -3,6 +3,7 @@
 import { useRef, type CSSProperties, type ReactNode } from "react";
 import { PhotoSlot } from "@/components/media/photo-slot";
 import { ClientVoices } from "./client-voices";
+import { VoiceFeedback } from "@/components/voice/voice-feedback";
 import { useStoryGallery } from "./use-story-gallery";
 import { useStoryPlayback } from "./use-story-playback";
 import type { ClientVoice } from "@/lib/client-voices";
@@ -66,6 +67,7 @@ export function TestimonialCarousel({ pages, voices = [] }: { pages: Testimonial
           <span key={page.slug} data-current={index === active} />)}</div>
       </div>
       <ClientVoices notes={voices} />
+      <div className="tc-voice-wrap"><VoiceFeedback /></div>
     </div>
     <span className="tc-sr-only" aria-live={playing ? "off" : "polite"} aria-atomic="true">{pages[active]?.name} — story {active + 1} of {pages.length}</span>
   </section>;

@@ -32,8 +32,13 @@ try {
   await fs.cp(path.join(source, 'out'), path.join(destination, 'public'), { recursive: true });
   const api = path.join(destination, 'public/api/voice-feedback');
   await fs.mkdir(api, { recursive: true });
-  // This launch has no recording UI or storage credentials. Fail closed for old links.
-  await fs.copyFile(path.join(root, 'deploy/cpanel/voice-disabled.php'), path.join(api, 'index.php'));
+  // PHP saves privately on this hosting account. No external storage credentials.
+  await fs.copyFile(path.join(root, 'deploy/cpanel/voice-index.php'), path.join(api, 'index.php'));
+  for (const name of ['voice-local.php', 'voice-validation.php']) {
+    await fs.copyFile(path.join(root, 'deploy/cpanel', name), path.join(api, name));
+  }
+  await fs.copyFile(path.join(root, 'deploy/cpanel/voice.user.ini'), path.join(api, '.user.ini'));
+  await fs.copyFile(path.join(root, 'deploy/cpanel/voice.htaccess'), path.join(api, '.htaccess'));
   await fs.copyFile(path.join(root, 'deploy/cpanel/.htaccess'), path.join(destination, 'public/.htaccess'));
   const manifest = [];
   async function walk(dir) {
@@ -54,7 +59,7 @@ try {
   await walk(path.join(destination, 'public'));
   const forbidden = manifest.filter(x => /(^|\/)(?:\.env[^/]*|node_modules|\.git|\.DS_Store|__MACOSX|\._[^/]*|voice-config\.php)(\/|$)/.test(x.path));
   if (forbidden.length) throw new Error('Private/build files found in public export');
-  await fs.writeFile(path.join(destination, 'manifest.json'), JSON.stringify({ target: 'cpanel-static', voiceFeedback: 'disabled', files: manifest }, null, 2) + '\n');
+  await fs.writeFile(path.join(destination, 'manifest.json'), JSON.stringify({ target: 'cpanel-static', voiceFeedback: 'private-php-storage', files: manifest }, null, 2) + '\n');
   console.log(`cPanel package: ${destination}/public (${manifest.length} files). No server credentials included.`);
 } finally {
   await fs.rm(source, { recursive: true, force: true });

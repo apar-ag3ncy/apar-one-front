@@ -42,7 +42,7 @@ function harness(t) {
     fetch: (_url, options) => new Promise((resolve, reject) => {
       signal = options.signal;
       body = options.body;
-      resolveUpload = (result = { ok: true }) => resolve(result);
+      resolveUpload = (result = { ok: true, status: 201, json: async () => ({ ok: true, id: "00000000-0000-4000-8000-000000000001" }) }) => resolve(result);
       signal.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")), { once: true });
     }),
   };
@@ -124,4 +124,23 @@ test("uncertain server delivery keeps the recording and displays the reconciliat
   assert.equal(ui.find(props => props.role === "alert").props.children, message);
   assert.ok(ui.find(props => props.children === "Send privately ↗"));
   assert.ok(ui.find(props => props.className === "vf-audio"));
+});
+
+test("an HTML or malformed success response cannot discard the recording", async t => {
+  const ui = harness(t);
+  await ui.prepare();
+  const sending = ui.click("Send privately ↗");
+  ui.resolve({ ok: true, status: 200, json: async () => { throw new Error("HTML response"); } });
+  await sending;
+  assert.match(ui.find(props => props.role === "alert").props.children, /could not be confirmed/);
+  assert.ok(ui.find(props => props.className === "vf-audio"));
+});
+
+test("a confirmed saved note clears its preview and shows private-delivery success", async t => {
+  const ui = harness(t);
+  await ui.prepare();
+  const sending = ui.click("Send privately ↗");
+  ui.resolve(); await sending;
+  assert.match(ui.find(props => props.className === "vf-message").props.children, /sent privately/);
+  assert.equal(ui.find(props => props.className === "vf-audio"), undefined);
 });

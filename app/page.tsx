@@ -2,6 +2,7 @@ import type { Viewport } from "next";
 import { Hero } from "@/components/home/hero";
 import "@/styles/testimonial-carousel.css";
 import "@/styles/client-voices.css";
+import "@/styles/voice-feedback.css";
 import { MJShowcase } from "@/components/home/diamond";
 import { HomeImageBento } from "@/components/home/home-image-bento";
 import { Faq } from "@/components/home/faq";

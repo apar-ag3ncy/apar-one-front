@@ -111,9 +111,13 @@ export function VoiceFeedback() {
     const timeout = window.setTimeout(() => controller.abort(), 30_000);
     try {
       const result = await fetch("/api/voice-feedback", { method: "POST", body: form, signal: controller.signal });
+      const payload = await result.json().catch(() => null);
       if (!result.ok) {
-        const payload = await result.json().catch(() => ({}));
-        throw new Error(payload.error || "Could not send the recording. Please try again.");
+        throw new Error(payload?.error || "Could not send the recording. Please try again.");
+      }
+      if (payload?.ok !== true || (result.status !== 202 &&
+          (result.status !== 201 || typeof payload.id !== "string" || !/^[a-f0-9-]{36}$/.test(payload.id)))) {
+        throw new Error("Delivery could not be confirmed. Your note may have reached us; please check with our team before resending.");
       }
       if (upload.current !== controller) return;
       clearPreview(); setName(""); setBrand(""); setConsent(false); setPhase("sent");

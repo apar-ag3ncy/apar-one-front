@@ -20,7 +20,7 @@
     "check:production": "npm run build && node scripts/check-build.mjs",
     "check:http": "node scripts/check-http.mjs",
     "build:cpanel": "node scripts/build-cpanel.mjs",
-    "test:cpanel": "php tests/cpanel-voice.php",
+    "test:cpanel": "php tests/cpanel-voice.php && php tests/cpanel-voice-local.php",
     "docs:tree": "node scripts/project-tree.mjs",
     "test:motion": "node e2e/featured-motion-check.mjs"
   },
