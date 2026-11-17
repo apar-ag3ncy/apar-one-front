@@ -17,8 +17,12 @@ function routeHarness() {
     compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020 },
   }).outputText;
   // Execute the actual route, catalogue, asset lookup and Next notFound helper.
-  // Only the visual component is replaced: no browser or client effects are needed.
+  // Replace the visual component and CSS only; Node does not load stylesheets.
   const localRequire = name => {
+    if (name === "@/styles/inner-mobile.css") {
+      assert.ok(fs.existsSync("styles/inner-mobile.css"));
+      return {};
+    }
     if (name === "@/lib/cases") return cases;
     if (name === "@/lib/cases/assets.server") return {
       caseAssets(...args) { assetCalls.push(args); return assets.caseAssets(...args); },
