@@ -20,7 +20,7 @@
 .service-deliverables li:last-child{border:0;}
 .service-team-link{margin-top:28px;}
 .clients-page .roster-row:focus-visible{background:var(--paper);}
-.clients-page .roster-row:focus-visible .rr-name,.clients-page .roster-row:focus-visible .rr-go{color:var(--red);}
+.clients-page .roster-row:focus-visible .rr-name{color:var(--red);}
 .case-identity-pattern i{color:var(--identity-accent,var(--c-accent));}
 .client-story-link:focus-visible{outline:2px solid var(--red);outline-offset:8px;border-radius:4px;}
 .meeting-home .faq-q{line-height:1.4;padding-block:27px;}

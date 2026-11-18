@@ -1,6 +1,5 @@
 "use client";
 
-import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
@@ -181,7 +180,6 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
             <Reveal i={1}>
               <Link className="btn" href="/start">
                 <HoverText>Start a project</HoverText>
-                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Reveal>
           </div>

@@ -1,4 +1,3 @@
-import { UiIcon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import "@/styles/inner-mobile.css";
 import Link from "next/link";
@@ -114,7 +113,7 @@ export default function WhatWeDoPage() {
                 and the numbers underneath. Strategy and craft, under one roof, with a human
                 directing every decision.
               </p>
-              <Link className="btn-ghost service-team-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link>
+              <Link className="btn-ghost service-team-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText></Link>
             </Reveal>
           </div>
         </div>
@@ -130,7 +129,6 @@ export default function WhatWeDoPage() {
             <Reveal i={1}>
               <Link className="btn" href="/start">
                 <HoverText>Start a project</HoverText>
-                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Reveal>
           </div>

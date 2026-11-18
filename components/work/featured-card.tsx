@@ -84,7 +84,7 @@ export function FeaturedCard({ client, i, artwork }: { client: FeaturedClient; i
           style={artwork ? { "--client-cover-ratio": artwork.ratio, "--client-photo-bleed": artwork.bleed } as CSSProperties : undefined}>
           <div className="client-story-art">
             {cover && <PhotoSlot src={cover} srcSet={artwork?.srcSet}
-              sizes={artwork ? "(max-width: 600px) calc(100vw - 32px), 46vw" : undefined}
+              sizes={artwork ? "(max-width: 512px) 87.5vw, (max-width: 600px) calc(100vw - 64px), 46vw" : undefined}
               fixedRatio="20/13" radius={0} placeholder={artwork?.alt ?? `${client.name} — selected work`} />}
             {!cover && <span className="client-story-seal" aria-hidden="true"><i /><i /><i /></span>}
           </div>
@@ -94,7 +94,7 @@ export function FeaturedCard({ client, i, artwork }: { client: FeaturedClient; i
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={client.logo} alt="" width={400} height={400} loading="lazy" draggable={false} />
           </span>
-          <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText><i><UiIcon name="arrow-up-right" /></i></span>
+          <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText></span>
         </div>
         <div className="client-story-caption">
           <div className="client-story-meta"><span>{client.cat}</span><span>{client.year}</span></div>

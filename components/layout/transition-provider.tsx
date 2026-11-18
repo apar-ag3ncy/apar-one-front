@@ -1,6 +1,5 @@
 "use client";
 
-import { UiIcon } from "@/components/ui/icon";
 import { useMobileLayout } from "@/lib/motion-policy";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -100,7 +99,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
           onAnimationComplete={onComplete}
         >
           <span className="page-wipe-label">
-            {target.label} <span className="page-wipe-arrow"><UiIcon name="arrow-up-right" /></span>
+            {target.label}
           </span>
         </motion.div>
       )}

@@ -3,8 +3,11 @@
 @media (max-width:900px), (hover:none) and (pointer:coarse) {
   html,html:not(.lenis) { scroll-behavior:auto; scroll-padding-top:80px; }
   body { -webkit-text-size-adjust:100%; }
-  :root { --gut:max(clamp(18px,4.6vw,32px),env(safe-area-inset-left),env(safe-area-inset-right));
-    --space-section:64px; --space-heading:32px; --space-content:24px; }
+  /* Phone reference: about 6.25% side margins, 16px below imagery and
+     32–40px between complete project cards. Use one rhythm across routes. */
+  :root { --gut:max(clamp(20px,6.25vw,32px),env(safe-area-inset-left),env(safe-area-inset-right));
+    --space-section:64px; --space-heading:32px; --space-content:24px;
+    --project-gap:clamp(32px,8.9vw,40px); --project-caption-gap:16px; --project-title-gap:8px; }
   .wrap { min-width:0; }
   button,a { touch-action:manipulation; }
   input,textarea,select { font-size:20px; }
@@ -18,7 +21,7 @@
     opacity:1!important; visibility:visible!important; transform:none!important;
     will-change:auto!important;
   }
-  .apar-logo,.apar-lead-char,.faq-label,.faq-a p,.vc-caption,.vc-panel,.aesthetic-guide {
+  .apar-logo,.faq-label,.faq-a p,.vc-caption,.vc-panel,.aesthetic-guide {
     animation:none!important; transition:none!important;
   }
   [data-fill], [data-fill] .fw { color:var(--ink); transition:none; }
@@ -80,27 +83,26 @@
   .is-cinematic h2 { font-size:clamp(42px,9vw,80px); }
   .meeting-home { --studio-join:clamp(72px,11svh,104px); }
   .flow-featured>.wrap,.home-image-bento .wrap { width:calc(100% - var(--gut) * 2); }
-  .flow-featured .flow-heading { margin-bottom:30px; }
+  .flow-featured .flow-heading { margin-bottom:40px; }
   .flow-featured .flow-heading h2 { font-size:clamp(42px,10vw,70px); }
-  /* One project per phone screen, in normal document flow. Stable svh avoids
-     resizing the cards as the browser's address bar expands and collapses. */
-  .flow-featured .flow-project-grid { grid-template-columns:minmax(0,1fr); gap:0; }
+  /* Let the next image follow the caption. Viewport-height cards inserted
+     empty space above and below short landscape projects on tall phones. */
+  .flow-featured .flow-project-grid { grid-template-columns:minmax(0,1fr); gap:var(--project-gap); }
   .flow-featured .flow-project {
-    display:flex; flex-direction:column; justify-content:center;
-    min-height:calc(100svh - 88px); padding-block:32px;
+    display:block; min-height:0; padding-block:0;
   }
   .flow-featured .flow-project-image { width:100%; flex:none; }
-  .flow-project-caption { padding-top:14px; gap:8px; }
+  .flow-project-caption { padding-top:var(--project-caption-gap); gap:var(--project-title-gap); }
   .flow-project-caption h3 { font-size:clamp(26px,6.7vw,44px); overflow-wrap:anywhere; }
   .flow-project-caption>span { font-size:16px; letter-spacing:.02em; }
   .flow-project-image { border-radius:16px!important; }
-  .home-bento-tile img,.home-bento-name,.home-bento-arrow { transition:none; }
-  .home-bento-name,.home-bento-arrow { opacity:1; transform:none; }
+  .home-bento-tile img,.home-bento-name { transition:none; }
+  .home-bento-name { opacity:1; transform:none; }
 
   /* The small-screen diamond is tap-to-explore, not a two-screen scroll trap. */
   .mj-scroll-track { height:auto; }
   .meeting-home .mj-showcase-stage { position:relative; top:auto; }
-  .meeting-home .mj-manual { display:inline-flex; gap:12px; }
+  .meeting-home .mj-manual { display:inline-flex; }
   .meeting-home .mj-showcase-controls { inset:auto 18px max(18px,env(safe-area-inset-bottom)); align-items:flex-start; gap:6px; }
   .mj-skip { min-height:44px; display:inline-flex; align-items:center; }
   .mj-showcase-heading h2,.tc-heading h2 { font-size:clamp(36px,8vw,56px); }
@@ -147,7 +149,7 @@
   .case-reel-intro { flex-basis:76vw; width:76vw; }
 
   .galaxy-art { height:clamp(360px,85vw,560px); margin-top:24px; }
-  .galaxy-people-link { max-width:calc(100% - 36px); white-space:normal; gap:12px; min-height:48px; }
+  .galaxy-people-link { max-width:calc(100% - 36px); white-space:normal; min-height:48px; }
   .ttu { right:max(16px,env(safe-area-inset-right)); bottom:max(16px,env(safe-area-inset-bottom)); width:54px; height:54px; }
   .ttu-orb { width:100%; height:100%; }
   .ttu-tip { display:none; }
@@ -167,7 +169,7 @@
 }
 @media (max-width:600px) {
   /* One column needs no JavaScript row measurement or reserved masonry tracks. */
-  .work-grid { display:flex; flex-direction:column; gap:32px; }
+  .work-grid { display:flex; flex-direction:column; gap:var(--project-gap); }
   .work-card { width:100%; margin:0; }
   .work-card .frame,.work-card .img-slot>img { will-change:auto; }
   .work-card .cap { gap:12px; }
@@ -199,12 +201,11 @@
   .work-page .work-cta { padding-bottom:40px; }
 }
 @media (max-width:600px) {
-  .work-page { --gut:max(16px,env(safe-area-inset-left),env(safe-area-inset-right)); }
-  .work-page .work-grid { --work-row-gap:32px; display:flex; flex-direction:column; gap:32px; }
+  .work-page .work-grid { display:flex; flex-direction:column; gap:var(--project-gap); }
   .work-page .work-card { min-width:0; }
   .work-page .work-card .tagpill { top:12px; left:12px; max-width:calc(100% - 24px);
     padding:6px 10px; font-size:14px; line-height:1.2; letter-spacing:.07em; }
-  .work-page .work-card .cap { margin-top:12px; gap:4px 12px; flex-wrap:wrap; }
+  .work-page .work-card .cap { margin-top:var(--project-caption-gap); gap:4px 12px; flex-wrap:wrap; }
   .work-page .work-card .cap h3 { min-width:0; overflow-wrap:anywhere; font-size:30px; line-height:1.15; }
   .work-page .work-card .cap .yr { font-size:16px; letter-spacing:.04em; }
   .work-page .work-card .cap p { margin-top:4px; font-size:18px; line-height:1.45; }
@@ -223,7 +224,7 @@
   }
   .client-story-arrow { display:none; }
   .case-explore { min-height:48px; }
-  .rr-n,.rr-name,.rr-cat,.rr-go,.fc-logo-img,.fc-card .fc-logo,.fc-body {
+  .rr-n,.rr-name,.rr-cat,.fc-logo-img,.fc-card .fc-logo,.fc-body {
     transition:none!important; transform:none!important;
   }
   .xr-cap { opacity:1!important; transform:none!important; transition:none!important; }

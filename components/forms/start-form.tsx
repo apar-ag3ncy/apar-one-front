@@ -146,12 +146,11 @@ export function StartForm() {
           </p>
           <div className="start-done-actions">
             {sent === "mail" && <>
-              <a className="btn cream" href={mailHref}><HoverText>Open email draft</HoverText><span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></a>
+              <a className="btn cream" href={mailHref}><HoverText>Open email draft</HoverText></a>
               <button className="start-copy" type="button" onClick={copyBrief}><HoverText>Copy brief</HoverText></button>
             </>}
             <Link className="btn cream" href="/work">
               <HoverText>See our work</HoverText>
-              <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
             </Link>
             <Link className="btn-ghost light" href="/">
               <HoverText>Back to home</HoverText>
@@ -253,7 +252,6 @@ export function StartForm() {
                 )}
                 <button className="start-submit" type="submit" disabled={busy} aria-busy={busy}>
                   <HoverText>{busy ? "Sending…" : BRIEF_ENDPOINT ? "Send the brief" : "Prepare email brief"}</HoverText>
-                  <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
                 </button>
                 <p className="start-delivery-note">{BRIEF_ENDPOINT ? "Your brief goes directly to our studio." : "We’ll prepare an email draft. You review it and send it from your own email app."}</p>
               </div>

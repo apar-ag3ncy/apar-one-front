@@ -23,8 +23,8 @@
 
   .clients-page .clients-featured { padding-top:16px; }
   .clients-page .featured-clients { margin-top:24px; gap:28px 18px; }
-  .clients-page .client-story-caption { padding-top:12px; }
-  .clients-page .client-story-caption h3 { margin-block:8px; }
+  .clients-page .client-story-caption { padding-top:var(--project-caption-gap); }
+  .clients-page .client-story-caption h3 { margin-block:var(--project-title-gap); }
   .clients-page .client-story-caption p { line-height:1.45; }
   .clients-page .roster { margin-top:20px; }
   .clients-page .roster-row { padding-block:16px; gap:8px 14px; }
@@ -97,13 +97,12 @@
 }
 
 @media (max-width:600px) {
-  /* One readable story at a time, with the same gutter and 32px card rhythm
-     as Work. The supplied portrait artwork stays whole on phones. */
-  .clients-page { --gut:max(16px,env(safe-area-inset-left),env(safe-area-inset-right)); }
-  .clients-page .featured-clients { grid-template-columns:minmax(0,1fr); gap:32px; }
+  /* Share Work and Featured Work's phone spacing. Keep supplied portrait
+     artwork at its own ratio rather than forcing landscape crops. */
+  .clients-page .featured-clients { grid-template-columns:minmax(0,1fr); gap:var(--project-gap); }
   .clients-page .client-story-media { border-radius:12px; aspect-ratio:var(--client-cover-ratio,20/13); }
   .clients-page .client-story-index { top:14px; left:16px; font-size:13px; }
-  .clients-page .client-story-explore { right:12px; bottom:12px; padding:6px; gap:8px; font-size:15px; }
+  .clients-page .client-story-explore { right:12px; bottom:12px; padding:6px; font-size:15px; }
   .clients-page .client-story-meta { flex-wrap:wrap; gap:4px 12px; font-size:14px; letter-spacing:.05em; }
   .clients-page .client-story-caption h3 { font-size:30px; }
   .clients-page .client-story-arrow { display:inline-flex; width:1.1em; opacity:1; }

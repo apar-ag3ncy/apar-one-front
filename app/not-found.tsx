@@ -1,4 +1,3 @@
-import { UiIcon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { HoverText } from "@/components/motion/hover-text";
@@ -29,7 +28,6 @@ export default function NotFound() {
         <div className="chip-row" style={{ marginTop: 34 }}>
           <Link className="btn" href="/">
             <HoverText>Back to home</HoverText>
-            <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
           </Link>
           <Link className="btn-ghost" href="/work">
             <HoverText>See the work</HoverText>

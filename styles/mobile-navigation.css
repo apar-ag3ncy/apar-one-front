@@ -7,11 +7,16 @@
   .nav-in { padding-top:env(safe-area-inset-top); gap:16px; }
   .nav .brand { flex:none; min-height:44px; }
   .nav .brand-tag,.nav-links,.nav .nav-cta { display:none; }
-  /* Reserve the artwork's box before fonts load. The original SVG keeps its
-     proportions inside the same 44px control height as Menu, including on scroll. */
-  .nav .apar-logo-responsive { width:80px; height:44px; flex:none; align-items:center; line-height:1; }
+  /* Keep one stable box on scroll and during every script swap. The vector is
+     only a font-loading fallback; the live wordmark also cycles on phones. */
+  .nav .apar-logo-responsive,.nav.scrolled .apar-logo-responsive { position:relative; width:80px; height:44px; flex:none; align-items:center; line-height:.85; font-size:56px; }
   .nav .apar-logo-responsive .apar-logo-inner { display:none; }
   .nav .apar-logo-responsive .apar-logo-compact { display:block; }
+  .nav .apar-logo-responsive[data-fonts-ready] .apar-logo-inner {
+    display:inline-flex; position:absolute; left:0; top:50%; width:max-content; white-space:nowrap;
+    transform:translateY(-50%) scale(var(--apar-logo-scale,1)); transform-origin:left center;
+  }
+  .nav .apar-logo-responsive[data-fonts-ready] .apar-logo-compact { display:none; }
   .nav .nav-burger {
     display:flex; align-items:center; justify-content:space-between; flex:none;
     width:120px; height:44px; margin:0; padding:0 18px;

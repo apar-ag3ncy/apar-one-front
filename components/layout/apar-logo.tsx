@@ -1,6 +1,5 @@
 "use client";
 
-import { MOBILE_LAYOUT_QUERY, useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
@@ -15,9 +14,9 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
  *    font, so the mark is strictly Fit at all times.
  *
  * Script variants share a baseline-aligned slot beside "PĀR". The responsive
- * header uses the original vector artwork at compact-navigation widths, so it
- * does not depend on font loading or hydrated media-query state. Both variants
- * render white / cream / red / ink via CSS color.
+ * header reserves its compact box and uses the original vector until the local
+ * Fit fonts are ready. Phones then share the same script cycle as desktop.
+ * Both variants render white / cream / red / ink via CSS color.
  */
 
 type Script = {
@@ -43,24 +42,26 @@ const SCRIPTS: Script[] = [
 ];
 
 export function AparLogo({ onDark = false, responsive = false }: { onDark?: boolean; responsive?: boolean }) {
-  const mobile = useMobileLayout();
   const containerRef = useRef<HTMLSpanElement>(null);
+  const wordmarkRef = useRef<HTMLSpanElement>(null);
   const [active, setActive] = useState<string[]>(["deva", "latin"]);
+  const [fontsReady, setFontsReady] = useState(false);
   const [i, setI] = useState(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Detect which live Fit scripts are GENUINELY loaded.
   useEffect(() => {
-    if (mobile || window.matchMedia(MOBILE_LAYOUT_QUERY).matches) return;
     let alive = true;
+    let detecting = false;
     const detect = async () => {
-      if (!alive || !document.fonts) return;
+      if (!alive || detecting || !document.fonts) return;
+      detecting = true;
       // Ask the browser to load any declared Fit faces
       await Promise.all(
         SCRIPTS.map((s) =>
-          document.fonts.load(`64px "${s.fitName}"`, s.char || "A").catch(() => {})
+          document.fonts.load(`900 64px "${s.fitName}"`, s.char || "A").catch(() => {})
         )
       );
+      detecting = false;
       if (!alive) return;
       const loaded = new Set<string>();
       document.fonts.forEach((ff) => {
@@ -72,6 +73,7 @@ export function AparLogo({ onDark = false, responsive = false }: { onDark?: bool
         (s) => s.key === "deva" || s.key === "latin" || (s.fitName && loaded.has(s.fitName.toLowerCase()))
       ).map((s) => s.key);
       setActive((prev) => (prev.join() === ok.join() ? prev : ok));
+      setFontsReady(loaded.has("fit-vf") && loaded.has("fit-devanagari-vf"));
     };
     detect();
     document.fonts?.ready.then(detect);
@@ -82,55 +84,79 @@ export function AparLogo({ onDark = false, responsive = false }: { onDark?: bool
       clearTimeout(t);
       document.fonts?.removeEventListener?.("loadingdone", detect);
     };
-  }, [mobile]);
+  }, []);
 
-  // Cross-fade through the available scripts, only while on screen.
+  // Optional Fit families can have wider glyphs. Fit the complete wordmark
+  // uniformly inside the reserved mobile box without shifting the Menu button.
   useEffect(() => {
-    if (mobile || window.matchMedia(MOBILE_LAYOUT_QUERY).matches) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
-    if (active.length < 2) return;
+    const container = containerRef.current;
+    const wordmark = wordmarkRef.current;
+    if (!responsive || !fontsReady || !container || !wordmark) return;
+    const fit = () => {
+      const width = wordmark.scrollWidth;
+      container.style.setProperty("--apar-logo-scale", String(width ? Math.min(1, 80 / width) : 1));
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(wordmark);
+    return () => observer.disconnect();
+  }, [responsive, fontsReady]);
+
+  // Cross-fade on every screen size; pause offscreen, in background tabs and
+  // whenever the visitor requests reduced motion (including live changes).
+  useEffect(() => {
+    if (!fontsReady || active.length < 2) return;
     const container = containerRef.current;
     if (!container) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const start = Date.now();
     const tick = () => {
       setI((x) => (x + 1) % active.length);
       const delay = Date.now() - start < 2000 ? 950 : 2400;
-      timer.current = setTimeout(tick, delay);
+      timer = setTimeout(tick, delay);
     };
     // While the hero's load-in choreography runs (it flags itself on <html>),
     // hold the first swap so the lead glyph never hard-cuts mid-fade.
     const firstTick = () => {
       if (document.documentElement.dataset.heroEntrance) {
-        timer.current = setTimeout(firstTick, 250);
+        timer = setTimeout(firstTick, 250);
         return;
       }
-      timer.current = setTimeout(tick, 800);
+      timer = setTimeout(tick, 800);
+    };
+    const stop = () => {
+      if (timer !== null) clearTimeout(timer);
+      timer = null;
+    };
+    const sync = () => {
+      stop();
+      if (visible && !document.hidden && !reduced.matches) firstTick();
     };
     const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        if (!timer.current) firstTick();
-      } else if (timer.current) {
-        clearTimeout(timer.current);
-        timer.current = null;
-      }
+      visible = e.isIntersecting;
+      sync();
     });
     io.observe(container);
+    document.addEventListener("visibilitychange", sync);
+    reduced.addEventListener("change", sync);
     return () => {
       io.disconnect();
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = null;
+      stop();
+      document.removeEventListener("visibilitychange", sync);
+      reduced.removeEventListener("change", sync);
     };
-  }, [active, mobile]);
+  }, [active, fontsReady]);
 
   const activeScripts = SCRIPTS.filter((s) => active.includes(s.key));
-  const currentKey = mobile ? "deva" : activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
+  const currentKey = activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
 
   return (
-    <span ref={containerRef} className={`apar-logo${responsive ? " apar-logo-responsive" : ""}${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">
-      {/* CSS selects the original compact vector before hydration, avoiding
-          font-loading flashes and width shifts during responsive switching. */}
+    <span ref={containerRef} className={`apar-logo${responsive ? " apar-logo-responsive" : ""}${onDark ? " on-dark" : ""}`} data-fonts-ready={fontsReady ? "true" : undefined} aria-label="APAR" role="img">
+      {/* Keep the original compact vector visible until genuine Fit is loaded. */}
       {responsive && <span className="apar-logo-compact" aria-hidden="true" />}
-      <span className="apar-logo-inner" aria-hidden="true">
+      <span ref={wordmarkRef} className="apar-logo-inner" aria-hidden="true">
         <span className="apar-lead-wrap">
           {SCRIPTS.map((s) => {
             const isActive = active.includes(s.key);

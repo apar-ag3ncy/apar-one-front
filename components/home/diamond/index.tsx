@@ -152,12 +152,12 @@ export function MJShowcase() {
             <span className="tc-sr-only" role="status">{status === "loading" ? "Loading interactive scene" : status === "fallback" ? "Interactive preview available" : ""}</span>
             <a href="#clients" className="mj-skip"><HoverText>Continue to clients</HoverText> <span aria-hidden="true"><UiIcon name="arrow-down" /></span></a>
             <button type="button" className="btn cream mj-manual" onClick={toggle} aria-pressed={expanded} aria-label={expanded ? "Gather the diamond" : "Burst the diamond"}>
-              <HoverText>{expanded ? "Gather the diamond" : "Burst the diamond"}</HoverText><span aria-hidden="true">{expanded ? <UiIcon name="arrow-down-left" /> : <UiIcon name="arrow-up-right" />}</span>
+              <HoverText>{expanded ? "Gather the diamond" : "Burst the diamond"}</HoverText>
             </button>
           </div>
         </div>
       </div>
-      <div className="wrap mj-showcase-caption"><Link href="/start">Build something with us <UiIcon name="arrow-up-right" /></Link></div>
+      <div className="wrap mj-showcase-caption"><Link href="/start">Build something with us</Link></div>
     </section>
   );
 }

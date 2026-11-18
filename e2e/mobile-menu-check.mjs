@@ -32,7 +32,7 @@ const state = (page) =>
       logoHeight: logoBox?.height,
       logoCentered: !!logoBox && !!burgerBox && Math.abs(logoBox.top + logoBox.height / 2 - burgerBox.top - burgerBox.height / 2) < 1,
       compactLogoVisible: getComputedStyle(logo.querySelector('.apar-logo-compact')).display === 'block',
-      textLogoHidden: getComputedStyle(logo.querySelector('.apar-logo-inner')).display === 'none',
+      textLogoVisible: getComputedStyle(logo.querySelector('.apar-logo-inner')).display === 'inline-flex',
       menuOpen: menu?.classList.contains("open") ?? null,
       menuTop: mb ? Math.round(mb.top) : null,
       menuWidth: mb?.width,
@@ -48,6 +48,7 @@ const state = (page) =>
 async function scenario(page, label, { scrollTo = 0 } = {}) {
   await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), scrollTo);
   await page.waitForTimeout(300);
+  await page.locator('.nav .apar-logo-responsive[data-fonts-ready="true"]').waitFor();
 
   const before = await state(page);
   await page.locator(".nav-burger").tap();
@@ -79,7 +80,7 @@ async function scenario(page, label, { scrollTo = 0 } = {}) {
   const pass =
     before.burgerDisplay === "flex" &&
     before.logoWidth === 80 && before.logoHeight === 44 && before.logoCentered &&
-    before.compactLogoVisible && before.textLogoHidden &&
+    !before.compactLogoVisible && before.textLogoVisible &&
     opened.burgerHittable &&
     opened.menuOpen === true &&
     opened.menuTop >= opened.headerBottom &&
@@ -95,6 +96,42 @@ async function scenario(page, label, { scrollTo = 0 } = {}) {
     `${label.padEnd(22)} burger=${before.burgerDisplay} open=${opened.menuOpen} top=${opened.menuTop} burgerCloses=${toggledClosed} link=${opened.linkHittable} nav=${navOk} closedAfterNav=${menuOpenAfter === false}  -> ${pass ? "PASS" : "FAIL"}`,
   );
   return pass;
+}
+
+// Observe every script change instead of sampling at a cadence that could miss
+// the transient glyph. Record geometry at the same time to catch layout jumps.
+async function checkLogoCycle(page, selectors) {
+  await page.waitForFunction(selectors => selectors.every(selector =>
+    document.querySelector(selector)?.dataset.fontsReady === 'true'), selectors);
+  await page.evaluate(selectors => {
+    window.__aparLogoCycles = selectors.map(selector => {
+      const logo = document.querySelector(selector);
+      const record = { selector, glyphs: [], boxes: [], fits: true };
+      const sample = () => {
+        const inner = logo.querySelector('.apar-logo-inner');
+        const glyph = [...logo.querySelectorAll('.apar-lead-char')].find(el => getComputedStyle(el).visibility === 'visible');
+        if (getComputedStyle(inner).display === 'none' || !glyph) return;
+        if (!record.glyphs.includes(glyph.textContent)) record.glyphs.push(glyph.textContent);
+        const box = logo.getBoundingClientRect(), wordmark = inner.getBoundingClientRect();
+        record.boxes.push({ width: box.width, height: box.height });
+        record.fits &&= wordmark.left >= box.left - 1 && wordmark.right <= box.right + 1;
+      };
+      const observer = new MutationObserver(sample);
+      observer.observe(logo, { attributes: true, subtree: true });
+      sample();
+      return { record, observer };
+    });
+  }, selectors);
+  try {
+    await page.waitForFunction(() => window.__aparLogoCycles.every(({ record }) => record.glyphs.length >= 2), null, { timeout: 12000 });
+    const records = await page.evaluate(() => window.__aparLogoCycles.map(({ record }) => record));
+    for (const record of records) {
+      assert.ok(record.fits, `${record.selector}: wordmark stays inside its reserved width`);
+      assert.ok(record.boxes.every(box => Math.abs(box.width - record.boxes[0].width) < 1 && Math.abs(box.height - record.boxes[0].height) < 1), `${record.selector}: no layout shift during script changes`);
+    }
+  } finally {
+    await page.evaluate(() => { window.__aparLogoCycles.forEach(({ observer }) => observer.disconnect()); delete window.__aparLogoCycles; });
+  }
 }
 
 const run = async () => {
@@ -115,6 +152,7 @@ const run = async () => {
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   await page.goto(URL, { waitUntil: "load" });
   await page.waitForTimeout(2600);
+  await checkLogoCycle(page, ['.nav .apar-logo', '.hb-wordmark .apar-logo']);
   all = (await scenario(page, "home (top)")) && all;
 
   // 2) home, scrolled (nav in .scrolled state)
@@ -149,6 +187,7 @@ const run = async () => {
   const desktop = await browser.newContext({ viewport: { width: 1024, height: 768 } });
   const tabletPage = await desktop.newPage();
   await tabletPage.goto(URL + "/work", { waitUntil: "load" });
+  await checkLogoCycle(tabletPage, ['.nav .apar-logo']);
   await tabletPage.locator(".nav-burger").click();
   await tabletPage.setViewportSize({ width: 1440, height: 900 });
   await tabletPage.locator(".mobile-menu").waitFor({ state: "hidden" });
@@ -156,6 +195,7 @@ const run = async () => {
   assert.equal(await tabletPage.locator(".nav-burger").getAttribute("aria-expanded"), "false");
   assert.equal(await tabletPage.locator('.nav .apar-logo-inner').evaluate(el => getComputedStyle(el).display), 'inline-flex');
   assert.equal(await tabletPage.locator('.nav .apar-logo-compact').evaluate(el => getComputedStyle(el).display), 'none');
+  await checkLogoCycle(tabletPage, ['.nav .apar-logo']);
   await desktop.close();
 
   console.log("\nconsole errors:", errors.length ? [...new Set(errors)].slice(0, 5) : "none");

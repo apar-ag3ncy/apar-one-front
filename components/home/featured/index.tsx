@@ -84,7 +84,7 @@ export function FeaturedProjects() {
         <div className="flow-project-art">
         <PhotoSlot src={project.src}
         srcSet={`${project.src.replace(/\.webp$/, "-480.webp")} 480w, ${project.src.replace(/\.webp$/, "-960.webp")} 960w, ${project.src} ${"width" in project ? project.width : 1600}w`}
-        sizes="(max-width: 900px) 92vw, (hover: none) and (pointer: coarse) calc(100vw - 64px), 44vw"
+        sizes="(max-width: 512px) 87.5vw, (max-width: 900px) calc(100vw - 64px), (hover: none) and (pointer: coarse) calc(100vw - 64px), 44vw"
         placeholder={`${project.title} — ${project.type}`} fixedRatio="20/13" radius={0} style={{ width: "100%", height: "100%" }} />
         {project.slug === "girvaan" && <span className="girvaan-store-sign" aria-hidden="true">
           {/* The original client wordmark sits on the blank photographed fascia. */}
@@ -97,6 +97,6 @@ export function FeaturedProjects() {
         </h3>
       </div>
     </Link>)}</div>
-    <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText><span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link></div>
+    <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText></Link></div>
   </div></section>;
 }

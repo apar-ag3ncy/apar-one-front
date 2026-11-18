@@ -187,6 +187,6 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
       <div className="case-reel-controls"><button type="button" onClick={() => step(-1)} aria-label="Previous artwork"><UiIcon name="arrow-left" /></button><button type="button" onClick={() => step(1)} aria-label="Next artwork"><UiIcon name="arrow-right" /></button></div>
     </div>
     </div>
-    <div className="case-reel-skip case-wrap"><a href="#case-results">Skip to the results <UiIcon name="arrow-up-right" /></a></div>
+    <div className="case-reel-skip case-wrap"><a href="#case-results">Skip to the results</a></div>
   </section>;
 }

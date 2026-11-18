@@ -50,9 +50,7 @@
 .home-bento-tile img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1);}
 .home-bento-grid[data-motion-ready] img{transition:none;}
 .home-bento-tile:hover img,.home-bento-tile:focus-visible img{transform:scale(1.035);}
-.home-bento-arrow{position:absolute;right:16px;bottom:16px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--surface);color:var(--ink);font-size:22px;line-height:1;opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
-.home-bento-tile:hover .home-bento-arrow,.home-bento-tile:focus-visible .home-bento-arrow{opacity:1;transform:none;}
-.home-bento-name{position:absolute;left:16px;bottom:16px;max-width:calc(100% - 76px);color:#fff;font-size:clamp(14px,1.15vw,18px);line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,.7);opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
+.home-bento-name{position:absolute;left:16px;bottom:16px;max-width:calc(100% - 32px);color:#fff;font-size:clamp(14px,1.15vw,18px);line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,.7);opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s ease;}
 .home-bento-tile:hover .home-bento-name,.home-bento-tile:focus-visible .home-bento-name{opacity:1;transform:none;}
 /* Only the copy uses .wrap; the stage fills the viewport during its scroll chapters. */
 .mj-scroll-track{height:230svh;position:relative;scroll-margin-top:0;}
@@ -100,8 +98,7 @@
 .home-bento-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"ruby bridal" "ruby blue" "campaign campaign" "girvaan paramount" "smiles smiles" "chheda chheda";grid-auto-rows:clamp(140px,42vw,340px);gap:9px;}
 }
 @media(max-width:560px){
-.home-bento-arrow{opacity:1;transform:none;width:30px;height:30px;font-size:18px;right:10px;bottom:10px;}
-.home-bento-name{opacity:1;transform:none;left:10px;bottom:15px;max-width:calc(100% - 50px);font-size:12px;}
+.home-bento-name{opacity:1;transform:none;left:10px;bottom:15px;max-width:calc(100% - 20px);font-size:12px;}
  .flow-project-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 2vw;}
  .flow-project-caption{padding-top:12px;gap:6px;}
  .flow-project-caption h3{font-size:19px;}

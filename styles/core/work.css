@@ -27,7 +27,7 @@
    CLIENTS page (roster)
    ============================================================ */
 .roster{margin-top:40px;border-top:1px solid var(--line);}
-.roster-row{display:grid;grid-template-columns:60px 1fr auto 40px;gap:24px;align-items:center;padding:26px 6px;border-bottom:1px solid var(--line);
+.roster-row{display:grid;grid-template-columns:60px 1fr auto;gap:24px;align-items:center;padding:26px 6px;border-bottom:1px solid var(--line);
   text-decoration:none;color:var(--ink);transition:background .35s var(--ease);}
 .roster-row:not(.static){cursor:pointer;}
 .roster-row:not(.static):hover{background:var(--paper);}
@@ -36,15 +36,12 @@
 .rr-name{font-size:clamp(24px,3vw,40px);transition:color .35s,transform .45s var(--ease);}
 .roster-row:not(.static):hover .rr-name{color:var(--red);}
 .rr-cat{font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
-.rr-go{font-size:20px;color:var(--ink-mid);text-align:right;transition:.45s var(--ease);}
-.roster-row:not(.static):hover .rr-go{color:var(--red);transform:translate(4px,-4px);}
 .roster-row.static{opacity:.92;}
 .clients-foot{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:48px;flex-wrap:wrap;}
 @media (max-width:680px){
   .roster-row{grid-template-columns:40px 1fr;gap:14px;}
   .rr-cat{grid-column:2;grid-row:2;transition:transform .45s var(--ease);}
   .roster-row:not(.static):hover .rr-cat{transform:translateX(16px);}
-  .rr-go{display:none;}
 }
 
 /* ============================================================
@@ -114,7 +111,7 @@
 .case-next .nx-name{font-size:clamp(34px,5vw,64px);}
 .case-next a.nx{color:var(--c-ink);text-decoration:none;transition:color .35s;}
 .case-next a.nx:hover .nx-name{color:var(--c-accent);}
-.case-btn{display:inline-flex;align-items:center;gap:12px;background:transparent;color:var(--c-ink);font-weight:700;font-size:20px;
+.case-btn{display:inline-flex;align-items:center;background:transparent;color:var(--c-ink);font-weight:700;font-size:20px;
   padding:17px 28px;border-radius:0;text-decoration:none;white-space:nowrap;}
 
 /* ---------- scroll-to-next-client (pull meter + wipe) ---------- */
@@ -129,8 +126,7 @@
 
 /* ---------- seamless page-transition wipe (cover → navigate → reveal) ---------- */
 .page-wipe{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;will-change:transform;}
-.page-wipe-label{font-style:italic;font-size:clamp(44px,10vw,128px);display:inline-flex;align-items:center;gap:.18em;}
-.page-wipe-arrow{font-style:normal;}
+.page-wipe-label{font-style:italic;font-size:clamp(44px,10vw,128px);display:inline-flex;align-items:center;}
 @media (max-width:860px){
   .case-cols{grid-template-columns:1fr;gap:34px;}
   .case-stats{grid-template-columns:1fr;gap:30px;}

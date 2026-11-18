@@ -103,7 +103,7 @@ export function ManifestoSculpture() {
           style={{ opacity: interactive && modelReady ? 0 : 1 }}
         />
         {interactive && <SculptureCanvas yaw={yaw} pitch={pitch} reducedMotion={reducedMotion} onReady={markReady} />}
-        {mobile && !activated && <button type="button" className="manifesto-sculpture-activate" onClick={() => setActivated(true)}>Explore in 3D <UiIcon name="arrow-up-right" /></button>}
+        {mobile && !activated && <button type="button" className="manifesto-sculpture-activate" onClick={() => setActivated(true)}>Explore in 3D</button>}
         {webgl && (!mobile || activated) && <span className="manifesto-sculpture-cue" aria-hidden="true"><UiIcon name="arrow-left" /> Drag to turn <UiIcon name="arrow-right" /></span>}
       </div>
     </div>

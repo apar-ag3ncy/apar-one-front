@@ -1,4 +1,3 @@
-import { UiIcon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import "@/styles/inner-mobile.css";
 import Link from "next/link";
@@ -67,7 +66,6 @@ export default function ExplodedRingPage() {
           <div className="xr-foot">
             <Link className="btn" href="/start">
               <span>Bring your piece</span>
-              <span className="arr"><UiIcon name="arrow-up-right" /></span>
             </Link>
             <Link className="btn-ghost light" href="/work">
               See the work

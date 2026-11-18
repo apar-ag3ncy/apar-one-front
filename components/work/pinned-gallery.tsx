@@ -186,7 +186,6 @@ export function PinnedGallery({ clients }: { clients: FeaturedClient[] }) {
           >
             <Link className="btn cream" href="/clients">
               <HoverText>See all clients</HoverText>
-              <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
             </Link>
           </div>
         </div>

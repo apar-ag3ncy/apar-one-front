@@ -154,7 +154,7 @@ export function VoiceFeedback() {
         <div className="vf-actions">
           {(phase === "ready" || phase === "review") && <button type="button" className="vf-action" onClick={begin}>{phase === "review" ? "Record again" : "Start recording"}</button>}
           {phase === "recording" && <button type="button" className="vf-action" onClick={stop}>Stop recording</button>}
-          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit}>Send privately <UiIcon name="arrow-up-right" /></button>}
+          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit}>Send privately</button>}
           {phase === "sending" && <span className="vf-sending" role="status">Sending securely…</span>}
         </div>
       </>}

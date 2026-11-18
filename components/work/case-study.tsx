@@ -194,11 +194,11 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
               }}
             >
               <div className="nx-l">{data.next.kicker}</div>
-              <div className="nx-name">{data.next.name} <UiIcon name="arrow-up-right" /></div>
+              <div className="nx-name">{data.next.name}</div>
             </a>
             {nextProfile.cover && <div className="case-next-art" aria-hidden="true"><PhotoSlot src={nextProfile.cover} fixedRatio="20/13" radius={15} /></div>}
             <Link className="case-btn" href="/start">
-              <HoverText>Start your project</HoverText><span aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
+              <HoverText>Start your project</HoverText>
             </Link>
           </div>
         </div>

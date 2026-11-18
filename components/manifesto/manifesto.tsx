@@ -136,7 +136,7 @@ export function Manifesto() {
     <section className="manifesto-closing wrap">
       <span className="manifesto-kicker">This is what we believe.</span>
       <h2>We don’t just<br />build brands.<br /><em>We build the way<br />they’re experienced.</em></h2>
-      <div className="manifesto-closing-bottom"><p>Strategy gives it direction.<br />Design gives it character.<br />Interaction makes it felt.</p><Link className="btn" href="/work"><HoverText>See it in our work</HoverText><span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link></div>
+      <div className="manifesto-closing-bottom"><p>Strategy gives it direction.<br />Design gives it character.<br />Interaction makes it felt.</p><Link className="btn" href="/work"><HoverText>See it in our work</HoverText></Link></div>
     </section>
   </main>;
 }

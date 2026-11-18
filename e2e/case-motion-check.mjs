@@ -149,7 +149,7 @@ try {
         await page.waitForFunction(() => document.querySelector(".case-reel-panel video")?.readyState >= 2, null, { timeout: 10000 });
       }
     }
-    await page.getByRole("link", { name: "Skip to the results ↗", exact: true }).click(); await settle();
+    await page.getByRole("link", { name: "Skip to the results", exact: true }).click(); await settle();
     const landed = await page.locator("#case-results").evaluate(el => el.getBoundingClientRect().top);
     if (Math.abs(landed - 80) >= 3) await page.waitForFunction(
       () => Math.abs(document.getElementById("case-results").getBoundingClientRect().top - 80) < 3,
