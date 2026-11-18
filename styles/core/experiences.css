@@ -63,6 +63,7 @@
 .mj-showcase-canvas{opacity:0;transition:opacity .4s;}
 .mj-showcase-stage[data-ready="true"] .mj-showcase-canvas{opacity:1;}
 .mj-showcase-stage[data-ready="true"] .diamond-experience-fallback{visibility:hidden;}
+.mj-touch-surface,.mj-touch-hint{display:none;}
 .mj-showcase .diamond-fallback-pieces polygon{transform-box:fill-box;transform-origin:center;transform:translate(calc(var(--diamond-burst)*var(--dx)),calc(var(--diamond-burst)*var(--dy))) rotate(calc(var(--diamond-burst)*var(--turn)));}
 .mj-showcase .diamond-fallback-rock{transform-box:fill-box;transform-origin:center;transform:translate(calc(var(--diamond-burst)*var(--rx)),calc(var(--diamond-burst)*var(--ry))) rotate(calc(var(--diamond-burst)*var(--rt)));}
 .mj-showcase-controls{color:var(--cream);position:absolute;z-index:2;inset:auto 32px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}

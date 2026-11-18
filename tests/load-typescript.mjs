@@ -16,7 +16,7 @@ export function loadTypeScript(filename) {
     if (specifier === "server-only") return {};
     if (!specifier.startsWith(".") && !specifier.startsWith("@/")) return require(specifier);
     const base = specifier.startsWith("@/") ? path.resolve(specifier.slice(2)) : path.resolve(path.dirname(file), specifier);
-    const target = [base, base + ".ts", base + ".tsx", path.join(base, "index.ts")]
+    const target = [base, base + ".ts", base + ".tsx", base + ".js", path.join(base, "index.ts")]
       .find(candidate => fs.existsSync(candidate) && fs.statSync(candidate).isFile());
     if (!target) throw new Error(`Unresolved ${specifier} in ${file}`);
     return loadTypeScript(target);

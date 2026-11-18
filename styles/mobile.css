@@ -101,9 +101,22 @@
 
   /* The small-screen diamond is tap-to-explore, not a two-screen scroll trap. */
   .mj-scroll-track { height:auto; }
-  .meeting-home .mj-showcase-stage { position:relative; top:auto; }
-  .meeting-home .mj-manual { display:inline-flex; }
-  .meeting-home .mj-showcase-controls { inset:auto 18px max(18px,env(safe-area-inset-bottom)); align-items:flex-start; gap:6px; }
+  .meeting-home .mj-showcase-stage {
+    position:relative; top:auto; height:min(720px,calc(100svh - 88px - env(safe-area-inset-top))); min-height:300px;
+  }
+  .mj-showcase-canvas,.mj-showcase .diamond-experience-fallback { height:calc(100% - 138px); }
+  .mj-showcase .diamond-fallback-pieces { transform-origin:center; transform-box:view-box; transform:scale(calc(1.6 - var(--diamond-burst)*.7)); }
+  .mj-touch-surface {
+    display:block; position:absolute; z-index:1; inset:0 0 138px; width:100%; border:0; padding:0;
+    background:transparent; color:inherit; cursor:pointer; touch-action:pan-y;
+  }
+  .mj-touch-surface:focus-visible { outline:2px solid var(--cream); outline-offset:-12px; border-radius:20px; }
+  .meeting-home .mj-manual { display:inline-flex; order:0; min-height:48px; padding:12px 24px; justify-content:center; }
+  .meeting-home .mj-showcase-controls {
+    inset:auto var(--gut) max(16px,env(safe-area-inset-bottom)); align-items:center; flex-direction:column; gap:6px;
+  }
+  .mj-showcase-controls .mj-touch-hint { display:block; order:-1; font-size:16px; line-height:1.3; text-align:center; }
+  .mj-showcase-controls .mj-skip { order:1; font-size:15px; }
   .mj-skip { min-height:44px; display:inline-flex; align-items:center; }
   .mj-showcase-heading h2,.tc-heading h2 { font-size:clamp(36px,8vw,56px); }
   .mj-showcase-caption a { display:inline-flex; align-items:center; min-height:44px; }

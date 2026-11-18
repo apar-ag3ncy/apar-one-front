@@ -32,23 +32,26 @@ export function MJShowcase() {
     scene.current?.render();
   };
 
-  // Reuse the copied Manish scene unchanged; only its progress driver belongs
-  // to APAR. Lazy-load near the section and scrub burst with page scrolling.
+  // Share the sculpture across devices: desktop scrubs with scrolling;
+  // phones use explicit taps and retain native page scrolling.
   useEffect(() => {
     const el = track.current;
     if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setStatus(current => current === "preview" ? "loading" : current);
+        setRequested(true);
+        io.disconnect();
+      }
+    }, { rootMargin: "400px" });
+    io.observe(el);
     if (mobile) {
       Object.assign(motion.current, { burst: 0, progress: .5, baseYaw: -.12 });
       setExpanded(false);
       paint();
       const state = motion.current;
-      return () => { gsap.killTweensOf(state); };
+      return () => { io.disconnect(); gsap.killTweensOf(state); };
     }
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setStatus("loading"); setRequested(true); io.disconnect(); }
-    // Phones use the interactive SVG; desktop loads the 3D scene near the section.
-    }, { rootMargin: "400px" });
-    io.observe(el);
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     media.add(DESKTOP_MOTION_QUERY, () => {
@@ -83,7 +86,7 @@ export function MJShowcase() {
   }, [mobile]);
 
   useEffect(() => {
-    if (!requested || mobile || !host.current) return;
+    if (!requested || !host.current) return;
     const el = host.current;
     let disposed = false;
     let runtime: Scene | null = null;
@@ -99,7 +102,7 @@ export function MJShowcase() {
       runtime = createDiamondScene(el, motion.current,
         () => { window.clearTimeout(timeout); if (!disposed) setStatus("ready"); },
         () => { window.clearTimeout(timeout); if (!disposed) setStatus("fallback"); },
-        () => { window.clearTimeout(timeout); });
+        () => { window.clearTimeout(timeout); }, mobile);
       scene.current = runtime;
     }).catch(() => { window.clearTimeout(timeout); if (!disposed) setStatus("fallback"); });
     return () => {
@@ -129,7 +132,7 @@ export function MJShowcase() {
   }, [mobile]);
 
   const toggle = () => {
-    if (!mobile && !requested) { setStatus("loading"); setRequested(true); }
+    if (!requested) { setStatus("loading"); setRequested(true); }
     const next = !expanded;
     setExpanded(next);
     gsap.to(motion.current, { burst: next ? 1 : 0, progress: next ? 1 : .5,
@@ -144,16 +147,19 @@ export function MJShowcase() {
           <h2 id="mj-showcase-title">From a product.<br />To an <em>experience.</em></h2>
         </div>
       </div>
-      <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={!mobile && status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}>
-        <div ref={stage} className="mj-showcase-stage" data-ready={!mobile && status === "ready"}>
-          <DiamondFallback loadTexture={requested && !mobile} />
+      <div ref={track} className="mj-scroll-track" id="diamond-experience" data-renderer={status === "ready" ? "webgl" : "fallback"} data-phase={["scatter", "gather", "radiate"][phase]}>
+        <div ref={stage} className="mj-showcase-stage" data-ready={status === "ready"}>
+          <DiamondFallback loadTexture={requested} />
           <div ref={host} className="mj-showcase-canvas" aria-hidden="true" />
+          <button type="button" className="mj-touch-surface" onClick={toggle}
+            aria-label={expanded ? "Reassemble diamond sculpture" : "Break diamond sculpture"} aria-pressed={expanded} />
           <div className="mj-showcase-controls">
             <span className="tc-sr-only" role="status">{status === "loading" ? "Loading interactive scene" : status === "fallback" ? "Interactive preview available" : ""}</span>
             <a href="#clients" className="mj-skip"><HoverText>Continue to clients</HoverText> <span aria-hidden="true"><UiIcon name="arrow-down" /></span></a>
             <button type="button" className="btn cream mj-manual" onClick={toggle} aria-pressed={expanded} aria-label={expanded ? "Gather the diamond" : "Burst the diamond"}>
               <HoverText>{expanded ? "Gather the diamond" : "Burst the diamond"}</HoverText>
             </button>
+            <span className="mj-touch-hint" aria-hidden="true">{expanded ? "Tap again to bring it together." : "Tap the diamond to break it apart."}</span>
           </div>
         </div>
       </div>

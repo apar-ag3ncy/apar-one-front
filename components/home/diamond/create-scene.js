@@ -10,11 +10,12 @@ import {
 import { diamondMaterial, fragmentDepthMaterial } from "@/components/home/diamond/fragment-material";
 import { createRockMaterial } from "@/components/home/diamond/rock-material";
 import { createRockMotion } from "@/components/home/diamond/rock-motion";
+import { diamondScale } from "@/components/home/diamond/mobile-framing";
 
 /** Render on demand. GSAP supplies the motion; this module never runs an idle animation loop. */
-export function createDiamondScene(host, state, onReady, onLost, onPrepared = () => {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-  let crispPixelRatio = Math.min(window.devicePixelRatio, host.clientWidth < 768 ? 1.75 : 2);
+export function createDiamondScene(host, state, onReady, onLost, onPrepared = () => {}, compact = false) {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: compact ? "low-power" : "high-performance" });
+  let crispPixelRatio = Math.min(window.devicePixelRatio, compact ? 1.25 : 2);
   let pixelRatio = crispPixelRatio;
   renderer.setPixelRatio(pixelRatio);
   renderer.setClearColor(0x000000, 0);
@@ -37,7 +38,7 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
   const key = new THREE.DirectionalLight(0xfffaf4, 3.7);
   key.position.set(-4, 7, 3);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.mapSize.set(compact ? 512 : 1024, compact ? 512 : 1024);
   key.shadow.camera.left = key.shadow.camera.bottom = -7;
   key.shadow.camera.right = key.shadow.camera.top = 7;
   key.shadow.camera.near = 0.5;
@@ -61,7 +62,7 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
   world.add(diamond);
   const triangles = diamondTriangles();
   const wholeGeometry = createDiamondGeometry(triangles);
-  const wholeMaterial = diamondMaterial();
+  const wholeMaterial = diamondMaterial(null, compact);
   const whole = new THREE.Mesh(wholeGeometry, wholeMaterial);
   const inverseDiamond = new THREE.Matrix4();
   whole.castShadow = true;
@@ -75,7 +76,7 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
   pieces.frustumCulled = false;
   pieces.castShadow = true;
   diamond.add(pieces);
-  const rockSurface = createRockMaterial(renderer, host.clientWidth < 768);
+  const rockSurface = createRockMaterial(renderer, compact);
   const rockMaterial = rockSurface.material;
   const rocks = rockComposition.map((data) => {
     const mesh = new THREE.Mesh(createRockGeometry(data.seed), rockMaterial);
@@ -119,7 +120,7 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
     ready = false,
     mapsReady = false,
     contextAvailable = true,
-    mobile = false,
+    mobile = compact,
     previousFrame = 0,
     slowFrames = 0,
     shadowBurst = -1,
@@ -128,10 +129,12 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
     frame = 0;
     if (disposed || !mapsReady || !contextAvailable || !visible || document.hidden) return;
     const interval = time - previousFrame;
+    // Touch animation renders at most 30fps; the last frame still settles exactly.
+    if (compact && interval < 1000 / 30) { frame = requestAnimationFrame(draw); return; }
     previousFrame = time;
     // Only measure continuous interaction, not the gap between on-demand frames.
     if (interval > 250) slowFrames = 0;
-    else if (interval > 25) slowFrames++;
+    else if (interval > (compact ? 45 : 25)) slowFrames++;
     else slowFrames = Math.max(0, slowFrames - 1);
     if (!refining && slowFrames >= 8 && pixelRatio > 0.7) {
       pixelRatio = Math.max(0.7, pixelRatio * 0.8);
@@ -141,7 +144,7 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
     burst.value = state.burst;
     whole.visible = state.burst < 0.015;
     pieces.visible = !whole.visible;
-    diamond.scale.setScalar(mobile ? 1.03 : 1.3);
+    diamond.scale.setScalar(diamondScale(mobile, camera.aspect, state.burst));
     diamond.rotation.y = 0.12;
     // Orbit the view: the sculpture turns on screen while its lighting and floor shadows stay stable.
     const yaw = state.yaw + state.hoverYaw + state.baseYaw;
@@ -197,8 +200,8 @@ export function createDiamondScene(host, state, onReady, onLost, onPrepared = ()
     const width = host.clientWidth,
       height = host.clientHeight;
     if (!width || !height) return;
-    mobile = width < 768;
-    crispPixelRatio = Math.min(window.devicePixelRatio, mobile ? 1.75 : 2);
+    mobile = compact;
+    crispPixelRatio = Math.min(window.devicePixelRatio, compact ? 1.25 : 2);
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();

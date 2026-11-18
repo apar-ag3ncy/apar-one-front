@@ -58,7 +58,7 @@ vec3 insideCrystal(vec3 origin, vec3 ray) {
 `;
 
 /** Sharp softbox reflections, internal refraction and subtle spectral fire. No blurred transmission buffer. */
-export function diamondMaterial(uniform = null) {
+export function diamondMaterial(uniform = null, compact = false) {
   return new THREE.ShaderMaterial({
     uniforms: uniform
       ? { uBurst: uniform }
@@ -86,7 +86,7 @@ export function diamondMaterial(uniform = null) {
     fragmentShader: `
       varying vec3 vWorldNormal;
       varying vec3 vWorldPosition;
-      ${uniform ? "" : crystalRefraction}
+      ${uniform ? "" : compact ? crystalRefraction.replace("bounce < 3", "bounce < 1") : crystalRefraction}
       // Analytic softboxes stay sharp as the stone turns and expose each individual cut.
       vec3 studio(vec3 direction) {
         vec3 d = normalize(direction);
