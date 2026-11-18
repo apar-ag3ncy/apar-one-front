@@ -9,6 +9,7 @@ import "@/styles/surfaces.css";
 import "@/styles/mobile.css";
 import "@/styles/typography.css";
 import "@/styles/glass.css";
+import "@/styles/mobile-navigation.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";
@@ -19,6 +20,7 @@ import { DesktopSlowMo } from "@/components/motion/desktop-slow-mo";
 import { PixelTrail } from "@/components/motion/pixel-trail";
 import { TalkToUs } from "@/components/voice/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
+import { IconSprite } from "@/components/ui/icon-sprite";
 
 export const metadata: Metadata = {
   // Production origin for absolute social-preview URLs.
@@ -54,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ) : null}
       </head>
       <body id="top" data-page="index">
+        <IconSprite />
         <MotionProvider>
           <SmoothScroll />
           {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity

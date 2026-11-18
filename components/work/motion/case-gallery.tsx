@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { DESKTOP_MOTION_QUERY, useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap } from "gsap";
@@ -181,11 +182,11 @@ export function CaseGalleryJourney({ data, assets }: { data: CaseData; assets: C
       </div>
       </div>
     <div className="case-reel-toolbar case-wrap">
-      <span className="case-reel-instruction"><span className="desktop-cue">Scroll to explore</span><span className="touch-cue">Swipe to explore</span><i aria-hidden="true">↔</i></span>
+      <span className="case-reel-instruction"><span className="desktop-cue">Scroll to explore</span><span className="touch-cue">Swipe to explore</span><i aria-hidden="true"><UiIcon name="arrow-left-right" /></i></span>
       <div className="case-reel-progress"><span ref={count}>01</span><span className="case-reel-meter"><i ref={meter} /></span><span>{String(data.approach.gallery.length).padStart(2, "0")}</span></div>
-      <div className="case-reel-controls"><button type="button" onClick={() => step(-1)} aria-label="Previous artwork">←</button><button type="button" onClick={() => step(1)} aria-label="Next artwork">→</button></div>
+      <div className="case-reel-controls"><button type="button" onClick={() => step(-1)} aria-label="Previous artwork"><UiIcon name="arrow-left" /></button><button type="button" onClick={() => step(1)} aria-label="Next artwork"><UiIcon name="arrow-right" /></button></div>
     </div>
     </div>
-    <div className="case-reel-skip case-wrap"><a href="#case-results">Skip to the results ↗</a></div>
+    <div className="case-reel-skip case-wrap"><a href="#case-results">Skip to the results <UiIcon name="arrow-up-right" /></a></div>
   </section>;
 }

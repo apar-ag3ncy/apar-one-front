@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect } from "react";
 import Link from "next/link";
 import { HoverText } from "@/components/motion/hover-text";
@@ -32,7 +33,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         <div className="chip-row" style={{ marginTop: 34 }}>
           <button className="btn" type="button" onClick={() => reset()}>
             <HoverText>Try again</HoverText>
-            <span className="arr" aria-hidden="true">↺</span>
+            <span className="arr" aria-hidden="true"><UiIcon name="rotate-ccw" /></span>
           </button>
           <Link className="btn-ghost" href="/">
             <HoverText>Back to home</HoverText>

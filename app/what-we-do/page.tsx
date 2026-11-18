@@ -1,3 +1,4 @@
+import { UiIcon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import "@/styles/inner-mobile.css";
 import Link from "next/link";
@@ -42,7 +43,7 @@ export default function WhatWeDoPage() {
           <Reveal as="h1" className="display d-lg service-title" style={{ marginTop: 8 }}>
             We build brands - and <em>look after them.</em>
           </Reveal>
-          <Reveal as="p" className="lead" i={1} style={{ maxWidth: "54ch" }}>
+          <Reveal as="p" className="lead service-lead" i={1}>
             APAR is a branding and digital-marketing studio. We craft the identity, run the
             marketing, and manage the social handles for a short, hand-picked roster of jewellery
             houses and premium brands - showing up every day so every touchpoint feels considered.
@@ -113,7 +114,7 @@ export default function WhatWeDoPage() {
                 and the numbers underneath. Strategy and craft, under one roof, with a human
                 directing every decision.
               </p>
-              <Link className="btn-ghost service-team-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true">↗</span></Link>
+              <Link className="btn-ghost service-team-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link>
             </Reveal>
           </div>
         </div>
@@ -129,7 +130,7 @@ export default function WhatWeDoPage() {
             <Reveal i={1}>
               <Link className="btn" href="/start">
                 <HoverText>Start a project</HoverText>
-                <span className="arr" aria-hidden="true">↗</span>
+                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Reveal>
           </div>

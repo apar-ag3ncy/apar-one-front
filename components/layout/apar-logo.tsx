@@ -7,19 +7,17 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
  * APAR wordmark - strictly **Fit** (David Jonathan Ross). The leading "A"
  * transitions across the languages Fit ships in, every form rendered in REAL Fit:
  *
- *  • Latin A and Devanagari अ are exact vector outlines traced from the master
- *    artwork - always available, always genuine Fit, no font kit needed.
+ *  • Latin A and Devanagari अ use the bundled Fit variable fonts.
  *  • The other Fit scripts (Cyrillic А, Greek Α, Hebrew א, Armenian Ա, Tamil அ,
  *    Kannada ಅ, Arabic ا) render as live Fit text from their matching Fit family -
  *    but ONLY join the cycle once document.fonts confirms that real Fit family is
  *    loaded (via the agency's Adobe Fonts kit). They are NEVER shown in a fallback
  *    font, so the mark is strictly Fit at all times.
  *
- * Every leading glyph is normalized into one fixed slot - matched to the master
- * cap-height, width-contained, baseline-aligned, and RIGHT-aligned to "PĀR" - so
- * every script keeps the same gap to the word ("sticks" to it) and the transition
- * never shifts "PĀR" or changes the wordmark's size/spacing.
- * one mark render white / cream / red / ink via CSS color.
+ * Script variants share a baseline-aligned slot beside "PĀR". The responsive
+ * header uses the original vector artwork at compact-navigation widths, so it
+ * does not depend on font loading or hydrated media-query state. Both variants
+ * render white / cream / red / ink via CSS color.
  */
 
 type Script = {
@@ -44,7 +42,7 @@ const SCRIPTS: Script[] = [
   { key: "kannada", lang: "Kannada", label: "ಅ", char: "ಅ", cssVar: "--fit-kannada", fitName: "fit-kannada-vf" },
 ];
 
-export function AparLogo({ onDark = false }: { onDark?: boolean }) {
+export function AparLogo({ onDark = false, responsive = false }: { onDark?: boolean; responsive?: boolean }) {
   const mobile = useMobileLayout();
   const containerRef = useRef<HTMLSpanElement>(null);
   const [active, setActive] = useState<string[]>(["deva", "latin"]);
@@ -128,8 +126,11 @@ export function AparLogo({ onDark = false }: { onDark?: boolean }) {
   const currentKey = mobile ? "deva" : activeScripts[i % Math.max(activeScripts.length, 1)]?.key ?? "deva";
 
   return (
-    <span ref={containerRef} className={`apar-logo${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">
-      <span className="apar-logo-inner">
+    <span ref={containerRef} className={`apar-logo${responsive ? " apar-logo-responsive" : ""}${onDark ? " on-dark" : ""}`} aria-label="APAR" role="img">
+      {/* CSS selects the original compact vector before hydration, avoiding
+          font-loading flashes and width shifts during responsive switching. */}
+      {responsive && <span className="apar-logo-compact" aria-hidden="true" />}
+      <span className="apar-logo-inner" aria-hidden="true">
         <span className="apar-lead-wrap">
           {SCRIPTS.map((s) => {
             const isActive = active.includes(s.key);

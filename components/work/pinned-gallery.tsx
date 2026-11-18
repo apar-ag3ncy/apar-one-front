@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -150,14 +151,14 @@ export function PinnedGallery({ clients }: { clients: FeaturedClient[] }) {
             </h2>
             <p>
               A focused body of branding, marketing and campaign work for jewellery and real-estate
-              brands. Swipe left to explore →
+              brands. Swipe left to explore <UiIcon name="arrow-right" />
             </p>
           </div>
 
           <div className="pin-controls">
             <span aria-live="polite">{String(Math.min(position.index + 1, cards.length)).padStart(2, "0")} / {cards.length}</span>
-            <button type="button" aria-label="Previous project" aria-controls="work-rail" disabled={position.index === 0} onClick={() => move(-1)}>←</button>
-            <button type="button" aria-label="Next project" aria-controls="work-rail" disabled={position.end} onClick={() => move(1)}>→</button>
+            <button type="button" aria-label="Previous project" aria-controls="work-rail" disabled={position.index === 0} onClick={() => move(-1)}><UiIcon name="arrow-left" /></button>
+            <button type="button" aria-label="Next project" aria-controls="work-rail" disabled={position.end} onClick={() => move(1)}><UiIcon name="arrow-right" /></button>
           </div>
         <div ref={trackRef} id="work-rail" className="pin-track" data-lenis-prevent-horizontal tabIndex={0} role="region" aria-label="Project carousel — swipe horizontally" onKeyDown={e => {
           if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); }
@@ -185,7 +186,7 @@ export function PinnedGallery({ clients }: { clients: FeaturedClient[] }) {
           >
             <Link className="btn cream" href="/clients">
               <HoverText>See all clients</HoverText>
-              <span className="arr" aria-hidden="true">↗</span>
+              <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
             </Link>
           </div>
         </div>

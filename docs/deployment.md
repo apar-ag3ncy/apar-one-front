@@ -35,10 +35,18 @@ route/asset checks. Its missing voice credentials are explicitly reported as a
 warning on the optional Node build. The cPanel release must pass `--require-voice` and private upload integration checks.
 
 Next and Sharp are pinned to patched versions. The PostCSS 8.5.33 override
-replaces a vulnerable transitive version while retaining Next 15. Build-time
-TypeScript, Tailwind and lint packages are included in `dependencies` because
-GoDaddy's documented installer omits development dependencies. Playwright and
-the offline logo tracing tool remain development-only.
+replaces a vulnerable transitive version while retaining Next 15. ESLint and its
+configuration are development-only tooling, alongside Playwright and the offline
+logo tracing tool. Release builders and CI must install with `npm ci --include=dev`
+to run lint and build checks. cPanel receives only the exported site and PHP;
+no Node dependencies are uploaded.
+
+The full development tree currently includes the unpatched picomatch advisory
+[GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), reached
+through ESLint's file matching. Only trusted repository patterns are passed to
+that tooling. Track the upstream patch; a clean production-only audit does not
+mean the development advisory is fixed. Do not downgrade Next or suppress the
+audit to hide it.
 
 ## cPanel File Manager release
 
@@ -81,8 +89,10 @@ The upload ZIP must have `package.json` and `package-lock.json` at its root,
 plus `app/`, `components/`, `lib/`, `public/`, `styles/` and config files.
 Exclude `.env*`, `.git`, `node_modules`, `.next`, local reports and raw design
 sources. Verify ZIP integrity and record its SHA-256 and source-file manifest.
-GoDaddy installs Linux dependencies, builds, and starts with `npm start`; Next
-uses the platform's `PORT`. Do not upload macOS native dependencies.
+For an optional Node deployment, configure installation as `npm ci --include=dev`
+before building, then start with `npm start`; Next uses the platform's `PORT`.
+A provider preset that omits development dependencies must be changed before
+using that optional route. Do not upload macOS native dependencies.
 
 Server environment variables:
 

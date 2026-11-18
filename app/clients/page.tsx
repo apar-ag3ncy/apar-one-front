@@ -1,8 +1,10 @@
+import { UiIcon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import "@/styles/inner-mobile.css";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { FEATURED_CLIENTS } from "@/lib/cases";
+import { CLIENT_CARD_ARTWORK } from "@/lib/cases/client-card-artwork";
 import { FeaturedCard } from "@/components/work/featured-card";
 import { HoverText } from "@/components/motion/hover-text";
 import styles from "./manish-card.module.css";
@@ -55,7 +57,7 @@ export default function ClientsPage() {
           </Reveal>
           <div className="featured-clients">
             {FEATURED_CLIENTS.filter(c => c.slug !== "manish-jewellers").map((c, i) => (
-              <FeaturedCard key={c.slug} client={c} i={i} />
+              <FeaturedCard key={c.slug} client={c} i={i} artwork={CLIENT_CARD_ARTWORK[c.slug]} />
             ))}
             <Link href="/work/manish-jewellers" className={styles.card} aria-label="Explore Manish Jewellers' case study">
               <span className={styles.media}>
@@ -63,7 +65,7 @@ export default function ClientsPage() {
                 <img className={styles.base} src="/work/manish-jewellers/curated/brand-monogram.webp" alt="Manish Jewellers rose-gold monogram" width="1600" height="1195" loading="lazy" decoding="async" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className={styles.hover} src="/work/manish-jewellers/curated/trio-landscape.webp" alt="" width="1600" height="792" loading="lazy" decoding="async" />
-                <span className={styles.explore}>Explore the story <span aria-hidden="true">↗</span></span>
+                <span className={styles.explore}>Explore the story <span aria-hidden="true"><UiIcon name="arrow-up-right" /></span></span>
               </span>
               <span className={styles.caption}><span>Jewellery · Since 1916</span><strong>Manish Jewellers</strong></span>
             </Link>
@@ -84,7 +86,7 @@ export default function ClientsPage() {
                   <span className="rr-n">{r.n}</span>
                   <span className="rr-name">{r.name}</span>
                   <span className="rr-cat">{r.cat}</span>
-                  <span className="rr-go">↗</span>
+                  <span className="rr-go"><UiIcon name="arrow-up-right" /></span>
                 </Reveal>
               ) : (
                 <Reveal key={r.n} i={i} className="roster-row static">
@@ -109,7 +111,7 @@ export default function ClientsPage() {
             <Reveal i={1}>
               <Link className="btn" href="/start">
                 <HoverText>Start a project</HoverText>
-                <span className="arr" aria-hidden="true">↗</span>
+                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Reveal>
           </div>

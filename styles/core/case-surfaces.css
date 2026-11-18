@@ -236,14 +236,5 @@
 /* ============================================================
    FIXES (audit 2026-09-16) - behaviour only, no visual change at rest
    ============================================================ */
-/* closed mobile menu: also visibility:hidden (transform alone leaves its links
-   focusable and announced); the delay keeps the slide-up animation */
-.mobile-menu{visibility:hidden;transition:transform .6s var(--ease),visibility 0s .6s;}
-.mobile-menu.open{visibility:visible;transition:transform .6s var(--ease),visibility 0s;}
-@media (max-width:900px){
-  /* the nav keeps `scrolled` while the menu is open: its cream bar hid the
-     cream close icon on light routes - let the menu's ink show through */
-  .nav.menu-open{background:transparent;box-shadow:none;}
-}
 /* the case pages' fixed "keep scrolling" meter (z 300) sat above the open menu */
 body:has(.mobile-menu.open) .next-pull{display:none;}

@@ -22,15 +22,6 @@
 .rc-showcase-container,
 .rc-showcase-container > * { min-width: 0; }
 
-@media (max-width: 560px) {
-  .rc-showcase-container { gap: 32px; }
-  .rc-glass-card { padding: 20px; }
-  /* stack each control's label above its control when they can't fit side-by-side */
-  .rc-control-row { gap: 12px; flex-wrap: wrap; }
-  .rc-segments { flex-wrap: wrap; }
-  .rc-segment-btn { padding: 6px 10px; }
-}
-
 /* Phone Mockup Frame */
 .rc-phone-mockup {
   position: relative;
@@ -545,4 +536,22 @@ input:checked + .rc-slider::before {
   overflow-x: auto;
   color: rgba(246, 197, 122, 0.95);
   margin-top: 12px;
+}
+
+/* Keep responsive rules after the base controls they override. */
+.reel-cover-page{padding-top:120px;min-height:100svh;}
+.reel-cover-page>.section{padding-bottom:64px;}
+@media(max-width:900px){
+  .reel-cover-page{padding-top:calc(96px + env(safe-area-inset-top));}
+  .reel-cover-page>.section{padding-block:0 36px;}
+  .reel-cover-page .lead{max-width:100%;}
+  .reel-cover-page .rc-showcase-container{margin-top:28px;}
+}
+@media(max-width:560px){
+  .rc-showcase-container{gap:32px;}
+  .rc-glass-card{padding:20px;}
+  .rc-control-row{gap:12px;flex-wrap:wrap;}
+  .rc-control-label{min-width:0;}
+  .rc-segments{flex-wrap:wrap;}
+  .rc-segment-btn{padding:6px 10px;}
 }

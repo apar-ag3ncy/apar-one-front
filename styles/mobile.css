@@ -40,16 +40,7 @@
   .nav.scrolled { background:var(--surface); }
   .nav .apar-logo,.nav.scrolled .apar-logo { font-size:40px; }
   .nav-links,.nav .nav-cta { display:none; }
-  .nav-burger { display:flex; width:48px; height:48px; margin-right:-8px; }
   .nav.on-dark.scrolled { background:#1a1714; }
-  .mobile-menu { transform:none; visibility:hidden; pointer-events:none; transition:none;
-    padding:calc(88px + env(safe-area-inset-top)) var(--gut) max(24px,env(safe-area-inset-bottom)); justify-content:flex-start;
-    overscroll-behavior:contain; gap:28px; }
-  .mobile-menu.open { visibility:visible; pointer-events:auto; transition:none; }
-  .mobile-menu .mm-links { gap:4px; }
-  .mobile-menu a { font-size:clamp(28px,7.6vw,42px); line-height:1.1; min-height:48px; padding:8px 0; }
-  .mobile-menu .mm-foot { position:static; margin-top:auto; flex-wrap:wrap; gap:12px;
-    padding-top:20px; font-size:18px; flex-shrink:0; }
   .btn,.btn-ghost,.case-btn { min-height:48px; }
 
   /* Compact introductions lead into the imagery; stable gutters follow it. */
@@ -136,12 +127,12 @@
   .meeting-home .faq-motion .faq-a p { transform:none; transition:none; font-size:20px; line-height:1.65; }
 
   .case-cinematic .case-hero { padding-top:calc(108px + env(safe-area-inset-top)); min-height:0; }
-  .case-cinematic .case-hero-in { gap:20px; }
+  .case-cinematic .case-hero-in { grid-template-columns:minmax(0,1fr); gap:20px; }
   .case-cinematic .case-hero-copy { display:contents; }
   .case-cinematic .case-eyebrow { order:0; }
   .case-cinematic .case-title { order:1; margin-top:0; }
   .case-cinematic .case-sub { order:2; margin-top:0; }
-  .case-page.case-cinematic .case-hero-fig { order:3; margin-block:8px; }
+  .case-page.case-cinematic .case-hero-fig { order:3; margin-block:8px; justify-self:center; }
   .case-cinematic .case-explore { order:4; margin:0; justify-content:space-between; }
   .case-cinematic .case-meta { order:5; margin-top:0; padding-top:22px; border-top:1px solid var(--c-line); }
   .case-cinematic .case-title { font-size:clamp(40px,10vw,70px); overflow-wrap:anywhere; }
@@ -169,7 +160,7 @@
   .footer-base { padding-right:64px; font-size:17px; gap:10px; line-height:1.6; }
   .vc-panel { max-height:calc(100dvh - 32px - env(safe-area-inset-top)); overflow-y:auto; }
   .vc-x { min-width:44px; min-height:44px; }
-  .start-close { display:inline-flex; align-items:center; min-height:44px; }
+  .start-close { display:inline-flex; align-items:center; gap:8px; flex:none; min-height:44px; }
   .manifesto-sculpture-activate { position:absolute; z-index:3; bottom:4%; left:50%; transform:translateX(-50%);
     border:1px solid #f4ede266; background:#181613; color:var(--cream); padding:12px 20px;
     min-height:48px; white-space:nowrap; font:500 19px var(--sans); border-radius:24px; }
@@ -188,7 +179,7 @@
 }
 
 /* Work is a browsable portfolio on phones: get to the projects sooner and
-   keep the original, uncropped creatives in a compact two-column grid. */
+   keep full artwork and its caption together in a single vertical flow. */
 @media (max-width:900px) {
   .work-page .page-hero { padding-block:calc(96px + env(safe-area-inset-top)) 24px; }
   .work-page .page-hero .eyebrow { margin-bottom:12px; }
@@ -208,42 +199,22 @@
   .work-page .work-cta { padding-bottom:40px; }
 }
 @media (max-width:600px) {
-  .work-page .work-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
-    grid-auto-rows:auto; gap:24px 14px; align-items:start; }
+  .work-page { --gut:max(16px,env(safe-area-inset-left),env(safe-area-inset-right)); }
+  .work-page .work-grid { --work-row-gap:32px; display:flex; flex-direction:column; gap:32px; }
   .work-page .work-card { min-width:0; }
-  .work-page .work-card .tagpill { top:8px; left:8px; max-width:calc(100% - 16px);
-    padding:5px 8px; font-size:12px; line-height:1.2; letter-spacing:.07em; }
-  .work-page .work-card .cap { margin-top:10px; gap:6px; }
-  .work-page .work-card .cap h3 { min-width:0; font-size:22px; line-height:1.15; }
-  .work-page .work-card .cap .yr { font-size:15px; letter-spacing:.04em; }
-  .work-page .work-card .cap p { margin-top:4px; font-size:17px; line-height:1.35; }
+  .work-page .work-card .tagpill { top:12px; left:12px; max-width:calc(100% - 24px);
+    padding:6px 10px; font-size:14px; line-height:1.2; letter-spacing:.07em; }
+  .work-page .work-card .cap { margin-top:12px; gap:4px 12px; flex-wrap:wrap; }
+  .work-page .work-card .cap h3 { min-width:0; overflow-wrap:anywhere; font-size:30px; line-height:1.15; }
+  .work-page .work-card .cap .yr { font-size:16px; letter-spacing:.04em; }
+  .work-page .work-card .cap p { margin-top:4px; font-size:18px; line-height:1.45; }
   .work-page .pin-card { width:min(68vw,280px); }
   .work-page .pin-card .cap { margin-top:12px; }
   .work-page .pin-card .cap p { font-size:18px; line-height:1.4; }
 }
 
-/* The compact header also prevents the six desktop links crowding on tablets.
-   This changes navigation only; desktop content and image grids keep their size. */
-@media (max-width:1100px), (hover:none) and (pointer:coarse) {
-  .nav-links,.nav .nav-cta { display:none; }
-  .nav-burger { display:flex; width:48px; height:48px; }
-  .nav.menu-open,.nav.on-dark.menu-open { background:var(--surface); box-shadow:none; }
-  .nav.on-case.menu-open { background:#fff; }
-  .nav.menu-open .nav-burger span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-  .nav.menu-open .nav-burger span:nth-child(2) { opacity:0; }
-  .nav.menu-open .nav-burger span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-  .nav.menu-open:not(.on-case) .nav-burger span { background:var(--ink); }
-  .mobile-menu .mm-project { display:flex; align-items:center; gap:24px; margin-top:16px; font:500 20px/1.4 var(--sans); color:var(--red); }
-  .mobile-menu .mm-project span { font-size:23px; }
-}
-@media (min-width:901px) and (max-width:1100px) {
-  .mobile-menu { justify-content:flex-start; padding:96px var(--gut) 32px; gap:24px; }
-  .mobile-menu a { font-size:36px; min-height:48px; }
-  .mobile-menu .mm-foot { position:static; margin-top:auto; flex-shrink:0; }
-}
 @media (max-width:900px) and (max-height:600px) {
   .hero-beam { min-height:620px; }
-  .mobile-menu a { font-size:30px; padding-block:5px; }
 }
 @media (max-width:900px), (hover:none) and (pointer:coarse) {
   .next-pull { display:none; }

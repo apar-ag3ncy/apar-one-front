@@ -47,7 +47,7 @@ export interface CaseData {
      *  `video` to a /videos/... path to play a looping film in that frame. */
     gallery: { cls: string; placeholder: string; ratio: string; video?: string }[];
   };
-  stats: { n: number; suffix?: string; label: string }[];
+  stats: { n: number; suffix?: string; icon?: "star"; label: string }[];
   /** Image-led stories can describe their visual outcome without unverified KPIs. */
   resultsLabel?: string;
   resultsNote?: ReactNode;

@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useRef, useState } from "react";
 
 export interface DialOption {
@@ -115,7 +116,7 @@ export function AestheticDial({
 
       <div className="dial-controls">
         <button type="button" className="dial-arrow" onClick={() => go(-1)} aria-label="Previous direction">
-          ‹
+          <UiIcon name="chevron-left" />
         </button>
         <div className="dial-dots" role="group" aria-label="Aesthetic options">
           {options.map((o, i) => (
@@ -130,7 +131,7 @@ export function AestheticDial({
           ))}
         </div>
         <button type="button" className="dial-arrow" onClick={() => go(1)} aria-label="Next direction">
-          ›
+          <UiIcon name="chevron-right" />
         </button>
       </div>
     </div>

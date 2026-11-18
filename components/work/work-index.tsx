@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
@@ -57,34 +58,32 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
   useEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
-    const GAP = 32;
     let raf = 0;
-    const columns = window.matchMedia("(min-width: 601px)");
     const layout = () => {
-      if (!columns.matches) return;
+      const computed = getComputedStyle(grid);
+      // The phone layout is normal vertical flow. Clear desktop row-spans on
+      // resize and avoid measuring every image while the user scrolls on mobile.
+      if (computed.display !== "grid") {
+        delete grid.dataset.masonry;
+        grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => card.style.removeProperty("grid-row-end"));
+        return;
+      }
+      const gap = parseFloat(computed.getPropertyValue("--work-row-gap")) || 32;
       // Measure every card before writing spans, preserving the existing grid.
       const sizes = Array.from(grid.querySelectorAll<HTMLElement>(".work-card"), card => ({ card, height: card.offsetHeight }));
       sizes.forEach(({ card, height }) => {
-        const span = `span ${Math.ceil(height) + GAP}`;
+        const span = `span ${Math.ceil(height + gap)}`;
         if (height > 0 && card.style.gridRowEnd !== span) card.style.gridRowEnd = span;
       });
+      grid.dataset.masonry = "true";
     };
     const schedule = () => {
       cancelAnimationFrame(raf);
-      if (columns.matches) raf = requestAnimationFrame(layout);
+      raf = requestAnimationFrame(layout);
     };
     const ro = new ResizeObserver(schedule);
-    const syncColumns = () => {
-      ro.disconnect();
-      cancelAnimationFrame(raf);
-      grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => {
-        if (columns.matches) ro.observe(card);
-        else card.style.removeProperty("grid-row-end");
-      });
-      schedule();
-    };
-    syncColumns();
-    columns.addEventListener("change", syncColumns);
+    grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => ro.observe(card));
+    schedule();
     const imgs = Array.from(grid.querySelectorAll("img"));
     imgs.forEach((img) => {
       if (!(img as HTMLImageElement).complete) img.addEventListener("load", schedule);
@@ -93,7 +92,8 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      columns.removeEventListener("change", syncColumns);
+      delete grid.dataset.masonry;
+      grid.querySelectorAll<HTMLElement>(".work-card").forEach(card => card.style.removeProperty("grid-row-end"));
       imgs.forEach((img) => img.removeEventListener("load", schedule));
       window.removeEventListener("resize", schedule);
     };
@@ -181,7 +181,7 @@ export function WorkIndex({ clients }: { clients: FeaturedClient[] }) {
             <Reveal i={1}>
               <Link className="btn" href="/start">
                 <HoverText>Start a project</HoverText>
-                <span className="arr" aria-hidden="true">↗</span>
+                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Reveal>
           </div>

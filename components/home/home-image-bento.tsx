@@ -1,3 +1,4 @@
+import { UiIcon } from "@/components/ui/icon";
 import Link from "next/link";
 import { BentoMotion } from "./bento-motion";
 
@@ -54,7 +55,7 @@ export function HomeImageBento() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/work/home-bento/${frame.image}-${frame.width}.webp`} srcSet={`/work/home-bento/${frame.image}-640.webp 640w, /work/home-bento/${frame.image}-${frame.width}.webp ${frame.width}w`} sizes={frame.wide ? "(max-width: 900px) 92vw, 45vw" : "(max-width: 900px) 46vw, 22vw"} style={{ objectPosition: frame.position }} alt={frame.alt} width={frame.width} height={frame.height} loading="lazy" decoding="async" />
           <span className="home-bento-name" aria-hidden="true">{frame.brand}</span>
-          <span className="home-bento-arrow" aria-hidden="true">↗</span>
+          <span className="home-bento-arrow" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
         </Link>)}
       </BentoMotion>
     </div>

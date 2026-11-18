@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
@@ -101,13 +102,13 @@ export function Manifesto() {
       <h1>Limitless.<br /><em>Beyond Culture.</em></h1>
       <div className="manifesto-opening-bottom">
         <p>Rooted in who you are.<br />Open to what you can become.</p>
-        <a href="#our-beliefs" className="manifesto-scroll">Explore our thinking <span aria-hidden="true">↘</span></a>
+        <a href="#our-beliefs" className="manifesto-scroll">Explore our thinking <span aria-hidden="true"><UiIcon name="arrow-down-right" /></span></a>
       </div>
     </header>
 
     <section className="manifesto-journey" id="our-beliefs" aria-label="The APĀR point of view">
       <div className="manifesto-stage wrap">
-        <div className="manifesto-journey-top"><span>From one idea to a brand world.</span><span className="manifesto-scroll-note">Scroll to unfold ↓</span></div>
+        <div className="manifesto-journey-top"><span>From one idea to a brand world.</span><span className="manifesto-scroll-note">Scroll to unfold <UiIcon name="arrow-down" /></span></div>
         <div className="manifesto-stage-body">
           <div className="manifesto-chapters">
             {BELIEFS.map((belief, i) => <article className="manifesto-chapter" key={belief.word}>
@@ -135,7 +136,7 @@ export function Manifesto() {
     <section className="manifesto-closing wrap">
       <span className="manifesto-kicker">This is what we believe.</span>
       <h2>We don’t just<br />build brands.<br /><em>We build the way<br />they’re experienced.</em></h2>
-      <div className="manifesto-closing-bottom"><p>Strategy gives it direction.<br />Design gives it character.<br />Interaction makes it felt.</p><Link className="btn" href="/work"><HoverText>See it in our work</HoverText><span className="arr" aria-hidden="true">↗</span></Link></div>
+      <div className="manifesto-closing-bottom"><p>Strategy gives it direction.<br />Design gives it character.<br />Interaction makes it felt.</p><Link className="btn" href="/work"><HoverText>See it in our work</HoverText><span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link></div>
     </section>
   </main>;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import "@/styles/core/voice-concierge.css";
+import { UiIcon } from "@/components/ui/icon";
 import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
@@ -162,13 +164,13 @@ export default function ReelCoverShowcase() {
 
   return (
     <main
-      className="case-page"
+      className="case-page reel-cover-page"
       // This page borrows the case-page shell but has no CaseStudy to set the
       // --c-* palette; without these the background fell through to cream under
       // the nav's on-dark (cream) mode.
-      style={{ paddingTop: 120, minHeight: "100vh", "--c-bg": "#0d0d0d", "--c-ink": "#f4ede2" } as React.CSSProperties}
+      style={{ "--c-bg": "#0d0d0d", "--c-ink": "#f4ede2" } as React.CSSProperties}
     >
-      <section className="section" style={{ paddingBottom: 64 }}>
+      <section className="section">
         <div className="wrap">
           {/* Eyebrow & Headline in APAR's agency web style */}
           <div className="tag-line">
@@ -266,7 +268,7 @@ export default function ReelCoverShowcase() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: mobile ? 0 : 0.8, delay: mobile ? 0 : 0.3 }}
                       >
-                        ⚡ QUICK DELIVERY
+                        <UiIcon name="zap" /> QUICK DELIVERY
                       </motion.h2>
                       <motion.p 
                         className="rc-subheadline"
@@ -287,7 +289,7 @@ export default function ReelCoverShowcase() {
                         <span className="rc-ig-username">chhedajewellers</span>
                       </div>
                       <p className="rc-ig-description">
-                        ⚡ Quick delivery, lifetime trust. Luxury crafted at the speed of culture. #heritage #gold
+                        <UiIcon name="zap" /> Quick delivery, lifetime trust. Luxury crafted at the speed of culture. #heritage #gold
                       </p>
 
                       <div className="rc-ig-actions">

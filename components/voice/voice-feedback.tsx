@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 const LIMIT_SECONDS = 60;
@@ -140,7 +141,7 @@ export function VoiceFeedback() {
   };
   return <div className="vf-wrap">
     {phase !== "closed" && <div className="vf-panel" role="group" aria-label="Private voice feedback">
-      <div className="vf-panel-head"><div><span className="vf-eyebrow">A NOTE FOR APĀR</span><h3>Tell us in your own voice.</h3></div><button type="button" className="vf-close" onClick={close} aria-label="Close voice feedback">×</button></div>
+      <div className="vf-panel-head"><div><span className="vf-eyebrow">A NOTE FOR APĀR</span><h3>Tell us in your own voice.</h3></div><button type="button" className="vf-close" onClick={close} aria-label="Close voice feedback"><UiIcon name="close" /></button></div>
       {phase === "sent" ? <p className="vf-message" role="status">Thank you. Your note has been sent privately to our team.</p> : <>
         <p className="vf-help">{phase === "review" ? "Listen back, enter your name, tick the privacy box, then send. Your note stays private." : "Up to one minute. You can listen back before sending. This recording is private and will not appear on the website."}</p>
         <label className="vf-field">Your name <input ref={nameInput} autoComplete="name" maxLength={80} value={name} onChange={e => { setName(e.target.value); setError(""); }} placeholder="Your name" disabled={phase === "sending" || phase === "recording"} /></label>
@@ -153,7 +154,7 @@ export function VoiceFeedback() {
         <div className="vf-actions">
           {(phase === "ready" || phase === "review") && <button type="button" className="vf-action" onClick={begin}>{phase === "review" ? "Record again" : "Start recording"}</button>}
           {phase === "recording" && <button type="button" className="vf-action" onClick={stop}>Stop recording</button>}
-          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit}>Send privately ↗</button>}
+          {phase === "review" && <button type="button" className="vf-action vf-action--send" onClick={submit}>Send privately <UiIcon name="arrow-up-right" /></button>}
           {phase === "sending" && <span className="vf-sending" role="status">Sending securely…</span>}
         </div>
       </>}

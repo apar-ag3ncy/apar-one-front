@@ -1,7 +1,8 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { Reveal } from "@/components/motion/reveal";
@@ -9,14 +10,16 @@ import { PhotoSlot } from "@/components/media/photo-slot";
 import { useCaseTransition } from "@/components/layout/transition-provider";
 import { featuredCardVars } from "@/lib/cases/presentation";
 import type { FeaturedClient } from "@/lib/cases/types";
+import type { ClientCardArtwork } from "@/lib/cases/client-card-artwork";
 import { caseMotion } from "@/lib/cases/motion";
 import { HoverText } from "@/components/motion/hover-text";
 
 /** A visible editorial caption, with a separate, brand-directed moving artwork layer. */
-export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number }) {
+export function FeaturedCard({ client, i, artwork }: { client: FeaturedClient; i: number; artwork?: ClientCardArtwork }) {
   const root = useRef<HTMLDivElement>(null);
   const transition = useCaseTransition();
   const profile = caseMotion(client.slug);
+  const cover = artwork?.src ?? profile.cover;
   useEffect(() => {
     const el = root.current;
     if (!el) return;
@@ -77,10 +80,13 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
           event.preventDefault();
           transition({ href: client.href, label: client.name, color: client.theme.bg, ink: client.theme.ink });
         }}>
-        <div className={`client-story-media${profile.cover ? " has-photo" : ""}`}>
+        <div className={`client-story-media${cover ? " has-photo" : ""}`}
+          style={artwork ? { "--client-cover-ratio": artwork.ratio, "--client-photo-bleed": artwork.bleed } as CSSProperties : undefined}>
           <div className="client-story-art">
-            {profile.cover && <PhotoSlot src={profile.cover} fixedRatio="20/13" radius={16} placeholder={`${client.name} — selected work`} />}
-            {!profile.cover && <span className="client-story-seal" aria-hidden="true"><i /><i /><i /></span>}
+            {cover && <PhotoSlot src={cover} srcSet={artwork?.srcSet}
+              sizes={artwork ? "(max-width: 600px) calc(100vw - 32px), 46vw" : undefined}
+              fixedRatio="20/13" radius={0} placeholder={artwork?.alt ?? `${client.name} — selected work`} />}
+            {!cover && <span className="client-story-seal" aria-hidden="true"><i /><i /><i /></span>}
           </div>
           <span className="client-story-index">{client.i} / APĀR</span>
           <span className={`client-story-mark${client.logoTint || client.logoInvert ? " mono" : ""}`}
@@ -88,11 +94,11 @@ export function FeaturedCard({ client, i }: { client: FeaturedClient; i: number 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={client.logo} alt="" width={400} height={400} loading="lazy" draggable={false} />
           </span>
-          <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText><i>↗</i></span>
+          <span className="client-story-explore" aria-hidden="true"><HoverText>Explore the story</HoverText><i><UiIcon name="arrow-up-right" /></i></span>
         </div>
         <div className="client-story-caption">
           <div className="client-story-meta"><span>{client.cat}</span><span>{client.year}</span></div>
-          <h3><span className="client-story-arrow" aria-hidden="true">→</span><span className="client-story-name">{client.name}</span></h3>
+          <h3><span className="client-story-arrow" aria-hidden="true"><UiIcon name="arrow-right" /></span><span className="client-story-name">{client.name}</span></h3>
           <p>{client.blurb}</p>
         </div>
       </Link>

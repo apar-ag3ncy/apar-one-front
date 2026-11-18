@@ -15,7 +15,7 @@
 @media(max-width:600px){
  .media{border-radius:12px;}
  .caption{padding-top:12px;gap:8px;}
- .caption>span{font-size:13px;letter-spacing:.05em;}
- .caption strong{font-size:24px;}
- .explore{right:6px;bottom:6px;padding:4px;gap:6px;font-size:13px;}
+ .caption>span{font-size:14px;letter-spacing:.05em;}
+ .caption strong{font-size:30px;}
+ .explore{right:12px;bottom:12px;padding:6px;gap:8px;font-size:15px;}
 }

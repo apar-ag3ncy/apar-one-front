@@ -166,9 +166,9 @@ try {
       if (size.width === 390) {
         await page.getByRole("button", { name: "Open menu", exact: true }).click();
         await page.waitForTimeout(650);
-        assert.equal(await page.locator(".mobile-menu").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(255, 255, 255)");
-        assert(await page.locator(".mobile-menu a").evaluateAll(links => links.every(link => getComputedStyle(link).color === "rgb(17, 17, 17)")));
-        assert.equal(await page.locator(".nav-burger span").first().evaluate(el => getComputedStyle(el).backgroundColor), "rgb(17, 17, 17)");
+        assert.equal(await page.locator(".mobile-menu").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(26, 23, 20)");
+        assert(await page.locator(".mobile-menu a").evaluateAll(links => links.every(link => getComputedStyle(link).color === "rgb(244, 237, 226)")));
+        assert.equal(await page.locator(".nav-burger .ui-icon").evaluate(el => getComputedStyle(el).color), "rgb(26, 23, 20)");
         await page.getByRole("button", { name: "Close menu", exact: true }).click();
         await page.waitForTimeout(650);
       }

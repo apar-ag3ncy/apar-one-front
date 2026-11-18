@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useMobileLayout } from "@/lib/motion-policy";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
@@ -54,7 +55,7 @@ export function GalaxyFooterArt(){
     {!isHome && <div className="galaxy-eyebrow"><span>Made of ideas. Built by people.</span></div>}
     <div className="galaxy-fallback" aria-hidden="true"><Image unoptimized src="/assets/apar-logo-cream.svg" alt="" width={519} height={288} loading="lazy"/></div>
     <CosmicCanvas kind="galaxy" />
-    <Link className="galaxy-people-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true">↗</span></Link>
+    <Link className="galaxy-people-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText><span aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link>
   </div>;
 }
 
@@ -65,8 +66,8 @@ export function PeopleOfApar(){
     <div className="people-fallback" aria-hidden="true"><Image key={showPerson?'person':'character'} unoptimized src={showPerson?'/people/suraj-cutout.png':'/people/feline-particles.webp'} alt="" width={showPerson?1254:1774} height={showPerson?1254:887} loading="lazy"/></div>
     <CosmicCanvas key={showPerson?'person':'character'} kind={showPerson?'portrait':'character'} />
     <div className="people-top"><span className="people-index">[[ &nbsp; {showPerson?'002':'001'} &nbsp; ]]</span><span className="people-calibration" aria-hidden="true"/><div><h1 id="apar-people-title">TEAM</h1><p>The people of APĀR</p></div></div>
-    <div className="people-reticle" aria-hidden="true"><span>+</span><span>+</span><span>+</span><span>+</span><span>+</span></div>
-    <div className="people-bottom"><div className="people-identity" aria-live="polite"><span className="people-id-dot" aria-hidden="true">∷</span><div><h3>{showPerson?'Suraj Yadav':'APĀR'}</h3><p>{showPerson?'Office Admin':'Creative character'}</p></div></div><button className="people-next" onClick={()=>setShowPerson(value=>!value)} aria-label={showPerson?'Show the APĀR character':'Meet Suraj Yadav'} aria-pressed={showPerson}><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M8 24h32M27 11l13 13-13 13" stroke="currentColor" strokeWidth="1.5"/></svg></button><p className="people-note">Behind every idea is a person.<br/>Meet the people who make APĀR.</p></div>
-    <div className="people-edge"><span>APĀR / PEOPLE</span><a href="#top">Back to top ↑</a></div>
+    <div className="people-reticle" aria-hidden="true">{Array.from({length:5},(_,index)=><span key={index}><UiIcon name="plus" /></span>)}</div>
+    <div className="people-bottom"><div className="people-identity" aria-live="polite"><span className="people-id-dot" aria-hidden="true"><UiIcon name="grid" /></span><div><h3>{showPerson?'Suraj Yadav':'APĀR'}</h3><p>{showPerson?'Office Admin':'Creative character'}</p></div></div><button className="people-next" onClick={()=>setShowPerson(value=>!value)} aria-label={showPerson?'Show the APĀR character':'Meet Suraj Yadav'} aria-pressed={showPerson}><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M8 24h32M27 11l13 13-13 13" stroke="currentColor" strokeWidth="1.5"/></svg></button><p className="people-note">Behind every idea is a person.<br/>Meet the people who make APĀR.</p></div>
+    <div className="people-edge"><span>APĀR / PEOPLE</span><a href="#top">Back to top <UiIcon name="arrow-up" /></a></div>
   </section>;
 }

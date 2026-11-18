@@ -60,7 +60,7 @@ const data: CaseData = {
     stats: [
       { n: 3.7, suffix: "×", label: "Appointment enquiries" },
       { n: 64, suffix: "%", label: "More new patients" },
-      { n: 4.8, suffix: "★", label: "Average review score" },
+      { n: 4.8, icon: "star", label: "Average review score" },
     ],
     quote: {
       text: (

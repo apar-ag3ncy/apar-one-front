@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
@@ -89,7 +90,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
                 </div>
               ))}
             </div>
-            <a className="case-explore" href="#case-work"><HoverText>Explore the work</HoverText><span aria-hidden="true">↓</span></a>
+            <a className="case-explore" href="#case-work"><HoverText>Explore the work</HoverText><span aria-hidden="true"><UiIcon name="arrow-down" /></span></a>
           </div>
           {/* Actual artwork keeps its measured aspect ratio. Missing campaign
               assets use the existing client identity rather than a blank frame. */}
@@ -149,6 +150,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
               <Reveal key={i} i={i} className="case-stat glass">
                 <div className="n">
                   <CountUp to={s.n} suffix={s.suffix} />
+                  {s.icon && <UiIcon name="star" />}
                 </div>
                 <div className="l">{s.label}</div>
               </Reveal>
@@ -192,11 +194,11 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
               }}
             >
               <div className="nx-l">{data.next.kicker}</div>
-              <div className="nx-name">{data.next.name} ↗</div>
+              <div className="nx-name">{data.next.name} <UiIcon name="arrow-up-right" /></div>
             </a>
             {nextProfile.cover && <div className="case-next-art" aria-hidden="true"><PhotoSlot src={nextProfile.cover} fixedRatio="20/13" radius={15} /></div>}
             <Link className="case-btn" href="/start">
-              <HoverText>Start your project</HoverText><span aria-hidden="true">↗</span>
+              <HoverText>Start your project</HoverText><span aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
             </Link>
           </div>
         </div>

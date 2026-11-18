@@ -7,6 +7,9 @@ const state = (page) =>
   page.evaluate(() => {
     const burger = document.querySelector(".nav-burger");
     const menu = document.querySelector(".mobile-menu");
+    const logo = document.querySelector('.nav .apar-logo-responsive');
+    const logoBox = logo?.getBoundingClientRect();
+    const burgerBox = burger?.getBoundingClientRect();
     const mc = menu && getComputedStyle(menu);
     const mb = menu && menu.getBoundingClientRect();
     let burgerHittable = null;
@@ -25,8 +28,18 @@ const state = (page) =>
     return {
       burgerDisplay: burger ? getComputedStyle(burger).display : null,
       burgerHittable,
+      logoWidth: logoBox?.width,
+      logoHeight: logoBox?.height,
+      logoCentered: !!logoBox && !!burgerBox && Math.abs(logoBox.top + logoBox.height / 2 - burgerBox.top - burgerBox.height / 2) < 1,
+      compactLogoVisible: getComputedStyle(logo.querySelector('.apar-logo-compact')).display === 'block',
+      textLogoHidden: getComputedStyle(logo.querySelector('.apar-logo-inner')).display === 'none',
       menuOpen: menu?.classList.contains("open") ?? null,
       menuTop: mb ? Math.round(mb.top) : null,
+      menuWidth: mb?.width,
+      menuHeight: mb?.height,
+      viewportHeight: window.innerHeight,
+      headerBottom: document.querySelector('.nav')?.getBoundingClientRect().bottom,
+      menuFits: !!mb && mb.left >= 0 && mb.right <= window.innerWidth && mb.bottom <= window.innerHeight,
       menuZ: mc?.zIndex,
       linkHittable,
     };
@@ -51,7 +64,7 @@ async function scenario(page, label, { scrollTo = 0 } = {}) {
   await page.waitForTimeout(700);
   let navOk = false;
   try {
-    await page.locator(".mobile-menu .mm-links a", { hasText: "Clients" }).tap({ timeout: 3000 });
+    await page.locator(".mobile-menu a", { hasText: "Clients" }).tap({ timeout: 3000 });
     await page.waitForURL("**/clients", { timeout: 4000 });
     navOk = true;
   } catch {
@@ -65,9 +78,14 @@ async function scenario(page, label, { scrollTo = 0 } = {}) {
 
   const pass =
     before.burgerDisplay === "flex" &&
+    before.logoWidth === 80 && before.logoHeight === 44 && before.logoCentered &&
+    before.compactLogoVisible && before.textLogoHidden &&
     opened.burgerHittable &&
     opened.menuOpen === true &&
-    opened.menuTop === 0 &&
+    opened.menuTop >= opened.headerBottom &&
+    opened.menuWidth <= 280 &&
+    opened.menuHeight < opened.viewportHeight &&
+    opened.menuFits &&
     opened.linkHittable &&
     toggledClosed &&
     navOk &&
@@ -114,9 +132,18 @@ const run = async () => {
   assert.equal(await page.locator(".mm-links a").first().evaluate(el => el === document.activeElement), true);
   await page.locator(".mm-project").focus();
   await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".mm-close").evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press("Tab");
   assert.equal(await page.locator(".nav-burger").evaluate(el => el === document.activeElement), true);
   await page.keyboard.press("Escape");
   assert.equal(await page.locator(".nav-burger").getAttribute("aria-expanded"), "false");
+
+  await page.locator('.nav-burger').click();
+  await page.locator('.mm-close').click();
+  assert.equal(await page.locator('.nav-burger').getAttribute('aria-expanded'), 'false');
+  await page.locator('.nav-burger').click();
+  await page.locator('.mobile-menu-backdrop').click({ position: { x: 4, y: 200 } });
+  assert.equal(await page.locator('.nav-burger').getAttribute('aria-expanded'), 'false');
 
   // A fine-pointer tablet must release the lock when resized to desktop.
   const desktop = await browser.newContext({ viewport: { width: 1024, height: 768 } });
@@ -127,6 +154,8 @@ const run = async () => {
   await tabletPage.locator(".mobile-menu").waitFor({ state: "hidden" });
   assert.equal(await tabletPage.evaluate(() => document.documentElement.style.overflow), "");
   assert.equal(await tabletPage.locator(".nav-burger").getAttribute("aria-expanded"), "false");
+  assert.equal(await tabletPage.locator('.nav .apar-logo-inner').evaluate(el => getComputedStyle(el).display), 'inline-flex');
+  assert.equal(await tabletPage.locator('.nav .apar-logo-compact').evaluate(el => getComputedStyle(el).display), 'none');
   await desktop.close();
 
   console.log("\nconsole errors:", errors.length ? [...new Set(errors)].slice(0, 5) : "none");

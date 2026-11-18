@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useMobileLayout } from "@/lib/motion-policy";
 
 import { useRef } from "react";
@@ -91,11 +92,11 @@ export function FeaturedProjects() {
           <img src="/logos/girvaan.png" alt="" width="1600" height="1000" loading="lazy" decoding="async" />
         </span>}</div></div>
       <div className="flow-project-caption"><span>{project.type}</span>
-        <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true">→</i>
+        <h3 aria-label={project.title}><i className="flow-project-arrow" aria-hidden="true"><UiIcon name="arrow-right" /></i>
           <span aria-hidden="true">{mobile ? project.title : project.title.split(" ").map((word, wi) => <span key={wi} className="flow-title-word">{[...word].map((letter, li) => <span className="flow-letter-window" key={li}><span className="flow-letter-stack"><span>{letter}</span><span>{letter}</span></span></span>)}{wi < project.title.split(" ").length - 1 ? " " : ""}</span>)}</span>
         </h3>
       </div>
     </Link>)}</div>
-    <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText><span className="arr" aria-hidden="true">↗</span></Link></div>
+    <div className="flow-project-end"><Link className="btn ink" href="/clients"><HoverText>See all projects</HoverText><span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></Link></div>
   </div></section>;
 }

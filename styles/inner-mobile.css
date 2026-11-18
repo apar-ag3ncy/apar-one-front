@@ -11,6 +11,7 @@
   :is(.services-page,.clients-page) :is(.work-foot,.clients-foot) { margin-top:24px; gap:16px; }
 
   .services-page .service-title { max-width:100%; }
+  .services-page .page-hero .service-lead,.services-page .service-pillar p { max-width:100%; }
   .services-page .service-pillars { margin-top:16px; }
   .services-page .service-pillar { grid-template-columns:28px minmax(0,1fr); gap:12px 14px; padding-block:24px; }
   .services-page .service-pillar p { margin-top:10px; line-height:1.5; }
@@ -84,6 +85,8 @@
   .start .start-fields { gap:16px; }
   .start .fld { gap:7px; }
   .start .start-delivery-note { margin-top:0; max-width:100%; }
+  .start .start-top { flex-wrap:wrap; gap:8px 16px; }
+  .start .start-done { max-width:min(100%,34rem); }
 
   .xr-page .xr-intro { padding-top:calc(96px + env(safe-area-inset-top)); }
   .xr-page .xr-lead { margin-top:16px; font-size:20px; line-height:1.5; }
@@ -94,13 +97,17 @@
 }
 
 @media (max-width:600px) {
-  .clients-page .featured-clients { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 14px; }
-  .clients-page .client-story-media { border-radius:12px; }
-  .clients-page .client-story-index { top:10px; left:10px; font-size:12px; }
-  .clients-page .client-story-explore { right:6px; bottom:6px; padding:4px; gap:6px; font-size:13px; }
-  .clients-page .client-story-meta { flex-wrap:wrap; gap:4px; font-size:13px; letter-spacing:.05em; }
-  .clients-page .client-story-caption h3 { font-size:24px; }
-  .clients-page .client-story-caption p { font-size:17px; }
+  /* One readable story at a time, with the same gutter and 32px card rhythm
+     as Work. The supplied portrait artwork stays whole on phones. */
+  .clients-page { --gut:max(16px,env(safe-area-inset-left),env(safe-area-inset-right)); }
+  .clients-page .featured-clients { grid-template-columns:minmax(0,1fr); gap:32px; }
+  .clients-page .client-story-media { border-radius:12px; aspect-ratio:var(--client-cover-ratio,20/13); }
+  .clients-page .client-story-index { top:14px; left:16px; font-size:13px; }
+  .clients-page .client-story-explore { right:12px; bottom:12px; padding:6px; gap:8px; font-size:15px; }
+  .clients-page .client-story-meta { flex-wrap:wrap; gap:4px 12px; font-size:14px; letter-spacing:.05em; }
+  .clients-page .client-story-caption h3 { font-size:30px; }
+  .clients-page .client-story-arrow { display:inline-flex; width:1.1em; opacity:1; }
+  .clients-page .client-story-caption p { font-size:18px; }
   .clients-page .roster-row { grid-template-columns:28px minmax(0,1fr); }
   .clients-page .rr-name { font-size:28px; }
   .start .dial { --dial-size:230px; }

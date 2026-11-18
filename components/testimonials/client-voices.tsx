@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { voiceTime, voiceWaveform, type ClientVoice } from "@/lib/client-voices";
@@ -14,7 +15,7 @@ export function ClientVoices({ notes }: { notes: ClientVoice[] }) {
   if (!notes.length) return null;
   return <section className="client-voices" aria-labelledby="client-voices-title">
     <div className="cv-heading"><h3 id="client-voices-title">In their own <em>words.</em></h3>
-      <span className="cv-heading-mark" aria-hidden="true">↗</span></div>
+      <span className="cv-heading-mark" aria-hidden="true"><UiIcon name="arrow-up-right" /></span></div>
     <div className="cv-grid">{notes.map(note => <VoicePlayer key={note.id} note={note} activate={activate} />)}</div>
   </section>;
 }

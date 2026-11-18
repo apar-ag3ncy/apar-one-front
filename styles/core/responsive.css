@@ -7,10 +7,6 @@
 @media (max-width:900px){
   .nav-links{display:none;}
   .nav-cta{display:none;}
-  .nav-burger{display:flex;}
-  .nav.menu-open .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg);background:var(--ink);}
-  .nav.menu-open .nav-burger span:nth-child(2){opacity:0;}
-  .nav.menu-open .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg);background:var(--ink);}
 }
 @media (max-width:760px){
   :root{--gut:22px;}
@@ -279,15 +275,6 @@
      extends past the viewport edge. Drop the layer entirely on touch (no
      overflow, fewer compositor layers). */
   .border-glow-card > .edge-light{display:none;}
-}
-
-/* Mobile menu: scroll on short / landscape phones instead of overlapping the
-   absolutely-pinned footer. */
-.mobile-menu{overflow-y:auto;}
-@media (max-height:640px){
-  .mobile-menu{justify-content:flex-start;padding-top:88px;}
-  .mobile-menu a{font-size:clamp(26px,7.5vw,40px);}
-  .mobile-menu .mm-foot{position:static;margin-top:28px;left:auto;right:auto;}
 }
 
 /* Small phones (≤480): the existing tiers stop scaling above this. */

@@ -6,7 +6,13 @@
   color:var(--fc-ink);background:radial-gradient(ellipse at 55% 25%,var(--fc-bg2),var(--fc-bg) 78%);}
 .client-story-art{position:absolute;inset:0;transform-origin:center;}
 .client-story-art .img-slot{width:100%;height:100%;}
-.client-story-art .photo-slot-img{object-position:center;}
+/* Crop the supplied screenshot margins inside the existing card. Dimensions
+   keep this independent of the artwork's GSAP hover transform; the outer card
+   alone owns the rounded clipping edge. Unbordered artwork uses zero bleed. */
+.client-story-art .photo-slot-img{object-position:center;
+  inset:calc(-1 * var(--client-photo-bleed,0%));
+  width:calc(100% + 2 * var(--client-photo-bleed,0%));
+  height:calc(100% + 2 * var(--client-photo-bleed,0%));max-width:none;}
 .client-story:first-child .client-story-art .photo-slot-img{object-position:100% 50%;}
 .client-story-media.has-photo::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.2),transparent 35%,transparent 60%,rgba(0,0,0,.38));}
 .client-story-index{position:absolute;top:22px;left:24px;z-index:2;color:var(--fc-ink);font-size:16px;letter-spacing:.12em;text-transform:uppercase;}
@@ -41,10 +47,6 @@
 .case-cinematic{position:relative;}
 .nav.on-case,.nav.on-case.scrolled{background:rgba(255,255,255,.98);color:#111;}
 .nav.on-case .brand-tag,.nav.on-case .nav-links a{color:#333;}
-.nav.on-case + .mobile-menu{background:#fff;color:#111;}
-.nav.on-case + .mobile-menu a{color:#111;}
-.nav.on-case + .mobile-menu .mm-foot{color:#333;border-color:rgba(17,17,17,.18);}
-.nav.on-case.menu-open .nav-burger span{background:#111;}
 .case-cinematic[data-presentation="white"] .ph-img{background:#fff;}
 /* Open editorial copy needs the same contrast headroom the old smoked panes
    provided. A static shade retains the client's hue without re-blurring scroll. */

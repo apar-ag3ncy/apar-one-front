@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { UiIcon } from "@/components/ui/icon";
 
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger ref={ref} className={cn("faq-q", className)} {...props}>
       {children}
       <span className="ic" aria-hidden>
-        +
+        <UiIcon name="plus" />
       </span>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>

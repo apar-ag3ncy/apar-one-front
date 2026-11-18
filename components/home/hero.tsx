@@ -1,5 +1,6 @@
 "use client";
 
+import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useMobileLayout } from "@/lib/motion-policy";
 import Link from "next/link";
@@ -91,7 +92,7 @@ export function Hero({ start }: { start: boolean }) {
             <Magnetic strength={0.3}>
               <Link className="btn cream" href="/work" prefetch={false}>
                 <HoverText>See the work</HoverText>
-                <span className="arr" aria-hidden="true">↗</span>
+                <span className="arr" aria-hidden="true"><UiIcon name="arrow-up-right" /></span>
               </Link>
             </Magnetic>
             <Link className="btn-ghost light" href="/what-we-do" prefetch={false}>

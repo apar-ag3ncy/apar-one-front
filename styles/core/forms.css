@@ -32,7 +32,8 @@
 /* DOM order: .start-aesthetic (dial) is the FIRST child = LEFT column,
    .start-left (form) is the SECOND child = RIGHT column, so the form column
    gets the wider track and the input fields stay comfortable. */
-.start-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(30px,5vw,80px);align-items:center;}
+.start-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(30px,5vw,80px);align-items:center;}
+.start-grid>*,.fld,.fld-in{min-width:0;}
 @media (max-width:900px){.start-grid{grid-template-columns:1fr;gap:46px;justify-items:center;}
   .start-left{align-items:flex-start;}}
 .start-left{display:flex;flex-direction:column;gap:clamp(22px,3.2vh,36px);max-width:560px;width:100%;}
@@ -47,7 +48,7 @@
 .fld-in:focus{outline:none;border-color:rgba(235,59,37,.7);background:var(--surface);
   box-shadow:0 0 0 4px rgba(235,59,37,.14);}
 .fld-area{resize:vertical;min-height:92px;}
-.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fld-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
 @media (max-width:520px){.fld-row{grid-template-columns:1fr;}}
 
 .start-error{margin:0 0 4px;font-size:19px;line-height:1.5;color:#a8291c;max-width:52ch;}

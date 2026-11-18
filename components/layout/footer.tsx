@@ -1,3 +1,4 @@
+import { UiIcon } from "@/components/ui/icon";
 import Link from "next/link";
 import { GalaxyFooterArt } from "@/components/layout/cosmic-footer";
 import { HoverText } from "@/components/motion/hover-text";
@@ -50,7 +51,7 @@ export function Footer() {
       <div className="wrap footer-inner">
         <div className="footer-row">
           <Link className="footer-talk" href="/#contact" data-magnetic>
-            <span className="circ" aria-hidden="true">→</span> <HoverText>Let&apos;s talk</HoverText>
+            <span className="circ" aria-hidden="true"><UiIcon name="arrow-right" /></span> <HoverText>Let&apos;s talk</HoverText>
           </Link>
           <div className="footer-cols">
             <div className="fcol">
