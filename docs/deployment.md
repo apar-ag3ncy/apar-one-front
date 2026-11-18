@@ -110,7 +110,20 @@ the account owner must confirm that legal step.
 ## Archive and cutover
 
 The initial old-site backup is outside the public root at:
-`/home/fm44mg4nvhpo/archived-old-apar-project-20261117/`.
+`/home/fm44mg4nvhpo/apar-project/archives/archived-old-apar-project-20261117/`.
+
+APAR hosting history is grouped outside `public_html`:
+
+- `apar-project/releases/`: dated extracted release folders.
+- `apar-project/packages/`: original deployment ZIP files.
+- `apar-project/archives/`: old-site backups and dated live-site rollback ZIPs.
+- `apar-project/archives/public-html-legacy/`: the separate legacy archive,
+  macOS packaging files and obsolete placeholder files formerly in `public_html`.
+
+Keep the live asset directories at their published URLs. Keep `apar-private/`
+and the existing preview document root in place; their paths are referenced by
+runtime storage and domain configuration. Similar names do not prove duplicate
+contents. Group historical versions without merging or deleting them.
 
 Its explicit inventory is `__MACOSX/`, `_next/`, `.htaccess`, `404.html`,
 `404.shtml`, `favicon.ico`, `home.html`, `index.html`, `index.txt`, and

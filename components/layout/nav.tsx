@@ -4,7 +4,7 @@ import { UiIcon } from "@/components/ui/icon";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { clsx } from "clsx";
 import { getLenis } from "@/lib/scroll-state";
 import { AparLogo } from "@/components/layout/apar-logo";
 import { Magnetic } from "@/components/motion/magnetic";
@@ -111,7 +111,7 @@ export function Nav() {
 
   return (
     <>
-      <header className={cn("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", scrolled && "scrolled", open && "menu-open")}>
+      <header className={clsx("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", scrolled && "scrolled", open && "menu-open")}>
         <div className="nav-in">
           <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
             <AparLogo responsive onDark={onDark} />
@@ -148,12 +148,12 @@ export function Nav() {
         </div>
       </header>
 
-      <div className={cn("mobile-menu-backdrop", open && "open")} aria-hidden="true" />
+      <div className={clsx("mobile-menu-backdrop", open && "open")} aria-hidden="true" />
       <nav
         ref={menuRef}
         id="mobile-navigation"
         aria-label="Mobile navigation"
-        className={cn("mobile-menu", open && "open")}
+        className={clsx("mobile-menu", open && "open")}
         // Closed, `inert` keeps menu links
         // out of the tab order and the accessibility tree at every viewport width.
         inert={!open}

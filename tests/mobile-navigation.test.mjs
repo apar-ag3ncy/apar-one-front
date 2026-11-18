@@ -40,10 +40,9 @@ function mountNav() {
   const module = { exports: {} };
   const localRequire = name => {
     if (name === 'react') return hooks;
-    if (name === 'react/jsx-runtime') return require(name);
+    if (name === 'react/jsx-runtime' || name === 'clsx') return require(name);
     if (name === 'next/link') return { __esModule: true, default: 'a' };
     if (name === 'next/navigation') return { usePathname: () => pathname };
-    if (name === '@/lib/utils') return { cn: (...classes) => classes.filter(Boolean).join(' ') };
     if (name === '@/lib/scroll-state') return { getLenis: () => lenis };
     return new Proxy({}, { get: () => () => null });
   };
@@ -89,9 +88,36 @@ function mountNav() {
     event(name, event) { listeners.get(name)?.forEach(fn => fn(event)); render(); },
     resizeDesktop() { compact.matches = false; resize(); render(); },
     navigate(path) { pathname = path; render(); render(); },
+    scroll(y) { window.scrollY = y; listeners.get('scroll')?.forEach(fn => fn()); render(); },
     unmount() { effects.forEach(effect => effect.cleanup?.()); assert.ok([...listeners.values()].every(set => set.size === 0)); },
   };
 }
+
+test('navigation preserves route, scroll and open-menu styling together', () => {
+  const nav = mountNav();
+  assert.equal(nav.find('nav').props.className, 'nav');
+  assert.equal(nav.find('mobile-menu').props.className, 'mobile-menu');
+  assert.equal(nav.find('mobile-menu-backdrop').props.className, 'mobile-menu-backdrop');
+
+  nav.navigate('/');
+  nav.scroll(25);
+  nav.open();
+  assert.equal(nav.find('nav').props.className, 'nav on-dark scrolled menu-open');
+  assert.equal(nav.find('mobile-menu').props.className, 'mobile-menu open');
+  assert.equal(nav.find('mobile-menu-backdrop').props.className, 'mobile-menu-backdrop open');
+
+  nav.navigate('/work/chheda');
+  assert.equal(nav.find('nav').props.className, 'nav on-case scrolled');
+  assert.equal(nav.find('mobile-menu').props.className, 'mobile-menu');
+  assert.equal(nav.find('mobile-menu-backdrop').props.className, 'mobile-menu-backdrop');
+  nav.open();
+  assert.equal(nav.find('nav').props.className, 'nav on-case scrolled menu-open');
+  nav.scroll(0);
+  assert.equal(nav.find('nav').props.className, 'nav on-case menu-open');
+  nav.navigate('/manifesto');
+  assert.equal(nav.find('nav').props.className, 'nav');
+  nav.unmount();
+});
 
 test('compact menu retains every destination and restores focus when dismissed', () => {
   const nav = mountNav();
