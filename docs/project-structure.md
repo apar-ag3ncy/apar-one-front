@@ -81,8 +81,7 @@ apar-one-front/
 │   │   │   ├── galaxy-motion.ts
 │   │   │   ├── galaxy-scene.ts
 │   │   │   ├── index.tsx
-│   │   │   ├── particle-material.ts
-│   │   │   └── portrait-scene.ts
+│   │   │   └── particle-material.ts
 │   │   ├── apar-logo.tsx
 │   │   ├── conditional-footer.tsx
 │   │   ├── footer.tsx
@@ -343,8 +342,7 @@ apar-one-front/
 │   │   ├── apar-manifesto-sculpture.glb
 │   │   └── apar-manifesto-sculpture.png
 │   ├── people/
-│   │   ├── feline-particles.webp
-│   │   └── suraj-cutout.png
+│   │   └── feline-particles.webp
 │   ├── showcase/
 │   │   └── mj/
 │   │       ├── anthracite-color-mobile.webp

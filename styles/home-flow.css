@@ -187,3 +187,29 @@
  .featured-media-plane{display:none;}
  .flow-project-image[data-motion-ready="true"]>.flow-project-art{opacity:1;}
 }
+
+/* Reserve the film's scroll distance so loading it below Q&A never moves the footer. */
+.home-journey {
+  --journey-inset:var(--compact-nav-height,70px);
+  --journey-height:calc(100svh - var(--journey-inset));
+  --journey-step:160svh;
+  min-height:calc(var(--journey-height) + 6 * var(--journey-step));
+  scroll-margin-top:var(--journey-inset); position:relative; background:#0b0706;
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-journey {--journey-step:clamp(124px,23svh,200px)}
+}
+.home-journey-opening {
+  position:sticky; top:var(--journey-inset); min-height:var(--journey-height); display:grid;
+  align-content:center; justify-items:center; gap:18px; padding:24px; text-align:center;
+  color:var(--cream); background:radial-gradient(ellipse at 50% 80%,#482314,#0b0706 60%);
+}
+.home-journey-opening h2 {font-size:clamp(38px,6vw,96px)}
+.home-journey-opening a {color:var(--cream); text-decoration:underline}
+
+/* Once the film is available its Contact panel owns these links. The original
+   footer row remains accessible during loading and if the film fails to load. */
+.meeting-home:has([data-journey-ready]) + .cosmic-footer .footer-row {display:none}
+.meeting-home:has([data-journey-ready]) + .cosmic-footer {padding-top:0}
+.meeting-home:has([data-journey-ready]) + .cosmic-footer .galaxy-art {margin-top:0}
+.meeting-home + .cosmic-footer::before {background:linear-gradient(to bottom,#0b0706,transparent)}

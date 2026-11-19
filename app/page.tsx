@@ -5,6 +5,7 @@ import "@/styles/client-voices.css";
 import "@/styles/voice-feedback.css";
 import { MJShowcase } from "@/components/home/diamond";
 import { HomeImageBento } from "@/components/home/home-image-bento";
+import { JourneyEntry } from "@/components/journey/journey-entry";
 import { Faq } from "@/components/home/faq";
 import { TestimonialCarousel } from "@/components/testimonials/testimonial-carousel";
 import { CASES } from "@/lib/cases";
@@ -40,5 +41,6 @@ export default function Home() {
     }))} />
 
     <Faq />
+    <JourneyEntry />
   </main>;
 }
