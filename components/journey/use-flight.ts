@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { getLenis } from '@/lib/scroll-state';
-import { cameraAtScroll, flightStops, nextFlightStop, overlayAt } from './flight';
-import { bindJourneyGestures } from './gestures';
+import { cameraAtScroll, easeCamera, nextFlightStop, overlayAt } from './flight';
 
 export function useFlight(
   viewport: RefObject<HTMLElement | null>,
@@ -10,12 +9,10 @@ export function useFlight(
 ) {
   const position = useRef(0);
   const inset = useRef(0);
-  const [visible, setVisible] = useState(false);
   const destination = useRef<number | null>(null);
+  const [visible, setVisible] = useState(false);
   const [chapter, setChapter] = useState(0);
-  const [target, setTarget] = useState(0);
   const [atEnd, setAtEnd] = useState(false);
-  const displayedTarget = useRef(0);
 
   const go = useCallback((index: number) => {
     const track = viewport.current;
@@ -25,40 +22,31 @@ export function useFlight(
     const range = track.offsetHeight - picture.offsetHeight;
     const top = window.scrollY + track.getBoundingClientRect().top - inset.current + next * range / limit;
     destination.current = next;
-    const chapterTarget = overlayAt(cameraAtScroll(next, limit, limit)).chapter;
-    displayedTarget.current = chapterTarget;
-    setTarget(chapterTarget);
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const lenis = getLenis();
     if (lenis?.scrollTo && !reduced) {
       const duration = Math.min(.65, .34 + Math.abs(top - window.scrollY) / 3000);
       lenis.scrollTo(top, { duration, easing: t => t * t * (3 - 2 * t) });
+    } else {
+      window.scrollTo({ top, behavior: reduced ? 'instant' : 'smooth' });
     }
-    else window.scrollTo({ top, behavior: reduced ? 'instant' : 'smooth' });
   }, [limit, viewport, screen]);
 
-  const nextStop = useCallback((direction: number, distance: number) => {
-    const track = viewport.current, picture = screen.current;
-    if (!track || !picture) return null;
-    const range = track.offsetHeight - picture.offsetHeight;
-    if (range <= 0) return null;
-    if (destination.current !== null) return nextFlightStop(destination.current, direction, limit / range);
-    const offset = inset.current - track.getBoundingClientRect().top;
-    if (offset < -1) return direction > 0 && -offset <= distance ? 0 : null;
-    if (offset > range + 1) return direction < 0 && offset - range <= distance ? limit : null;
-    return nextFlightStop(offset * limit / range, direction, limit / range);
-  }, [viewport, screen, limit]);
-
   const step = useCallback((direction: number) => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      go(Math.round(position.current) + direction);
-      return;
-    }
-    // A control may be clicked while the opening is only partly visible.
-    const next = nextStop(direction, Infinity);
-    if (next === 0 && direction > 0) go(flightStops[1]);
-    else if (next !== null) go(next);
-  }, [go, nextStop]);
+    const track = viewport.current;
+    const picture = screen.current;
+    if (!track || !picture) return false;
+    const range = track.offsetHeight - picture.offsetHeight;
+    if (range <= 0) return false;
+    const offset = inset.current - track.getBoundingClientRect().top;
+    const raw = destination.current ?? Math.max(0, Math.min(limit, offset * limit / range));
+    const next = matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? Math.round(raw) + direction
+      : nextFlightStop(raw, direction, limit / range);
+    if (next === null || next < 0 || next > limit) return false;
+    go(next);
+    return true;
+  }, [viewport, screen, go, limit]);
 
   useEffect(() => {
     const track = viewport.current;
@@ -67,49 +55,67 @@ export function useFlight(
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     let range = 0;
     let onScreen = false;
-    let previousPosition = -1;
-    let previousChapter = -1;
+    let frame = 0;
+    let lastTime = 0;
+    let targetPosition = 0;
+    let lastPainted = -1;
+    let lastChapter = -1;
 
-    function sync() {
+    function paint(value: number) {
+      if (value === lastPainted) return;
+      lastPainted = position.current = value;
+      const cue = overlayAt(value);
+      picture!.style.setProperty('--caption', String(cue.opacity));
+      picture!.style.setProperty('--flight-progress', String(value / limit));
+      picture!.style.setProperty('--reel-opacity', String(cue.reel));
+      if (cue.chapter !== lastChapter) {
+        lastChapter = cue.chapter;
+        setChapter(cue.chapter);
+      }
+    }
+
+    function tick(now: number) {
+      frame = 0;
+      paint(easeCamera(position.current, targetPosition, Math.max(0, now - lastTime)));
+      lastTime = now;
+      if (position.current !== targetPosition) frame = requestAnimationFrame(tick);
+    }
+
+    function stopFrame() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    }
+
+    function sync(immediate = false) {
       if (!onScreen) return;
       const offset = inset.current - track!.getBoundingClientRect().top;
       const cursor = cameraAtScroll(offset, range, limit);
-      const nearest = Math.round(cursor);
-      if (destination.current !== null && Math.abs(offset - destination.current * range / limit) <= 1) destination.current = null;
-      setAtEnd(range > 0 && offset >= range - 1);
-      position.current = motion.matches ? nearest : cursor;
-      // Update the navigation only when a stop changes, even during a long drag.
-      const navPosition = destination.current === null ? position.current : cameraAtScroll(destination.current, limit, limit);
-      const nextTarget = overlayAt(navPosition).chapter;
-      if (nextTarget !== displayedTarget.current) {
-        displayedTarget.current = nextTarget;
-        setTarget(nextTarget);
+      targetPosition = motion.matches ? Math.round(cursor) : cursor;
+      if (destination.current !== null && Math.abs(offset - destination.current * range / limit) <= 1) {
+        destination.current = null;
       }
-      if (position.current === previousPosition) return;
-      previousPosition = position.current;
+      setAtEnd(range > 0 && offset >= range - 1);
 
-      const cue = overlayAt(position.current);
-      picture!.style.setProperty('--log-opacity', String(cue.opacity));
-      picture!.style.setProperty('--log-offset', (9 * (1 - cue.opacity)) + 'px');
-      picture!.style.setProperty('--reel-opacity', String(cue.reel));
-      if (cue.chapter !== previousChapter) {
-        previousChapter = cue.chapter;
-        setChapter(cue.chapter);
+      // Desktop Lenis already eases the document offset. On native scroll only
+      // the picture settles; the user's finger always owns the page position.
+      if (immediate || motion.matches || getLenis() || offset <= 0 || offset >= range) {
+        stopFrame();
+        paint(targetPosition);
+      } else if (!frame && position.current !== targetPosition) {
+        lastTime = performance.now();
+        frame = requestAnimationFrame(tick);
       }
     }
 
     function measure() {
       inset.current = parseFloat(getComputedStyle(picture!).top) || 0;
       range = track!.offsetHeight - picture!.offsetHeight;
-      sync();
+      // Match roomShot's canvas-aspect cutoff, including the space taken by the site nav.
+      picture!.toggleAttribute('data-portrait', picture!.clientWidth < .85 * picture!.clientHeight);
+      sync(true);
     }
-    function releaseDestination() {
-      destination.current = null;
-    }
-    function pointerDown(event: PointerEvent) {
-      if (event.pointerType === 'mouse') releaseDestination();
-    }
-    measure();
+    function releaseDestination() { destination.current = null; }
+    function scroll() { sync(); }
     const bounds = new ResizeObserver(measure);
     bounds.observe(track);
     bounds.observe(picture);
@@ -117,25 +123,25 @@ export function useFlight(
       onScreen = entry.isIntersecting;
       setVisible(onScreen);
       if (onScreen) measure();
-      else releaseDestination();
+      else { stopFrame(); releaseDestination(); }
     });
     visibility.observe(track);
-    window.addEventListener('scroll', sync, { passive: true });
-    const unbind = bindJourneyGestures(track, (direction, distance) =>
-      motion.matches ? null : nextStop(direction, distance), go);
-    window.addEventListener('scrollend', sync);
-    window.addEventListener('pointerdown', pointerDown);
-    motion.addEventListener('change', sync);
+    window.addEventListener('scroll', scroll, { passive: true });
+    window.addEventListener('scrollend', releaseDestination);
+    window.addEventListener('wheel', releaseDestination, { passive: true });
+    window.addEventListener('pointerdown', releaseDestination, { passive: true });
+    motion.addEventListener('change', measure);
     return () => {
+      stopFrame();
       bounds.disconnect();
       visibility.disconnect();
-      window.removeEventListener('scroll', sync);
-      window.removeEventListener('scrollend', sync);
-      window.removeEventListener('pointerdown', pointerDown);
-      unbind();
-      motion.removeEventListener('change', sync);
+      window.removeEventListener('scroll', scroll);
+      window.removeEventListener('scrollend', releaseDestination);
+      window.removeEventListener('wheel', releaseDestination);
+      window.removeEventListener('pointerdown', releaseDestination);
+      motion.removeEventListener('change', measure);
     };
-  }, [limit, viewport, screen, nextStop, go]);
+  }, [limit, viewport, screen]);
 
-  return { chapter, target, atEnd, position, visible, go, step };
+  return { chapter, atEnd, position, visible, go, step };
 }

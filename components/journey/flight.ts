@@ -1,8 +1,3 @@
-// Fractions of one chapter's scroll distance, applied symmetrically on either
-// side of its resting position. The middle of each transition cruises steadily.
-const hold = .10;
-const ramp = .08;
-
 // An arrival and a resting frame per chapter. Each arrival is beyond its
 // caption fade and shows a different part of the shot from the resting frame.
 const arrivals = [.56, .59, .57, .73, .49, .68];
@@ -19,14 +14,26 @@ export function nextFlightStop(position: number, direction: number, tolerance: n
 export function cameraAtScroll(offset: number, range: number, lastChapter: number) {
   if (range <= 0 || lastChapter <= 0) return 0;
   const position = Math.max(0, Math.min(1, offset / range)) * lastChapter;
-  const stop = Math.round(position);
-  const distance = Math.abs(position - stop) - hold;
-  if (distance <= 0) return stop;
+  // Slow down around the captions. The slope stays between .45 and 1.55,
+  // so even a one-pixel reversal moves the camera through a chapter boundary.
+  const turn = 2 * Math.PI;
+  return position - .55 * Math.sin(turn * (position % 1)) / turn;
+}
 
-  // Integrate a short acceleration ramp, then continue at constant speed.
-  // Normalizing keeps the halfway point halfway in both scroll directions.
-  const travel = distance < ramp ? distance * distance / (2 * ramp) : distance - ramp / 2;
-  return stop + Math.sign(position - stop) * travel / (1 - 2 * hold - ramp);
+export function easeCamera(current: number, target: number, elapsedMs: number) {
+  const distance = target - current;
+  if (Math.abs(distance) < .00005) return target;
+  // A short native-scroll settle, with the same timing on 60 and 120 Hz phones.
+  return current + distance * -Math.expm1(-elapsedMs / 75);
+}
+
+// Apply a soft knee to high-velocity wheel samples. Small movements retain
+// their original distance and even the largest flick keeps moving the film.
+export function journeyWheelDelta(delta: number, viewportHeight: number) {
+  const knee = Math.max(40, viewportHeight * .064);
+  const distance = Math.abs(delta);
+  if (distance <= knee) return delta;
+  return Math.sign(delta) * knee * (1 + Math.log(distance / knee));
 }
 
 function ease(start: number, end: number, value: number) {

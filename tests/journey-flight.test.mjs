@@ -2,94 +2,93 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { loadTypeScript } from './load-typescript.mjs';
 
-const { cameraAtScroll, overlayAt, nextFlightStop } = loadTypeScript('components/journey/flight.ts');
-const { bindJourneyGestures } = loadTypeScript('components/journey/gestures.ts');
+const { cameraAtScroll, easeCamera, journeyWheelDelta, overlayAt, nextFlightStop } = loadTypeScript('components/journey/flight.ts');
 
-test('chapter controls land on a readable frame across phone and desktop strides', () => {
-  for (const stride of [124, 150, 194.12, 200, 213.72, 234]) {
+test('large trackpad flicks take 11 to 14 strokes while every momentum sample still advances the film', () => {
+  for (const height of [667, 844, 900, 1080]) {
+    const range = 6 * 1.6 * height;
+    const stroke = [95, 3400, 320, 125, 57, 20, 7, 1];
+    let travel = 0;
+    for (const delta of stroke) {
+      const distance = journeyWheelDelta(delta, height);
+      assert.ok(distance > 0 && distance <= delta);
+      assert.equal(journeyWheelDelta(-delta, height), -distance);
+      if (delta <= 20) assert.equal(distance, delta);
+      travel += distance;
+    }
+    const gestures = Math.ceil(range / travel);
+    assert.ok(gestures >= 11 && gestures <= 14);
+  }
+});
+
+test('an uninterrupted scroll moves the camera at every pixel, even across chapter boundaries', () => {
+  for (const height of [667, 844, 900]) {
+    const range = Math.round(6 * 1.6 * height);
+    for (let pixel = 1; pixel <= range; pixel++) {
+      const previous = cameraAtScroll(pixel - 1, range, 6);
+      const current = cameraAtScroll(pixel, range, 6);
+      const speed = (current - previous) * range / 6;
+      assert.ok(speed >= .449 && speed <= 1.551);
+    }
+    const middle = range / 2;
+    const nearCaption = cameraAtScroll(middle + 1, range, 6) - cameraAtScroll(middle, range, 6);
+    const fast = cameraAtScroll(range / 4 + 1, range, 6) - cameraAtScroll(range / 4, range, 6);
+    assert.ok(nearCaption < fast / 3);
+  }
+});
+
+test('the twelve navigation beats land on readable captions forward and backward', () => {
+  for (const stride of [198.4, 1067.2, 1350.4, 1440]) {
     const range = Math.round(stride * 6);
-    for (let chapter = 0; chapter <= 6; chapter++) {
-      const camera = cameraAtScroll(Math.round(chapter * stride), range, 6);
-      assert.equal(camera, chapter);
-      assert.deepEqual(overlayAt(camera), { chapter, opacity: 1, reel: chapter === 5 ? 1 : 0 });
+    let stop = 0;
+    const visits = [stop];
+    for (let beat = 1; beat <= 12; beat++) {
+      stop = nextFlightStop(stop, 1, 6 / range);
+      assert.notEqual(stop, null);
+      visits.push(stop);
+      const pixel = Math.round(stop / 6 * range);
+      const camera = cameraAtScroll(pixel, range, 6);
+      const cue = overlayAt(camera);
+      assert.equal(cue.chapter, Math.ceil(beat / 2));
+      assert.ok(cue.opacity > .999);
+      if (beat === 10) assert.ok(cue.reel > .999);
     }
+    assert.equal(stop, 6);
+    assert.equal(nextFlightStop(stop, 1, 6 / range), null);
+    for (const previous of visits.slice(0, -1).reverse()) {
+      stop = nextFlightStop(stop, -1, 6 / range);
+      assert.equal(stop, previous);
+    }
+    assert.equal(nextFlightStop(0, -1, 6 / range), null);
   }
 });
 
-test('a chapter holds across small scrolls and eases out in either direction', () => {
-  const camera = y => cameraAtScroll(y, 1200, 6);
-  for (const y of [381, 390, 400, 410, 419]) assert.equal(camera(y), 2);
-  const first = camera(425) - camera(420);
-  const cruising = camera(465) - camera(460);
-  assert.ok(first > 0 && first < cruising / 4);
-  assert.ok(Math.abs(camera(425) + camera(375) - 4) < 1e-9);
-  assert.equal(camera(500), 2.5);
-});
-
-test('direct navigation and scrollbar scrubbing can traverse the whole track in either direction', () => {
-  const range = 1200;
-  assert.equal(cameraAtScroll(985, range, 6), 5);
-  assert.equal(overlayAt(cameraAtScroll(985, range, 6)).reel, 1);
-  const between = cameraAtScroll(696, range, 6);
-  assert.ok(between > 3.4 && between < 3.5);
-  assert.equal(overlayAt(between).opacity, 0);
-  assert.equal(overlayAt(cameraAtScroll(754, range, 6)).chapter, 4);
-  const forward = Array.from({length: range + 1}, (_, y) => cameraAtScroll(y, range, 6));
-  for (let y = range; y > 0; y--) {
-    assert.ok(forward[y] >= forward[y-1]);
-    assert.ok(forward[y] - forward[y-1] < .008);
-    assert.equal(cameraAtScroll(y-1, range, 6), forward[y-1]);
+test('a held swipe and its reversal keep updating, then the camera settles without overshoot', () => {
+  for (const hz of [30, 60, 120]) {
+    const dt = 1000 / hz;
+    let position = 0;
+    for (let frame = 1; frame <= hz * 4; frame++) {
+      const target = cameraAtScroll(frame, hz * 4, 6);
+      const next = easeCamera(position, target, dt);
+      assert.ok(next > position && next <= target);
+      position = next;
+    }
+    const reversal = cameraAtScroll(850, 1000, 6);
+    const previous = position;
+    position = easeCamera(position, reversal, dt);
+    assert.ok(position < previous && position >= reversal);
+    for (let frame = 0; frame < hz; frame++) position = easeCamera(position, reversal, dt);
+    assert.equal(position, reversal);
   }
+  const progressAfter = hz => {
+    let position = 0;
+    for (let frame = 0; frame < hz / 10; frame++) position = easeCamera(position, 1, 1000 / hz);
+    return position;
+  };
+  assert.ok(Math.abs(progressAfter(60) - progressAfter(120)) < 1e-12);
 });
 
-for (const input of ['wheel', 'touch']) {
-  test(`12 distinct ${input} gestures reach the finale and a fresh gesture releases the page`, () => {
-    const track = new EventTarget();
-    const visited = [0];
-    const cleanup = bindJourneyGestures(track,
-      direction => nextFlightStop(visited.at(-1), direction, .001),
-      stop => visited.push(stop));
-    let time = 0;
-    function fire(type, props) {
-      const event = Object.assign(new Event(type, {cancelable:true}), props);
-      Object.defineProperty(event, 'timeStamp', {value:time});
-      time += 14;
-      track.dispatchEvent(event);
-      return event.defaultPrevented;
-    }
-    function gesture(direction) {
-      time += 220;
-      if (input === 'wheel') {
-        return [95, 3400, 320, 125, 57, 20, 7, 1].map(delta =>
-          fire('wheel', {deltaY:delta*direction, deltaX:0, deltaMode:0}));
-      }
-      const touches = y => ({touches:[{clientX:120,clientY:y}]});
-      fire('touchstart', touches(400));
-      const captured = [3, 20, 75, 310].map(dy => fire('touchmove', touches(400-dy*direction)));
-      fire('touchend', {touches:[]});
-      return captured;
-    }
-    for (let i = 1; i <= 12; i++) {
-      assert.ok(gesture(1).every(Boolean));
-      assert.equal(visited.length, i+1);
-      const stop = visited.at(-1);
-      if (i % 2 === 0) assert.equal(stop, i/2);
-      else assert.ok(stop > (i-1)/2 && stop < (i+1)/2);
-      assert.equal(overlayAt(cameraAtScroll(stop, 6, 6)).opacity, 1);
-    }
-    assert.ok(gesture(1).every(prevented => !prevented));
-    const forward = [...visited];
-    for (let i = 11; i >= 0; i--) {
-      assert.ok(gesture(-1).every(Boolean));
-      assert.equal(visited.at(-1), forward[i]);
-    }
-    assert.ok(gesture(-1).every(prevented => !prevented));
-    cleanup();
-    assert.ok(gesture(1).every(prevented => !prevented));
-  });
-}
-
-test('bounds and mobile overscroll hold the first or final frame', () => {
+test('the camera stays in range before and after the sticky section', () => {
   assert.equal(cameraAtScroll(200, 0, 6), 0);
   assert.equal(cameraAtScroll(-51, 1200, 6), 0);
   assert.equal(cameraAtScroll(1260, 1200, 6), 6);

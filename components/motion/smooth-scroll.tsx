@@ -8,6 +8,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { markScrolling, setLenis } from "@/lib/scroll-state";
 import { focusAnchor, samePageAnchor } from "@/lib/motion/anchor-navigation";
+import { journeyWheelDelta } from "@/components/journey/flight";
 
 /**
  * Lusion-style inertial scrolling (Lenis), driven from GSAP's ticker so
@@ -50,6 +51,14 @@ export function SmoothScroll() {
       syncTouch: false,
       smoothWheel: true,
       wheelMultiplier: 1,
+      virtualScroll(sample) {
+        const { event } = sample;
+        if (event.type === "wheel" && event.target instanceof Element &&
+            event.target.closest("[data-journey-ready]") && !event.target.closest("dialog")) {
+          sample.deltaY = journeyWheelDelta(sample.deltaY, window.innerHeight);
+        }
+        return true;
+      },
       // touch is left NATIVE (syncTouch defaults false); keep the multiplier at
       // 1 so finger-drag stays 1:1 - 1.6 made phone scroll feel fast/floaty.
       touchMultiplier: 1,
