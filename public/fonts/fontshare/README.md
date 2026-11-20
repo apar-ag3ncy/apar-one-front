@@ -1,14 +1,7 @@
 # UI fonts
 
-Official Fontshare variable WOFF2 downloads (upright, weight 200–700):
-- New Title: https://www.fontshare.com/fonts/new-title
-- General Sans: https://www.fontshare.com/fonts/general-sans
+The site serves the upright Satoshi variable WOFF2 locally. Its weight axis runs from 300 to 900. Headings, navigation, buttons and labels use Medium (500). Paragraphs, testimonial quotes and messages use Regular (400). UI copy keeps its authored casing, except navigation labels, which display in lowercase.
 
-Source CSS: https://api.fontshare.com/v2/css?f[]=new-title@variable&f[]=general-sans@variable&display=swap
-Fontshare licensing: https://www.fontshare.com/licenses
+The original Satoshi package includes the Indian Type Foundry Free Font License in `Satoshi-FFL.txt`. [Fontshare Satoshi family](https://www.fontshare.com/fonts/satoshi)
 
-Locally hosted to avoid third-party font requests. New Title is used for all UI
-copy, navigation, controls and headings. Headings and primary actions use 700
-(Bold); supporting text keeps its role-specific weight and readable sizing.
-General Sans is reserved for existing brand signatures. APAR's Fit wordmark
-faces and supplied client logo artwork are independent and unchanged.
+General Sans is available for brand artwork. The APAR wordmark uses Fit. [Fontshare General Sans family](https://www.fontshare.com/fonts/general-sans)

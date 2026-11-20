@@ -1,9 +1,10 @@
 import type { Viewport } from "next";
+import { HomeScrollMotion } from "@/components/home/home-scroll-motion";
+import "@/styles/home-sections.css";
 import { Hero } from "@/components/home/hero";
 import "@/styles/testimonial-carousel.css";
 import "@/styles/client-voices.css";
 import "@/styles/voice-feedback.css";
-import { MJShowcase } from "@/components/home/diamond";
 import { HomeImageBento } from "@/components/home/home-image-bento";
 import { JourneyEntry } from "@/components/journey/journey-entry";
 import { Faq } from "@/components/home/faq";
@@ -19,10 +20,10 @@ export const viewport: Viewport = { themeColor: "#120302" };
 
 export default function Home() {
   return <main className="meeting-home">
+    <HomeScrollMotion />
     <Hero start />
     <ProgressiveQuote id="studio" text="Limitless. Beyond Culture." />
     <FeaturedProjects />
-    <MJShowcase />
     <HomeImageBento />
     <MovingClients />
     <TestimonialCarousel voices={CLIENT_VOICES} pages={Object.values(CASES).map(data => ({

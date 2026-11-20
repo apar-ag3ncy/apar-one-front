@@ -68,15 +68,26 @@
 .nav .apar-par-text{
   font-variation-settings:'wght' 1000,'wdth' 482,'HGHT' 100,'slnt' 0;
 }
-.nav .brand-tag{font-size:11px;line-height:1.15;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);
+.nav .brand-tag{font-size:11px;line-height:1.15;letter-spacing:.02em;text-transform:none;font-weight:500;color:var(--ink-soft);
   padding-left:13px;border-left:1px solid var(--line-strong);}
 .nav.on-dark .brand-tag{color:rgba(244,237,226,.7);border-color:rgba(244,237,226,.3);}
 @media (max-width:1180px){.nav .brand-tag{display:none;}}
-.nav-links{display:flex;align-items:center;gap:clamp(20px,2.1vw,32px);}
-.nav-links a{display:inline-flex;align-items:center;min-height:var(--target-size);font-size:20px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;position:relative;padding:8px 0;color:var(--ink);}
+.nav-links{display:flex;align-items:center;gap:clamp(14px,1.5vw,24px);}
+.nav-links a{display:inline-grid;align-items:center;min-height:var(--target-size);font-size:clamp(15px,1.15vw,18px);letter-spacing:.035em;text-transform:none;font-weight:500;position:relative;padding:8px 0;color:var(--ink);}
+/* Reserve the full-size Medium label so hover never shifts adjacent links.
+   Scale only the visible label; the link's click target stays full-sized. */
+.nav-links a::before{content:attr(data-nav-label);grid-area:1/1;visibility:hidden;white-space:nowrap;font-weight:500;font-kerning:none;}
+.nav-links a > .hover-text{grid-area:1/1;justify-self:center;white-space:nowrap;font-weight:400;transform:scale(.92);transform-origin:center;transition:transform .22s var(--ease),font-weight .22s var(--ease);}
+.nav-links a:focus-visible > .hover-text{font-weight:500;transform:scale(1);}
+@media(hover:hover) and (pointer:fine){
+  .nav-links a:hover > .hover-text{font-weight:500;transform:scale(1);}
+}
+@media(prefers-reduced-motion:reduce){
+  .nav-links a > .hover-text{transition:none;}
+}
 .nav-links a::after{content:"";position:absolute;inset:auto 0 4px;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease);}
 .nav-links a:is(:hover,:focus-visible,.active,[aria-current="page"])::after{transform:scaleX(1);}
-.nav-cta{font-size:20px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink);background:transparent;padding:11px 20px;border-radius:0;}
+.nav-cta{font-size:clamp(15px,1.15vw,18px);letter-spacing:.035em;text-transform:none;font-weight:500;color:var(--ink);background:transparent;padding:11px 20px;border-radius:0;}
 
 .nav.on-dark .nav-links a,.nav.on-dark .nav-cta{color:var(--cream);}
 .nav.on-dark .nav-cta{background:transparent;}
@@ -111,7 +122,7 @@
 .footer-talk:hover .circ{transform:rotate(45deg) scale(1.08);}
 .footer-cols{display:flex;gap:var(--space-heading);flex-wrap:wrap;}
 .fcol{display:flex;flex-direction:column;gap:2px;}
-.fcol-h{font-size:17px;text-transform:uppercase;color:var(--ink-mid);margin-bottom:8px;}
+.fcol-h{font-size:17px;text-transform:none;color:var(--ink-mid);margin-bottom:8px;}
 .fcol a,.fcol span{color:rgba(244,237,226,.85);font-size:22px;transition:color .3s;}
 .fcol a{display:inline-flex;align-items:center;min-height:var(--target-size);width:fit-content;}
 .fcol a:is(:hover,:focus-visible){color:var(--red);}

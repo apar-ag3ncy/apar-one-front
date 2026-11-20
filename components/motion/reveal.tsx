@@ -18,6 +18,8 @@ export function Reveal({ as = "div", i = 0, delay = 0, children, ...props }: Rev
   useEffect(() => {
     const el = ref.current;
     if (!el || !("IntersectionObserver" in window)) return;
+    // Shared liquid scroll owns text entrances; avoid a second delayed fade.
+    if (!el.querySelector("img,picture,video,canvas,iframe")) return;
     const media = gsap.matchMedia();
     media.add(DESKTOP_MOTION_QUERY, () => {
       // Slow hydration, restored scroll and direct hashes must never hide

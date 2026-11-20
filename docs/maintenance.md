@@ -2,9 +2,10 @@
 
 ## Add or update a brand
 
-UI typography uses the local New Title family via `--ui-font` in
+UI typography uses the local Satoshi family via `--ui-font` in
 `styles/core/foundation.css`. `styles/typography.css` owns heading/action roles
-and brand exceptions. Keep client fonts in `--brand-serif` / `--brand-sans`,
+and brand exceptions: Medium (500) headings/actions, Regular (400) body copy,
+and authored casing except for lowercase navigation labels. Keep client fonts in `--brand-serif` / `--brand-sans`,
 never in `--sans` / `--serif`, which would change controls and running copy.
 APAR's Fit wordmark, supplied logo artwork, and existing brand signatures remain
 independent. Small labels use at least 14px; form text uses at least 20px.

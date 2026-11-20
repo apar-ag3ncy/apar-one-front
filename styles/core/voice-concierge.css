@@ -174,11 +174,11 @@
   color: rgba(255, 255, 255, 0.85);
   font-family: var(--sans);
   font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-weight: 500;
+  letter-spacing: .02em;
   padding: 4px 8px;
   border-radius: 4px;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 /* 1:1 Square Feed Crop Bounding Box */
@@ -199,10 +199,10 @@
   left: 12px;
   font-family: var(--sans);
   font-size: 14px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: .02em;
+  text-transform: none;
   color: rgba(235, 59, 37, 0.8);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 /* Instagram Interactive Overlay Mock (avatar, handle, icons) */
@@ -244,9 +244,9 @@
 }
 
 .rc-ig-username {
-  font-family: var(--brand-sans);
+  font-family: var(--ui-font);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
@@ -284,7 +284,7 @@
 
 .rc-ig-icon span {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
@@ -381,7 +381,7 @@
 
 .rc-control-name {
   font-size: 19px;
-  font-weight: 600;
+  font-weight: 500;
   color: rgba(244, 237, 226, 0.9);
 }
 
@@ -478,9 +478,9 @@ input:checked + .rc-slider::before {
   padding: 6px 12px;
   font-family: var(--sans);
   font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: .02em;
+  text-transform: none;
   color: var(--ink-mid);
   cursor: pointer;
   border-radius: 6px;

@@ -9,13 +9,7 @@ import { AparLogo } from "@/components/layout/apar-logo";
 import { Magnetic } from "@/components/motion/magnetic";
 import { HoverText } from "@/components/motion/hover-text";
 
-/**
- * Home hero - the brand's Algolia-style beam promoted to the landing screen:
- * the red pixel-dome arc sweeps behind the giant APAR wordmark (tinted to the
- * beam's pale-rose crest so it sits IN the light, not against it) and the
- * brand statement. Entrance choreography plays on mount (`start`);
- * the copy parallax-fades on scroll-out, Lusion-style.
- */
+/** APĀR’s rotating Fit wordmark sits above the original red pixel arc. */
 export function Hero({ start }: { start: boolean }) {
   const reduce = useReducedMotion();
   const mobile = useMobileLayout();
@@ -73,7 +67,6 @@ export function Hero({ start }: { start: boolean }) {
 
   return (
     <section ref={ref} className="hero-beam" data-screen-label="Home - Hero" data-enter={start ? "1" : undefined} data-settled={isSettled ? "1" : undefined}>
-      {/* domeY is scaled by 0.2 in the shader: -0.5 moves the beam down 10% of the hero. */}
       <BandBackdrop domeY={-0.74} intensity={0.98} mobileFullBleed />
       <div className="wrap">
         <HeroCopy target={ref} mobile={mobile || !!reduce}>
@@ -90,11 +83,11 @@ export function Hero({ start }: { start: boolean }) {
           <div className="hero-actions">
             <Magnetic strength={0.3}>
               <Link className="btn cream" href="/work" prefetch={false}>
-                <HoverText>See the work</HoverText>
+                <HoverText>see the work</HoverText>
               </Link>
             </Magnetic>
             <Link className="btn-ghost light" href="/what-we-do" prefetch={false}>
-              <HoverText>What we do</HoverText>
+              <HoverText>what we do</HoverText>
             </Link>
           </div>
         </HeroCopy>

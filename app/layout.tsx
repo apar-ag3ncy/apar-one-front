@@ -17,6 +17,7 @@ import { TransitionProvider } from "@/components/layout/transition-provider";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { DesktopSlowMo } from "@/components/motion/desktop-slow-mo";
+import { LiquidTextScroll } from "@/components/motion/liquid-text-scroll";
 import { PixelTrail } from "@/components/motion/pixel-trail";
 import { TalkToUs } from "@/components/voice/talk-to-us";
 import { ADOBE_FONTS_KIT } from "@/lib/adobe-fonts";
@@ -45,12 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Devanagari अ - renders in real Fit on first paint, no fallback flash. */}
         <link rel="preload" href="/fit-devnagari/Fit_Latin_Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/fit-devnagari/Fit_Devanagari_Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/fontshare/GeneralSans-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/fontshare/NewTitle-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        {/* UI uses local New Title; General Sans is reserved for existing
-            brand signatures and the wordmark keeps its local Fit faces.
+        <link rel="preload" href="/fonts/fontshare/Satoshi-Variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* UI uses local Satoshi. The wordmark keeps its local Fit faces.
             Do not block every page on unused external fallback fonts. An agency
-            Adobe kit may still add genuine Fit scripts when configured. */}
+            Adobe kit remains available for other brand artwork when configured. */}
         {ADOBE_FONTS_KIT ? (
           <link rel="stylesheet" href={`https://use.typekit.net/${ADOBE_FONTS_KIT}.css`} />
         ) : null}
@@ -59,9 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <IconSprite />
         <MotionProvider>
           <SmoothScroll />
-          {/* Cinematic slow-motion layer (GSAP): media parallax + slow zoom, velocity
-              skew, masked line reveals, footer wordmark parallax. See slow-mo.tsx. */}
+          {/* Media parallax, velocity skew and footer wordmark motion. */}
           <DesktopSlowMo />
+          <LiquidTextScroll />
           {/* Site-wide pixel cursor trail (the hero pixel-dome language everywhere). */}
           <PixelTrail />
           <ScrollProgressBar />

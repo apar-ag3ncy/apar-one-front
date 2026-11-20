@@ -1,0 +1,33 @@
+/* Flat paper/ink joins. Only the narrow boundary responds to scroll velocity. */
+.meeting-home :is(.progressive-quote, .flow-featured, .home-image-bento, .testimonial-carousel, .faq) {
+  --surface: var(--paper);
+  background-color: var(--paper);
+}
+.meeting-home .flow-clients {
+  position: relative;
+  overflow: visible;
+  background-color: var(--ink);
+  color: var(--cream);
+}
+.meeting-home .mj-showcase { --surface: var(--paper); }
+.meeting-home .faq { position: relative; }
+
+.section-scroll-edge {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: 40px;
+  pointer-events: none;
+  overflow: hidden;
+}
+.section-scroll-edge[data-edge-position="top"] { top: -20px; }
+.section-scroll-edge[data-edge-position="bottom"] { bottom: -20px; }
+.flow-clients > [data-edge-position="top"] { --edge-above: var(--paper); --edge-below: var(--ink); }
+.flow-clients > [data-edge-position="bottom"] { --edge-above: var(--ink); --edge-below: var(--paper); }
+.faq > .section-scroll-edge { --edge-above: var(--paper); --edge-below: #0b0706; }
+
+@media (max-width: 900px), (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .section-scroll-edge { display: none; }
+}

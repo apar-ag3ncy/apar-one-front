@@ -1,6 +1,6 @@
 # APAR — AGENTIVE CREACY
 
-Brand portfolio built with Next.js App Router, React, TypeScript, GSAP, Motion and Three.js. The site uses New Title for UI typography, the original APAR wordmark and supplied client artwork.
+Brand portfolio built with Next.js App Router, React, TypeScript, GSAP, Motion and Three.js. The site uses Satoshi for UI typography, the original APAR wordmark and supplied client artwork.
 
 ## Run locally
 

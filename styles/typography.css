@@ -1,12 +1,28 @@
-/* New Title is the shared UI family. Brand artwork and Fit wordmark spans
-   stay independent. Role rules also survive late-loaded route styles. */
+/* Satoshi Medium and authored casing for headings/actions; Regular for body
+   copy. Brand artwork and Fit wordmark spans stay independent. */
 body :is(p,blockquote),body .vc-caption,body .empty-note{
   font-family:var(--ui-font)!important;
+  font-weight:400;
   font-style:normal;
 }
 body :is(button,input,textarea,select){font-family:var(--ui-font);font-synthesis:none;}
-body :is(.btn,.btn-ghost,.nav-links a,.nav-cta,.start-submit,.vf-trigger,.vf-action,.chip){
-  font-weight:700;letter-spacing:.06em;word-spacing:.1em;text-transform:uppercase;
+body :is(strong,b){font-weight:500;}
+body :is(button,label,legend,nav a,.btn,.btn-ghost,.nav-cta,.case-btn,.glass-action,.chip,
+  .eyebrow,.flow-kicker,.flow-project-caption>span,.tc-by,.tc-page-top,.tc-page-brand,
+  .tc-image-caption>span,.cv-label,.fld-l,.tagpill,.case-tag,.case-eyebrow,.case-quote .by,
+  .rr-cat,.fc-cat,.fc-go,.scroll-cue,.vf-action,.fcol a,.kicker,.tag-line,
+  .stat .l,.case-stat .l,.pq-cue,.case-explore,.next-pull-label,.case-ph-cap,
+  .client-story-index,.client-story-meta,.case-reel-kicker,.case-reel-note,
+  .case-reel-panel figcaption,.galaxy-eyebrow,.hero-feature-cap,
+  .manifesto-meta,.manifesto-journey-top,.manifesto-kicker,.manifesto-art-label,
+  .rc-control-name,.mm-close){
+  font-family:var(--ui-font);
+  font-weight:500;
+  text-transform:none;
+}
+body :is(input,textarea,select,blockquote,.vc-caption,.vf-message,.vf-help,.vf-consent){
+  font-weight:400;
+  text-transform:none;
 }
 body :is(
   h1, h2, h3, h4, h5, h6, [role="heading"], .display,
@@ -20,9 +36,20 @@ body :is(
   letter-spacing: var(--heading-tracking) !important;
   word-spacing: var(--heading-word-gap);
   font-kerning: normal;
-  text-transform: uppercase;
+  text-transform: none;
   font-style: normal;
   font-synthesis: none;
+}
+/* Keep the brand descriptor at 600, with its existing spaced two-line layout. */
+body .nav .brand-tag {
+  font-family: var(--ui-font);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+/* Navigation uses lowercase labels on desktop and mobile. */
+body :is(.nav .nav-links a, .nav .nav-cta, .mobile-menu a) {
+  text-transform: lowercase;
 }
 /* Keep stacked display lines together, with extra leading on smaller cards. */
 body :is(h1, h2, .display, .nx-name) {
@@ -33,7 +60,3 @@ body :is(h3, .rr-name, .dial-name, .s-name) {
   line-height: 1.2;
 }
 body :is(em,i,.hl,.pq-beyond){font-style:normal!important;}
-body blockquote{text-transform:none;}
-/* Keep client signatures and the agency lockup in their existing type. */
-body :is(.brand-tag,.tc-page-brand,.cv-identity p){font-family:var(--brand-sans)!important;word-spacing:normal;}
-.tc-page-brand,.cv-identity p{letter-spacing:normal;}

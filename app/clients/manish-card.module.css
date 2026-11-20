@@ -8,8 +8,8 @@
 .explore{position:absolute;right:22px;bottom:20px;z-index:2;color:#793f48;background:rgba(255,255,255,.92);padding:9px 13px;font:500 16px/1.2 var(--sans);letter-spacing:.04em;opacity:0;transform:translateY(7px);transition:opacity .3s ease,transform .3s ease;}
 .card:hover .explore,.card:focus-visible .explore{opacity:1;transform:none;}
 .caption{display:flex;flex-direction:column;gap:8px;padding-top:20px;}
-.caption>span{font:500 16px/1.4 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);}
-.caption strong{font:var(--heading-weight) clamp(28px,3vw,42px)/1.2 var(--heading);letter-spacing:var(--heading-tracking);word-spacing:var(--heading-word-gap);text-transform:uppercase;}
+.caption>span{font:500 16px/1.4 var(--sans);letter-spacing:.02em;text-transform:none;color:var(--ink-soft);}
+.caption strong{font:var(--heading-weight) clamp(28px,3vw,42px)/1.2 var(--heading);letter-spacing:var(--heading-tracking);word-spacing:var(--heading-word-gap);text-transform:none;}
 @media(hover:none){.explore{opacity:1;transform:none;}}
 @media(prefers-reduced-motion:reduce){.media img,.explore{transition:none;}}
 @media(max-width:600px){

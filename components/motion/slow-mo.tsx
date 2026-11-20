@@ -6,12 +6,11 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
 
 /**
  * SlowMo - the site's cinematic slow-motion layer (GSAP + ScrollTrigger), riding
  * the Lenis/ticker sync set up in <SmoothScroll>. Mounted once in the layout and
- * re-armed on every route change. Four effects, all declarative by selector:
+ * re-armed on every route change. Three effects, all declarative by selector:
  *
  *  1. MEDIA PARALLAX + SLOW ZOOM  - every real image inside a frame drifts slower
  *     than the page and slowly zooms out. Direct scrub follows Lenis's already
@@ -19,10 +18,8 @@ import { SplitText } from "gsap/SplitText";
  *     <img> so it never fights the framer <Reveal> wrappers or CSS hover scales.
  *  2. VELOCITY SKEW - frames skew/stretch with scroll speed and settle over ~0.55s
  *     (Lusion's signature), via quickTo on the frame wrappers.
- *  3. SLOW LINE REVEALS - large statements split (SplitText, free in GSAP 3.13+)
- *     into masked lines that rise over 1.1s with a long stagger. Headings that
- *     already use the framer word-split are skipped.
- *  4. FOOTER WORDMARK - the giant mark rises in slow parallax as the footer enters.
+ *  3. FOOTER WORDMARK - the giant mark rises in slow parallax as the footer enters.
+ *     Text reveals are owned by the shared LiquidTextScroll layer.
  *
  * No-ops under prefers-reduced-motion; the horizontal gallery is excluded (it owns its native scroll).
  */
@@ -30,14 +27,13 @@ export function SlowMo() {
   const pathname = usePathname();
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, SplitText);
+    gsap.registerPlugin(ScrollTrigger);
 
     const media = gsap.matchMedia();
     // Touch scrolling is native. Keep the cinematic per-frame layer on wider
-    // screens, where its image parallax, velocity skew and SplitText have room
+    // screens, where its image parallax and velocity skew have room
     // to breathe; on phones they compete with touch scrolling and hydration.
     media.add(DESKTOP_MOTION_QUERY, () => {
-    const splits: SplitText[] = [];
     let alive = true;
     const ctx = gsap.context((self) => {
       // ---- 1) media parallax + slow zoom ---------------------------------------
@@ -110,46 +106,7 @@ export function SlowMo() {
         self.add(() => () => { observer.disconnect(); sleep(); });
       }
 
-      // ---- 3) slow line reveals on the big statements --------------------------
-      const statements = Array.from(document.querySelectorAll<HTMLElement>("h1.display, h2.display, .feat, .hero-h1")).filter(
-        (el) => !el.querySelector("span span") && !el.closest(".pin, .hero-beam, #intro, [data-static-reveal], .case-page") && el.textContent?.trim()
-      );
-      // `arm` may run later (fonts.ready): guard against a cleaned-up effect
-      // (StrictMode's double invoke, a fast route change) and create the tweens
-      // INSIDE the context via self.add so ctx.revert() owns them - otherwise the
-      // ScrollTriggers/tweens made in the promise callback leaked, and under
-      // StrictMode the statements were split twice.
-      const arm = () => {
-        if (!alive) return;
-        self.add(() => {
-        for (const el of statements) {
-          // A late font must not split/hide a heading already on screen.
-          if (el.getBoundingClientRect().top < window.innerHeight) continue;
-          splits.push(
-            SplitText.create(el, {
-              type: "lines",
-              mask: "lines",
-              linesClass: "sm-line",
-              autoSplit: true,
-              onSplit: (self) =>
-                gsap.from(self.lines, {
-                  yPercent: 112,
-                  opacity: 0.4,
-                  duration: 1.1,
-                  ease: "expo.out",
-                  stagger: 0.08,
-                  scrollTrigger: { trigger: el, start: "top 88%", once: true },
-                }),
-            })
-          );
-        }
-        });
-      };
-      // split once the web fonts are in, so the lines are measured on the real face
-      if (document.fonts?.status === "loaded") arm();
-      else document.fonts?.ready.then(arm).catch(arm);
-
-      // ---- 4) footer wordmark slow parallax ------------------------------------
+      // ---- 3) footer wordmark slow parallax ------------------------------------
       const fw = document.querySelector<HTMLElement>(".footer-word");
       if (fw) {
         gsap.fromTo(
@@ -168,7 +125,6 @@ export function SlowMo() {
       alive = false;
       cancelAnimationFrame(raf);
       window.removeEventListener("load", refresh);
-      for (const s of splits) s.revert();
       ctx.revert();
     };
     });

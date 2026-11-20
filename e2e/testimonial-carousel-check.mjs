@@ -26,7 +26,7 @@ try {
   assert.equal(await page.locator(".tc-story").count(), storyCount);
   assert.equal(await page.getByRole("button", { name: "Leave APĀR a private voice note" }).count(), 1);
   assert.equal(await page.getByRole("button", { name: /Previous brand story|Next brand story/ }).count(), 0);
-  assert.match(await page.locator('#tc-story-manish-jewellers').innerText(), /Campaign line/);
+  assert.match(await page.locator('#tc-story-manish-jewellers').innerText(), /Campaign line/i);
 
   const initialRect = await gallery.boundingBox();
   await page.mouse.move(initialRect.x + initialRect.width * .7, initialRect.y + 160);

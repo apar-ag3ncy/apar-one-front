@@ -5,20 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { voiceTime, voiceWaveform, type ClientVoice } from "@/lib/client-voices";
 import { useMobileLayout } from "@/lib/motion-policy";
 
-export function ClientVoices({ notes }: { notes: ClientVoice[] }) {
-  const active = useRef<HTMLAudioElement | null>(null);
-  const activate = (audio: HTMLAudioElement) => {
-    if (active.current !== audio) active.current?.pause();
-    active.current = audio;
-  };
-  if (!notes.length) return null;
-  return <section className="client-voices" aria-labelledby="client-voices-title">
-    <div className="cv-heading"><h3 id="client-voices-title">In their own <em>words.</em></h3></div>
-    <div className="cv-grid">{notes.map(note => <VoicePlayer key={note.id} note={note} activate={activate} />)}</div>
-  </section>;
-}
-
-function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: HTMLAudioElement) => void }) {
+export function VoicePlayer({ note, current }: { note: ClientVoice; current: boolean }) {
   const reduced = useReducedMotion();
   const mobile = useMobileLayout();
   const ref = useRef<HTMLAudioElement>(null);
@@ -38,12 +25,15 @@ function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: 
     };
   }, []);
 
+  useEffect(() => {
+    if (!current) ref.current?.pause();
+  }, [current]);
+
   const toggle = async () => {
     const audio = ref.current;
     if (!audio) return;
     const id = ++request.current;
     if (active) { audio.pause(); setPhase("paused"); return; }
-    activate(audio);
     setPhase("loading");
     // No audio request during page load. Set the source and invoke play in
     // the tap handler so Safari retains the user's playback activation.
@@ -67,9 +57,8 @@ function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: 
     else pendingSeek.current = value;
   };
 
-  return <article className="cv-card" data-playing={phase === "playing"} aria-label={`Voice testimonial from ${note.name}`}>
-    <div className="cv-identity"><span className="cv-label">Client voice</span>
-      <h4>{note.name}</h4>{note.brand && <p>{note.brand}</p>}</div>
+  return <div className="cv-player" role="group" inert={!current} data-playing={phase === "playing"} aria-label={`Voice note from ${note.name}`}>
+    <p className="cv-label">Voice note · {note.name}{note.brand && ` · ${note.brand}`}</p>
     <div className="cv-controls">
       <motion.button type="button" className="cv-play" onClick={toggle} data-loading={phase === "loading"}
         whileHover={reduced || mobile ? undefined : { scale: 1.05 }}
@@ -105,5 +94,5 @@ function VoicePlayer({ note, activate }: { note: ClientVoice; activate: (audio: 
       onPause={() => setPhase(value => value === "error" ? value : "paused")}
       onEnded={() => setPhase("paused")}
       onError={() => setPhase("error")} />
-  </article>;
+  </div>;
 }

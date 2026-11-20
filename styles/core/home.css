@@ -67,9 +67,10 @@
 /* The wordmark is lifted onto the beam crest; open a bigger gap under it so the
    tagline + CTAs drop back into the dark BELOW the beam and never overlap it. */
 .hero-beam .hero-h1{
-  --tagline-size:clamp(32px,4.4vw,64px);
-  font-size:min(var(--tagline-size),10.5cqi);
-  white-space:nowrap;
+  --tagline-size:clamp(30px,3.25vw,48px);
+  font-size:var(--tagline-size);
+  max-inline-size:min(56vw,720px);
+  white-space:normal;
   margin:clamp(44px,7.5vh,104px) 0 0;margin:round(clamp(44px,7.5vh,104px),2px) 0 0;}
 .hero-beam .hero-actions{margin-top:clamp(28px,4.2vh,38px);margin-top:round(clamp(28px,4.2vh,38px),2px);
   align-items:baseline;} /* the ghost link's label shares the pill label's baseline (it sat 3px high) */
@@ -81,7 +82,7 @@
 .hero-beam .scroll-cue{color:rgba(244,237,226,.5);}
 .hero-beam .cue-mouse{border-color:rgba(244,237,226,.4);}
 @media (max-width:740px){
-  .hero-beam .hero-h1{--tagline-size:clamp(30px,8.6vw,44px);}
+  .hero-beam .hero-h1{--tagline-size:clamp(26px,6.5vw,34px);max-inline-size:min(100%,20ch);}
 }
 /* The entrance starts from SSR/CSS on every screen, before hydration or WebGL.
    JS still owns scroll parallax, but never holds the hero invisible while fonts
@@ -121,14 +122,14 @@
 .hero-actions{display:flex;align-items:center;gap:28px;margin-top:38px;}
 .hero-feature .frame{position:relative;border-radius:4px;overflow:hidden;}
 .hero-feature-num{position:absolute;top:18px;right:20px;font-family:var(--serif);font-style:italic;color:var(--cream);font-size:24px;z-index:2;mix-blend-mode:difference;}
-.hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:17px;letter-spacing:.16em;text-transform:uppercase;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
+.hero-feature-cap{position:absolute;left:18px;bottom:16px;color:var(--cream);font-size:17px;letter-spacing:.02em;text-transform:none;z-index:2;background:rgba(26,23,20,.55);padding:6px 12px;border-radius:100px;}
 .hero-home .hero-copy,.hero-home .hero-feature-par{will-change:transform,opacity;}
 /* Lusion-style scroll cue - a mouse outline whose wheel-dot drops on a loop,
    beside quiet microcopy. The whole cue dissolves as scrolling starts (wired
    to scroll progress in hero.tsx). */
 .scroll-hint{margin-top:54px;transition:opacity .5s var(--ease);}
 .scroll-hint.gone{opacity:0;pointer-events:none;}
-.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:17px;letter-spacing:.2em;text-transform:uppercase;}
+.scroll-cue{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:17px;letter-spacing:.02em;text-transform:none;}
 .cue-mouse{width:22px;height:34px;flex:none;border:1.5px solid var(--ink-mid);border-radius:12px;position:relative;}
 .cue-mouse::after{
   content:"";position:absolute;left:50%;top:6px;width:4px;height:4px;margin-left:-2px;
@@ -182,10 +183,10 @@
   overflow:hidden;background:linear-gradient(160deg,var(--fc-bg2,#fff),var(--fc-bg,var(--cream-2)));color:var(--fc-ink,var(--ink));}
 .fc-card .fc-top{display:flex;align-items:center;justify-content:space-between;}
 .fc-card .fc-i{font-family:var(--serif);font-style:italic;font-size:22px;}
-.fc-card .fc-cat{font-size:16px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;opacity:.7;}
+.fc-card .fc-cat{font-size:16px;letter-spacing:.02em;text-transform:none;font-weight:500;opacity:.7;}
 .fc-card h3{font-size:34px;margin:auto 0 12px;}
 .fc-card p{font-size:20px;line-height:1.5;opacity:.85;margin:0 0 22px;max-width:32ch;}
-.fc-card .fc-go{font-size:18px;letter-spacing:.06em;font-weight:700;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+.fc-card .fc-go{font-size:18px;letter-spacing:.02em;font-weight:500;text-transform:none;display:inline-flex;align-items:center;gap:8px;}
 .fc-card .fc-go i{font-style:normal;transition:transform .4s var(--ease);}
 .fc-card:hover .fc-go i{transform:translate(4px,-4px);}
 /* Per-client colours come from --fc-* vars set inline from each case theme

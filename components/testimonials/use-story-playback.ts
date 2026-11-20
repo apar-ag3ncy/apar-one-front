@@ -27,6 +27,21 @@ export function useStoryPlayback(area: RefObject<HTMLDivElement | null>, count: 
     const down = () => playback.pause("pointer");
     const up = () => playback.resume("pointer");
     const interaction = () => playback.restart();
+    const recordings = () => Array.from(root.querySelectorAll("audio"));
+    const syncVoice = () => {
+      if (recordings().some(audio => !audio.paused && !audio.ended && !audio.error)) playback.pause("voice");
+      else playback.resume("voice");
+    };
+    const startVoice = (event: Event) => {
+      if (!(event.target instanceof HTMLAudioElement) || event.target.paused) return;
+      for (const audio of recordings()) {
+        if (audio !== event.target && !audio.paused) audio.pause();
+      }
+      syncVoice();
+    };
+    root.addEventListener("play", startVoice, true);
+    const voiceStops = ["pause", "ended", "error"];
+    for (const type of voiceStops) root.addEventListener(type, syncVoice, true);
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && entry.intersectionRatio >= .4) playback.resume("offscreen");
       else playback.pause("offscreen");
@@ -47,6 +62,8 @@ export function useStoryPlayback(area: RefObject<HTMLDivElement | null>, count: 
     motion.addEventListener("change", preference);
     document.addEventListener("visibilitychange", visibility);
     return () => {
+      root.removeEventListener("play", startVoice, true);
+      for (const type of voiceStops) root.removeEventListener(type, syncVoice, true);
       playback.dispose(); controller.current = null; observer.disconnect();
       root.removeEventListener("pointerenter", enter);
       root.removeEventListener("pointerleave", leave);

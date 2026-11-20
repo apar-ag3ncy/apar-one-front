@@ -339,7 +339,7 @@ export default function ReelCoverShowcase() {
                 </div>
               </div>
               
-              <span className="text-xs text-neutral-500 mt-4 tracking-wider uppercase font-semibold">
+              <span className="text-xs text-neutral-500 mt-4 font-medium">
                 Instagram Portrait Preview (4:5 Crop)
               </span>
             </div>

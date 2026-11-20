@@ -4,39 +4,52 @@ The homepage keeps its existing content order, artwork, typography and two-colum
 
 ## Editorial direction
 
-Middle sections and internal pages use white with ink text, APAR-red accents
-and generous spacing. The landing hero retains its original near-black base,
-red pixel arc and cream wordmark. `BandBackdrop` uses the original shader palette
-on every device; its geometry and performance gates are unchanged. The hero
-fades into the cinematic quote through the same dark-to-image transition.
-The original Fit wordmark and supplied client logos keep their typography.
+The opening uses the red pixel arc on a near-black field behind the rotating
+Fit wordmark. Its leading glyph alternates strictly between Hindi अ and English A;
+no other scripts join the sequence. The studio quote sits on the plain page surface. Later sections alternate
+between warm paper and ink.
 
-Testimonial photos overlap peach-tinted quote panels, and public voice cards
-alternate peach and lilac. The extra brand-name selector and previous/next buttons are removed. Native
+Testimonial photos overlap peach-tinted quote panels. The Chheda Jewellers and A Paramount panels include their assigned voice notes. The extra brand-name selector and previous/next buttons are removed. Native
 swipe, mouse drag and keyboard controls navigate the same original stories. Client
-logos sit on a black section with white heading and monochrome white marks.
+logos sit on an ink section with white heading and monochrome white marks.
 Hover/focus restores only the selected logo's colours. Logo links have no filled
-hover backdrop, so the black section stays continuous. The footer retains its near-black background,
+hover backdrop, so the dark section stays continuous. The footer retains its near-black background,
 cream contact links and full-width galaxy. Full-screen creative exhibits retain
 their original palettes.
 
-No background texture, new animation loop or dependency is added for this theme.
-Mobile copy remains static, and existing native phone scrolling is unchanged.
-The diamond showcase has a black outer section with white copy; the interactive
-stage retains its Manish Jewellers burgundy palette. The stage sits outside the
-copy container, spanning the full page width and one stable viewport height with
-square edges. Desktop scroll chapters begin when the stage reaches the viewport
-top. Phones and reduced-motion layouts retain normal flow and manual controls.
+`LiquidTextScroll` applies the studio's liquid distortion to text throughout
+every route: headings, paragraphs, captions, testimonials, FAQ answers, link and
+button labels, and footer copy. The shared layer discovers text-only groups
+without rewriting React's DOM or touching media. It preserves each text colour.
+Incoming text transitions from 116% to 68% of viewport height, with its filter
+prepared before entering the screen. Outgoing text starts melting when its
+bottom passes 58%, reaching full distortion at 12%. The longer exit and hero
+curves ramp up immediately; the hero stretches over 70% of a viewport. Both
+directions use the same position mapping.
+Each fresh viewport entry, from the top or bottom, also starts fully liquid and
+has a 700ms blur-to-clear reveal floor. This re-arms on every re-entry and keeps
+fast scrolls from skipping the transition. Initial visible copy stays readable.
+The centre remains clear; interactive hover and keyboard focus bypass the effect.
+A stationary cursor over ordinary text no longer suppresses its entrance.
 
-Every homepage dark/light boundary uses a short CSS colour blend inside the
-existing section padding: Featured Work → diamond, diamond → bento, bento →
-clients, clients → testimonials, and FAQ → footer. The hero/quote keeps its
-artwork-aware transition. White-to-white joins need no overlay. These edges
-are decorative, ignore pointer input and add no page height, text animation,
-canvas, scroll listener or rendering loop. Their height follows the spacing
-token (32px on phones, up to 48px on desktop); forced-colour mode hides them.
-The existing single Lenis/GSAP clock handles desktop input. Phones keep native
-scrolling, and the diamond's existing desktop chapters remain unchanged.
+Only visible or just-entering text receives SVG dilation, blur, alpha merging and
+displacement. A bounded idle filter pool avoids allocating a filter per word or
+per page. One passive scroll listener batches layout reads before writes and
+parks between events, except while a fresh arrival is resolving. Mutation observation covers route/FAQ/carousel changes;
+resize and font loads update measurements. Phones retain native scrolling with
+a gentler version. Reduced motion and pre-hydration text stay sharp. Navigation,
+brand artwork, editable fields and dialogs stay usable without distortion.
+The previous one-shot line reveals and separate heading blur are removed.
+
+The clients section and FAQ/film boundary are straight at rest. On desktop,
+`section-edge-motion.ts` gives each visible boundary one shallow, symmetrical
+bend, using Featured Work's signed velocity limit of 14px and settling rate.
+Scrolling down pulls the centre down; scrolling up reverses it. When scrolling
+stops, the boundary settles exactly flat and its animation loop stops. A 40px
+SVG strip paints only the difference from the original straight join, keeping
+section content and layout stationary. Offscreen edges, hidden tabs, resize,
+phones and reduced motion all reset to straight edges. There is no wave mask,
+permanent curvature, extra scroll distance or pinning.
 
 ## Responsibilities
 

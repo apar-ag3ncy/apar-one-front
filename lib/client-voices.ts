@@ -1,5 +1,6 @@
 export interface ClientVoice {
   id: string;
+  storySlug: string;
   name: string;
   brand: string;
   src: string;
@@ -12,6 +13,7 @@ export interface ClientVoice {
 export const CLIENT_VOICES: ClientVoice[] = [
   {
     id: "hari-om-infotech",
+    storySlug: "chheda",
     name: "Viral",
     brand: "Hari Om Infotech",
     src: "/audio/testimonials/hari-om-infotech.m4a",
@@ -25,7 +27,8 @@ export const CLIENT_VOICES: ClientVoice[] = [
   },
   {
     id: "hiccup",
-    name: "Hiccup",
+    storySlug: "a-paramount",
+    name: "H1CCUP",
     brand: "",
     src: "/audio/testimonials/hiccup.m4a",
     duration: 36.06,

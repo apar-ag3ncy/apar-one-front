@@ -7,6 +7,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Reveal } from "@/components/motion/reveal";
+import { SectionScrollEdge } from "./section-scroll-edge";
 
 const ITEMS = [
   {
@@ -82,6 +83,7 @@ export function Faq() {
           })}
         </Accordion>
       </div>
+      <SectionScrollEdge position="bottom" />
     </section>
   );
 }

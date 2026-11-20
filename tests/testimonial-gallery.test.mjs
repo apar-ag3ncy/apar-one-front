@@ -30,6 +30,18 @@ test("every brand has one accessible story with its original attribution", () =>
   assert.match(html, /Manish Jewellers · Campaign line/);
 });
 
+test("each published voice plays inside its assigned brand's testimonial", () => {
+  const { CLIENT_VOICES } = loadTypeScript("lib/client-voices.ts");
+  const html = renderToStaticMarkup(createElement(TestimonialCarousel, { pages, voices: CLIENT_VOICES }));
+  const stories = html.match(/<article\b[^>]*id="tc-story-[^"]+"[\s\S]*?<\/article>/g);
+  for (const [slug, name] of [["chheda", "Viral"], ["a-paramount", "H1CCUP"]]) {
+    const card = stories.find(story => story.includes(`id="tc-story-${slug}"`));
+    assert.ok(card?.includes(`aria-label="Play ${name}&#x27;s voice note"`));
+  }
+  assert.equal((html.match(/<audio /g) ?? []).length, 2);
+  assert.doesNotMatch(html, /In their own|class="cv-grid"/);
+});
+
 test("private recording starts only after interaction, without eager audio downloads", () => {
   const html = renderToStaticMarkup(createElement(TestimonialCarousel, { pages }));
   assert.match(html, /Leave APĀR a private voice note/);

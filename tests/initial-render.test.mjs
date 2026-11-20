@@ -60,13 +60,12 @@ test("Talk to us has an accessible contact destination before hydration", () => 
   assert.doesNotMatch(html, hiddenStyle);
 });
 
-test("studio copy and responsive artwork arrive together without waiting for animation", () => {
+test("studio quote appears on the plain page surface before hydration", () => {
   const html = renderToStaticMarkup(createElement(ProgressiveQuote, {
     id: "studio", text: "Limitless. Beyond Culture.",
   }));
   assert.match(html, /aria-labelledby="studio-quote"/);
   assert.match(html, /aria-label="Limitless\. Beyond Culture\."/);
-  assert.match(html, /<img[^>]*srcSet="[^"]*640w[^"]*1536w"/);
-  assert.match(html, /width="1536" height="1024"/);
+  assert.doesNotMatch(html, /<img\b|pq-landscape/);
   assert.doesNotMatch(html, hiddenStyle);
 });

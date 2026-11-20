@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FEATURED_CLIENTS } from "@/lib/cases";
+import { SectionScrollEdge } from "../section-scroll-edge";
 
 // These supplied marks are white-only artwork. Reveal their case palette on
 // hover while preserving the original logo silhouette and monochrome rest state.
@@ -16,6 +17,7 @@ export function MovingClients() {
   const clients = FEATURED_CLIENTS.filter(client => client.slug !== "manish-jewellers");
   const rows = [clients.slice(0, 4), clients.slice(4, 8), clients.slice(8, 12)];
   return <section id="clients" className="flow-clients flow-section" aria-labelledby="flow-clients-title" data-no-pixel-trail>
+    <SectionScrollEdge position="top" />
     <div className="wrap flow-client-heading">
       <h2 id="flow-clients-title">Recommended by the best.</h2>
     </div>
@@ -33,5 +35,6 @@ export function MovingClients() {
         </span>
       </Link>)}</div>)}
     </div></div>)}</div>
+    <SectionScrollEdge position="bottom" />
   </section>;
 }

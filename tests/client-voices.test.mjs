@@ -5,21 +5,17 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadTypeScript } from "./load-typescript.mjs";
 
-const { ClientVoices } = loadTypeScript("components/testimonials/client-voices.tsx");
+const { VoicePlayer } = loadTypeScript("components/testimonials/client-voices.tsx");
 const { CLIENT_VOICES, voiceTime, voiceWaveform } = loadTypeScript("lib/client-voices.ts");
 const fixture = { id: "test-only", name: "Test speaker", brand: "Test brand", src: "/audio/testimonials/test.m4a", duration: 27, peaks: [.1, .6, 1] };
 
 test("voice players reserve controls without fetching any audio on initial render", () => {
-  const html = renderToStaticMarkup(createElement(ClientVoices, { notes: [fixture] }));
+  const html = renderToStaticMarkup(createElement(VoicePlayer, { note: fixture, current: true }));
   assert.match(html, /aria-label="Play Test speaker&#x27;s voice note"/);
   assert.match(html, /aria-label="Seek within Test speaker&#x27;s voice note"/);
   assert.match(html, /aria-valuetext="0:00 of 0:27"/);
   assert.match(html, /<audio preload="none"/);
   assert.doesNotMatch(html, /\bsrc=|autoplay|<source|<canvas/);
-});
-
-test("an unpublished list renders no empty public player", () => {
-  assert.equal(renderToStaticMarkup(createElement(ClientVoices, { notes: [] })), "");
 });
 
 test("only manually curated local audio can be published", () => {

@@ -15,7 +15,7 @@
   position:sticky; top:var(--journey-inset); align-self:start; isolation:isolate; overflow:clip;
   font-family:var(--ui-font); font-size:18px; line-height:1.35; color-scheme:dark;
 }
-.journeyTrack:lang(hi),.screen [lang="hi"] {--ui-font:'New Title','fit-devanagari-vf'; --heading:var(--ui-font)}
+.journeyTrack:lang(hi),.screen [lang="hi"] {--ui-font:'Satoshi','fit-devanagari-vf'; --heading:var(--ui-font)}
 .screen button,.screen a {color:inherit; font:inherit; letter-spacing:inherit; -webkit-tap-highlight-color:transparent}
 .screen button {border:0; padding:0; background:none; cursor:pointer}
 .screen :is(a,button):focus-visible {outline:2px solid var(--accent); outline-offset:3px}

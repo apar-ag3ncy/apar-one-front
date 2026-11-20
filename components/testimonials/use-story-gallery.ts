@@ -28,8 +28,12 @@ export function useStoryGallery(count: number) {
     const root = track.current;
     if (!root || !count) return;
     let frame = 0;
+    let alignFrame = 0;
+    let measuredWidth = 0;
     const update = () => {
       frame = 0;
+      if (root.clientWidth !== measuredWidth) { measure(); return; }
+      if (alignFrame) return;
       const x = root.scrollLeft;
       let nearest = 0;
       for (let i = 1; i < offsets.current.length; i++) {
@@ -40,6 +44,10 @@ export function useStoryGallery(count: number) {
     };
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
     const measure = () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(alignFrame);
+      frame = 0;
+      measuredWidth = root.clientWidth;
       const cards = Array.from(root.children) as HTMLElement[];
       const start = cards[0]?.offsetLeft ?? 0;
       offsets.current = cards.map(card => card.offsetLeft - start);
@@ -47,12 +55,18 @@ export function useStoryGallery(count: number) {
       root.scrollTo({ left: offsets.current[index] ?? 0, behavior: "instant" });
       current.current = index;
       setActive(index);
+      // Browser scroll-snap restoration may run after the resize observer.
+      // Re-align once after layout, keeping the selected story during reflow.
+      alignFrame = requestAnimationFrame(() => {
+        root.scrollTo({ left: offsets.current[index] ?? 0, behavior: "instant" });
+        alignFrame = 0;
+      });
     };
     const observer = new ResizeObserver(measure);
     observer.observe(root);
     root.addEventListener("scroll", onScroll, { passive: true });
     measure();
-    return () => { observer.disconnect(); cancelAnimationFrame(frame); root.removeEventListener("scroll", onScroll); };
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); cancelAnimationFrame(alignFrame); root.removeEventListener("scroll", onScroll); };
   }, [count]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -65,6 +79,7 @@ export function useStoryGallery(count: number) {
   };
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.target instanceof Element && event.target.closest("button, input, a")) return;
     if (event.pointerType !== "mouse" || event.button !== 0) return;
     event.preventDefault();
     drag.current = { pointer: event.pointerId, x: event.clientX, left: event.currentTarget.scrollLeft, index: current.current, moved: false };
@@ -82,10 +97,12 @@ export function useStoryGallery(count: number) {
   const onPointerEnd = (event: PointerEvent<HTMLDivElement>) => {
     const start = drag.current;
     if (!start || start.pointer !== event.pointerId) return;
+    // Restoring scroll snap can synchronously move scrollLeft back to the
+    // original story. Capture the gesture before changing that CSS state.
+    const distance = event.currentTarget.scrollLeft - start.left;
     drag.current = null;
     delete event.currentTarget.dataset.dragging;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    const distance = event.currentTarget.scrollLeft - start.left;
     if (start.moved) select(start.index + (Math.abs(distance) > 48 ? Math.sign(distance) : 0));
   };
 

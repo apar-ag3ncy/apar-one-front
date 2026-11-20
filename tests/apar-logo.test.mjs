@@ -120,7 +120,7 @@ function mountLogo({ width = 390, touch = true, responsive = true, reduced = fal
 
 for (const [width, touch] of [[320, true], [390, true], [768, true], [1024, true], [1440, false]]) {
   for (const responsive of [true, false]) {
-    test(`${responsive ? 'header' : 'hero'} cycles genuine Fit glyphs at ${width}px ${touch ? 'touch' : 'desktop'}`, async () => {
+    test(`${responsive ? 'header' : 'hero'} strictly alternates Hindi and English at ${width}px ${touch ? 'touch' : 'desktop'}`, async () => {
       const logo = mountLogo({ width, touch, responsive });
       assert.equal(logo.ready(), false);
       await logo.flush();
@@ -131,11 +131,15 @@ for (const [width, touch] of [[320, true], [390, true], [768, true], [1024, true
       await logo.advance(800);
       assert.equal(logo.glyph(), 'A');
       await logo.advance(950);
-      assert.equal(logo.glyph(), 'А');
+      assert.equal(logo.glyph(), 'अ');
       await logo.advance(950);
-      assert.equal(logo.glyph(), 'Α');
+      assert.equal(logo.glyph(), 'A');
       await logo.advance(2400);
       assert.equal(logo.glyph(), 'अ');
+      for (let cycle = 0; cycle < 4; cycle++) {
+        await logo.advance(2400); assert.equal(logo.glyph(), 'A');
+        await logo.advance(2400); assert.equal(logo.glyph(), 'अ');
+      }
       logo.unmount();
     });
   }
@@ -147,7 +151,7 @@ test('logo pauses offscreen and in background tabs, then resumes without duplica
   logo.intersect(true); await logo.advance(800); assert.equal(logo.glyph(), 'A');
   logo.intersect(false); await logo.advance(10000); assert.equal(logo.glyph(), 'A');
   logo.intersect(true); logo.hide(true); await logo.advance(10000); assert.equal(logo.glyph(), 'A');
-  logo.hide(false); await logo.advance(800); assert.equal(logo.glyph(), 'А');
+  logo.hide(false); await logo.advance(800); assert.equal(logo.glyph(), 'अ');
   logo.unmount();
 });
 
@@ -166,10 +170,11 @@ test('font failure preserves the vector fallback and never starts the cycle', as
   logo.unmount();
 });
 
-test('optional scripts enter only with their genuine Fit family and wide glyphs fit the fixed header', async () => {
+test('other loaded Fit scripts cannot join the alternating pair, which fits the fixed header', async () => {
   const logo = mountLogo({ families: ['fit-vf', 'fit-devanagari-vf', 'fit-hebrew-vf'], wordmarkWidth: 100 });
   await logo.flush();
-  assert.deepEqual(logo.glyphs(), ['अ', 'A', 'А', 'Α', 'א']);
+  assert.deepEqual(logo.glyphs(), ['अ', 'A']);
+  assert.deepEqual([...new Set(logo.requests.map(request => request.glyph))], ['अ', 'A']);
   assert.equal(logo.properties.get('--apar-logo-scale'), '0.8');
   logo.resize(79); assert.equal(logo.properties.get('--apar-logo-scale'), '1');
   logo.unmount();

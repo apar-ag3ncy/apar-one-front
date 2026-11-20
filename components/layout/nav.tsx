@@ -32,7 +32,7 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const onDark = DARK_ROUTES.has(pathname);
 
   useEffect(() => {
@@ -116,14 +116,14 @@ export function Nav() {
           <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
             <AparLogo responsive onDark={onDark} />
             <span className="brand-tag">
-              AGENTIVE
+              agentive
               <br />
-              CREACY
+              creacy
             </span>
           </Link>
           <nav className="nav-links" aria-label="Main navigation">
             {LINKS.map((l) => (
-              <Link key={l.href} href={l.href} aria-current={!l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")) ? "page" : undefined}>
+              <Link key={l.href} href={l.href} data-nav-label={l.label} aria-current={!l.href.includes("#") && (pathname === l.href || pathname.startsWith(l.href + "/")) ? "page" : undefined}>
                 <HoverText>{l.label}</HoverText>
               </Link>
             ))}

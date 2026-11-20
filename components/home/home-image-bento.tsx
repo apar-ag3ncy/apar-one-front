@@ -3,22 +3,22 @@ import { BentoMotion } from "./bento-motion";
 
 const frames = [
   {
-    image: "mj-ruby-necklace", area: "ruby", brand: "Manish Jewellers", href: "#diamond-experience",
+    image: "mj-ruby-necklace", area: "ruby", brand: "Manish Jewellers", href: "/work/manish-jewellers",
     alt: "Manish Jewellers ruby and diamond necklace in warm sunlight",
     width: 960, height: 1553, wide: false, position: "50% 65%", background: "#e3c5cb",
   },
   {
-    image: "mj-bridal-portrait", area: "bridal", brand: "Manish Jewellers", href: "#diamond-experience",
+    image: "mj-bridal-portrait", area: "bridal", brand: "Manish Jewellers", href: "/work/manish-jewellers",
     alt: "Manish Jewellers bridal portrait with traditional gold, ruby and emerald jewellery",
     width: 960, height: 644, wide: false, position: "58% 50%", background: "#793f48",
   },
   {
-    image: "mj-campaign", area: "campaign", brand: "Manish Jewellers", href: "#diamond-experience",
+    image: "mj-campaign", area: "campaign", brand: "Manish Jewellers", href: "/work/manish-jewellers",
     alt: "Three models wearing Manish Jewellers bridal collections in a heritage interior",
     width: 960, height: 475, wide: true, position: "60% 45%", background: "#b6a48b",
   },
   {
-    image: "mj-blue-necklace", area: "blue", brand: "Manish Jewellers", href: "#diamond-experience",
+    image: "mj-blue-necklace", area: "blue", brand: "Manish Jewellers", href: "/work/manish-jewellers",
     alt: "Manish Jewellers blue gemstone necklace with a purple centre stone",
     width: 1280, height: 1067, wide: false, position: "52% 50%", background: "#bd8966",
   },

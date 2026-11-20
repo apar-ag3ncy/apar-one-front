@@ -127,8 +127,8 @@
 .case-ph-logo--invert{filter:brightness(0) invert(1) drop-shadow(0 8px 24px rgba(0,0,0,.28));}
 .case-ph-mask{display:block;width:100%;height:100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;opacity:.92;}
-.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:16px;letter-spacing:.2em;text-transform:uppercase;
-  font-weight:700;color:var(--c-soft);opacity:.85;}
+.case-ph-cap{position:absolute;left:22px;bottom:18px;font-family:var(--sans);font-size:16px;letter-spacing:.02em;text-transform:none;
+  font-weight:500;color:var(--c-soft);opacity:.85;}
 /* the four fallback tiles are one logo four times: vary the glow corner and
    the logo scale down the grid so the row reads as a set, not a repeat */
 .case-page .case-gallery .g:nth-child(2n) .ph-img{background:
