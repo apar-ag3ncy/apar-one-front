@@ -5,6 +5,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { DEVELOPMENT_ONLY_ROUTES } from './lib/production-routes.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const destination = process.argv[2] && path.resolve(process.argv[2]);
@@ -24,6 +25,11 @@ try {
   }
   // Remove the Node-only route only from this isolated build, never the checkout.
   await fs.rm(path.join(source, 'app/api'), { recursive: true });
+  // Static hosts cannot turn a generated notFound() HTML file into HTTP 404.
+  // Leave local preview shortcuts out so Apache serves the real 404 document.
+  for (const route of DEVELOPMENT_ONLY_ROUTES) {
+    await fs.rm(path.join(source, 'app', route.slice(1)), { recursive: true, force: true });
+  }
   await fs.symlink(path.join(root, 'node_modules'), path.join(source, 'node_modules'), 'dir');
   const build = spawnSync(process.execPath, [path.join(root, 'node_modules/next/dist/bin/next'), 'build'], {
     cwd: source, stdio: 'inherit', env: { ...process.env, APAR_DEPLOY_TARGET: 'cpanel', NEXT_TELEMETRY_DISABLED: '1' },

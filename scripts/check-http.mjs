@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { DEVELOPMENT_ONLY_ROUTES } from "./lib/production-routes.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const TEXT_LIMIT = 4 * 1024 * 1024;
@@ -285,7 +286,7 @@ export async function runSmoke(options, transport = fetch) {
     checks.push({ kind, url, ...details, sampledBytes: body.length, outcome: issues.length ? "fail" : "pass", issues, ...extra });
   };
   const missing = ["/__http-smoke-missing__", "/work/__http-smoke-missing__", ...Object.getOwnPropertyNames(Object.prototype).map(key => `/work/${encodeURIComponent(key)}`)];
-  const pages = [...targets.routes.map(route => ({ route, expected: 200 })), ...missing.map(route => ({ route, expected: 404 }))];
+  const pages = [...targets.routes.map(route => ({ route, expected: DEVELOPMENT_ONLY_ROUTES.has(route) ? 404 : 200 })), ...missing.map(route => ({ route, expected: 404 }))];
   await pool(pages, options.concurrency, async ({ route, expected }) => {
     const url = new URL(route, options.baseUrl).href;
     const result = await getResponse(url, { headers: { Accept: "text/html" } }, options, transport);

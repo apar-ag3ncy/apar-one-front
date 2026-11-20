@@ -26,22 +26,31 @@ try {
       cwd: root, env: { ...process.env, APAR_VOICE_STORAGE_DIR: storage }, stdio: ['ignore', 'ignore', 'pipe'],
     });
     let serverError;
+    let serverOutput = '';
     server.on('error', error => { serverError = error; });
-    server.stderr.on('data', () => {});
+    server.stderr.on('data', chunk => { serverOutput = (serverOutput + chunk).slice(-4000); });
     try {
       let ready = false;
-      for (let attempt = 0; attempt < 50; attempt++) {
+      let readiness = 'no response';
+      const startupDeadline = Date.now() + 30_000;
+      while (Date.now() < startupDeadline) {
         if (serverError) throw serverError;
-        if (server.exitCode !== null) throw new Error('PHP test server exited before readiness');
-        try { const r = await fetch(`${base}/api/voice-feedback`); await r.body?.cancel(); ready = r.status === 405; } catch {}
+        if (server.exitCode !== null) throw new Error(`PHP test server exited before readiness: ${serverOutput}`);
+        try {
+          const r = await fetch(`${base}/api/voice-feedback`);
+          readiness = `HTTP ${r.status}`; await r.body?.cancel(); ready = r.status === 405;
+        } catch (error) { readiness = error.message; }
         if (ready) break;
         await delay(100);
       }
-      if (!ready) throw new Error('PHP test server did not become ready');
+      if (!ready) throw new Error(`PHP test server did not become ready (${readiness}): ${serverOutput}`);
       if (mode === 'On') {
         const report = await runSmoke(parseOptions([base, '--require-voice']));
         await fs.writeFile(path.join(release, 'php-http.json'), JSON.stringify(report, null, 2) + '\n');
         console.log(`cPanel HTTP: ${report.summary.pass} passed, ${report.summary.fail} failed, ${report.summary.warn} warnings.`);
+        for (const check of report.checks.filter(check => check.outcome !== 'pass').slice(0, 30)) {
+          console.error(`${check.outcome.toUpperCase()} ${check.probe || check.assetKind || check.kind} ${check.url || ''}: ${check.issues.join('; ')}`);
+        }
         if (report.summary.fail || report.summary.warn) throw new Error('cPanel HTTP checks failed');
       }
       const send = async () => {
