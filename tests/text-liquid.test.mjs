@@ -5,34 +5,32 @@ import { loadTypeScript } from './load-typescript.mjs';
 const liquid = loadTypeScript('lib/motion/text-liquid.ts');
 const { mountLiquidTextScroll } = loadTypeScript('components/motion/mount-liquid-text-scroll.ts');
 
-test('text uses longer entry and exit ranges with a clear central reading zone in both directions', () => {
+test('scroll mapping blurs only the arriving edge and leaves the opposite exit clear', () => {
   const amount = liquid.textLiquidAmount;
   assert.equal(amount(1170, 1230, 1000), 1);
   assert.ok(amount(970, 1030, 1000) > amount(900, 960, 1000));
   assert.ok(amount(800, 860, 1000) > 0);
   assert.equal(amount(680, 740, 1000), 0);
   for (const top of [680, 600, 520]) assert.equal(amount(top, top + 60, 1000), 0);
-  // The exit is already visible at mid-screen, well before the old 36% mark.
-  assert.ok(amount(460, 520, 1000) > 0.2);
-  assert.ok(amount(460, 520, 1000) < amount(200, 260, 1000));
-  assert.ok(amount(200, 260, 1000) > 0);
-  assert.equal(amount(0, 60, 1000), 1);
+  for (const top of [460, 200, 0, -40]) assert.equal(amount(top, top + 60, 1000), 0);
   // A long paragraph is still readable even after its first lines pass the nav.
   assert.equal(amount(-100, 600, 1000), 0);
   assert.equal(amount(100, 150, 0), 0);
-  const positions = [1100, 1000, 900, 800, 500, 300, 100, 0, -100];
-  const forward = positions.map(top => amount(top, top + 60, 1000));
-  assert.deepEqual(positions.toReversed().map(top => amount(top, top + 60, 1000)), forward.toReversed());
+  assert.ok(amount(-40, 20, 1000, -1) > amount(100, 160, 1000, -1));
+  for (const top of [300, 600, 920]) assert.equal(amount(top, top + 60, 1000, -1), 0);
 });
 
-test('hero is crisp at rest and starts melting immediately with scroll, including scroll-up reversal', () => {
-  const amount = top => liquid.textLiquidAmount(600, 680, 1000, top);
-  assert.equal(amount(0), 0);
-  assert.ok(amount(-30) > 0.08);
-  assert.ok(amount(-120) > amount(-30));
-  assert.ok(amount(-500) < 1);
-  assert.equal(amount(-700), 1);
-  assert.equal(amount(30), 0);
+test('a reveal never grows blurry again before leaving, even on a direction change', () => {
+  const arrival = liquid.createTextArrival();
+  let previous = 1;
+  for (const [now, wanted] of [[0, .8], [100, .4], [200, .9], [400, .1], [700, 0], [900, 1]]) {
+    const { amount } = arrival.sample(wanted, true, true, now);
+    assert.ok(amount <= previous);
+    previous = amount;
+  }
+  assert.equal(previous, 0);
+  assert.deepEqual(arrival.sample(1, false, true, 1000), {amount:0, moving:false});
+  assert.equal(arrival.sample(1, true, true, 1100).amount, 1);
 });
 
 class ElementMock extends EventTarget {
@@ -97,28 +95,32 @@ function harness(t, enabled = true, phone = false) {
   };
 }
 
-test('visible text filters park at rest, restore in the reading zone and retrace on reverse scroll', t => {
+test('text enters blurry, clears, and remains clear through either exit and direction reversals', t => {
   const h = harness(t);
+  h.scroll();
   h.observer.visible(h.original); h.step();
   assert.match(h.original.style.filter,/url\("#site-liquid-/);
-  const values = () => h.defs.children[0].children.map(child=>({...child.attrs}));
-  const first = values();
+  for (let i=0;i<8;i++) h.step();
   assert.equal(h.frames.size,0);
+  assert.equal(h.original.style.filter,'contrast(1)', 'pausing at the lower edge must finish the reveal');
   h.original.box = {...h.original.box,top:600,bottom:650}; h.scroll(); h.step();
   assert.equal(h.original.style.filter,'contrast(1)');
-  h.original.box = {...h.original.box,top:920,bottom:970}; h.scroll(); h.step();
-  assert.deepEqual(values(),first);
+  for (const [top, delta] of [[200,400],[-30,230],[300,-330],[920,-620]]) {
+    h.original.box = {...h.original.box,top,bottom:top+50}; h.scroll(delta); h.step();
+    assert.equal(h.original.style.filter,'contrast(1)');
+  }
   assert.equal(h.defs.children.length,1);
   h.original.focused=true; h.root.dispatchEvent(new Event('focusin')); h.step();
   assert.equal(h.original.style.filter,'contrast(1)');
   h.original.focused=false; h.root.dispatchEvent(new Event('focusout')); h.step();
-  assert.match(h.original.style.filter,/url/);
+  assert.equal(h.original.style.filter,'contrast(1)');
   h.observer.visible(h.original,false); h.step();
   assert.equal(h.original.style.filter,'contrast(1)');
 });
 
 test('route changes, resize, hidden tabs and reduced-motion changes clean up live filters', t => {
   const h = harness(t);
+  h.scroll();
   h.observer.visible(h.original); h.step();
   const next = new ElementMock();
   h.setCopy([next]); h.step();
@@ -127,17 +129,17 @@ test('route changes, resize, hidden tabs and reduced-motion changes clean up liv
   assert.ok(h.observer.observed.has(next));
   h.observer.visible(next); h.step();
   const scale = () => Number(h.defs.children[0].children[4].attrs.scale);
-  const before=scale(); next.size='72px'; h.win.dispatchEvent(new Event('resize')); h.step();
+  const before=scale(); next.size='96px'; h.win.dispatchEvent(new Event('resize')); h.step();
   assert.ok(scale()>before);
   h.doc.hidden=true; h.doc.dispatchEvent(new Event('visibilitychange'));
   assert.equal(next.style.filter,''); assert.equal(h.frames.size,0);
   h.doc.hidden=false; h.doc.dispatchEvent(new Event('visibilitychange')); h.step();
-  assert.match(next.style.filter,/url/);
+  assert.equal(next.style.filter,'', 'returning to a tab must not re-blur visible copy');
   h.motion.matches=false; h.motion.dispatchEvent(new Event('change'));
   assert.equal(next.style.filter,''); assert.equal(h.defs.children.length,0);
   assert.equal(h.observer.observed.size,0);
   h.motion.matches=true; h.motion.dispatchEvent(new Event('change'));
-  h.observer.visible(next); h.step(); assert.match(next.style.filter,/url/);
+  h.observer.visible(next); h.step(); assert.equal(next.style.filter,'');
   h.cleanup(); h.scroll(); h.mutation.change();
   assert.equal(next.style.filter,''); assert.equal(h.frames.size,0); assert.equal(h.defs.children.length,0);
 });
@@ -149,12 +151,33 @@ test('reduced motion allocates no filters or observers', t => {
   assert.equal(h.original.style.filter,'contrast(1)');
 });
 
+test('fast downward arrival in the upper reading area stays in its original form', t => {
+  const h=harness(t);
+  h.original.box={...h.original.box,top:150,bottom:200};
+  h.scroll(900); h.observer.visible(h.original); h.step();
+  assert.equal(h.original.style.filter,'contrast(1)');
+  assert.equal(h.frames.size,0);
+});
+
+test('a stationary entrance fully clears and cannot restart on resize or direction changes', t => {
+  const h=harness(t);
+  h.scroll(); h.observer.visible(h.original); h.step();
+  assert.match(h.original.style.filter,/url/);
+  for(let i=0;i<8;i++) h.step();
+  assert.equal(h.original.style.filter,'contrast(1)');
+  h.win.dispatchEvent(new Event('resize')); h.step();
+  h.scroll(-10); h.step();
+  assert.equal(h.original.style.filter,'contrast(1)');
+  assert.equal(h.frames.size,0);
+});
+
 test('phones receive the liquid effect with gentler displacement', t => {
   const h=harness(t,true,true);
+  h.scroll();
   h.observer.visible(h.original); h.step();
   assert.match(h.original.style.filter,/url/);
   const scale=Number(h.defs.children[0].children[4].attrs.scale);
-  const full=liquid.textLiquidAmount(920,970,1000)*48*.5;
+  const full=48*.5;
   assert.ok(scale>0 && scale<full*.7);
 });
 
@@ -204,7 +227,20 @@ test('arrival floor handles both entry edges without hiding initial or focused t
   assert.deepEqual(arrival.sample(0,true,false,1200),{amount:0,moving:false});
 });
 
-test('text discovery covers nested headings, body copy, captions and controls without selecting media or navigation', t => {
+test('initial hero copy stays sharp as it scrolls out, then reveals on a fresh entry', t => {
+  const h=harness(t);
+  h.original.hero=new ElementMock();
+  h.observer.visible(h.original); h.step();
+  assert.equal(h.original.style.filter,'contrast(1)');
+  for (const top of [600, 300, 0, -60]) {
+    h.original.box={...h.original.box,top,bottom:top+50}; h.scroll(200); h.step();
+    assert.equal(h.original.style.filter,'contrast(1)');
+  }
+  h.original.box={...h.original.box,top:-30,bottom:20}; h.scroll(-30); h.step();
+  assert.match(h.original.style.filter,/url/);
+});
+
+test('text discovery excludes entire testimonials and case quotes, including nested copy and voice controls', t => {
   class DomElement {
     constructor(tag, classes='', children=[]) {
       this.tag=tag; this.classes=classes.split(' '); this.children=[];
@@ -235,10 +271,16 @@ test('text discovery covers nested headings, body copy, captions and controls wi
   const card=el('a','',[el('img'),caption]);
   const button=el('button','',[el('svg'),el('span','',['Listen to the voice note'])]);
   const quote=el('blockquote','',['A client testimonial.']);
+  const caseQuote=el('section','case-quote',[el('blockquote','',['Case feedback']),el('div','by',['Client name'])]);
+  const testimonial=el('section','testimonial-carousel',[
+    el('h2','',['Every brand.']),quote,el('p','tc-by',['Client name']),
+    el('div','cv-player',[el('p','',['Viral']),el('button','',['Play']),el('span','',['0:27'])]),
+  ]);
+  const voice=el('div','cv-player',[el('p','',['Standalone voice']),el('button','',['Play'])]);
   const footer=el('small','',['Contact us']);
   const root=el('body','',[
     el('nav','',[el('a','',['work'])]),el('span','apar-logo',['APAR']),
-    el('main','',[heading,body,card,button,quote,el('textarea','',['Editable text'])]),
+    el('main','',[heading,body,card,button,testimonial,caseQuote,voice,el('textarea','',['Editable text'])]),
     el('footer','',[footer]),el('span','sr-only',['Only announced']),
   ]);
   const text=[];
@@ -252,5 +294,5 @@ test('text discovery covers nested headings, body copy, captions and controls wi
     if(doc) Object.defineProperty(globalThis,'document',doc); else delete globalThis.document;
     if(filter) Object.defineProperty(globalThis,'NodeFilter',filter); else delete globalThis.NodeFilter;
   });
-  assert.deepEqual(liquid.collectLiquidText(root),[heading,body,caption,button,quote,footer]);
+  assert.deepEqual(liquid.collectLiquidText(root),[heading,body,caption,button,footer]);
 });

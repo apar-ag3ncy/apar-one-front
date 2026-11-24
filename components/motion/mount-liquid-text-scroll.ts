@@ -1,7 +1,7 @@
 import { collectLiquidText, createLiquidFilter, createTextArrival, textLiquidAmount } from "@/lib/motion/text-liquid";
 
 type Filter = ReturnType<typeof createLiquidFilter>;
-type Target = { el: HTMLElement; fontSize: number; original: string; hero: HTMLElement | null; arrival: ReturnType<typeof createTextArrival>; filter?: Filter; last: number };
+type Target = { el: HTMLElement; fontSize: number; original: string; arrival: ReturnType<typeof createTextArrival>; filter?: Filter; last: number };
 
 export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
   if (!("IntersectionObserver" in window)) return () => {};
@@ -14,6 +14,7 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
   let scanFrame = 0;
   let running = false;
   let hasScrolled = false;
+  let direction = 1;
   let lastScrollY = window.scrollY;
 
   const release = (target: Target) => {
@@ -30,17 +31,21 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
     const now = performance.now();
     let revealing = false;
     // Finish layout reads before filter writes. There is no perpetual RAF loop.
-    const boxes = [...active].map(target => ({ target, box: target.el.getBoundingClientRect(), heroTop: target.hero?.getBoundingClientRect().top }));
-    for (const { target, box, heroTop } of boxes) {
+    const boxes = [...active].map(target => ({ target, box: target.el.getBoundingClientRect() }));
+    for (const { target, box } of boxes) {
       // A stationary cursor must not cancel arrivals of ordinary headings or
       // paragraphs. Only interactive hover and keyboard focus bypass the blur.
       const protectedText = target.el.matches(":focus-within") || target.el.closest('a:hover,button:hover,[role="button"]:hover,[hidden],[inert]');
-      // Prepare just before text crosses the viewport, so the first visible
-      // frame is already liquid rather than waiting for an in-view callback.
+      // The expanded observer already tracks text before it crosses either
+      // edge. Entry starts on the first visible frame; leaving stays clear.
       const visible = box.width > 3 && box.height > 3 && box.bottom > -height * 0.18 && box.top < height * 1.18 && box.right > 0 && box.left < window.innerWidth;
       const inViewport = visible && box.bottom > 0 && box.top < height;
-      const wanted = visible && !protectedText ? textLiquidAmount(box.top, box.bottom, height, heroTop) : 0;
-      const arrival = target.arrival.sample(wanted, inViewport, hasScrolled && !protectedText, now);
+      const wanted = visible && !protectedText ? textLiquidAmount(box.top, box.bottom, height, direction) : 0;
+      // Fast downward scrolls must not start/continue a reveal on copy that
+      // has already reached the upper reading area. Returning from above can
+      // still reveal, but this visit can never become blurry again once clear.
+      const canReveal = hasScrolled && !protectedText && (direction < 0 || box.top >= height * 0.35);
+      const arrival = target.arrival.sample(wanted, inViewport, canReveal, now);
       const amount = arrival.amount;
       revealing ||= arrival.moving;
       if (amount < 0.002) { release(target); continue; }
@@ -62,7 +67,8 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
     if (running && !document.hidden && active.size && !frame) frame = requestAnimationFrame(render);
   };
   const scroll = () => {
-    if (Math.abs(window.scrollY - lastScrollY) > 0.1) hasScrolled = true;
+    const delta = window.scrollY - lastScrollY;
+    if (Math.abs(delta) > 0.1) { hasScrolled = true; direction = Math.sign(delta); }
     lastScrollY = window.scrollY;
     queue();
   };
@@ -84,7 +90,7 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
       observer.unobserve(el); active.delete(target); release(target); targets.delete(el);
     }
     for (const el of current) if (!targets.has(el)) {
-      targets.set(el, { el, fontSize: parseFloat(getComputedStyle(el).fontSize), original: el.style.filter, hero: el.closest(".hero-beam"), arrival: createTextArrival(), last: -1 });
+      targets.set(el, { el, fontSize: parseFloat(getComputedStyle(el).fontSize), original: el.style.filter, arrival: createTextArrival(), last: -1 });
       observer.observe(el);
     }
     queue();
@@ -106,7 +112,10 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
   const visibility = () => {
     if (document.hidden) {
       cancelAnimationFrame(frame); frame = 0;
-      active.forEach(target => { release(target); target.arrival.reset(); });
+      active.forEach(target => {
+        release(target);
+        target.arrival.sample(0, true, false, performance.now());
+      });
     } else queue();
   };
   const stop = () => {
@@ -127,6 +136,7 @@ export function mountLiquidTextScroll(root: HTMLElement, defs: SVGDefsElement) {
     if (!motion.matches) return;
     running = true;
     hasScrolled = false;
+    direction = 1;
     lastScrollY = window.scrollY;
     scan();
     mutations.observe(root, { childList: true, subtree: true, characterData: true });

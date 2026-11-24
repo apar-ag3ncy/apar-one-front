@@ -19,7 +19,7 @@ export function Footer() {
 
         <GalaxyFooterArt />
 
-        <div className="footer-base">
+        <div className="footer-base" data-liquid-skip>
           <span>© {new Date().getFullYear()} APAR Agency. All rights reserved.</span>
           <span>Digital Marketing · Branding · Strategy · AI Content</span>
         </div>

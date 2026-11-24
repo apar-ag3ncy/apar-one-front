@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { mountLiquidTextScroll } from "./mount-liquid-text-scroll";
 
-/** One observer layer for every route, including streamed and carousel copy. */
+/** Shared entry reveals for every route; testimonial copy is excluded. */
 export function LiquidTextScroll() {
   const defs = useRef<SVGDefsElement>(null);
   useEffect(() => {

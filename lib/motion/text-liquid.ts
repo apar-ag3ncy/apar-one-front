@@ -2,40 +2,47 @@ const smooth = (value: number) => {
   const t = Math.max(0, Math.min(1, value));
   return t * t * (3 - 2 * t);
 };
-const early = (value: number) => {
-  const t = Math.max(0, Math.min(1, value));
-  return 1 - (1 - t) * (1 - t);
-};
-
-/** Long entry from 116% to 68%; exit starts at 58% and ends at 12%.
- * An ease-out exit makes the first scroll movement visibly affect the text.
- * Use the bottom edge for exit so long paragraphs remain readable. */
-export function textLiquidAmount(top: number, bottom: number, height: number, heroTop?: number) {
+/** Only the arriving edge blurs: lower edge when scrolling down, upper edge
+ * when scrolling up. There is deliberately no exit effect or hero exception. */
+export function textLiquidAmount(top: number, bottom: number, height: number, direction = 1) {
   if (height <= 0) return 0;
-  if (heroTop !== undefined) return early(-heroTop / (height * 0.7));
-  return Math.max(smooth((top / height - 0.68) / 0.48), early((0.58 - bottom / height) / 0.46));
+  return direction < 0
+    ? smooth((0.32 - bottom / height) / 0.48)
+    : smooth((top / height - 0.68) / 0.48);
 }
 
-/** Re-arm on every viewport entry, from either edge. A short reveal floor
- * prevents a fast scroll from skipping straight from offscreen to sharp text.
- * The normal scroll mapping stays immediate; only fresh arrivals get a pulse. */
+/** Re-arm on viewport entry, from either edge. The 700ms time envelope always
+ * finishes even when the reader stops scrolling in the entrance zone.
+ * Within one visit the amount can only decrease, including direction changes.
+ * Once readable, text stays readable until it has fully left the viewport. */
 export function createTextArrival() {
   let wasVisible = false;
   let started: number | null = null;
+  let clearest = 1;
   return {
-    reset() { wasVisible = false; started = null; },
+    reset() { wasVisible = false; started = null; clearest = 1; },
     sample(wanted: number, visible: boolean, animate: boolean, now: number) {
-      if (!visible || !animate) started = null;
-      else if (!wasVisible) started = now;
-      wasVisible = visible;
+      if (!visible) {
+        wasVisible = false; started = null; clearest = 1;
+        return { amount: 0, moving: false };
+      }
+      // Initial content and interacted-with controls stay clear for this visit.
+      if (!animate) {
+        wasVisible = true; started = null; clearest = 0;
+        return { amount: 0, moving: false };
+      }
+      if (!wasVisible) started = now;
+      wasVisible = true;
+      clearest = Math.min(clearest, wanted);
       const pulse = started === null ? 0 : 1 - smooth((now - started) / 700);
       if (pulse === 0) started = null;
-      return { amount: Math.max(wanted, pulse), moving: pulse > wanted && pulse > 0 };
+      const amount = Math.max(clearest, pulse) * pulse;
+      return { amount, moving: amount > 0 };
     },
   };
 }
 
-export const LIQUID_TEXT_SKIP = 'script,style,noscript,svg,canvas,textarea,input,select,option,pre,code,nav,.nav,.mobile-menu,.apar-logo,.brand-tag,.ttu,.page-wipe,[role="dialog"],[contenteditable],[data-liquid-skip],.sr-only,.tc-sr-only,.hover-text-a11y';
+export const LIQUID_TEXT_SKIP = 'script,style,noscript,svg,canvas,textarea,input,select,option,pre,code,nav,.nav,.mobile-menu,.apar-logo,.brand-tag,.ttu,.page-wipe,.testimonial-carousel,.case-quote,.cv-player,[role="dialog"],[contenteditable],[data-liquid-skip],.sr-only,.tc-sr-only,.hover-text-a11y';
 const textGroup = '.hover-text,.pq-focus-word,h1,h2,h3,h4,h5,h6,p,blockquote,li,dt,dd,figcaption,label,legend,summary,button,a,th,td,caption';
 const mixedContent = 'img,video,canvas,input,textarea,select,iframe,h1,h2,h3,h4,h5,h6,p,section,article,ul,ol,table';
 
