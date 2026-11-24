@@ -13,7 +13,7 @@ import css from '@/styles/journey.module.css';
 const Film = dynamic(() => import('@/components/journey/film'), { ssr: false });
 const format = (n: number) => String(n).padStart(2, '0');
 
-export function JourneySection() {
+export function JourneySection({ selectedWorkHref = '/work' }: { selectedWorkHref?: string }) {
   const viewport = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useState<Language>('en');
   const dialog = useRef<HTMLDialogElement>(null);
@@ -88,7 +88,7 @@ export function JourneySection() {
           {atEnd
             ? <a className={css.cue} href="#apar-galaxy" aria-label={source.galaxy}><span className={css.mouse}><i/></span></a>
             : <button className={css.cue} onClick={()=>step(1)} aria-label={source.next}><span className={css.mouse}><i/></span></button>}
-          <div><button onClick={contact}>{source.email}</button><Link href="/work" prefetch={false}>{source.work}</Link></div>
+          <div><button onClick={contact}>{source.email}</button><Link href={selectedWorkHref} prefetch={false}>{source.work}</Link></div>
         </div>
         <dialog data-lenis-prevent ref={dialog} className={css.dialog} aria-labelledby="flight-contact" onClick={e=>{if(e.target===dialog.current) dialog.current.close();}}>
           <section><h2 id="flight-contact">{source.send}</h2><FooterContacts icons={false}/>

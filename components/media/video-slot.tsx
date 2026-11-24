@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { clsx } from "clsx";
 import type { CSSProperties } from "react";
 
 interface VideoSlotProps {
@@ -171,7 +171,7 @@ export function VideoSlot({
   return (
     <div
       ref={wrapRef}
-      className={cn("img-slot", !ready && "ph-img", className)}
+      className={clsx("img-slot", !ready && "ph-img", className)}
       style={{ borderRadius: `${radius}px`, ...style }}
       aria-label={placeholder}
     >

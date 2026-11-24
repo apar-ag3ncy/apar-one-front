@@ -40,35 +40,34 @@ async function check(name, test) {
 try {
   await page.setViewportSize({ width: 1440, height: 900 });
   await visit("/work");
-  await check("reduced-motion content is visible below the fold without scrolling", async () => {
-    assert.equal(await page.locator(".work-card").last().evaluate(el => getComputedStyle(el).opacity), "1");
+  await check("Our Work preserves the cinematic journey without the old gallery", async () => {
+    assert.equal(await page.getByRole("heading", { level: 1 }).innerText(), "Our work");
+    await page.locator("#journey [data-journey-ready]").waitFor({ state: "attached" });
+    assert.equal(await page.locator("#showreel, .work-card, .work-toolbar, .filter-row").count(), 0);
+    assert.equal(await page.getByRole("link", { name: /^our work$/i }).getAttribute("aria-current"), "page");
   });
-  await check("Work filters report and display the right projects", async () => {
-    for (const [label, count] of [["Jewellery", 4], ["Lifestyle", 2], ["All work", 6]]) {
-      await page.getByRole("button", { name: new RegExp(`^${label}`) }).click();
-      await page.waitForTimeout(200);
-      assert.equal(await page.locator(".work-card").count(), count);
-      assert.equal(await page.getByRole("button", { name: new RegExp(`^${label}`) }).getAttribute("aria-pressed"), "true");
-    }
-    assert.equal(await page.getByRole("link", { name: "Work", exact: true }).getAttribute("aria-current"), "page");
+  await visit("/manifesto");
+  await check("Manifesto contains the relocated reel without the removed image grid", async () => {
+    assert.equal(await page.locator(".work-card, .work-toolbar, .filter-row").count(), 0);
+    assert.equal(await page.locator("#showreel .pin").count(), 1);
+    await page.locator("#work-rail").scrollIntoViewIfNeeded();
+    await page.locator("#showreel video").first().waitFor({ state: "attached" });
+    assert.ok(await page.locator("#showreel video").count() > 0);
+    assert.equal(await page.locator(".pin-card").last().evaluate(el => getComputedStyle(el).opacity), "1");
+    assert.equal(await page.getByRole("link", { name: /^manifesto$/i }).getAttribute("aria-current"), "page");
   });
-  await check("Work masonry has real images with no overlapping cards", async () => {
-    await revealAssets();
-    const info = await page.locator(".work-card").evaluateAll(cards => cards.map(card => {
-      const image = card.querySelector(".photo-slot-img"), box = card.getBoundingClientRect();
-      const frame = card.querySelector(".img-slot").getBoundingClientRect();
-      return { x: box.x, y: box.y, w: box.width, h: box.height, loaded: image.naturalWidth > 0,
-        ratio: frame.width / frame.height };
-    }));
-    assert(info.every(card => card.loaded && card.ratio > 0));
-    for (let i = 0; i < info.length; i++) for (let j = i + 1; j < info.length; j++) {
-      const a = info[i], b = info[j];
-      assert(!(a.x < b.x + b.w - 1 && a.x + a.w > b.x + 1 && a.y < b.y + b.h - 1 && a.y + a.h > b.y + 1), `cards ${i}/${j} overlap`);
-    }
+  await check("The reel retains previous and next navigation", async () => {
+    const rail = page.locator("#work-rail");
+    await page.getByRole("button", { name: "Next project", exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('#work-rail').scrollLeft > 0 && !document.querySelector('button[aria-label="Previous project"]').disabled);
+    assert.equal(await page.getByRole("button", { name: "Previous project", exact: true }).isEnabled(), true);
+    await page.getByRole("button", { name: "Previous project", exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('#work-rail').scrollLeft < 2);
+    assert.equal(await rail.getAttribute("aria-label"), "Project carousel — swipe horizontally");
   });
   for (const size of [{ width: 1440, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(size);
-    for (const route of ["/", "/work", "/clients", "/what-we-do", "/start", "/team", "/work/chheda", "/work/a-paramount"]) {
+    for (const route of ["/", "/work", "/manifesto", "/clients", "/what-we-do", "/start", "/team", "/work/chheda", "/work/a-paramount"]) {
       await visit(route);
       await revealAssets();
       await check(`${size.width}px ${route}: no overflow or broken images`, async () => {
@@ -90,8 +89,8 @@ try {
           }
         }
         if (route === "/start" && size.width <= 900) {
-          const positions = await page.evaluate(() => [".start-head", ".start-aesthetic", ".start-fields"].map(selector => document.querySelector(selector).getBoundingClientRect().top));
-          assert(positions[0] < positions[1] && positions[1] < positions[2], `mobile form order: ${positions}`);
+          const positions = await page.evaluate(() => [".start-head", ".start-fields", ".start-aesthetic", ".start-actions"].map(selector => document.querySelector(selector).getBoundingClientRect().top));
+          assert(positions.every((top, index) => index === 0 || top > positions[index - 1]), `mobile form order: ${positions}`);
         }
       });
       if ((size.width === 1440 && ["/work", "/clients", "/what-we-do"].includes(route)) || (size.width === 390 && ["/work", "/start", "/team"].includes(route))) {

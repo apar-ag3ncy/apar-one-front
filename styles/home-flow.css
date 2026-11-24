@@ -182,7 +182,12 @@
  .flow-project-image[data-motion-ready="true"]>.flow-project-art{opacity:1;}
 }
 
-/* Reserve the film's scroll distance so loading it below Q&A never moves the footer. */
+/* Align the standalone film with the same viewport used below Q&A on home. */
+.work-experience {
+  padding-top:var(--compact-nav-height,70px); background:#0b0706; color:var(--cream);
+}
+
+/* Reserve the film's scroll distance so loading it never moves the footer. */
 .home-journey {
   --journey-inset:var(--compact-nav-height,70px);
   --journey-height:calc(100svh - var(--journey-inset));
@@ -203,7 +208,7 @@
 
 /* Once the film is available its Contact panel owns these links. The original
    footer row remains accessible during loading and if the film fails to load. */
-.meeting-home:has([data-journey-ready]) + .cosmic-footer .footer-row {display:none}
-.meeting-home:has([data-journey-ready]) + .cosmic-footer {padding-top:0}
-.meeting-home:has([data-journey-ready]) + .cosmic-footer .galaxy-art {margin-top:0}
-.meeting-home + .cosmic-footer::before {background:linear-gradient(to bottom,#0b0706,transparent)}
+:is(.meeting-home,.work-experience):has([data-journey-ready]) + .cosmic-footer .footer-row {display:none}
+:is(.meeting-home,.work-experience):has([data-journey-ready]) + .cosmic-footer {padding-top:0}
+:is(.meeting-home,.work-experience):has([data-journey-ready]) + .cosmic-footer .galaxy-art {margin-top:0}
+:is(.meeting-home,.work-experience) + .cosmic-footer::before {background:linear-gradient(to bottom,#0b0706,transparent)}

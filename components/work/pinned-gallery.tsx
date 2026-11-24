@@ -138,7 +138,7 @@ export function PinnedGallery({ clients }: { clients: FeaturedClient[] }) {
   return (
     <section
       className="pin"
-      data-screen-label="Home - Work Gallery"
+      data-screen-label="Selected work - Films"
       aria-label="Selected work"
     >
       <div className="pin-sticky">

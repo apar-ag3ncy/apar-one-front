@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { CaseMotionProfile } from "@/lib/cases/motion";
 
 /** Case pages own their media motion; global SlowMo deliberately excludes them. */
-export function useCaseMotion(root: RefObject<HTMLDivElement | null>, profile: CaseMotionProfile) {
+export function useCaseMotion(root: RefObject<HTMLElement | null>, profile: CaseMotionProfile) {
   useEffect(() => {
     const el = root.current;
     if (!el) return;

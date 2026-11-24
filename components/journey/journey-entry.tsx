@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState, type ComponentType } from "react";
 
-export function JourneyEntry() {
+type JourneyEntryProps = { selectedWorkHref?: string };
+
+export function JourneyEntry({ selectedWorkHref = "/work" }: JourneyEntryProps) {
   const host = useRef<HTMLElement>(null);
-  const [FilmSection, setFilmSection] = useState<ComponentType | null>(null);
+  const [FilmSection, setFilmSection] = useState<ComponentType<JourneyEntryProps> | null>(null);
   useEffect(() => {
     const section = host.current;
     if (!section) return;
@@ -23,7 +25,7 @@ export function JourneyEntry() {
   }, []);
 
   return <section ref={host} id="journey" className="home-journey" aria-label="APĀR film">
-    {FilmSection ? <FilmSection /> : <div className="home-journey-opening">
+    {FilmSection ? <FilmSection selectedWorkHref={selectedWorkHref} /> : <div className="home-journey-opening">
       <h2>APĀR: Beyond the Ordinary</h2>
       <a href="#apar-galaxy">Continue to the APĀR galaxy</a>
     </div>}

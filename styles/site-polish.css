@@ -42,11 +42,8 @@
  .service-deliverables li:not(:last-child)::after{content:" ·";color:var(--red);}
 }
 @media(max-width:900px){
- .start .start-grid{display:flex;flex-direction:column;gap:38px;}
- .start .start-left{display:contents;}
- .start .start-head{order:0;width:100%;max-width:560px;}
- .start .start-aesthetic{order:1;width:100%;max-width:560px;}
- .start .start-fields{order:2;width:100%;max-width:560px;}
+ .start .start-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:32px;}
+ .start .start-head,.start .start-aesthetic,.start .start-fields{width:100%;min-width:0;}
  .start .start-h1{line-height:1.15;}
 }
 @media(max-width:600px){

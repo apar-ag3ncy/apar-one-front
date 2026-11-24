@@ -11,12 +11,12 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { HoverText } from "@/components/motion/hover-text";
 import { COMPACT_NAV_QUERY } from "@/lib/motion-policy";
 
-// The dark homepage hero and creative exhibits use light navigation.
-const DARK_ROUTES = new Set(["/", "/team", "/creative/reel-cover", "/creative/exploded-ring"]);
+// Dark cinematic pages use light navigation.
+const DARK_ROUTES = new Set(["/", "/work", "/team", "/creative/reel-cover", "/creative/exploded-ring"]);
 const isCasePage = (path: string) => /^\/work\/[^/]+$/.test(path);
 
 const LINKS = [
-  { href: "/work", label: "Work" },
+  { href: "/work", label: "Our work" },
   { href: "/what-we-do", label: "What we do" },
   { href: "/clients", label: "Clients" },
   { href: "/manifesto", label: "Manifesto" },
@@ -34,6 +34,8 @@ export function Nav() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname() ?? "";
   const onDark = DARK_ROUTES.has(pathname);
+  // The standalone film starts at the same compact header inset as on home.
+  const compactHeader = scrolled || pathname === "/work";
 
   useEffect(() => {
     const onScroll = () => {
@@ -111,7 +113,7 @@ export function Nav() {
 
   return (
     <>
-      <header className={clsx("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", scrolled && "scrolled", open && "menu-open")}>
+      <header className={clsx("nav", onDark && "on-dark", isCasePage(pathname) && "on-case", compactHeader && "scrolled", open && "menu-open")}>
         <div className="nav-in">
           <Link className="brand" href="/" aria-label="APAR - Agentive Creacy">
             <AparLogo responsive onDark={onDark} />

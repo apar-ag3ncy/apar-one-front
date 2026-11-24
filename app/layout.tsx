@@ -10,6 +10,7 @@ import "@/styles/mobile.css";
 import "@/styles/typography.css";
 import "@/styles/glass.css";
 import "@/styles/mobile-navigation.css";
+import "@/styles/internal-pages.css";
 import { Nav } from "@/components/layout/nav";
 import { ConditionalFooter } from "@/components/layout/conditional-footer";
 import { ScrollProgressBar } from "@/components/motion/scroll-progress-bar";

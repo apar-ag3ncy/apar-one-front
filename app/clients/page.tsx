@@ -6,6 +6,7 @@ import { FEATURED_CLIENTS } from "@/lib/cases";
 import { CLIENT_CARD_ARTWORK } from "@/lib/cases/client-card-artwork";
 import { FeaturedCard } from "@/components/work/featured-card";
 import { HoverText } from "@/components/motion/hover-text";
+import { InternalPageHeader } from "@/components/layout/internal-page-header";
 import styles from "./manish-card.module.css";
 
 export const metadata: Metadata = {
@@ -33,24 +34,18 @@ const ROSTER = [
 export default function ClientsPage() {
   return (
     <main className="clients-page">
-      <section className="page-hero" data-screen-label="Clients - Hero">
-        <div className="wrap">
-          <Reveal className="eyebrow">
-            <i className="dot" /> Our clients
-          </Reveal>
-          <Reveal as="h1" className="display d-lg" style={{ marginTop: 8 }}>
-            The brands behind the <em>work.</em>
-          </Reveal>
-          <Reveal as="p" className="lead" i={1}>
-            From heritage jewellery houses to fast-moving lifestyle brands - a focused roster we
-            partner with closely. Explore their stories below.
-          </Reveal>
-        </div>
-      </section>
+      <InternalPageHeader
+        eyebrow="Our clients"
+        title={<>The brands behind the <em>work.</em></>}
+        label="Clients - Hero"
+      >
+        From heritage jewellery houses to fast-moving lifestyle brands - a focused roster we
+        partner with closely. Explore their stories below.
+      </InternalPageHeader>
 
       <section className="section clients-featured" data-screen-label="Clients - Featured">
         <div className="wrap">
-          <Reveal className="tag-line">
+          <Reveal as="h2" className="tag-line">
             <span>Featured stories</span>
             <i className="ln" />
           </Reveal>
@@ -74,7 +69,7 @@ export default function ClientsPage() {
 
       <section className="section" style={{ paddingTop: 0 }} data-screen-label="Clients - Roster">
         <div className="wrap">
-          <Reveal className="tag-line">
+          <Reveal as="h2" className="tag-line">
             <span>The full roster</span>
             <i className="ln" />
           </Reveal>

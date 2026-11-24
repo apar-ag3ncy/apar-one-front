@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 
-// /work is a client component (filters), so it cannot export metadata itself -
-// the segment layout carries its title/description instead. Case pages under
-// /work/[slug] set their own via generateMetadata and override this.
+// Case pages under /work/[slug] override this metadata via generateMetadata.
 export const metadata: Metadata = {
-  title: "Work — APAR AGENTIVE CREACY",
+  title: "Our work — APAR AGENTIVE CREACY",
   description:
-    "Selected work by APAR - identities, campaigns and content engines for jewellery houses and ambitious lifestyle brands.",
+    "Explore the APĀR world through a continuous cinematic journey — ideas, identities and experiences for ambitious brands.",
 };
 
 export default function WorkLayout({ children }: { children: React.ReactNode }) {

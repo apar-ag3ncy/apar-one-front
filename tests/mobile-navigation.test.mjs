@@ -95,7 +95,7 @@ function mountNav() {
 
 test('navigation preserves route, scroll and open-menu styling together', () => {
   const nav = mountNav();
-  assert.equal(nav.find('nav').props.className, 'nav');
+  assert.equal(nav.find('nav').props.className, 'nav on-dark scrolled');
   assert.equal(nav.find('mobile-menu').props.className, 'mobile-menu');
   assert.equal(nav.find('mobile-menu-backdrop').props.className, 'mobile-menu-backdrop');
 

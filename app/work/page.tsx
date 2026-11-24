@@ -1,6 +1,8 @@
 import { WorkIndex } from "@/components/work/work-index";
-import { FEATURED_CLIENTS } from "@/lib/cases";
+import type { Viewport } from "next";
+
+export const viewport: Viewport = { themeColor: "#0b0706" };
 
 export default function WorkPage() {
-  return <WorkIndex clients={FEATURED_CLIENTS} />;
+  return <WorkIndex />;
 }

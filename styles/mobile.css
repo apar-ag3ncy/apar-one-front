@@ -204,11 +204,11 @@
   .work-page .vmarquee { padding:12px var(--gut); }
   .work-page .vmarquee span { font-size:22px; padding:.18em .3em; }
   .work-page .work-grid-section { padding-block:16px 36px; }
-  .work-page .pin { padding-block:40px 32px; }
-  .work-page .pin-intro h2 { font-size:clamp(36px,7vw,48px); margin-block:14px 12px; }
-  .work-page .pin-intro p { font-size:18px; line-height:1.45; }
-  .work-page .pin-controls { padding-block:16px; }
-  .work-page .pin-track { gap:16px; padding-bottom:16px; }
+  .manifesto-page .pin { padding-block:40px 32px; }
+  .manifesto-page .pin-intro h2 { font-size:clamp(36px,7vw,48px); margin-block:14px 12px; }
+  .manifesto-page .pin-intro p { font-size:18px; line-height:1.45; }
+  .manifesto-page .pin-controls { padding-block:16px; }
+  .manifesto-page .pin-track { gap:16px; padding-bottom:16px; }
   .work-page .work-foot { margin-top:24px; gap:16px; }
   .work-page .work-cta { padding-bottom:40px; }
 }
@@ -221,9 +221,9 @@
   .work-page .work-card .cap h3 { min-width:0; overflow-wrap:anywhere; font-size:30px; line-height:1.15; }
   .work-page .work-card .cap .yr { font-size:16px; letter-spacing:.04em; }
   .work-page .work-card .cap p { margin-top:4px; font-size:18px; line-height:1.45; }
-  .work-page .pin-card { width:min(68vw,280px); }
-  .work-page .pin-card .cap { margin-top:12px; }
-  .work-page .pin-card .cap p { font-size:18px; line-height:1.4; }
+  .manifesto-page .pin-card { width:min(68vw,280px); }
+  .manifesto-page .pin-card .cap { margin-top:12px; }
+  .manifesto-page .pin-card .cap p { font-size:18px; line-height:1.4; }
 }
 
 @media (max-width:900px) and (max-height:600px) {

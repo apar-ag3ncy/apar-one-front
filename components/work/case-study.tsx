@@ -18,7 +18,7 @@ import { HoverText } from "@/components/motion/hover-text";
 import type { CaseData } from "@/lib/cases/types";
 
 export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets }) {
-  const root = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLElement>(null);
   const profile = caseMotion(data.slug);
   useCaseMotion(root, profile);
   const nextProfile = caseMotion(data.next.href.split("/").pop() ?? "");
@@ -66,7 +66,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
   ];
 
   return (
-    <div ref={root} className="case-page case-cinematic" data-form={profile.form} data-case={data.slug} data-variant={variant} data-glass="light" data-presentation="white" style={themeVars}>
+    <main ref={root} className="case-page case-cinematic" data-form={profile.form} data-case={data.slug} data-variant={variant} data-glass="light" data-presentation="white" style={themeVars}>
       {/* HERO */}
       <header className="case-hero" data-screen-label={`${data.slug} - Hero`}>
         <div className="case-wrap case-hero-in">
@@ -110,7 +110,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
       {/* OVERVIEW */}
       <section className="case-sec">
         <div className="case-wrap">
-          <Reveal className="case-tag">
+          <Reveal as="h2" className="case-tag">
             <span>01 - The brief</span>
             <i className="ln" />
           </Reveal>
@@ -140,7 +140,7 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
       {/* RESULTS */}
       <section className="case-sec" id="case-results">
         <div className="case-wrap">
-          <Reveal className="case-tag">
+          <Reveal as="h2" className="case-tag">
             <span>03 - {data.resultsLabel ?? "The results"}</span>
             <i className="ln" />
           </Reveal>
@@ -210,6 +210,6 @@ export function CaseStudy({ data, assets }: { data: CaseData; assets: CaseAssets
         color={t.bg}
         ink={t.ink}
       />
-    </div>
+    </main>
   );
 }

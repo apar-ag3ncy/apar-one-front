@@ -3,6 +3,7 @@ import "@/styles/inner-mobile.css";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/reveal";
 import { HoverText } from "@/components/motion/hover-text";
+import { InternalPageHeader } from "@/components/layout/internal-page-header";
 
 export const metadata: Metadata = {
   title: "What we do — APAR AGENTIVE CREACY",
@@ -34,28 +35,22 @@ const PILLARS = [
 export default function WhatWeDoPage() {
   return (
     <main className="services-page">
-      <section className="page-hero" data-screen-label="What we do - Hero">
-        <div className="wrap">
-          <Reveal className="eyebrow">
-            <i className="dot" /> What we do
-          </Reveal>
-          <Reveal as="h1" className="display d-lg service-title" style={{ marginTop: 8 }}>
-            We build brands - and <em>look after them.</em>
-          </Reveal>
-          <Reveal as="p" className="lead service-lead" i={1}>
-            APAR is a branding and digital-marketing studio. We craft the identity, run the
-            marketing, and manage the social handles for a short, hand-picked roster of jewellery
-            houses and premium brands - showing up every day so every touchpoint feels considered.
-          </Reveal>
-        </div>
-      </section>
+      <InternalPageHeader
+        eyebrow="What we do"
+        title={<>We build brands — and <em>look after them.</em></>}
+        label="What we do - Hero"
+      >
+        APAR is a branding and digital-marketing studio. We craft the identity, run the
+        marketing, and manage the social handles for a short, hand-picked roster of jewellery
+        houses and premium brands - showing up every day so every touchpoint feels considered.
+      </InternalPageHeader>
 
       <section className="section-sm" style={{ paddingTop: 0 }} data-screen-label="What we do - Pillars">
         <div className="wrap">
-          <div className="tag-line">
+          <h2 className="tag-line">
             <span>How we help</span>
             <i className="ln" />
-          </div>
+          </h2>
           <div className="service-pillars">
             {PILLARS.map((p, i) => (
               <Reveal
@@ -83,9 +78,9 @@ export default function WhatWeDoPage() {
         </div>
       </section>
 
-      <section className="section" data-screen-label="What we do - Clients">
+      <section className="section service-client-section" data-screen-label="What we do - Clients">
         <div className="wrap">
-          <Reveal as="p" className="display d-md" style={{ maxWidth: "24ch" }}>
+          <Reveal as="p" className="display service-client-statement">
             We&apos;re the team behind <em>Chheda, Girvaan, Achal, Maison Mireyaa, Signi</em> and a
             growing roster of houses across Mumbai and beyond.
           </Reveal>

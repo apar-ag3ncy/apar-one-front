@@ -2,7 +2,7 @@
 
 import { UiIcon } from "@/components/ui/icon";
 import { DESKTOP_MOTION_QUERY } from "@/lib/motion-policy";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -33,7 +33,7 @@ const TILES = Array.from({ length: 81 }, (_, i) => {
     opacity: Math.max(.24, 1 - Math.hypot(col, row) / 8) };
 });
 
-export function Manifesto() {
+export function Manifesto({ children }: { children?: ReactNode }) {
   const root = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -42,14 +42,14 @@ export function Manifesto() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     let alive = true;
-    media.add({ cinematic: "(min-width: 900px) and (min-height: 650px)",
+    media.add({ cinematic: "(min-width: 1100px) and (min-height: 820px)",
       motion: DESKTOP_MOTION_QUERY }, context => {
       if (!context.conditions?.motion) return;
       const track = el.querySelector<HTMLElement>(".manifesto-journey")!;
       const chapters = Array.from(el.querySelectorAll<HTMLElement>(".manifesto-chapter"));
       const tiles = Array.from(el.querySelectorAll<SVGRectElement>(".manifesto-tile"));
       if (!context.conditions?.cinematic) {
-        // Phones keep natural page scrolling and all the copy in normal flow.
+        // Short and narrow desktops keep every chapter in natural page flow.
         chapters.forEach(chapter => gsap.fromTo(chapter, { y: 20 }, {
           y: 0, ease: "none", scrollTrigger: { trigger: chapter, start: "top 92%", end: "top 55%", scrub: .3 },
         }));
@@ -130,6 +130,8 @@ export function Manifesto() {
         <div className="manifesto-journey-bottom"><div className="manifesto-steps">{BELIEFS.map((belief, i) => <span className="manifesto-step" key={belief.word}>0{i + 1} <span>{belief.word}</span></span>)}</div><div className="manifesto-meter" aria-hidden="true"><i className="manifesto-meter-fill" /></div></div>
       </div>
     </section>
+
+    {children}
 
     <ManifestoSculpture />
 

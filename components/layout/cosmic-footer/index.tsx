@@ -50,9 +50,10 @@ function CosmicCanvas({ kind }: { kind:"galaxy"|"character" }) {
 }
 
 export function GalaxyFooterArt(){
-  const isHome = usePathname() === "/";
+  const pathname = usePathname();
+  const followsJourney = pathname === "/" || pathname === "/work";
   return <div id="apar-galaxy" tabIndex={-1} className="galaxy-art" aria-label="APĀR in a galaxy of orange-red stars">
-    {!isHome && <div className="galaxy-eyebrow"><span>Made of ideas. Built by people.</span></div>}
+    {!followsJourney && <div className="galaxy-eyebrow"><span>Made of ideas. Built by people.</span></div>}
     <div className="galaxy-fallback" aria-hidden="true"><Image unoptimized src="/assets/apar-logo-cream.svg" alt="" width={519} height={288} loading="lazy"/></div>
     <CosmicCanvas kind="galaxy" />
     <Link className="galaxy-people-link" href="/team"><HoverText>Meet the people behind APĀR</HoverText></Link>

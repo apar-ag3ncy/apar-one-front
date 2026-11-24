@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Manifesto } from "@/components/manifesto/manifesto";
+import { PinnedGallery } from "@/components/work/pinned-gallery";
+import { FEATURED_CLIENTS } from "@/lib/cases";
 import "./manifesto.css";
 import "@/styles/inner-mobile.css";
 
@@ -9,5 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function ManifestoPage() {
-  return <Manifesto />;
+  return (
+    <Manifesto>
+      <div id="showreel"><PinnedGallery clients={FEATURED_CLIENTS} /></div>
+    </Manifesto>
+  );
 }

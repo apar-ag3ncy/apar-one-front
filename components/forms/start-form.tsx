@@ -108,7 +108,7 @@ export function StartForm() {
   };
 
   return (
-    <section className="start" data-screen-label="Start a project">
+    <main className="start" data-screen-label="Start a project">
       <div className="start-glow" aria-hidden />
 
       <header className="start-top">
@@ -152,7 +152,7 @@ export function StartForm() {
             <Link className="btn cream" href="/work">
               <HoverText>See our work</HoverText>
             </Link>
-            <Link className="btn-ghost light" href="/">
+            <Link className="btn-ghost" href="/">
               <HoverText>Back to home</HoverText>
             </Link>
           </div>
@@ -160,41 +160,15 @@ export function StartForm() {
         </div>
       ) : (
         <form className="start-form" onSubmit={onSubmit}>
+          <div className="start-head">
+            <h1 className="start-h1">Tell us about <em>your brand.</em></h1>
+            <p className="start-lead">
+              We take good brands and lift them to top-notch. A few details and one gut-check on
+              direction - that&apos;s all we need to start.
+            </p>
+          </div>
           <div className="start-grid">
-            <div className="start-aesthetic">
-              <span className="fld-l">03 — Aesthetic direction</span>
-              <p className="start-aesthetic-hint">
-                Which direction should your brand own? Spin through — each one signals something
-                different.
-              </p>
-              <AestheticDial options={AESTHETICS} value={aesthetic} onChange={setAesthetic} />
-              <div className="aesthetic-guide" key={AESTHETICS[aesthetic].key}>
-                <div className="ag-row">
-                  <span className="ag-k">Best for</span>
-                  <span className="ag-v">{AESTHETICS[aesthetic].bestFor}</span>
-                </div>
-                <div className="ag-traits" aria-label="What it signals">
-                  {AESTHETICS[aesthetic].traits?.map((t) => (
-                    <span className="ag-tag" key={t}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="start-left">
-              <div className="start-head">
-                <h1 className="start-h1">
-                  Tell us about <em>your brand.</em>
-                </h1>
-                <p className="start-lead">
-                  We take good brands and lift them to top-notch. A few details and one gut-check on
-                  direction - that&apos;s all we need to start.
-                </p>
-              </div>
-
-              <div className="start-fields">
+            <div className="start-fields">
               <label className="fld">
                 <span className="fld-l">01 — Brand name</span>
                 <input
@@ -245,20 +219,36 @@ export function StartForm() {
                 </label>
               </div>
 
-                {error && (
-                  <p className="start-error" role="alert">
-                    {error}
-                  </p>
-                )}
-                <button className="start-submit" type="submit" disabled={busy} aria-busy={busy}>
-                  <HoverText>{busy ? "Sending…" : BRIEF_ENDPOINT ? "Send the brief" : "Prepare email brief"}</HoverText>
-                </button>
-                <p className="start-delivery-note">{BRIEF_ENDPOINT ? "Your brief goes directly to our studio." : "We’ll prepare an email draft. You review it and send it from your own email app."}</p>
+            </div>
+            <div className="start-aesthetic">
+              <span className="fld-l">03 — Aesthetic direction</span>
+              <p className="start-aesthetic-hint">
+                Which direction should your brand own? Spin through — each one signals something
+                different.
+              </p>
+              <AestheticDial options={AESTHETICS} value={aesthetic} onChange={setAesthetic} />
+              <div className="aesthetic-guide" key={AESTHETICS[aesthetic].key}>
+                <div className="ag-row">
+                  <span className="ag-k">Best for</span>
+                  <span className="ag-v">{AESTHETICS[aesthetic].bestFor}</span>
+                </div>
+                <div className="ag-traits" aria-label="What it signals">
+                  {AESTHETICS[aesthetic].traits?.map((t) => (
+                    <span className="ag-tag" key={t}>{t}</span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+          <div className="start-actions">
+            {error && <p className="start-error" role="alert">{error}</p>}
+            <button className="start-submit" type="submit" disabled={busy} aria-busy={busy}>
+              <HoverText>{busy ? "Sending…" : BRIEF_ENDPOINT ? "Send the brief" : "Prepare email brief"}</HoverText>
+            </button>
+            <p className="start-delivery-note">{BRIEF_ENDPOINT ? "Your brief goes directly to our studio." : "We’ll prepare an email draft. You review it and send it from your own email app."}</p>
+          </div>
         </form>
       )}
-    </section>
+    </main>
   );
 }
