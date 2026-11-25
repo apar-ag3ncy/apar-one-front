@@ -1,6 +1,6 @@
 .journeyTrack {
   display:grid; position:relative;
-  color:var(--cream); background:#0b0706; isolation:isolate;
+  color:#edf2f7; background:#080d16; isolation:isolate;
 }
 .markers,.screen {grid-area:1 / 1; min-width:0}
 .markers {pointer-events:none}
@@ -8,7 +8,7 @@
 .markers i:last-child,.screen {height:var(--journey-height)}
 .screen {
   --edge:clamp(18px,4vw,66px);
-  --accent:#ff9960;
+  --accent:#ff785b;
   --caption-inset:clamp(var(--edge),8vw,144px);
   display:grid; grid-template: auto minmax(0,1fr) auto / minmax(0,1fr);
   box-sizing:border-box; padding-block:14px max(14px,env(safe-area-inset-bottom));
@@ -20,40 +20,27 @@
 .screen button {border:0; padding:0; background:none; cursor:pointer}
 .screen :is(a,button):focus-visible {outline:2px solid var(--accent); outline-offset:3px}
 .sr {position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
-.set,.glass {position:absolute; inset:0; pointer-events:none}
+.set {position:absolute; inset:0; pointer-events:none}
 .set {
-  z-index:-2; background-color:#0c0807;
-  background-image:radial-gradient(ellipse 68% 112% at 50% 132%,#0b0807 95%,#573021 97%,transparent 99%),
-    radial-gradient(1px 1px at 18px 16px,#ffae71 70%,transparent),radial-gradient(1px 1px at 8px 40px,#f4ede2 70%,transparent);
+  z-index:-2; background-color:#080d16;
+  background-image:radial-gradient(ellipse 68% 112% at 50% 132%,#080d16 95%,#35495b 97%,transparent 99%),
+    radial-gradient(1px 1px at 18px 16px,#b9cadb 70%,transparent),radial-gradient(1px 1px at 8px 40px,#f4ede2 70%,transparent);
   background-size:100% 100%,63px 53px,99px 79px;
 }
-.screen[data-stage="1"] .set {background:radial-gradient(circle at 50% 56%,#4a2418 0 22%,#efba85 22.5%,transparent 23%),radial-gradient(ellipse at 50% 32%,#9c5330,#0e0907 55%)}
-.screen[data-stage="2"] .set {background:radial-gradient(ellipse,#4d2415,#0e0806 73%)}
-.screen[data-stage="3"] .set {background:linear-gradient(160deg,transparent 59%,#401e15 60%,#733b24),linear-gradient(#48231e,#ce996e 64%,#66452f 65%)}
-.screen[data-stage="4"] .set {background:repeating-conic-gradient(at 50% 50%,#1b0905 0 4deg,#b54b23 6deg,#ffae67 7deg,#592715 11deg)}
-.screen[data-stage="5"] .set {background:linear-gradient(90deg,#edddc7 50%,#100a08 50%)}
-.screen[data-stage="6"] .set {background:radial-gradient(circle at 0% 40%,#a45a33,transparent 38%),radial-gradient(circle at 128% 4%,#e5bb87 0 33%,transparent 33.3%),#0d0806}
-.glass {z-index:1; opacity:.18; background:repeating-linear-gradient(0deg,transparent 0 2px,#1a0d0944 2px 3px)}
+.screen[data-stage="1"] .set {background:radial-gradient(circle at 50% 56%,#182538 0 22%,#c5d7e5 22.5%,transparent 23%),radial-gradient(ellipse at 50% 32%,#495f76,#080d16 55%)}
+.screen[data-stage="2"] .set {background:radial-gradient(ellipse,#182a40,#080d16 73%)}
+.screen[data-stage="3"] .set {background:linear-gradient(160deg,transparent 59%,#8b9eaf 60%,#394f66),linear-gradient(#101d30,#40556c 64%,#8a9caa 65%)}
+.screen[data-stage="4"] .set {background:repeating-conic-gradient(at 50% 50%,#101824 0 4deg,#713b35 6deg,#bbc9d8 7deg,#283d52 11deg)}
+.screen[data-stage="5"] .set {background:radial-gradient(1px 1px at 16px 18px,#748a9e 70%,transparent) 0 0 / 40px 30px,#0b1422}
+.screen[data-stage="6"] .set {background:radial-gradient(circle at 0% 40%,#425d78,transparent 38%),radial-gradient(circle at 128% 4%,#becdd9 0 33%,transparent 33.3%),#080d16}
 .header,.footer {position:relative; z-index:3; margin-inline:var(--edge); display:flex; align-items:center; justify-content:space-between; gap:12px}
 .header {grid-area:1 / 1; flex-wrap:wrap; row-gap:2px}
-.tools,.language,.footer>div {display:flex; align-items:center}
-.tools {margin-left:auto; gap:clamp(10px,1.6vw,25px)}
-.language {gap:2px}
-.language button,.sound {min-width:32px; min-height:44px}
-.language button {opacity:.68}
-.language button[aria-pressed=true] {opacity:1; text-decoration:underline; text-underline-offset:5px}
-.sound {display:flex; justify-content:center; align-items:center; gap:3px}
-.sound i {display:block; width:2px; height:7px; background:currentColor}
-.sound i:nth-child(even) {height:14px; animation-delay:-.35s}
-.sound i:nth-child(3) {height:19px; animation-delay:-.56s}
-.sound[aria-pressed=true] i {animation:pulse .7s ease-in-out alternate infinite}
-@keyframes pulse {to{transform:scaleY(.35)}}
 .screen .control {
   display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:8px 22px;
-  border:1px solid #f4ede256; border-radius:12px; background:#20130ec9; color:var(--cream);
+  border:1px solid #f4ede256; border-radius:12px; background:#121e2ccb; color:#edf2f7;
   font-weight:500; letter-spacing:.02em; text-transform:none;
 }
-.screen .control:hover {border-color:var(--accent); background:#55291c}
+.screen .control:hover {border-color:var(--accent); background:#283747}
 .map {width:clamp(210px,22vw,310px); line-height:1}
 .stops {position:relative; display:grid; grid-template-columns:repeat(var(--stops),minmax(0,1fr)); height:44px}
 .stops svg {position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
@@ -67,9 +54,9 @@
 .mapLabel {display:block; margin-inline-start:calc(50% / var(--stops)); font-size:14px}
 .opening,.log {position:relative; grid-area:2 / 1; align-self:center; z-index:2; min-width:0}
 .opening {margin-inline:var(--edge); text-align:center}
-.opening h2 {margin:0; font-size:clamp(40px,5.6vw,96px); color:var(--cream)}
-.opening p {margin:clamp(14px,3vh,38px) 0; font-size:clamp(21px,2.2vw,34px); color:var(--cream-2)}
-.log {justify-self:start; margin-inline:var(--caption-inset); width:min(40%,560px); outline:none; text-shadow:0 2px 15px #140904}
+.opening h2 {margin:0; font-size:clamp(40px,5.6vw,96px); color:#edf2f7}
+.opening p {margin:clamp(14px,3vh,38px) 0; font-size:clamp(21px,2.2vw,34px); color:#c3cdd8}
+.log {justify-self:start; margin-inline:var(--caption-inset); width:min(40%,560px); outline:none; text-shadow:0 2px 16px #050b16}
 .log .tag {margin:0 0 .8em; color:var(--accent); font-size:clamp(15px,1.25vw,20px)}
 .tag span {margin-inline-start:.35em; font-variant-numeric:tabular-nums}
 .log .headline {margin:0; font-size:clamp(36px,3.6vw,64px); line-height:1.04; text-wrap:balance}
@@ -89,9 +76,7 @@
 .screen[data-stage="3"] .log {--drift-x:-16px; --drift-y:2px}
 .screen[data-stage="4"] .log {justify-self:center; width:min(62%,640px); text-align:center}
 .screen[data-stage="4"] .detail {margin-inline:auto}
-.screen[data-stage="5"] .log {width:min(34%,490px); color:var(--ink); text-shadow:none}
-.screen[data-stage="5"] :is(.tag,.map) {color:#6e311c}
-.screen[data-stage="5"] .map {--accent:#8e421e}
+.screen[data-stage="5"] .log {width:min(34%,490px)}
 .screen[data-stage="6"] .log {--drift-x:12px; --drift-y:3px; justify-self:center; width:min(48%,590px)}
 .log>.control {margin-top:1em}
 .reel {position:absolute; inset:0 0 0 50%; overflow:hidden; opacity:var(--reel-opacity,0); mask-image:linear-gradient(transparent,#000 18% 82%,transparent)}
@@ -101,19 +86,16 @@
 .track img {width:clamp(95px,14vw,235px); max-width:46%; height:73%; object-fit:contain; filter:brightness(0) invert(.91)}
 @keyframes credits {to{transform:translateY(-50%)}}
 .footer {grid-area:-2 / 1; min-height:44px; font-size:16px; letter-spacing:.02em; text-transform:none}
-.footer>div {gap:16px}
-.footer a,.footer>div button {text-decoration:underline; text-underline-offset:4px}
 .screen .cue {position:absolute; left:50%; bottom:0; transform:translateX(-50%); width:44px; height:44px; display:grid; place-items:center}
 .mouse {display:block; width:14px; height:23px; border:1px solid; border-radius:8px}
 .mouse i {display:block; width:2px; height:5px; margin:4px auto; background:var(--accent); animation:drop 1.5s ease-in-out infinite}
 @keyframes drop {55%{opacity:.25; transform:translateY(5px)}}
 .dialog {position:fixed; inset:0; margin:auto; border:1px solid #ffae6755; border-radius:12px; width:min(88vw,410px); padding:26px; text-align:center; color:var(--cream); background:var(--ink); font-family:var(--ui-font)}
-.dialog::backdrop {background:#100906bc}
+.dialog::backdrop {background:#080e19bc}
 .dialog h2 {font-size:26px; margin:0 0 14px}
 .dialog a {font-size:24px}
 .dialog form {margin-top:22px}
 @media(max-width:740px) {
-  .tools {gap:8px}.language button,.sound {min-width:26px}
   .screen {--caption-inset:var(--edge); padding-top:6px}
   .screen .control {padding-inline:12px}
   .map {width:clamp(168px,43vw,240px)}.mapLabel {font-size:13px}
@@ -121,18 +103,14 @@
   .log,.screen[data-stage="4"] .log,.screen[data-stage="6"] .log {width:auto; max-width:32rem}
   .log .headline {font-size:clamp(32px,7.5vw,48px)}
   .log .detail {font-size:clamp(22px,5vw,28px)}
-  .footer {font-size:14px}.footer>div {gap:9px}
 }
 .screen[data-stage="5"][data-portrait] {grid-template-rows:auto minmax(0,1fr) 39% auto}
-.screen[data-stage="5"][data-portrait] .set {background:linear-gradient(#edddc7 57%,#100a08 57%)}
+.screen[data-stage="5"][data-portrait] .set {background:linear-gradient(#132033 57%,#080d16 57%)}
 .screen[data-stage="5"][data-portrait] .log {width:auto; max-width:32rem}
-.screen[data-stage="5"][data-portrait] .header {color:var(--ink)}
 .screen[data-portrait] .reel {inset:58% 0 8%}
 .screen[data-portrait] .track li {height:clamp(52px,9svh,88px)}
 @media(max-width:400px) and (max-height:710px) {
   .header {column-gap:4px}
-  .tools {gap:4px}
-  .screen .tools .control {padding-inline:6px}
   .screen[data-stage="5"] .log .headline {font-size:30px}
   .screen[data-stage="5"] .log .detail {font-size:19px; line-height:1.3; margin-top:.4em}
 }

@@ -1,27 +1,24 @@
 "use client";
 
-import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
-import { clients, copy, type Language } from '@/components/journey/copy';
+import { useEffect, useRef } from 'react';
+import { clients, copy } from '@/components/journey/copy';
 import { FooterContacts } from '@/components/layout/footer-contacts';
 import { useFlight } from '@/components/journey/use-flight';
 import { JourneyTimeline } from './journey-timeline';
-import { useAmbience } from '@/components/journey/ambience';
 import css from '@/styles/journey.module.css';
 
 const Film = dynamic(() => import('@/components/journey/film'), { ssr: false });
 const format = (n: number) => String(n).padStart(2, '0');
 
-export function JourneySection({ selectedWorkHref = '/work' }: { selectedWorkHref?: string }) {
+export function JourneySection() {
   const viewport = useRef<HTMLDivElement>(null);
-  const [language, setLanguage] = useState<Language>('en');
+  const language = 'en';
   const dialog = useRef<HTMLDialogElement>(null);
   const screen = useRef<HTMLDivElement>(null);
   const chapterFocus = useRef<HTMLDivElement>(null);
   const source = copy[language], limit = source.names.length - 1;
   const { chapter: stage, atEnd, position, visible, go, step } = useFlight(viewport, screen, limit);
-  const { enabled, toggle } = useAmbience(stage, visible);
   const [headline, description] = source.lines[stage];
 
   useEffect(() => {
@@ -51,18 +48,8 @@ export function JourneySection({ selectedWorkHref = '/work' }: { selectedWorkHre
       <div className={css.markers} aria-hidden="true">{copy.en.names.map(name => <i key={name}/>)}</div>
       <div ref={screen} className={css.screen} data-stage={stage}>
         <div aria-hidden="true" className={css.set}><Film position={position} target={stage} active={visible}/></div>
-        <div className={css.glass} aria-hidden="true"/>
         <div className={css.header}>
           <JourneyTimeline names={source.names} label={source.chapters} chapter={stage} go={go}/>
-          <div className={css.tools}>
-            <button className={css.sound} aria-label={source.sound} aria-pressed={enabled} onClick={toggle}>
-              {[0,1,2,3,4].map(i=><i key={i}/>)}</button>
-            <div className={css.language} aria-label="Language">
-              <button aria-label="English" aria-pressed={language==='en'} onClick={()=>setLanguage('en')}>EN</button>
-              <button lang="hi" aria-label="हिन्दी" aria-pressed={language==='hi'} onClick={()=>setLanguage('hi')}>हि</button>
-            </div>
-            <button className={css.control} onClick={contact}>{source.contact}</button>
-          </div>
         </div>
         {stage===0 ? <div className={css.opening}>
           <h2 className={css.headline}>{source.title}</h2><p className={css.detail}>{source.by}<br/>{source.studio}</p>
@@ -84,11 +71,9 @@ export function JourneySection({ selectedWorkHref = '/work' }: { selectedWorkHre
         </>}
         <p className={css.sr} role="status">{format(stage)} · {source.names[stage]}</p>
         <div className={css.footer}>
-          <span>{source.city}</span>
           {atEnd
             ? <a className={css.cue} href="#apar-galaxy" aria-label={source.galaxy}><span className={css.mouse}><i/></span></a>
             : <button className={css.cue} onClick={()=>step(1)} aria-label={source.next}><span className={css.mouse}><i/></span></button>}
-          <div><button onClick={contact}>{source.email}</button><Link href={selectedWorkHref} prefetch={false}>{source.work}</Link></div>
         </div>
         <dialog data-lenis-prevent ref={dialog} className={css.dialog} aria-labelledby="flight-contact" onClick={e=>{if(e.target===dialog.current) dialog.current.close();}}>
           <section><h2 id="flight-contact">{source.send}</h2><FooterContacts icons={false}/>

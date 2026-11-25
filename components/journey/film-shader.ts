@@ -12,10 +12,11 @@ precision highp float;
 varying vec2 screenUV;
 uniform float aspect, pixelHeight, clockTime, journey;
 uniform vec2 pointer;
-// Match the ember and apricot used by the closing particle galaxy.
+// Keep APAR's ember as the accent; moonlight carries the surrounding space.
 const vec3 ember = vec3(1.,.23,.075);
-const vec3 apricot = vec3(1.,.65,.38);
-const vec3 cream = vec3(.957,.929,.886);
+const vec3 apricot = vec3(.96,.66,.50);
+const vec3 cream = vec3(.92,.95,.98);
+const vec3 ice = vec3(.57,.72,.88);
 
 float hash(vec2 p) {
   vec3 q = fract(vec3(p.xyx) * vec3(.1031,.1030,.0973));
@@ -38,11 +39,12 @@ vec3 dust(vec2 p, float freq, float seed) {
   float pick = hash(cell+seed);
   vec2 pos = vec2(hash(cell+7.),hash(cell+31.))*.84+.08;
   vec2 d = fract(grid)-pos;
-  float footprint = clamp(freq*1.03/pixelHeight,.042,.26);
+  float footprint = clamp(freq*1.15/pixelHeight,.032,.22);
   float radius = footprint*(.75 + 1.4*pow(pick,9.));
   float light = exp(-dot(d,d)/(radius*radius)) * smoothstep(.69,.995,pick);
-  vec3 tint = mix(mix(ember,apricot,pick), cream, hash(cell+11.));
-  return light*tint*(.72+.28*sin(seed+pick*130.+clockTime*.55));
+  vec3 tint = mix(ice,cream,pick);
+  tint = mix(tint,ember,smoothstep(.88,.99,hash(cell+11.))*.8);
+  return light*tint*(.88+.12*sin(seed+pick*130.+clockTime*.4));
 }
 vec3 sky(vec2 p) {
   p += .0018*vec2(clockTime, -clockTime*.24);
@@ -53,24 +55,24 @@ vec3 sphere(vec3 bg, vec2 p, vec2 center, float radius, float kind) {
   float r = length(s);
   float aa = 2./(pixelHeight*radius);
   float top = clamp(s.y*.5+.5,0.,1.);
-  bg += apricot*.55*exp(-max(0.,r-1.)*125.)*top*(kind<.5?.07:.55);
+  bg += mix(ice,apricot,.28)*.55*exp(-max(0.,r-1.)*125.)*top*(kind<.5?.07:.55);
   if (r >= 1.+aa) return bg;
   float z = sqrt(max(0., 1.-r*r));
   vec3 n = vec3(s,z);
   float edge = exp(-z*12.);
   vec3 col;
   if(kind<.5) {
-    col = vec3(.006,.003,.002) + apricot*.18*top*top*exp(-z*9.);
+    col = vec3(.006,.009,.016) + ice*.16*top*top*exp(-z*9.);
   } else if(kind<1.5) {
     float land = clouds(n.xy*4.+n.z*2.+.015*clockTime);
-    col = vec3(.043,.017,.009) + apricot*.18*land*(.32+top*.68)
-      + vec3(.93,.62,.39)*pow(top,3.)*(exp(-z*5.)+.018);
+    col = vec3(.021,.032,.051) + ice*.16*land*(.32+top*.68)
+      + mix(ice,apricot,.3)*pow(top,3.)*(exp(-z*5.)+.018);
   } else {
     float land = clouds(n.xy*5.+n.z*2.+.01*clockTime);
     float bands = clouds(n.xy*13.+land*4.);
-    col = mix(vec3(.39,.16,.075),cream,smoothstep(.32,.71,land+.18*bands));
+    col = mix(vec3(.13,.21,.30),cream,smoothstep(.32,.71,land+.18*bands));
     col *= .54+.5*max(0.,dot(n,normalize(vec3(-.8,.7,.3))));
-    col += edge*apricot*.53;
+    col += edge*mix(ice,ember,.14)*.38;
   }
   return mix(bg,col,1.-smoothstep(1.-aa,1.+aa,r));
 }
@@ -82,7 +84,7 @@ vec3 orbit(vec2 p, float flight) {
   vec3 col = sky(q*(1.-.25*k));
   vec2 sun = q-vec2(0.,.42);
   float flare = length(sun);
-  col += k*(vec3(.85,.51,.26)*exp(-flare*6.)+vec3(1.,.97,.84)*exp(-flare*16.)
+  col += k*(mix(ice,ember,.18)*exp(-flare*6.)+cream*exp(-flare*16.)
              + vec3(1.)*(1.-smoothstep(.074,.105,flare)));
   if(flight>0.) col = sphere(col,q,vec2(0.,mix(-1.24,-.14,k)),.56,1.);
   return sphere(col,q,vec2(0.,horizon-radius),radius,0.);
@@ -96,11 +98,11 @@ vec3 portalSpace(vec2 p) {
   float arm = .5+.5*cos(3.*angle-radius*6.7+1.8*dustCloud-clockTime*.061);
   float dustLane = pow(arm,3.)*exp(-radius*1.9)*dustCloud;
   float core = exp(-radius*12.);
-  return vec3(.009,.005,.006) + ember*dustLane*.48 + apricot*core*.40
+  return vec3(.007,.012,.023) + ember*dustLane*.38 + cream*core*.32
     + sky(p*.86)*(1.+2.6*dustLane);
 }
 vec3 practice(vec2 p) {
-  vec3 dark = vec3(.012,.005,.003)+vec3(.145,.056,.022)*exp(-dot(p,p)*2.);
+  vec3 dark = vec3(.008,.013,.025)+vec3(.035,.060,.085)*exp(-dot(p,p)*2.);
   vec2 orbitUV=p-vec2(.24*aspect,-.06);
   float radius=length(vec2(orbitUV.x+orbitUV.y*.5,orbitUV.y*2.8));
   float ring=exp(-22.*abs(radius-.67-.018*sin(clockTime*.4)));
@@ -113,7 +115,7 @@ vec3 eclipseFlight(vec2 p,float advance) {
   float r=.56*zoom;
   vec3 col=sky(q/(1.+.16*advance)*.75);
   float flare=length(q-center-vec2(0.,r));
-  col+=vec3(.85,.52,.32)*exp(-flare*5.) + vec3(1.,.97,.84)*(1.-smoothstep(.076,.107,flare));
+  col+=mix(ice,ember,.18)*exp(-flare*5.) + cream*(1.-smoothstep(.076,.107,flare));
   vec3 disk=sphere(col,q,center,r,1.);
   float inside=1.-smoothstep(.993,1.,length(q-center)/r);
   disk=mix(disk,practice(p),inside*smoothstep(.05,.64,advance));
@@ -122,7 +124,12 @@ vec3 eclipseFlight(vec2 p,float advance) {
   return sphere(disk,q,vec2(0.,horizon-radius),radius,0.);
 }
 
-vec3 desertAir(vec2 p,float arrival,float approach) {
+float snowCrest(float x,float k,float layer,float horizon) {
+  return horizon+.034*sin(x*3.8+layer*2.)
+    +.038*noise(vec2(x*3.,layer*4.))-.29*k
+    +k*k*.42*exp(-pow((x+1.64)*.94,2.));
+}
+vec3 snowAir(vec2 p,float arrival,float approach) {
   // The foreground ridge drifts across the camera faster than the horizon.
   float retreat=1.-arrival;
   float x=p.x+(.34*approach+.46*retreat)+pointer.x*.025;
@@ -131,28 +138,52 @@ vec3 desertAir(vec2 p,float arrival,float approach) {
   vec2 skyUV=vec2(x/(.56+max(h,0.)),1./(.32+max(h,0.)));
   float vapor=clouds(skyUV*vec2(.86,1.8)+vec2(clockTime*.014,3.));
   float canopy=clouds(vec2(x*.89,p.y*1.55)+vec2(3.2,clockTime*.007));
-  vec3 twilight=mix(vec3(.64,.45,.34),vec3(.35,.17,.12),smoothstep(.02,1.15,h));
-  twilight+=vec3(.20,.12,.11)*canopy;
+  vec3 twilight=mix(vec3(.21,.29,.38),vec3(.025,.044,.078),smoothstep(.02,1.15,h));
+  twilight+=vec3(.055,.070,.090)*canopy;
   float shadow=smoothstep(.46,.71,vapor+canopy*.13);
-  vec3 col=mix(twilight,vec3(.16,.067,.039),shadow*.80*smoothstep(-.03,.28,h));
-  col+=vec3(.032,.012,.002)*(noise(skyUV*12.)-.5);
+  vec3 col=mix(twilight,vec3(.028,.048,.080),shadow*.60*smoothstep(-.03,.28,h));
+  col+=vec3(.009,.012,.017)*(noise(skyUV*12.)-.5);
+  col+=sky(p)*.18*smoothstep(.18,.75,h)*(1.-shadow);
   for(int i=0;i<6;i++) {
     float k=float(i)/5.;
     float worldX=x*(.85+.30*k)+(.10*approach+.52*retreat)*k;
-    float crest=horizon+.034*sin(worldX*3.8+float(i)*2.)
-      +.038*noise(vec2(worldX*3.,float(i)*4.))-.29*k;
-    // A closer windward dune rises into frame on the left at the landing.
-    crest+=k*k*.42*exp(-pow((worldX+1.64)*.94,2.));
+    // Preserve the original wind-shaped ridges and camera parallax exactly.
+    float crest=snowCrest(worldX,k,float(i),horizon);
     float below=crest-p.y;
-    if(below<=-.003) continue;
-    vec3 distant=mix(vec3(.51,.36,.30),vec3(.155,.078,.070),k);
-    float sand=clouds(vec2(worldX*3.3,below*11.)+float(i)*3.);
-    vec3 ground=distant-vec3(.09,.067,.046)*smoothstep(.005,.36,below)+(sand-.5)*(.025+.045*k);
-    col=mix(col,ground,smoothstep(-.003,.003,below));
+    float slope=(snowCrest(worldX+.01,k,float(i),horizon)-snowCrest(worldX-.01,k,float(i),horizon))/.02;
+    float aa=(1.+abs(slope))/pixelHeight;
+    if(below<=-aa) continue;
+    // Broad moonlit faces and blue hollows read as packed snow, without grit.
+    float fold=clouds(vec2(worldX*2.,below*5.)+float(i)*3.);
+    vec3 normal=normalize(vec3(-slope*.8,.65,.7+below*.6));
+    float light=clamp(dot(normal,normalize(vec3(-.5,.8,.6))),0.,1.);
+    vec3 ground=mix(vec3(.31,.42,.56),vec3(.79,.86,.93),light*.76);
+    ground*=1.-.28*smoothstep(.025,.48,below);
+    ground+=(fold-.5)*.018;
+    ground+=vec3(.08,.09,.10)*exp(-below*below*90.)*light;
+    ground=mix(vec3(.31,.40,.51),ground,.68+.32*k);
+    col=mix(col,ground,smoothstep(-aa,aa,below));
   }
   return col;
 }
-vec3 desertShot(vec2 p,float arrival,float approach) {
+float cross2(vec2 a,vec2 b) { return a.x*b.y-a.y*b.x; }
+vec2 faceCoverage(vec2 p,vec2 a,vec2 b,vec2 c,vec2 d) {
+  // Screen-space half planes stay finite even when a viewing ray is parallel
+  // to the box. A one-pixel edge cannot leak across the rest of the image.
+  float winding=sign(cross2(b-a,c-a));
+  float edge=min(min(cross2(b-a,p-a)*winding/max(length(b-a),.00001),
+                     cross2(c-b,p-b)*winding/max(length(c-b),.00001)),
+                 min(cross2(d-c,p-c)*winding/max(length(d-c),.00001),
+                     cross2(a-d,p-d)*winding/max(length(a-d),.00001)));
+  float aa=1.25/pixelHeight;
+  float width=abs(cross2(b-a,d-a))/max(length(d-a),.00001);
+  return vec2(smoothstep(-aa,aa,edge)*smoothstep(0.,aa,width),edge);
+}
+vec2 projectDoor(vec3 corner,vec3 eye,mat3 view,float lens,vec2 framing) {
+  vec3 relative=(corner-eye)*view;
+  return relative.xy*(lens/max(relative.z,.01))+framing;
+}
+vec3 snowShot(vec2 p,float arrival,float approach) {
   float align=smoothstep(.075,.42,approach);
   float distanceToFace=mix(24.,3.93,arrival);
   // A tall viewport reaches the sides of the doorway sooner. Ease its dolly
@@ -169,23 +200,39 @@ vec3 desertShot(vec2 p,float arrival,float approach) {
   float landingX=narrow ? aspect*.45 : aspect*.404;
   vec2 framing=vec2(landingX*mix(.16,1.,arrival),mix(-.20,narrow?-.32:.014,arrival))*(1.-align);
   float lens=1.80*(1.+smoothstep(.68,.90,approach)*max(.24,aspect-.95));
-  vec3 ray=normalize(forward*lens+right*(p.x-framing.x)+up*(p.y-framing.y));
-  vec3 halfExtent=vec3(.445,1.,.134);
-  vec3 inverse=1./(ray+vec3(.0000001));
-  vec3 first=(-halfExtent-eye)*inverse, last=(halfExtent-eye)*inverse;
-  vec3 near=min(first,last), far=max(first,last);
-  float entry=max(max(near.x,near.y),near.z),exitD=min(min(far.x,far.y),far.z);
-  if(exitD>=max(0.,entry)) {
-    vec3 spot=eye+ray*entry;
-    if(near.z>=max(near.x,near.y)) {
-      vec2 windowUV=p*(.90+.04*approach)+vec2((1.-align)*.43,.05)*(1.-approach);
-      vec3 stars=portalSpace(windowUV);
-      float clear=smoothstep(.60,.98,arrival);
-      return mix(vec3(.040,.028,.018),stars,clear)*(.79+.21*approach);
-    }
-    return vec3(.057,.042,.045)+.018*noise(spot.xy*84.);
+  mat3 view=mat3(right,up,forward);
+  vec2 a=projectDoor(vec3(-.445,-1.,.134),eye,view,lens,framing);
+  vec2 b=projectDoor(vec3(.445,-1.,.134),eye,view,lens,framing);
+  vec2 c=projectDoor(vec3(.445,1.,.134),eye,view,lens,framing);
+  vec2 d=projectDoor(vec3(-.445,1.,.134),eye,view,lens,framing);
+  vec2 frontMask=faceCoverage(p,a,b,c,d);
+  float front=frontMask.x;
+  float side=0.;
+  if(eye.x>.445) {
+    vec2 e=projectDoor(vec3(.445,-1.,-.134),eye,view,lens,framing);
+    vec2 f=projectDoor(vec3(.445,1.,-.134),eye,view,lens,framing);
+    side=faceCoverage(p,b,e,f,c).x;
   }
-  return desertAir(p,arrival,approach);
+  float coverage=front+side;
+  vec3 background=vec3(0.);
+  if(coverage<.999) {
+    background=snowAir(p,arrival,approach);
+    // A restrained contact shadow seats the doorway in the snow. Its position
+    // and scale follow the same projected corners as the doorway itself.
+    vec2 foot=(a+b)*.5;
+    float span=length(b-a);
+    vec2 shadowUV=(p-foot)/vec2(max(.012,span*.85),max(.006,span*.14));
+    float contact=exp(-dot(shadowUV,shadowUV)*2.)*(1.-smoothstep(foot.y-.01,foot.y+.015,p.y));
+    background*=1.-contact*.24*smoothstep(.2,.8,arrival);
+  }
+  if(coverage<=0.) return background;
+  vec2 windowUV=p*(.90+.04*approach)+vec2((1.-align)*.43,.05)*(1.-approach);
+  vec3 frontColor=mix(vec3(.009,.014,.022),portalSpace(windowUV),smoothstep(.60,.98,arrival))*(.79+.21*approach);
+  float bevel=1.-smoothstep(1.25/pixelHeight,4./pixelHeight,frontMask.y);
+  frontColor+=ice*.055*bevel*(1.-smoothstep(.55,.85,approach));
+  vec3 surface=(frontColor*front+vec3(.026,.036,.052)*side)/coverage;
+  // Sum touching faces before blending so the shared edge has no pale seam.
+  return coverage>.999 ? surface : mix(background,surface,coverage);
 }
 vec3 gate(vec2 p) {
   vec2 q = p + pointer*.022;
@@ -204,7 +251,7 @@ vec3 gate(vec2 p) {
   float tint = noise(vec2(row*.058,depth*.40-clockTime*.19));
   vec3 copper = mix(ember*.48,ember,tint);
   vec3 amber = mix(ember,apricot,smoothstep(.24,.71,tint));
-  vec3 pigment = q.x<0. ? copper : amber;
+  vec3 pigment = mix(q.x<0. ? copper : amber,ice,.32);
   float trail = (.16+1.55*ribbon)*(.18+core)*(.24+.76*seed);
   float flare = exp(-x*16.)*(.4+.6*mist);
   return sky(q)*.25 + pigment*(trail+.52*mist)*exp(-x*1.28)
@@ -225,15 +272,30 @@ vec3 roomShot(vec2 p,float landing,float depart) {
   center*=1.-nearTravel;
   size=mix(size,vec2(aspect*2.9,3.7),nearTravel);
   vec2 rect=abs(p-center)-size*.5;
-  float mask=1.-smoothstep(-.002,.002,max(rect.x,rect.y));
-  vec3 roomColor=vec3(.89,.835,.75)+.047*exp(-dot(p,p)*1.4);
+  float edgeAA=1.25/pixelHeight;
+  float mask=1.-smoothstep(-edgeAA,edgeAA,max(rect.x,rect.y));
+  vec3 roomColor=vec3(.020,.033,.055)+ice*.036*exp(-dot(p,p)*1.4);
+  roomColor+=sky(p)*.10*smoothstep(-.18,.65,p.y);
   float ground=-.19-p.y;
   if(ground>0.){
     float z=1./max(.011,ground);
     vec2 tile=vec2((p.x+.10*p.x*nearTravel)*z*.88,z*1.18+.30*(settle+nearTravel));
-    vec2 nearest=abs(fract(tile-.5)-.5)/max(fwidth(tile),vec2(.0001));
-    roomColor*=1.-.29*(1.-smoothstep(.2,1.65,min(nearest.x,nearest.y)))*smoothstep(.02,.43,ground);
+    // Small inset light pixels, rather than bright outlined floor tiles.
+    // Analytic pixel footprints remain stable inside this ground-only branch.
+    // Fade cells before they become smaller than a drawing-buffer pixel.
+    vec2 cells=tile*3.;
+    float pick=hash(floor(cells));
+    float dx=2.64*(1.+.10*nearTravel);
+    float footprint=max(dx*z+abs(dx*p.x)*z*z,3.54*z*z)*2./pixelHeight;
+    vec2 point=abs(fract(cells)-.5);
+    float halfSize=mix(.065,.18,smoothstep(.92,1.,pick));
+    float pixel=1.-smoothstep(halfSize,halfSize+footprint,max(point.x,point.y));
+    float fade=(1.-smoothstep(.45,1.,footprint))*smoothstep(.02,.35,ground);
+    vec3 tint=mix(ice*.32,ember*.65,step(.965,pick));
+    roomColor+=tint*pixel*fade*(.25+.75*smoothstep(.45,.95,pick));
+    roomColor+=ice*.018*exp(-ground*4.);
   }
+  roomColor+=ice*.065*exp(-abs(max(rect.x,rect.y))*110.);
   if(mask<=0.) return roomColor;
   return mix(roomColor,portalSpace(p),mask);
 }
@@ -249,16 +311,17 @@ vec3 transmission(vec2 p,float reveal) {
   float z=sqrt(max(0.,1.-r*r));
   float limb=exp(-z*4.);
   float haze=clouds(uv*3.+z*2.+vec2(.025*clockTime,1.));
-  vec3 glass=sky(q+uv*(.13+.22*z))*.75+vec3(.16,.063,.032)*(haze+.29)
-    +apricot*(limb+.27*pow(haze,3.));
+  vec3 glass=sky(q+uv*(.13+.22*z))*.75+vec3(.06,.10,.15)*(haze+.29)
+    +mix(ice,apricot,.18)*(limb+.27*pow(haze,3.));
   if(r<1.) {
     vec2 net=vec2(atan(uv.x,max(.08,z)),asin(clamp(uv.y,-1.,1.)))*22.;
     float mesh=min(abs(fract(net.x+net.y*.5)-.5),abs(fract(net.y-net.x*.4)-.5));
     float wire=1.-smoothstep(.015,.095,mesh);
-    glass+=apricot*wire*(.035+.10*limb)*haze;
+    glass+=ice*wire*(.035+.10*limb)*haze;
   }
-  col+=apricot*.45*exp(-abs(r-1.)*33.);
-  col=mix(col,glass,1.-smoothstep(.996,1.002,r));
+  col+=mix(ice,ember,.14)*.40*exp(-abs(r-1.)*33.);
+  float edgeAA=1.25/(pixelHeight*radius);
+  col=mix(col,glass,1.-smoothstep(1.-edgeAA,1.+edgeAA,r));
   return sphere(col,q,vec2(aspect+mix(1.1,.54,mobile)+(1.-reveal)*2.,mix(.87,-1.,mobile)),mix(1.86,.88,mobile),2.);
 }
 vec3 sceneColor(vec2 p) {
@@ -268,32 +331,45 @@ vec3 sceneColor(vec2 p) {
     float u=journey-2.;
     if(u<.23) return practice(p)*(1.-smoothstep(0.,.23,u));
     float travel=smoothstep(.23,.89,u);
-    return desertShot(p,travel,0.)*smoothstep(.23,.60,u);
+    return snowShot(p,travel,0.)*smoothstep(.23,.60,u);
   }
   if(journey<4.) {
     float u=journey-3.;
     if(u>=.98) return gate(p);
-    vec3 shot=desertShot(p,1.,u);
+    vec3 shot=snowShot(p,1.,u);
     if(u>.79) shot=mix(shot,gate(p),smoothstep(.79,.98,u));
     return shot;
   }
   if(journey<5.) {
     float u=journey-4.;
-    vec3 white=cream;
-    if(u<.19) return mix(gate(p/(1.+1.5*u)),white,smoothstep(.02,.19,u));
-    return mix(white,roomShot(p,u,0.),smoothstep(.19,.38,u));
+    vec3 afterglow=vec3(.09,.13,.19);
+    if(u<.19) return mix(gate(p/(1.+1.5*u)),afterglow,smoothstep(.02,.19,u));
+    return mix(afterglow,roomShot(p,u,0.),smoothstep(.19,.38,u));
   }
   float u=journey-5.;
   if(u<=.45) return roomShot(p,1.,u);
   float reveal=smoothstep(.45,.83,u);
   return transmission(p,reveal);
 }
+vec3 finishLight(vec3 color) {
+  // Display-referred highlight shoulder: retain the color of bright APAR
+  // ribbons instead of clipping their channels independently to flat white.
+  color=max(color,0.);
+  float peak=max(max(color.r,color.g),color.b);
+  if(peak>.78) {
+    float shoulder=.78+.22*(1.-exp(-((peak-.78)/.22)));
+    color*=shoulder/peak;
+  }
+  // Mild local contrast in the existing palette; no full-frame blur pass.
+  return mix(color,color*color*(3.-2.*color),.06);
+}
 void main() {
   vec2 p=(screenUV*2.-1.)*vec2(aspect,1.);
   vec3 col=sceneColor(p);
-  float vignette=1.-.22*smoothstep(.28,1.40,length(screenUV*2.-1.));
+  col=finishLight(col);
+  float vignette=1.-.14*smoothstep(.28,1.40,length(screenUV*2.-1.));
   col*=vignette;
-  col+=(hash(gl_FragCoord.xy)-.5)*.012;
+  col+=(hash(gl_FragCoord.xy)-.5)/255.;
   gl_FragColor=vec4(max(col,0.),1.);
 }
 `;

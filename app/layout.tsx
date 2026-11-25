@@ -27,7 +27,7 @@ import { IconSprite } from "@/components/ui/icon-sprite";
 export const metadata: Metadata = {
   // Production origin for absolute social-preview URLs.
   metadataBase: new URL("https://apar.agency"),
-  title: "APAR — AGENTIVE CREACY",
+  title: "APAR - AGENTIVE CREACY",
   description:
     "APAR is a digital marketing and branding agency in Mumbai for jewellery houses and premium brands. Strategy, branding, performance marketing, AI content and campaigns.",
 };
