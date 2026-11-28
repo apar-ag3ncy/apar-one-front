@@ -7,11 +7,36 @@ void main() {
   gl_Position = vec4(position.xy, 0., 1.);
 }`;
 
+// Both materials use the same moving doorway and one-pixel silhouette.
+export const clientsPortal = `
+vec2 portalRect(vec2 p, float landing, float depart) {
+  float settle = smoothstep(.30, .95, landing);
+  float travel = smoothstep(.12, .55, depart);
+  float width = mix(.055, aspect, settle);
+  vec2 size = vec2(width, width * 2.24);
+  vec2 center = vec2(.5 * aspect * settle, .035);
+  if (aspect < .85) {
+    float height = mix(.11, .85, settle);
+    size = mix(vec2(height * .44, height), vec2(aspect * 2., height), smoothstep(.45, 1., settle));
+    center = vec2(0., -.575 * settle);
+  }
+  center *= 1. - travel;
+  size = mix(size, vec2(aspect * 2.9, 3.7), travel);
+  return abs(p - center) - size * .5;
+}
+float portalMask(vec2 rect) {
+  float aa = 1.25 / pixelHeight;
+  return 1. - smoothstep(-aa, aa, max(rect.x, rect.y));
+}
+float roomArrival() { return smoothstep(4., 4.38, journey); }
+`;
+
 export const fragmentShader = `
 precision highp float;
 varying vec2 screenUV;
 uniform float aspect, pixelHeight, clockTime, journey;
 uniform vec2 pointer;
+${clientsPortal}
 // Keep APAR's ember as the accent; moonlight carries the surrounding space.
 const vec3 ember = vec3(1.,.23,.075);
 const vec3 apricot = vec3(.96,.66,.50);
@@ -90,16 +115,21 @@ vec3 orbit(vec2 p, float flight) {
   return sphere(col,q,vec2(0.,horizon-radius),radius,0.);
 }
 vec3 portalSpace(vec2 p) {
-  // An inclined star disc recurs inside each doorway along the flight.
+  // Rotate within the inclined disc so stars follow ellipses around the core.
   vec2 disc = vec2(p.x + p.y*.30, (p.y - p.x*.13)*2.25);
   float radius = length(disc);
-  float angle = atan(disc.y,disc.x+.00001);
-  float dustCloud = clouds(disc*2.6+vec2(clockTime*.014,8.2));
-  float arm = .5+.5*cos(3.*angle-radius*6.7+1.8*dustCloud-clockTime*.061);
+  float phase = clockTime * .18;
+  float c = cos(phase), s = sin(phase);
+  vec2 orbitUV = mat2(c,-s,s,c) * disc;
+  float angle = atan(orbitUV.y,orbitUV.x+.00001);
+  float dustCloud = clouds(orbitUV*2.6+vec2(0.,8.2));
+  float arm = .5+.5*cos(3.*angle-radius*6.7+1.8*dustCloud);
   float dustLane = pow(arm,3.)*exp(-radius*1.9)*dustCloud;
+  vec3 orbitingStars = dust(orbitUV,46.,1.) * exp(-radius*1.25) * (.55+4.*dustLane);
+  vec3 backgroundStars = dust(p*.86,104.,20.)*.40 + dust(p*.86,22.,8.)*.70;
   float core = exp(-radius*12.);
-  return vec3(.007,.012,.023) + ember*dustLane*.38 + cream*core*.32
-    + sky(p*.86)*(1.+2.6*dustLane);
+  return vec3(.007,.012,.023) + ember*dustLane*.55 + cream*core*.32
+    + orbitingStars + backgroundStars;
 }
 vec3 practice(vec2 p) {
   vec3 dark = vec3(.008,.013,.025)+vec3(.035,.060,.085)*exp(-dot(p,p)*2.);
@@ -234,68 +264,26 @@ vec3 snowShot(vec2 p,float arrival,float approach) {
   // Sum touching faces before blending so the shared edge has no pale seam.
   return coverage>.999 ? surface : mix(background,surface,coverage);
 }
-vec3 gate(vec2 p) {
-  vec2 q = p + pointer*.022;
-  float x = abs(q.x);
-  float depth = 1./(.10+x);
-  // The parallel walls terminate along a vertical slit. Keep a finite image
-  // height at the far end, so light streams travel past the eye on each side.
-  float lane = q.y*37./(.39+x*.77);
-  float row = floor(lane);
-  float seed = hash(vec2(row,sign(q.x)));
-  float travel = depth*(.66+seed*1.53)-clockTime*(1.45+seed*.42);
-  float pulse = fract(travel);
-  float ribbon = smoothstep(.01,.19,pulse)*(1.-smoothstep(.43,.96,pulse));
-  float core = exp(-10.*abs(fract(lane)-.46));
-  float mist = clouds(vec2(q.y*2.8,depth*.57-clockTime*.23));
-  float tint = noise(vec2(row*.058,depth*.40-clockTime*.19));
-  vec3 copper = mix(ember*.48,ember,tint);
-  vec3 amber = mix(ember,apricot,smoothstep(.24,.71,tint));
-  vec3 pigment = mix(q.x<0. ? copper : amber,ice,.32);
-  float trail = (.16+1.55*ribbon)*(.18+core)*(.24+.76*seed);
-  float flare = exp(-x*16.)*(.4+.6*mist);
-  return sky(q)*.25 + pigment*(trail+.52*mist)*exp(-x*1.28)
-    + cream*(flare*.75+exp(-x*100.)*.22);
+vec3 polarSky(vec2 p) {
+  vec2 q = p + pointer * .012;
+  float horizon = exp(-5. * abs(q.y + .36));
+  float airglow = exp(-2.8 * abs(q.y - .08 - .12 * sin(q.x * 1.7)));
+  return vec3(.009, .020, .047) + vec3(.018, .051, .071) * horizon
+    + vec3(.012, .063, .056) * airglow + sky(q) * .30;
 }
 vec3 roomShot(vec2 p,float landing,float depart) {
-  bool portrait=aspect<.85;
-  float settle=smoothstep(.30,.95,landing);
-  float nearTravel=smoothstep(.12,.55,depart);
-  float desktopWidth=mix(.055,aspect,settle);
-  vec2 size=vec2(desktopWidth,desktopWidth*2.24);
-  vec2 center=vec2(.5*aspect*settle,.035);
-  if(portrait) {
-    float height=mix(.11,.85,settle);
-    size=mix(vec2(height*.44,height),vec2(aspect*2.,height),smoothstep(.45,1.,settle));
-    center=vec2(0.,-.575*settle);
-  }
-  center*=1.-nearTravel;
-  size=mix(size,vec2(aspect*2.9,3.7),nearTravel);
-  vec2 rect=abs(p-center)-size*.5;
-  float edgeAA=1.25/pixelHeight;
-  float mask=1.-smoothstep(-edgeAA,edgeAA,max(rect.x,rect.y));
-  vec3 roomColor=vec3(.020,.033,.055)+ice*.036*exp(-dot(p,p)*1.4);
-  roomColor+=sky(p)*.10*smoothstep(-.18,.65,p.y);
+  vec2 rect=portalRect(p,landing,depart);
+  float arrival=roomArrival();
+  float mask=portalMask(rect)*arrival;
+  if(mask>=1.) return portalSpace(p);
+  vec3 roomColor=polarSky(p);
   float ground=-.19-p.y;
   if(ground>0.){
-    float z=1./max(.011,ground);
-    vec2 tile=vec2((p.x+.10*p.x*nearTravel)*z*.88,z*1.18+.30*(settle+nearTravel));
-    // Small inset light pixels, rather than bright outlined floor tiles.
-    // Analytic pixel footprints remain stable inside this ground-only branch.
-    // Fade cells before they become smaller than a drawing-buffer pixel.
-    vec2 cells=tile*3.;
-    float pick=hash(floor(cells));
-    float dx=2.64*(1.+.10*nearTravel);
-    float footprint=max(dx*z+abs(dx*p.x)*z*z,3.54*z*z)*2./pixelHeight;
-    vec2 point=abs(fract(cells)-.5);
-    float halfSize=mix(.065,.18,smoothstep(.92,1.,pick));
-    float pixel=1.-smoothstep(halfSize,halfSize+footprint,max(point.x,point.y));
-    float fade=(1.-smoothstep(.45,1.,footprint))*smoothstep(.02,.35,ground);
-    vec3 tint=mix(ice*.32,ember*.65,step(.965,pick));
-    roomColor+=tint*pixel*fade*(.25+.75*smoothstep(.45,.95,pick));
-    roomColor+=ice*.018*exp(-ground*4.);
+    float floorCoverage=arrival*smoothstep(0.,.05,ground);
+    vec3 floorColor=vec3(.020,.033,.055)+ice*.018*exp(-ground*4.);
+    roomColor=mix(roomColor,floorColor,floorCoverage);
   }
-  roomColor+=ice*.065*exp(-abs(max(rect.x,rect.y))*110.);
+  roomColor+=ice*.065*exp(-abs(max(rect.x,rect.y))*110.)*arrival;
   if(mask<=0.) return roomColor;
   return mix(roomColor,portalSpace(p),mask);
 }
@@ -335,17 +323,12 @@ vec3 sceneColor(vec2 p) {
   }
   if(journey<4.) {
     float u=journey-3.;
-    if(u>=.98) return gate(p);
+    if(u>=.98) return polarSky(p);
     vec3 shot=snowShot(p,1.,u);
-    if(u>.79) shot=mix(shot,gate(p),smoothstep(.79,.98,u));
+    if(u>.79) shot=mix(shot,polarSky(p),smoothstep(.79,.98,u));
     return shot;
   }
-  if(journey<5.) {
-    float u=journey-4.;
-    vec3 afterglow=vec3(.09,.13,.19);
-    if(u<.19) return mix(gate(p/(1.+1.5*u)),afterglow,smoothstep(.02,.19,u));
-    return mix(afterglow,roomShot(p,u,0.),smoothstep(.19,.38,u));
-  }
+  if(journey<5.) return roomShot(p,journey-4.,0.);
   float u=journey-5.;
   if(u<=.45) return roomShot(p,1.,u);
   float reveal=smoothstep(.45,.83,u);

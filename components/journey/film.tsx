@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { Mesh, NoToneMapping, OrthographicCamera, PlaneGeometry, Scene, ShaderMaterial, SRGBColorSpace, Vector2, WebGLRenderer } from 'three';
 import { vertexShader, fragmentShader } from './film-shader';
+import { createAurora } from './aurora';
 import { Snowfall } from './snowfall';
 
 export default function Film({ position, target, active }: { position: RefObject<number>; target: number; active: boolean }) {
@@ -44,6 +45,8 @@ export default function Film({ position, target, active }: { position: RefObject
     const mesh = new Mesh(plane, material);
     mesh.frustumCulled = false;
     scene.add(mesh);
+    const aurora = createAurora(uniforms);
+    scene.add(aurora);
     const snowfall = new Snowfall();
     scene.add(snowfall.mesh);
     function schedule() {
@@ -73,6 +76,7 @@ export default function Film({ position, target, active }: { position: RefObject
       uniforms.clockTime.value = elapsed;
       uniforms.pointer.value.lerp(media.matches ? pointer.set(0, 0) : pointer, 1 - Math.exp(-dt * 4));
       snowfall.update(dt, elapsed, position.current, media.matches, snowHover ? snowPointer : null);
+      aurora.visible = position.current > 3.79 && position.current < 5.45;
       renderer.render(scene, camera);
       if (node!.style.opacity !== '1') node!.style.opacity = '1';
       if (!media.matches) schedule();
@@ -130,6 +134,7 @@ export default function Film({ position, target, active }: { position: RefObject
       window.removeEventListener('scroll', leave);
       media.removeEventListener('change', visibility); node.removeEventListener('webglcontextlost', lost);
       node.removeEventListener('webglcontextrestored', restored);
+      aurora.geometry.dispose(); aurora.material.dispose();
       snowfall.dispose(); plane.dispose(); material.dispose(); renderer.dispose();
     };
   }, [position]);
