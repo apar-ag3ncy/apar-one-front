@@ -73,13 +73,8 @@
 
   /* No tall empty scroll tracks around static phone copy. */
   .progressive-quote,.progressive-quote.is-cinematic,.progressive-quote.is-dark { min-height:0; }
-  .pq-sticky,.is-cinematic .pq-sticky { position:relative; top:auto; min-height:0; padding-block:76px; }
+  .progressive-quote:not(.is-cinematic) .pq-sticky { position:relative; top:auto; min-height:0; padding-block:76px; }
   .progressive-quote h2 { margin:0; }
-  /* Portrait composition: architecture above, copy on the softly lit ground.
-     No sticky track or background attachment on touch devices. */
-  .pq-scene { position:relative; top:auto; height:82svh; min-height:520px; max-height:860px; }
-  .is-cinematic .pq-sticky { height:100%; justify-content:flex-end; padding-block:48px 64px; }
-  .is-cinematic h2 { font-size:clamp(38px,8vw,68px); }
   .meeting-home { --studio-join:clamp(72px,11svh,104px); }
   .flow-featured>.wrap,.home-image-bento .wrap { width:calc(100% - var(--gut) * 2); }
   .flow-featured .flow-heading { margin-bottom:40px; }

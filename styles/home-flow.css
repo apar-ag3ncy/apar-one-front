@@ -129,13 +129,51 @@
 .meeting-home>.hero-beam::after{content:"";position:absolute;inset:auto 0 0;height:var(--studio-join);z-index:1;pointer-events:none;
  background:linear-gradient(#12030200,#120302);}
 .progressive-quote.is-cinematic{min-height:0;}
-.pq-scene{position:relative;height:calc(100svh - 80px);min-height:540px;overflow:hidden;isolation:isolate;}
-.is-cinematic .pq-sticky{position:relative;top:auto;z-index:2;height:100%;min-height:0;padding-block:80px;}
-.is-cinematic h2{max-width:100%;width:fit-content;font-size:clamp(44px,6.2vw,100px);margin:0;}
-.pq-line{display:block;}
-.pq-focus-word{display:inline-block;}
-.pq-line+.pq-line{margin-top:.14em;}
-.pq-beyond{color:var(--red);}
+/* The caption sits between the sky and a transparent Three.js foreground. */
+.pq-scene {
+  position:relative; isolation:isolate; overflow:hidden;
+  height:calc(100svh - var(--compact-nav-height,70px)); min-height:460px;
+  background:radial-gradient(ellipse at 86% 63%,#98b3bc 0,transparent 59%),
+    linear-gradient(145deg,#192e41 8%,#365667 50%,#87a8b2 96%);
+}
+.is-cinematic .pq-sticky {
+  position:absolute; z-index:1; inset:53.5% 0 auto; transform:translateY(-100%);
+  width:min(86%,1650px); height:auto; min-height:0; margin:auto; padding:0;
+}
+.is-cinematic .pq-copy {
+  --heading-weight:830; --heading-tracking:-.06em;
+  max-width:100%; width:fit-content; margin:0; color:#f4f8f7;
+  font-size:clamp(42px,10.4vw,178px); line-height:.95; text-wrap:nowrap;
+}
+.pq-line {display:block;}
+.pq-focus-word {display:inline-block;}
+.pq-copy .pq-line:first-child {
+  font-size:.37em; font-weight:355; letter-spacing:-.035em; line-height:1.15;
+  margin-bottom:.20em;
+}
+.pq-copy .pq-beyond {color:inherit; font-weight:830; line-height:.94;}
+.alpine-art,.alpine-art canvas,.pq-scene::before,.pq-scene::after {
+  position:absolute; inset:0; width:100%; height:100%; pointer-events:none;
+}
+.alpine-art {
+  z-index:2; background:url('/textures/quote-alpine-wide.webp') center / cover no-repeat;
+}
+.alpine-art[data-painted] {background-image:none;}
+.alpine-art canvas {display:block; visibility:hidden;}
+.alpine-art[data-painted] canvas {visibility:visible;}
+.pq-scene::before,.pq-scene::after {content:""; z-index:3;}
+.pq-scene::before {height:18%; background:linear-gradient(#120302,rgba(18,3,2,.30) 36%,transparent);}
+.pq-scene::after {top:auto; height:18%; background:linear-gradient(0deg,var(--paper),transparent);}
+@media (max-aspect-ratio:4/5) {
+  .alpine-art {background-image:url('/textures/quote-alpine-tall.webp');}
+  .is-cinematic .pq-sticky {top:51%; width:90%;}
+  .is-cinematic .pq-copy {font-size:clamp(38px,12.6vw,112px);}
+  .pq-copy .pq-line:first-child {font-size:.49em;}
+}
+@media (max-height:520px) and (orientation:landscape) {
+  .pq-scene {min-height:320px;}
+  .is-cinematic .pq-copy {font-size:min(10vw,25svh);}
+}
 /* Homepage headings no longer have section labels above them. */
 .meeting-home .flow-client-heading h2,.meeting-home .tc-heading h2,.meeting-home .mj-showcase-heading h2{margin-top:0;}
 .meeting-home .mj-showcase-controls{justify-content:flex-end;}

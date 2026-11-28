@@ -60,12 +60,14 @@ test("Talk to us has an accessible contact destination before hydration", () => 
   assert.doesNotMatch(html, hiddenStyle);
 });
 
-test("studio quote appears on the plain page surface before hydration", () => {
+test("studio quote is readable before hydration and owns the decorative mountain canvas", () => {
   const html = renderToStaticMarkup(createElement(ProgressiveQuote, {
     id: "studio", text: "Limitless. Beyond Culture.",
   }));
   assert.match(html, /aria-labelledby="studio-quote"/);
   assert.match(html, /aria-label="Limitless\. Beyond Culture\."/);
-  assert.doesNotMatch(html, /<img\b|pq-landscape/);
+  assert.match(html, /class="alpine-art" aria-hidden="true"><canvas/);
+  const other = renderToStaticMarkup(createElement(ProgressiveQuote, { id: "another", text: "Another quote." }));
+  assert.doesNotMatch(other, /alpine-art|<canvas/);
   assert.doesNotMatch(html, hiddenStyle);
 });

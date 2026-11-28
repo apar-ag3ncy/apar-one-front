@@ -1,3 +1,5 @@
+import { AlpineArt } from '@/components/effects/alpine-quote/alpine-art';
+
 export function ProgressiveQuote({ id, text, dark = false }: {
   id: string; text: string; dark?: boolean;
 }) {
@@ -15,6 +17,6 @@ export function ProgressiveQuote({ id, text, dark = false }: {
   return <section id={id}
     className={`progressive-quote${cinematic ? " is-cinematic" : ""}${dark ? " is-dark" : ""}`}
     aria-labelledby={`${id}-quote`}>
-    {cinematic ? <div className="pq-scene">{copy}</div> : copy}
+    {cinematic ? <div className="pq-scene">{copy}<AlpineArt /></div> : copy}
   </section>;
 }
